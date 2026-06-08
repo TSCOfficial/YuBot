@@ -1,0 +1,39 @@
+package ch.frily.yubot.util;
+
+public enum EnvKey {
+    CRED_TOKEN,
+    GUILD_YUSERVER,
+    ROLE_OWNER,
+    ROLE_SERVERLEITUNG,
+    ROLE_ADMIN,
+    ROLE_ORGALEITUNG,
+    ROLE_DEVLEITUNG,
+    ROLE_AWARENESSLEITUNG,
+    ROLE_EVENTLEITUNG,
+    ROLE_DESIGNLEITUNG,
+    ROLE_MODLEITUNG,
+    ROLE_ORGA,
+    ROLE_MODERATOR,
+    ROLE_SUPPORT,
+    ROLE_AWARENESS,
+    ROLE_DEVELOPER,
+    ROLE_EVENT,
+    ROLE_DESIGN,
+    ROLE_SUPPORTLEITUNG,
+    ROLE_ENTERTAINER,
+    ROLE_COMMUNITYMANAGER,
+    ROLE_TWITCHMOD,
+    ROLE_EVERYONE,
+    CHANNEL_DASTEAM,
+    CHANNEL_TICKET,
+    CATEGORY_TICKETS,
+    CATEGORY_ANSAGEN,
+    CATEGORY_LIVEVENTS,
+    CATEGORY_COMMUNITYFLOOR,
+    CATEGORY_VOICE;
+
+    String get(){
+        return EnvResolver.getString(this);
+    }
+}
+// todo evntl sogar funktional? dass die enum elemente vars sind welche den .env-aufruf automatisch machen und den wert direkt ausgeben?

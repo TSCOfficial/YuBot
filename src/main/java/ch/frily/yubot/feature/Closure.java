@@ -1,0 +1,187 @@
+package ch.frily.yubot.feature;
+
+import ch.frily.yubot.util.EnvKey;
+import ch.frily.yubot.util.EnvResolver;
+import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.section.Section;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+@Slf4j
+public class Closure {
+
+    private static Closure instance;
+
+    private static final List<Category> CATEGORIYKEYS = Stream.of(
+            EnvKey.CATEGORY_ANSAGEN,
+            EnvKey.CATEGORY_LIVEVENTS,
+            EnvKey.CATEGORY_COMMUNITYFLOOR,
+            EnvKey.CATEGORY_VOICE
+    ).map(EnvResolver::getCategoryById).toList();
+
+    private static final List<Permission> PERMISSIONS = List.of(
+            Permission.VIEW_CHANNEL,
+            Permission.MESSAGE_SEND
+    );
+
+    private static final List<Role> mods = Stream.of(
+            EnvKey.ROLE_MODLEITUNG,
+            EnvKey.ROLE_MODERATOR
+    ).map(EnvResolver::getRoleById).toList();
+
+    public static Closure getInstance() {
+        if (instance == null) {
+            instance = new Closure();
+        }
+        return instance;
+    }
+
+    private static List<Category> resolveCategories(){
+        return CATEGORIYKEYS;
+    }
+
+    public void triggerUpdate(){
+        log.debug("Triggered Update");
+        List<Member> modWithRoles = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getMembersWithRoles(mods);
+        log.debug(String.valueOf(modWithRoles.size()));
+        modWithRoles.stream().filter(mod -> mod.getOnlineStatus() == OnlineStatus.ONLINE).toList();
+
+        log.debug(String.valueOf(modWithRoles.size()));
+
+        toggleCategoryPermissions(!modWithRoles.isEmpty());
+
+    }
+
+    public CompletableFuture<List<Category>> openChannels(Consumer<List<Category>> onEach) {
+        return toggleCategoryPermissions(true, onEach);
+    }
+
+    public CompletableFuture<List<Category>> closeChannels(Consumer<List<Category>> onEach) {
+        return toggleCategoryPermissions(false, onEach);
+    }
+
+    /**
+     * Toggle the @everyone-roles category permissions - with progress
+     * @param isOpen True if the categories should be open, false if they should be closed
+     * @return Progress of the categories
+     */
+    public CompletableFuture<List<Category>> toggleCategoryPermissions(boolean isOpen, Consumer<List<Category>> onEach) {
+        Role everyoneRole = EnvResolver.getRoleById(EnvKey.ROLE_EVERYONE);
+        List<Category> progress = new ArrayList<>();
+
+        List<Permission> allowPerms = new ArrayList<>();
+        List<Permission> denyPerms = new ArrayList<>();
+
+        if (isOpen) {
+            allowPerms.addAll(PERMISSIONS);
+        } else {
+            denyPerms.addAll(PERMISSIONS);
+        }
+
+        return CompletableFuture.supplyAsync(() -> {
+            for (Category category : resolveCategories()) {
+                category.getManager()
+                    .putRolePermissionOverride(everyoneRole.getIdLong(), allowPerms, denyPerms)
+                    .complete();
+
+
+                progress.add(category);
+                onEach.accept(progress);
+                log.debug("Closed category: {}", category.getName());
+            }
+            return progress;
+        });
+    }
+
+    /**
+     * Toggle the @everyone-roles category permissions - without progress
+     * @param isOpen True if the categories should be open, false if they should be closed
+     */
+    public void toggleCategoryPermissions(boolean isOpen) {
+        Role everyoneRole = EnvResolver.getRoleById(EnvKey.ROLE_EVERYONE);
+
+        List<Permission> allowPerms = new ArrayList<>();
+        List<Permission> denyPerms = new ArrayList<>();
+
+        if (isOpen) {
+            allowPerms.addAll(PERMISSIONS);
+        } else {
+            denyPerms.addAll(PERMISSIONS);
+        }
+
+        for (Category category : resolveCategories()) {
+            category.getManager()
+                    .putRolePermissionOverride(everyoneRole.getIdLong(), allowPerms, denyPerms)
+                    .complete();
+        }
+    }
+
+    public static Container buildContainer(List<Category> categories, boolean isOpen, boolean isCompleted) {
+        List<ContainerChildComponent> containerComponents = new ArrayList<>();
+
+        if (isOpen) containerComponents.add(TextDisplay.of("## Kategorien öffnen"));
+        else containerComponents.add(TextDisplay.of("## Kategorien schliessen"));
+
+        if (isOpen) containerComponents.add(TextDisplay.of("Nachfolgende Kategorien werden geöffnet."));
+        else containerComponents.add(TextDisplay.of("Nachfolgende Kategorien werden geschlossen."));
+
+        containerComponents.add(Separator.createDivider(Separator.Spacing.SMALL));
+
+        if (categories.size() > 0) {
+            for (int i = 0; i < categories.size(); i += 5) {
+                List<Category> chunk = categories.subList(i, Math.min(i + 5, categories.size()));
+                containerComponents.add(ActionRow.of(
+                        chunk.stream()
+                                .map(cat -> Button.secondary("category:" + cat.getId(), "# " + cat.getName()).withDisabled(true))
+                                .collect(Collectors.toList())
+                ));
+            }
+        } else {
+            containerComponents.add(TextDisplay.of("*Keine Kategorie verfügbar*"));
+        }
+
+        containerComponents.add(Separator.createInvisible(Separator.Spacing.LARGE));
+
+        // Status
+        StringBuilder statusBuilder = new StringBuilder("*Status: ");
+
+        if (isCompleted) {
+            statusBuilder.append(categories.size()).append(" Kategorien erfolgreich ");
+            if (isOpen) {
+                statusBuilder.append("geöffnet.*");
+            } else {
+                statusBuilder.append("geschlossen.*");
+            }
+        } else {
+            statusBuilder.append(categories.size()).append("/").append(resolveCategories().size());
+            statusBuilder.append(" in Warteschlange*");
+        }
+
+        Button revertButton = Button.primary("closure-open", "↩️ Erneut öffnen");
+        if (isOpen) {
+            revertButton = Button.primary("closure-close", "↩️ Erneut schliessen");
+        }
+
+        containerComponents.add(Section.of(
+                revertButton.withDisabled(!isCompleted),
+                TextDisplay.of(statusBuilder.toString())
+        ));
+        return Container.of(containerComponents);
+    }
+}
