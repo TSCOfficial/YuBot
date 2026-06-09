@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
  */
 public enum StaticEmbedRegistry {
 
-    SERVER_CLOSE_EMBED(new ServerClosedEmbed().build());
+    NONE(null);
 
     private final MessageEmbed embed;
 

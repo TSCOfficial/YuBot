@@ -1,9 +1,6 @@
 package ch.frily.yubot.interaction.command;
 
-import ch.frily.yubot.interaction.command.cmd.SendEmbedCmd;
-import ch.frily.yubot.interaction.command.cmd.TeamlistCmd;
-import ch.frily.yubot.interaction.command.cmd.ClosureCmdGroup;
-import ch.frily.yubot.interaction.command.cmd.TicketCmdGroup;
+import ch.frily.yubot.interaction.command.cmd.*;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import javassist.NotFoundException;
@@ -42,7 +39,8 @@ public class SlashCommandRegistry {
     public void loadCommands() {
         List<ISlashCommand> slashCommands = List.of(
                 new TeamlistCmd(),
-                new SendEmbedCmd()
+                new SendEmbedCmd(),
+                new SendContainerCmd()
         );
 
         List<ISlashCommandGroup> slashCommandGroups = List.of(

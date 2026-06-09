@@ -11,6 +11,9 @@ public class Color {
 
     private final Integer blue;
 
+    public static final java.awt.Color RED = new java.awt.Color(231, 76, 60);
+    public static final java.awt.Color GREEN = new java.awt.Color(46, 204, 113);
+
     public Color(Integer red, Integer green, Integer blue){
         this.red = red;
         this.green = green;

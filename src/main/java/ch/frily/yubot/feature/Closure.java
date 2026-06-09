@@ -40,8 +40,7 @@ public class Closure {
     ).map(EnvResolver::getCategoryById).toList();
 
     private static final List<Permission> PERMISSIONS = List.of(
-            Permission.VIEW_CHANNEL,
-            Permission.MESSAGE_SEND
+            Permission.VIEW_CHANNEL
     );
 
     private static final List<Role> mods = Stream.of(
@@ -73,7 +72,7 @@ public class Closure {
         if (isOpen) {
             TextChannel lobbyChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_LOBBY); // lobby channel
             Role role = EnvResolver.getRoleById(EnvKey.ROLE_ANTIFASHIST);
-            lobbyChannel.sendMessage("Hey " + role.getAsMention() + "! Es ist Zeit zu quatschen ✨").queue();
+            lobbyChannel.sendMessage("Hey " + role.getName() + "! Es ist Zeit zu quatschen ✨").queue();
         }
 
 
@@ -131,58 +130,5 @@ public class Closure {
         List<Member> members = guild.getMembersWithRoles(activeModRole);
         log.debug(members.stream().map(Member::getEffectiveName).collect(Collectors.joining(", ")));
         return members;
-    }
-
-    public static Container buildContainer(List<Category> categories, boolean isOpen, boolean isCompleted) {
-        List<ContainerChildComponent> containerComponents = new ArrayList<>();
-
-        if (isOpen) containerComponents.add(TextDisplay.of("## Kategorien öffnen"));
-        else containerComponents.add(TextDisplay.of("## Kategorien schliessen"));
-
-        if (isOpen) containerComponents.add(TextDisplay.of("Nachfolgende Kategorien werden geöffnet."));
-        else containerComponents.add(TextDisplay.of("Nachfolgende Kategorien werden geschlossen."));
-
-        containerComponents.add(Separator.createDivider(Separator.Spacing.SMALL));
-
-        if (categories.size() > 0) {
-            for (int i = 0; i < categories.size(); i += 5) {
-                List<Category> chunk = categories.subList(i, Math.min(i + 5, categories.size()));
-                containerComponents.add(ActionRow.of(
-                        chunk.stream()
-                                .map(cat -> Button.secondary("category:" + cat.getId(), "# " + cat.getName()).withDisabled(true))
-                                .collect(Collectors.toList())
-                ));
-            }
-        } else {
-            containerComponents.add(TextDisplay.of("*Keine Kategorie verfügbar*"));
-        }
-
-        containerComponents.add(Separator.createInvisible(Separator.Spacing.LARGE));
-
-        // Status
-        StringBuilder statusBuilder = new StringBuilder("*Status: ");
-
-        if (isCompleted) {
-            statusBuilder.append(categories.size()).append(" Kategorien erfolgreich ");
-            if (isOpen) {
-                statusBuilder.append("geöffnet.*");
-            } else {
-                statusBuilder.append("geschlossen.*");
-            }
-        } else {
-            statusBuilder.append(categories.size()).append("/").append(resolveCategories().size());
-            statusBuilder.append(" in Warteschlange*");
-        }
-
-        Button revertButton = Button.primary("closure-open", "↩️ Erneut öffnen");
-        if (isOpen) {
-            revertButton = Button.primary("closure-close", "↩️ Erneut schliessen");
-        }
-
-        containerComponents.add(Section.of(
-                revertButton.withDisabled(!isCompleted),
-                TextDisplay.of(statusBuilder.toString())
-        ));
-        return Container.of(containerComponents);
     }
 }

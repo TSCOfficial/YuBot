@@ -1,9 +1,10 @@
 package ch.frily.yubot.interaction.command.cmd;
 
+import ch.frily.yubot.container.StaticContainerRegistry;
 import ch.frily.yubot.embed.StaticEmbedRegistry;
 import ch.frily.yubot.interaction.command.ISlashCommand;
-import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -13,25 +14,24 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
-public class SendEmbedCmd implements ISlashCommand {
+public class SendContainerCmd implements ISlashCommand {
     @Override
     public String getName() {
-        return "sendembed";
+        return "sendcontainer";
     }
 
     @Override
     public String getDescription() {
-        return "Sende eine Einbettung";
+        return "Sende ein container";
     }
 
     @Override
     public List<OptionData> getOptions() {
         return List.of(
-                new OptionData(OptionType.STRING, "embed", "Wähle eine Einbettung aus", true)
-                        .addChoices(Arrays.stream(StaticEmbedRegistry.values()).map(embed -> {
-                            return new Command.Choice(humanizeEnumName(embed.name()), embed.name());
+                new OptionData(OptionType.STRING, "container", "Wähle ein container aus", true)
+                        .addChoices(Arrays.stream(StaticContainerRegistry.values()).map(container -> {
+                            return new Command.Choice(humanizeEnumName(container.name()), container.name());
                         }).toList()
                         )
         );
@@ -39,10 +39,10 @@ public class SendEmbedCmd implements ISlashCommand {
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) {
-        String embedValue = event.getOption("embed").getAsString();
-        MessageEmbed embed = StaticEmbedRegistry.valueOf(embedValue).getEmbed();
-        event.getChannel().sendMessageEmbeds(embed).queue();
-        event.reply("✅ Einbettung \"" + humanizeEnumName(embedValue) + "\" erfolgreich gesendet.").setEphemeral(true).queue();
+        String embedValue = event.getOption("container").getAsString();
+        Container container = StaticContainerRegistry.valueOf(embedValue).getContainer();
+        event.getChannel().sendMessageComponents(container).useComponentsV2().queue();
+        event.reply("✅ Container \"" + humanizeEnumName(embedValue) + "\" erfolgreich gesendet.").setEphemeral(true).queue();
     }
 
     @Override
