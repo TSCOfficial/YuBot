@@ -14,8 +14,6 @@ public class ClosureCmdGroup implements ISlashCommandGroup {
     @Override
     public List<ISlashSubcommand> getSubcommands() {
         return List.of(
-                new ClosureCloseCmd(),
-                new ClosureOpenCmd(),
                 new ClosureOptInCmd()
         );
     }

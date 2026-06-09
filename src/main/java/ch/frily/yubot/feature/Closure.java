@@ -1,5 +1,7 @@
 package ch.frily.yubot.feature;
 
+import ch.frily.yubot.Client;
+import ch.frily.yubot.embed.ClosureLogEmbed;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +17,7 @@ import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,55 +61,20 @@ public class Closure {
 
     public void triggerUpdate(){
         log.debug("Triggered Update");
-        List<Member> modWithRoles = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getMembersWithRoles(mods);
-        log.debug(String.valueOf(modWithRoles.size()));
-        modWithRoles.stream().filter(mod -> mod.getOnlineStatus() == OnlineStatus.ONLINE).toList();
+        Role activeModRole = EnvResolver.getRoleById(1513639704870912130L);
+        List<Member> activeMods = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getMembersWithRoles(activeModRole);
+        log.debug(String.valueOf(activeMods.size()));
+        // modWithRoles.stream().filter(mod -> mod.getOnlineStatus() == OnlineStatus.ONLINE).toList();
 
-        log.debug(String.valueOf(modWithRoles.size()));
+        log.debug(String.valueOf(activeMods.size()));
 
-        toggleCategoryPermissions(!modWithRoles.isEmpty());
+        boolean isOpen = !activeMods.isEmpty();
 
-    }
+        toggleCategoryPermissions(!activeMods.isEmpty());
 
-    public CompletableFuture<List<Category>> openChannels(Consumer<List<Category>> onEach) {
-        return toggleCategoryPermissions(true, onEach);
-    }
-
-    public CompletableFuture<List<Category>> closeChannels(Consumer<List<Category>> onEach) {
-        return toggleCategoryPermissions(false, onEach);
-    }
-
-    /**
-     * Toggle the @everyone-roles category permissions - with progress
-     * @param isOpen True if the categories should be open, false if they should be closed
-     * @return Progress of the categories
-     */
-    public CompletableFuture<List<Category>> toggleCategoryPermissions(boolean isOpen, Consumer<List<Category>> onEach) {
-        Role everyoneRole = EnvResolver.getRoleById(EnvKey.ROLE_EVERYONE);
-        List<Category> progress = new ArrayList<>();
-
-        List<Permission> allowPerms = new ArrayList<>();
-        List<Permission> denyPerms = new ArrayList<>();
-
-        if (isOpen) {
-            allowPerms.addAll(PERMISSIONS);
-        } else {
-            denyPerms.addAll(PERMISSIONS);
-        }
-
-        return CompletableFuture.supplyAsync(() -> {
-            for (Category category : resolveCategories()) {
-                category.getManager()
-                    .putRolePermissionOverride(everyoneRole.getIdLong(), allowPerms, denyPerms)
-                    .complete();
-
-
-                progress.add(category);
-                onEach.accept(progress);
-                log.debug("Closed category: {}", category.getName());
-            }
-            return progress;
-        });
+        // Logging
+        TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getIdLong(), 1513777649649193010L);
+        channel.sendMessageEmbeds(new ClosureLogEmbed().build()).queue();
     }
 
     /**

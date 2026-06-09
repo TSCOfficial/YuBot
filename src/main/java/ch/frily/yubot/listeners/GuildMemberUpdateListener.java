@@ -29,6 +29,7 @@ public class GuildMemberUpdateListener extends ListenerAdapter {
 
     @Override
     public void onGuildMemberUpdate(GuildMemberUpdateEvent event) {
+        Closure.getInstance().triggerUpdate();
         log.info("Updated {}", event.getMember().getEffectiveName());
 
         MessageEmbed embed = Teamlist.getInstance().generateEmbed();
@@ -43,11 +44,6 @@ public class GuildMemberUpdateListener extends ListenerAdapter {
             return null;
         });
 
-    }
-
-    @Override
-    public void onUserUpdateOnlineStatus(@NotNull UserUpdateOnlineStatusEvent event) {
-        Closure.getInstance().triggerUpdate();
     }
 
 

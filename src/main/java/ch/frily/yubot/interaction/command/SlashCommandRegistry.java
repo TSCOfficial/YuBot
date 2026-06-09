@@ -1,6 +1,6 @@
 package ch.frily.yubot.interaction.command;
 
-import ch.frily.yubot.feature.TeamlistCmd;
+import ch.frily.yubot.interaction.command.cmd.TeamlistCmd;
 import ch.frily.yubot.interaction.command.cmd.ClosureCmdGroup;
 import ch.frily.yubot.interaction.command.cmd.TicketCmdGroup;
 import ch.frily.yubot.util.EnvKey;

@@ -1,5 +1,6 @@
-package ch.frily.yubot.feature;
+package ch.frily.yubot.interaction.command.cmd;
 
+import ch.frily.yubot.feature.Teamlist;
 import ch.frily.yubot.interaction.command.ISlashCommand;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
