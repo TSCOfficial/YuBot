@@ -5,16 +5,15 @@ import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class ClosureOptInCmd implements ISlashSubcommand {
+public class ClosureOptOutCmd implements ISlashSubcommand {
     @Override
     public String getName() {
-        return "opt-in";
+        return "opt-out";
     }
 
     @Override
@@ -26,15 +25,17 @@ public class ClosureOptInCmd implements ISlashSubcommand {
     public void execute(@NotNull SlashCommandInteractionEvent event) {
         try {
             Role activeMod = EnvResolver.getRoleById(1513639704870912130L);
-            event.getGuild().addRoleToMember(event.getMember(), activeMod).submit().thenAccept(_ -> {
+            event.getGuild().removeRoleFromMember(event.getMember(), activeMod).submit().thenAccept(_ -> {
                 int activeModCount = Closure.getActiveMods().size();
 
-                String countInfo = "Es sind nun **" + activeModCount + "** aktive Moderator\\*innen.";
+                String countInfo = "Es sind nun **" + activeModCount + "** aktive Moderator\\*innen";
                 if (activeModCount == 1) {
-                    countInfo = "Es ist nun nurnoch **" + activeModCount + "** aktive\\*r Moderator\\*in";
+                    countInfo = "Es ist nun nurnoch **" + activeModCount + "** aktive*r Modderator*in";
+                } else if (activeModCount == 0) {
+                    countInfo = "Es sind nun keine aktive Moderator*innen mehr da - der Server wird geschlossen.";
                 }
 
-                event.reply("Du wurdest als aktive\\*r moderator\\*in markiert.\n-# " + countInfo).setEphemeral(true).queue();
+                event.reply("Dein aktiver moderator\\*innen Status wurde entfernt.\n-# " + countInfo).setEphemeral(true).queue();
             });
 
 

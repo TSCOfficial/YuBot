@@ -32,17 +32,17 @@ public class GuildMemberUpdateListener extends ListenerAdapter {
         Closure.getInstance().triggerUpdate();
         log.info("Updated {}", event.getMember().getEffectiveName());
 
-        //MessageEmbed embed = Teamlist.getInstance().generateEmbed();
+        MessageEmbed embed = Teamlist.getInstance().generateEmbed();
 
         TextChannel channel = (TextChannel) EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_DASTEAM);
 
 
-//        EnvResolver.getMessageById(event.getGuild().getIdLong(), channel.getIdLong(), channel.getLatestMessageIdLong()).thenAccept(message -> {
-//            message.editMessageEmbeds(embed).queue();
-//        }).exceptionally(error -> {
-//            channel.sendMessage("").addEmbeds(embed).queue();
-//            return null;
-//        });
+        EnvResolver.getMessageById(event.getGuild().getIdLong(), channel.getIdLong(), channel.getLatestMessageIdLong()).thenAccept(message -> {
+            message.editMessageEmbeds(embed).queue();
+        }).exceptionally(error -> {
+            channel.sendMessage("").addEmbeds(embed).queue();
+            return null;
+        });
 
     }
 

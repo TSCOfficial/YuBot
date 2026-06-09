@@ -61,33 +61,52 @@ public class Closure {
     }
 
     public void triggerUpdate(){
-        log.debug("Triggered Update");
-        Role activeModRole = EnvResolver.getRoleById(1513639704870912130L);
-        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
-        List<Member> activeMods = guild.getMembersWithRoles(activeModRole);
-        log.debug("Active mods: {}", activeMods.stream().map(Member::getEffectiveName).collect(Collectors.joining(", ")));
-        // modWithRoles.stream().filter(mod -> mod.getOnlineStatus() == OnlineStatus.ONLINE).toList();
+        List<Member> activeMods = getActiveMods();
 
         log.debug(String.valueOf(activeMods.size()));
 
-        toggleCategoryPermissions(!activeMods.isEmpty());
+        boolean isOpen = !activeMods.isEmpty();
 
-        if (!activeMods.isEmpty()) {
-            TextChannel lobbyChannel = EnvResolver.getChannelById(TextChannel.class, guild.getIdLong(), 1435272551759613983L); // lobby channel
-            lobbyChannel.sendMessage("Hey <@618876411905835018>! Es ist Zeit zu quatschen ✨").queue(); // role antifaschist: 618876411905835018
+        toggleCategoryPermissions(isOpen);
+        toggleServerClosedChannelPermissions(!isOpen);
+
+        if (isOpen) {
+            TextChannel lobbyChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_LOBBY); // lobby channel
+            Role role = EnvResolver.getRoleById(EnvKey.ROLE_ANTIFASHIST);
+            lobbyChannel.sendMessage("Hey " + role.getAsMention() + "! Es ist Zeit zu quatschen ✨").queue();
         }
 
 
         // Logging
-        TextChannel logChannel = EnvResolver.getChannelById(TextChannel.class, guild.getIdLong(), 1513777649649193010L); // Log channel
+        TextChannel logChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_CLOSURELOGS); // Log channel
         logChannel.sendMessageEmbeds(new ClosureLogEmbed(!activeMods.isEmpty()).build()).queue();
+    }
+
+    /**
+     * Toggle the permissions of the "server-geschlossen" channel
+     * @param isOpen True if the channel should be open (Inverted value of closure's isOpen value)
+     */
+    private void toggleServerClosedChannelPermissions(boolean isOpen) {
+        Role everyoneRole = EnvResolver.getRoleById(EnvKey.ROLE_EVERYONE);
+        TextChannel serverClosedChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_SERVERGESCHLOSSEN);
+
+        List<Permission> allowPerms = new ArrayList<>();
+        List<Permission> denyPerms = new ArrayList<>();
+
+        if (isOpen) {
+            allowPerms.addAll(PERMISSIONS);
+        } else {
+            denyPerms.addAll(PERMISSIONS);
+        }
+
+        serverClosedChannel.getManager().putRolePermissionOverride(everyoneRole.getIdLong(), allowPerms, denyPerms).queue();
     }
 
     /**
      * Toggle the @everyone-roles category permissions - without progress
      * @param isOpen True if the categories should be open, false if they should be closed
      */
-    public void toggleCategoryPermissions(boolean isOpen) {
+    private void toggleCategoryPermissions(boolean isOpen) {
         Role everyoneRole = EnvResolver.getRoleById(EnvKey.ROLE_EVERYONE);
 
         List<Permission> allowPerms = new ArrayList<>();
@@ -104,6 +123,14 @@ public class Closure {
                     .putRolePermissionOverride(everyoneRole.getIdLong(), allowPerms, denyPerms)
                     .complete();
         }
+    }
+
+    public static List<Member> getActiveMods() {
+        Role activeModRole = EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD);
+        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+        List<Member> members = guild.getMembersWithRoles(activeModRole);
+        log.debug(members.stream().map(Member::getEffectiveName).collect(Collectors.joining(", ")));
+        return members;
     }
 
     public static Container buildContainer(List<Category> categories, boolean isOpen, boolean isCompleted) {

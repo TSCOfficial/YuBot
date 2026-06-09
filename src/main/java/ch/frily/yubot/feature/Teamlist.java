@@ -55,9 +55,13 @@ public class Teamlist {
         embedBuilder.setColor(new Color("cf3f05").get());
         fillWithBlankFields(embedBuilder);
 
-//        List<Member> teammembers = getUsersByRole(EnvResolver.getRoleById(EnvKey.ROLE_TEAM));
-//        embedBuilder.addField("Gesammtes Team (" + teammembers.size() + ")",
-//                                teammembers.stream().map(Member::getAsMention).collect(Collectors.joining(", ")), false);
+        List<Member> activeMods = getUsersByRole(EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD));
+        if (activeMods.isEmpty()) {
+            embedBuilder.addField("Aktive Moderation (0)", "*Nicht besetzt*", false);
+        } else {
+            embedBuilder.addField("Aktive Moderation (" + activeMods.size() + ")",
+                    activeMods.stream().map(Member::getAsMention).collect(Collectors.joining(", ")), false);
+        }
 
         return embedBuilder.build();
     }

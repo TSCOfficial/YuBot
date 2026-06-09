@@ -15,9 +15,9 @@ public class ClosureLogEmbed implements IEmbed {
 
     @Override
     public String getTitle() {
-        String title = "Server geschlossen";
+        String title = "🔒 Server geschlossen";
         if (isOpen) {
-            title = "Server eröffnet";
+            title = "🔓 Server eröffnet";
         }
         return title;
     }
@@ -26,7 +26,7 @@ public class ClosureLogEmbed implements IEmbed {
     public String getDescription() {
         String description = "Es sind keine aktive mods mehr verfügbar - Server wurde geschlossen.";
         if (isOpen) {
-            description = "Es wurde minestens 1 aktive*r Moderator*in - Server wurde eröffnet.";
+            description = "Es wurde minestens 1 aktive\\*r Moderator\\*in - Server wurde eröffnet.";
         }
         return description;
     }
