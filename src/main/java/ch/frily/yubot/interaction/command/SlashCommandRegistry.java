@@ -1,5 +1,6 @@
 package ch.frily.yubot.interaction.command;
 
+import ch.frily.yubot.interaction.command.cmd.SendEmbedCmd;
 import ch.frily.yubot.interaction.command.cmd.TeamlistCmd;
 import ch.frily.yubot.interaction.command.cmd.ClosureCmdGroup;
 import ch.frily.yubot.interaction.command.cmd.TicketCmdGroup;
@@ -40,7 +41,8 @@ public class SlashCommandRegistry {
 
     public void loadCommands() {
         List<ISlashCommand> slashCommands = List.of(
-                new TeamlistCmd()
+                new TeamlistCmd(),
+                new SendEmbedCmd()
         );
 
         List<ISlashCommandGroup> slashCommandGroups = List.of(

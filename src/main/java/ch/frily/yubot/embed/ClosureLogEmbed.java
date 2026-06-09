@@ -9,6 +9,10 @@ public class ClosureLogEmbed implements IEmbed {
     @Setter
     private boolean isOpen;
 
+    public ClosureLogEmbed(boolean isOpen){
+        this.isOpen = isOpen;
+    }
+
     @Override
     public String getTitle() {
         String title = "Server geschlossen";

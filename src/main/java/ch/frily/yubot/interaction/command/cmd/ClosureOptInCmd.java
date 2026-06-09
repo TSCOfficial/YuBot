@@ -26,7 +26,7 @@ public class ClosureOptInCmd implements ISlashSubcommand {
         try {
             Role activeMod = EnvResolver.getRoleById(1513639704870912130L);
             event.getGuild().addRoleToMember(event.getMember(), activeMod).queue();
-            event.reply("Du wurdest als aktive*r moderator*in markiert.").queue();
+            event.reply("Du wurdest als aktive\\*r moderator\\*in markiert.").queue();
         } catch (Exception e) {
             event.reply(e.getMessage()).queue();
         }

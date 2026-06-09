@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
@@ -62,19 +63,24 @@ public class Closure {
     public void triggerUpdate(){
         log.debug("Triggered Update");
         Role activeModRole = EnvResolver.getRoleById(1513639704870912130L);
-        List<Member> activeMods = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getMembersWithRoles(activeModRole);
-        log.debug(String.valueOf(activeMods.size()));
+        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+        List<Member> activeMods = guild.getMembersWithRoles(activeModRole);
+        log.debug("Active mods: {}", activeMods.stream().map(Member::getEffectiveName).collect(Collectors.joining(", ")));
         // modWithRoles.stream().filter(mod -> mod.getOnlineStatus() == OnlineStatus.ONLINE).toList();
 
         log.debug(String.valueOf(activeMods.size()));
 
-        boolean isOpen = !activeMods.isEmpty();
-
         toggleCategoryPermissions(!activeMods.isEmpty());
 
+        if (!activeMods.isEmpty()) {
+            TextChannel lobbyChannel = EnvResolver.getChannelById(TextChannel.class, guild.getIdLong(), 1435272551759613983L); // lobby channel
+            lobbyChannel.sendMessage("Hey <@618876411905835018>! Es ist Zeit zu quatschen ✨").queue(); // role antifaschist: 618876411905835018
+        }
+
+
         // Logging
-        TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getIdLong(), 1513777649649193010L);
-        channel.sendMessageEmbeds(new ClosureLogEmbed().build()).queue();
+        TextChannel logChannel = EnvResolver.getChannelById(TextChannel.class, guild.getIdLong(), 1513777649649193010L); // Log channel
+        logChannel.sendMessageEmbeds(new ClosureLogEmbed(!activeMods.isEmpty()).build()).queue();
     }
 
     /**
