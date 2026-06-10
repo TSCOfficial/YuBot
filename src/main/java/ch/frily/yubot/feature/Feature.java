@@ -55,13 +55,7 @@ public abstract class Feature {
     }
 
     public boolean isPermitted(String execution, Member member) {
-        log.debug("Executing: {} ({})", execution, resolveKey(execution));
-        log.debug("Possible options: {}", permission.stream().map(FeaturePermission::name).collect(Collectors.joining(", ")));
         FeaturePermission featurePerm = permission.stream().filter(featurePerms -> featurePerms.name().equals(resolveKey(execution))).findFirst().orElseThrow();
-        log.debug(featurePerm.name());
-        log.debug(featurePerm.roles().stream().map(Role::getName).collect(Collectors.joining(", ")));
-        log.debug(member.getRoles().stream().map(Role::getName).collect(Collectors.joining(", ")));
-        log.debug(String.valueOf(Util.containsAny(featurePerm.roles(), member.getRoles())));
         return Util.containsAny(featurePerm.roles(), member.getRoles());
     }
 }

@@ -33,7 +33,10 @@ public class GuildMemberUpdateListener extends ListenerAdapter {
     @Override
     public void onGuildMemberRoleAdd(@NotNull GuildMemberRoleAddEvent event) {
         if (Util.isTeamMember(event.getMember())) {
-            Closure.getInstance().triggerUpdate();
+
+            if (event.getRoles().contains(EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD))) {
+                Closure.getInstance().triggerUpdate();
+            }
 
             MessageEmbed embed = Teamlist.getInstance().generateEmbed();
 
@@ -51,7 +54,9 @@ public class GuildMemberUpdateListener extends ListenerAdapter {
     @Override
     public void onGuildMemberRoleRemove(@NotNull GuildMemberRoleRemoveEvent event) {
         if (Util.isTeamMember(event.getMember())) {
-            Closure.getInstance().triggerUpdate();
+            if (event.getRoles().contains(EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD))) {
+                Closure.getInstance().triggerUpdate();
+            }
 
             MessageEmbed embed = Teamlist.getInstance().generateEmbed();
 
