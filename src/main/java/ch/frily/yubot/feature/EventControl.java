@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * Controls the visibility of the #community-events channel
+ */
 public class EventControl extends Feature {
 
     private static EventControl instance;
@@ -20,7 +23,7 @@ public class EventControl extends Feature {
     );
 
     public EventControl() {
-        addPermission("*", EnvKey.ROLE_EVENT, EnvKey.ROLE_EVENTLEITUNG, EnvKey.ROLE_SERVERLEITUNG);
+        addPermission("*", List.of(EnvKey.ROLE_EVENT, EnvKey.ROLE_EVENTLEITUNG, EnvKey.ROLE_SERVERLEITUNG), "Nur das Eventteam darf dies ausführen.");
     }
 
     public static EventControl getInstance() {

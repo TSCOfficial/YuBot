@@ -23,7 +23,8 @@ public class EventControlCmdGroup implements ISlashCommandGroup {
     @Override
     public List<ISlashSubcommand> getSubcommands() {
         return List.of(
-                new EventOpenCmd()
+                new EventOpenCmd(),
+                new EventCloseCmd()
         );
     }
 }
