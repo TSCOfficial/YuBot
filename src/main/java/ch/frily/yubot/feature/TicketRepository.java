@@ -18,15 +18,15 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class TicketController {
+public class TicketRepository {
 
-    private static TicketController instance;
+    private static TicketRepository instance;
 
     private List<Permission> ownerPermissions = List.of(Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND); // This is just in case! Other permissions are set on the category.
 
-    public static TicketController getInstance() {
+    public static TicketRepository getInstance() {
         if (instance == null) {
-            instance = new TicketController();
+            instance = new TicketRepository();
         }
         return instance;
     }

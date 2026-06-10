@@ -36,6 +36,9 @@ public class SlashCommandRegistry {
         return instance;
     }
 
+    /**
+     * Load the slashcommands
+     */
     public void loadCommands() {
         List<ISlashCommand> slashCommands = List.of(
                 new TeamlistCmd(),
@@ -44,8 +47,9 @@ public class SlashCommandRegistry {
         );
 
         List<ISlashCommandGroup> slashCommandGroups = List.of(
-            new TicketCmdGroup(),
-                new ClosureCmdGroup()
+                new TicketCmdGroup(),
+                new ClosureCmdGroup(),
+                new EventControlCmdGroup()
         );
 
         slashCommands.forEach(cmd -> {

@@ -1,19 +1,10 @@
 package ch.frily.yubot.feature;
 
-import ch.frily.yubot.Client;
 import ch.frily.yubot.embed.ClosureLogEmbed;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.buttons.Button;
-import net.dv8tion.jda.api.components.container.Container;
-import net.dv8tion.jda.api.components.container.ContainerChildComponent;
-import net.dv8tion.jda.api.components.section.Section;
-import net.dv8tion.jda.api.components.separator.Separator;
-import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -22,17 +13,16 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
-public class Closure {
+public class Closure extends Feature {
 
     private static Closure instance;
 
-    private static final List<Category> CATEGORIYKEYS = Stream.of(
+    private static final List<Category> CATEGORYKEYS = Stream.of(
             EnvKey.CATEGORY_ANSAGEN,
             EnvKey.CATEGORY_LIVEVENTS,
             EnvKey.CATEGORY_COMMUNITYFLOOR,
@@ -43,7 +33,7 @@ public class Closure {
             Permission.VIEW_CHANNEL
     );
 
-    private static final List<Role> mods = Stream.of(
+    private static final List<Role> MOD_ROLES = Stream.of(
             EnvKey.ROLE_MODLEITUNG,
             EnvKey.ROLE_MODERATOR
     ).map(EnvResolver::getRoleById).toList();
@@ -53,10 +43,6 @@ public class Closure {
             instance = new Closure();
         }
         return instance;
-    }
-
-    private static List<Category> resolveCategories(){
-        return CATEGORIYKEYS;
     }
 
     public void triggerUpdate(){
@@ -117,7 +103,7 @@ public class Closure {
             denyPerms.addAll(PERMISSIONS);
         }
 
-        for (Category category : resolveCategories()) {
+        for (Category category : CATEGORYKEYS) {
             category.getManager()
                     .putRolePermissionOverride(everyoneRole.getIdLong(), allowPerms, denyPerms)
                     .complete();
@@ -130,5 +116,20 @@ public class Closure {
         List<Member> members = guild.getMembersWithRoles(activeModRole);
         log.debug(members.stream().map(Member::getEffectiveName).collect(Collectors.joining(", ")));
         return members;
+    }
+
+    /**
+     * Check if a member is a moderator
+     * @param member
+     * @return True if they are a mod, false if not
+     */
+    public static boolean isMod(Member member) {
+        AtomicBoolean value = new AtomicBoolean(false);
+        MOD_ROLES.forEach(role -> {
+            if (member.getRoles().contains(role)) {
+                value.set(true);
+            }
+        });
+        return value.get();
     }
 }

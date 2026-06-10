@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.exceptions.PermissionException;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -25,6 +26,9 @@ public class ClosureOptInCmd implements ISlashSubcommand {
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) {
         try {
+            if (!Closure.isMod(event.getMember())) {
+                throw new PermissionException("Only mods are allowed to set themself as active!");
+            }
             Role activeMod = EnvResolver.getRoleById(1513639704870912130L);
             event.getGuild().addRoleToMember(event.getMember(), activeMod).submit().thenAccept(_ -> {
                 int activeModCount = Closure.getActiveMods().size();
@@ -34,17 +38,12 @@ public class ClosureOptInCmd implements ISlashSubcommand {
                     countInfo = "Es ist nun nurnoch **" + activeModCount + "** aktive\\*r Moderator\\*in";
                 }
 
-                event.reply("Du wurdest als aktive\\*r moderator\\*in markiert.\n-# " + countInfo).setEphemeral(true).queue();
+                event.reply("✅ Du wurdest als aktive\\*r moderator\\*in markiert.\n-# " + countInfo).setEphemeral(true).queue();
             });
-
-
+        } catch (PermissionException permissionException) {
+            event.reply("❌ Du bist nicht dazu berechtigt dies auszuführen.\n-# Nur Moderator*innen können diesen Befehl ausführen.").setEphemeral(true).queue();
         } catch (Exception e) {
             event.reply(e.getMessage()).queue();
         }
-    }
-
-    @Override
-    public List<Permission> getDefaultPermissions() {
-        return ISlashSubcommand.super.getDefaultPermissions();
     }
 }

@@ -1,5 +1,6 @@
 package ch.frily.yubot.embed;
 
+import lombok.Getter;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
 /**
@@ -9,13 +10,11 @@ public enum StaticEmbedRegistry {
 
     NONE(null);
 
+    @Getter
     private final MessageEmbed embed;
 
     StaticEmbedRegistry(MessageEmbed embed) {
         this.embed = embed;
     }
 
-    public MessageEmbed getEmbed() {
-        return embed;
-    }
 }
