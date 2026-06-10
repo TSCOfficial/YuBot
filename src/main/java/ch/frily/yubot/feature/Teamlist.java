@@ -67,7 +67,7 @@ public class Teamlist {
     }
 
     /**
-     * Fill the embed with blank fields to keep the embed structured no matter how many roles there are.
+     * Fill the embed with blank fields to keep the embed structured no matter how many holders there are.
      */
     private void fillWithBlankFields(EmbedBuilder embedBuilder) {
         int fieldCountOffset = embedBuilder.getFields().size() % 3;

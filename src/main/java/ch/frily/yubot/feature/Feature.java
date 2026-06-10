@@ -3,6 +3,7 @@ package ch.frily.yubot.feature;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.entities.Member;
@@ -10,7 +11,6 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Basic feature class<br>
@@ -19,7 +19,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class Feature {
 
-    // permission-key, list of roles, hint
+    // permission-key, list of holders, hint
+    @Getter
     List<FeaturePermission> permission = new ArrayList<>();
 
     /**
@@ -30,9 +31,9 @@ public abstract class Feature {
      * @param hint A hint for the error message to tell the user why they can't execute it
      */
     void addPermission(String key, List<EnvKey> roleKeys, String hint) {
-        List<Role> permissionHolders = roleKeys.stream().map(envKey -> {
+        List<IPermissionHolder> permissionHolders = roleKeys.stream().map(envKey -> {
             if (envKey.name().startsWith("ROLE_")) {
-                return EnvResolver.getRoleById(envKey);
+                return (IPermissionHolder) EnvResolver.getRoleById(envKey);
             } else {
                 throw new IllegalArgumentException("Key '" + envKey.name() + "' can not be resolved as a permission holder");
             }
@@ -53,11 +54,21 @@ public abstract class Feature {
      * Check whether a member is permitted to execute an action
      * @param key The key representing the defined permission
      * @param member The member to check for permission
-     * @return
+     * @throws NoSuchElementException If the given key doesn't match any existing permissions
+     * @return True if the member is permitted, false if not
      */
-    public boolean isPermitted(String key, Member member) {
+    public boolean isPermitted(String key, Member member) throws NoSuchElementException {
         FeaturePermission featurePerm = permission.stream().filter(featurePerms -> featurePerms.name().equals(resolveKey(key))).findFirst().orElseThrow();
-        return Util.containsAny(featurePerm.roles(), member.getRoles());
+
+        for (IPermissionHolder holder : featurePerm.holders()) {
+            if (holder instanceof Role role) {
+                if (member.getRoles().contains(role)) return true;
+            }
+            if (holder instanceof Member m) {
+                if (m.equals(member)) return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -65,10 +76,11 @@ public abstract class Feature {
      * @param key The key representing the defined permission
      * @param member The member to check for permission
      * @throws PermissionException If the member is not permitted, it throws a permission exception
+     * @throws NoSuchElementException If the given key doesn't match any existing permissions
      */
-    public void isPermittedElseThrow(String key, Member member) throws PermissionException {
+    public void isPermittedElseThrow(String key, Member member) throws PermissionException, NoSuchElementException {
         FeaturePermission featurePerm = permission.stream().filter(featurePerms -> featurePerms.name().equals(resolveKey(key))).findFirst().orElseThrow();
-        if (Util.containsAny(featurePerm.roles(), member.getRoles())) {
+        if (isPermitted(key, member)) {
             return;
         }
         throw new PermissionException(featurePerm.hint());

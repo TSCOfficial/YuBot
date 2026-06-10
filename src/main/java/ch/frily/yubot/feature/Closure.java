@@ -88,7 +88,7 @@ public class Closure extends Feature {
     }
 
     /**
-     * Toggle the @everyone-roles category permissions - without progress
+     * Toggle the @everyone-holders category permissions - without progress
      * @param isOpen True if the categories should be open, false if they should be closed
      */
     private void toggleCategoryPermissions(boolean isOpen) {
