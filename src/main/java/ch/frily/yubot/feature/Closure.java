@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,9 +110,13 @@ public class Closure extends Feature {
                     .putRolePermissionOverride(everyoneRole.getIdLong(), allowPerms, denyPerms)
                     .complete();
 
-            category.getChannels().forEach(categoryChannels -> {
-                categoryChannels.getPermissionContainer().getRolePermissionOverrides(); // find @everyone and update their channel permissions
-            });
+            for (GuildChannel channel : category.getChannels()) {
+                channel.getPermissionContainer()
+                        .upsertPermissionOverride(everyoneRole)
+                        .setDenied(denyPerms)
+                        .setAllowed(allowPerms)
+                        .complete();
+            }
         }
     }
 
