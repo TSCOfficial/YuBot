@@ -104,9 +104,14 @@ public class Closure extends Feature {
         }
 
         for (Category category : CATEGORYKEYS) {
+
             category.getManager()
                     .putRolePermissionOverride(everyoneRole.getIdLong(), allowPerms, denyPerms)
                     .complete();
+
+            category.getChannels().forEach(categoryChannels -> {
+                categoryChannels.getPermissionContainer().getRolePermissionOverrides(); // find @everyone and update their channel permissions
+            });
         }
     }
 
