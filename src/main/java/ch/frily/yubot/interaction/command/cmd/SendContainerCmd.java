@@ -40,8 +40,12 @@ public class SendContainerCmd implements ISlashCommand {
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) {
         String embedValue = event.getOption("container").getAsString();
-        Container container = StaticContainerRegistry.valueOf(embedValue).getContainer();
-        event.getChannel().sendMessageComponents(container).useComponentsV2().queue();
+        List<Container> containers = StaticContainerRegistry.valueOf(embedValue).getContainers();
+
+        containers.forEach(container -> {
+            event.getChannel().sendMessageComponents(container).useComponentsV2().queue();
+        });
+
         event.reply("✅ Container \"" + humanizeEnumName(embedValue) + "\" erfolgreich gesendet.").setEphemeral(true).queue();
     }
 
