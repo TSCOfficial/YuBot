@@ -1,6 +1,5 @@
 package ch.frily.yubot.container;
 
-import ch.frily.yubot.Client;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
@@ -9,22 +8,21 @@ import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 public class RulesContainer extends Container {
 
-    private static final String GUILD_NAME = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getName();
+    private static final Guild GUILD = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
 
     public RulesContainer() {
         this.addComponent(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(new File("src/main/resources/img/regelwerk-header.png")))));
-        this.addTextDisplay(Util.format("## Serverregeln von {}", GUILD_NAME));
+        this.addTextDisplay(Util.format("## Serverregeln von {}", GUILD.getName()));
         this.addTextDisplay("-# *Stand 15. Juni 2026*");
 
-        this.addTextDisplay(Util.format("Dies sind die allgemein gültigen Regeln des öffentlichen Community-Servers: \"{}\". Sie sind entsprechend des Reglements verbindlich für alle Mitglieder des Discord-Servers.", GUILD_NAME));
+        this.addTextDisplay(Util.format("Dies sind die allgemein gültigen Regeln des öffentlichen Community-Servers: \"{}\". Sie sind entsprechend des Reglements verbindlich für alle Mitglieder des Discord-Servers.", GUILD.getName()));
         this.addInvisibleSeparator(Separator.Spacing.LARGE);
         
         this.addTextDisplay("### Inhaltsverzeichnis");
@@ -46,16 +44,16 @@ public class RulesContainer extends Container {
         this.addTextDisplay("**§1 Zielsetzung**");
         this.addTextDisplay(Util.format("""
                        {} ist der offizielle deutschsprachige Community-Server von Yu. Auf ihm soll ein gemütliches, friedliches und freundschaftliches Miteinander ermöglicht werden.
-                        """, GUILD_NAME)
+                        """, GUILD.getName())
         );
 
         this.addInvisibleSeparator(Separator.Spacing.SMALL);
 
         this.addTextDisplay("**§2 Rechte und Pflichten einer Mitgliedschaft**");
         this.addSection(
-                Button.link("https://discord.com/terms", "Discord TOS"),
+                Button.link("https://discord.com/terms", "Discord ToS"),
                 TextDisplay.of("""
-                        ¹ Das Beitreten und Verweilen auf dem Servers steht jeder Person frei zur Wahl, die das 13. Lebensjahr abgeschlossen hat. Ausnahmen bezüglich des Alters sind gemäß Discord ToS nicht möglich.
+                        ¹ Das Beitreten und Verweilen auf dem Servers steht jeder Person frei zur Wahl, welche 16 oder Älter ist. Ausnahmen bezüglich des Alters sind gemäss der Liste mit weltweiten Angaben zum Mindestalter vom Discord ToS zu entnehmen.
                         """)
         );
         this.addTextDisplay("""
@@ -170,6 +168,6 @@ public class RulesContainer extends Container {
 
         this.addLineSeparator(Separator.Spacing.LARGE);
 
-        this.addTextDisplay("-# Die Leitung behält sich das Recht vor, diese Regeln jederzeit, ohne ankündigung, zu ändern. Solange man Mitglied dieses Servers ist, gelten die Regeln als aktzeptiert.");
+        this.addTextDisplay("-# Die Serverleitung behält sich das Recht vor, diese Regeln jederzeit, auch ohne Ankündigung, zu ändern. Solange man Mitglied dieses Servers ist, gelten die Regeln als aktzeptiert.");
     }
 }

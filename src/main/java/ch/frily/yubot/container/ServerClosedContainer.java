@@ -29,11 +29,12 @@ public class ServerClosedContainer extends Container {
         this.addComponent(Separator.createInvisible(Separator.Spacing.SMALL));
         this.addComponent(TextDisplay.of("In der zwischenzeit kannst du dir Yu's Inhalte anschauen:"));
         this.addComponent(ActionRow.of(
-                Button.of(ButtonStyle.LINK, "https://www.twitch.tv/einfachyu", "Twitch", Emoji.fromCustom("twitch", 1513866550615085196L, false)),
-                Button.of(ButtonStyle.LINK, "https://www.youtube.com/channel/UC-aJNxT5dDuRZrc8MTNo5ag", "YouTube", Emoji.fromCustom("youtube", 1513868081653354666L, false)),
                 Button.of(ButtonStyle.LINK, "https://www.instagram.com/einfachyu/", "Instagram", Emoji.fromCustom("instagram", 1513868079711649805L, false)),
                 Button.of(ButtonStyle.LINK, "https://open.spotify.com/intl-de/artist/3fePw6n7ygV222wnREArp6?si=bO9Y61msSLShf46qbsDPtQ", "Spotify", Emoji.fromCustom("spotify", 1513868764209348669L, false)),
-                Button.of(ButtonStyle.LINK, "https://tiktok.com/@einfachyu", "Tiktok", Emoji.fromCustom("tiktok", 1514163991331475526L, false))
+                Button.of(ButtonStyle.LINK, "https://tiktok.com/@einfachyu", "Tiktok", Emoji.fromCustom("tiktok", 1514163991331475526L, false)),
+                Button.of(ButtonStyle.LINK, "https://www.twitch.tv/einfachyu", "Twitch", Emoji.fromCustom("twitch", 1513866550615085196L, false)),
+                Button.of(ButtonStyle.LINK, "https://www.youtube.com/channel/UC-aJNxT5dDuRZrc8MTNo5ag", "YouTube", Emoji.fromCustom("youtube", 1513868081653354666L, false))
+
         ));
         this.addComponent(Separator.createInvisible(Separator.Spacing.SMALL));
         this.addComponent(Separator.createDivider(Separator.Spacing.LARGE));
