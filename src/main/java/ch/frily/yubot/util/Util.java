@@ -26,4 +26,12 @@ public class Util {
     public static <T> boolean containsAny(Collection<T> collection, T... elements) {
         return containsAny(collection, Arrays.stream(elements).toList());
     }
+
+    public static String format(String template, Object... args) {
+        int i = 0;
+        while (template.contains("{}") && i < args.length) {
+            template = template.replaceFirst("\\{\\}", String.valueOf(args[i++]));
+        }
+        return template;
+    }
 }

@@ -74,7 +74,7 @@ public class Client {
         jdaBuilder.enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES);
         jdaBuilder.setStatus(OnlineStatus.IDLE);
         jdaBuilder.setMemberCachePolicy(MemberCachePolicy.ALL);
-        jdaBuilder.setActivity(Activity.customStatus("🎶 1.. 2.. 3.. 4.."));
+        jdaBuilder.setActivity(Activity.listening("Yu"));
         // Event listeners
         jdaBuilder.addEventListeners(InteractionListener.getInstance());
         jdaBuilder.addEventListeners(OnReadyListener.getInstance());

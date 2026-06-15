@@ -3,17 +3,20 @@ package ch.frily.yubot.container;
 import lombok.Getter;
 import net.dv8tion.jda.api.components.container.Container;
 
+import java.util.List;
+
 /**
  * This is a list of Embeds that can be used statically via the send embed command
  */
 public enum StaticContainerRegistry {
 
-    SERVER_CLOSE_CONTAINER(new ServerClosedContainer().build());
+    SERVER_CLOSE(new ServerClosedContainer().build()),
+    RULES(new RulesContainer().build());
 
     @Getter
-    private final Container container;
+    private final List<Container> containers;
 
-    StaticContainerRegistry(Container container) {
-        this.container = container;
+    StaticContainerRegistry(List<Container> containers) {
+        this.containers = containers;
     }
 }
