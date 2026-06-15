@@ -14,9 +14,9 @@ public class Database {
 
     // init database constants
     private static final String DATABASE_DRIVER = "org.postgresql.Driver";
-    private static final String DATABASE_URL = "EnvResolver.getString(EnvKey.CRED_DB_URL)";
-    private static final String USERNAME = "EnvResolver.getString(EnvKey.CRED_DB_USERNAME)";
-    private static final String PASSWORD = "EnvResolver.getString(EnvKey.CRED_DB_PASSWORD)";
+    private static final String DATABASE_URL = EnvResolver.getString(EnvKey.CRED_DB_URL);
+    private static final String USERNAME = EnvResolver.getString(EnvKey.CRED_DB_USERNAME);
+    private static final String PASSWORD = EnvResolver.getString(EnvKey.CRED_DB_PASSWORD);
 
     // init connection object
     private Connection connection;

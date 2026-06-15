@@ -20,7 +20,7 @@ public enum TicketType {
                     Das Supportteam meldet sich so schnell wie möglich bei dir.
                     """,
             TicketTypeGroup.SUPPORT,
-            List.of(EnvKey.ROLE_SUPPORT)
+            List.of(EnvKey.ROLE_SUPPORT) // TODO: Rollen permission geben
     ),
     SUPPORT_REGELVERSTOSS(
             "report",

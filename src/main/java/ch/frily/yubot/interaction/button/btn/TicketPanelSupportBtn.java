@@ -7,13 +7,13 @@ import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class SupportButton implements IButton {
+public class TicketPanelSupportBtn implements IButton {
 
-    private static SupportButton instance;
+    private static TicketPanelSupportBtn instance;
 
-    public static SupportButton getInstance(){
+    public static TicketPanelSupportBtn getInstance(){
         if (instance == null) {
-            instance = new SupportButton();
+            instance = new TicketPanelSupportBtn();
         }
         return instance;
     }

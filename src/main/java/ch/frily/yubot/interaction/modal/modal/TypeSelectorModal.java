@@ -1,5 +1,6 @@
 package ch.frily.yubot.interaction.modal.modal;
 
+import ch.frily.yubot.feature.TicketManager;
 import ch.frily.yubot.interaction.modal.IModal;
 import ch.frily.yubot.feature.TicketRepository;
 import ch.frily.yubot.feature.TicketType;
@@ -56,7 +57,7 @@ public class TypeSelectorModal implements IModal {
                     Objects.equals(type.getId(), event.getValue("select-menu:ticket-type-selector").getAsStringList().getFirst())
             ).findFirst().orElseThrow(() -> new IllegalStateException("Tickettyp ist ungültig."));
 
-            TicketRepository.getInstance().createTicket(ticketType, event.getMember(), channel -> {
+            TicketManager.getInstance().createTicket(ticketType, event.getMember(), channel -> {
                 event.getHook().sendMessage("Dein Ticket wurde erstellt: " + channel.getAsMention()).queue();
             });
         } catch (PermissionException permissionException) {

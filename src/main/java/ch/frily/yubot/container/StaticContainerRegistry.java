@@ -11,7 +11,8 @@ import java.util.List;
 public enum StaticContainerRegistry {
 
     SERVER_CLOSE(new ServerClosedContainer().build()),
-    RULES(new RulesContainer().build());
+    RULES(new RulesContainer().build()),
+    TICKET_PANEL(new TicketPanelContainer().build());
 
     @Getter
     private final List<Container> containers;

@@ -1,8 +1,10 @@
 package ch.frily.yubot;
 
+import ch.frily.yubot.database.Database;
 import ch.frily.yubot.interaction.button.ButtonRegistry;
 import ch.frily.yubot.interaction.modal.ModalRegistry;
 import ch.frily.yubot.listeners.InteractionListener;
+import ch.frily.yubot.listeners.OnMessageReceived;
 import ch.frily.yubot.listeners.OnReadyListener;
 import ch.frily.yubot.listeners.GuildMemberUpdateListener;
 import ch.frily.yubot.interaction.command.SlashCommandRegistry;
@@ -16,6 +18,9 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 @Slf4j
 public class Client {
@@ -49,6 +54,15 @@ public class Client {
     public void setup() {
         try {
             config = loadConfig();
+
+            Connection conn = Database.getInstance().connect();
+            if (conn != null) {
+                log.info("Database connected!");
+            } else {
+                throw new SQLException("Database could not be reached!");
+            }
+            Database.getInstance().disconnect();
+
             client = createClient();
             client.awaitReady();
             log.info("Application started successfully!");
@@ -60,8 +74,11 @@ public class Client {
             ButtonRegistry.getInstance().loadButtons();
             ModalRegistry.getInstance().loadModals();
 
-        } catch (InterruptedException e) {
-            log.error(e.getMessage());
+        } catch (InterruptedException interruptedException) {
+            log.error(interruptedException.getMessage());
+        } catch (SQLException sqlException) {
+            log.error("SQLState: {}", sqlException.getSQLState());
+            log.error(sqlException.getMessage());
         }
     }
 
@@ -71,7 +88,7 @@ public class Client {
      */
     private JDA createClient() {
         JDABuilder jdaBuilder = JDABuilder.createDefault(config.get(EnvKey.CRED_TOKEN.name()));
-        jdaBuilder.enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES);
+        jdaBuilder.enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.MESSAGE_CONTENT);
         jdaBuilder.setStatus(OnlineStatus.IDLE);
         jdaBuilder.setMemberCachePolicy(MemberCachePolicy.ALL);
         jdaBuilder.setActivity(Activity.listening("Yu"));
@@ -79,6 +96,7 @@ public class Client {
         jdaBuilder.addEventListeners(InteractionListener.getInstance());
         jdaBuilder.addEventListeners(OnReadyListener.getInstance());
         jdaBuilder.addEventListeners(GuildMemberUpdateListener.getInstance());
+        jdaBuilder.addEventListeners(OnMessageReceived.getInstance());
         return jdaBuilder.build();
     }
 

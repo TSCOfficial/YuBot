@@ -36,7 +36,8 @@ public class Closure extends Feature {
 
     private static final List<Role> MOD_ROLES = Stream.of(
             EnvKey.ROLE_MODLEITUNG,
-            EnvKey.ROLE_MODERATOR
+            EnvKey.ROLE_MODERATOR,
+            EnvKey.ROLE_SERVERLEITUNG
     ).map(EnvResolver::getRoleById).toList();
 
     public static Closure getInstance() {
@@ -59,7 +60,7 @@ public class Closure extends Feature {
         if (isOpen) {
             TextChannel lobbyChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_LOBBY); // lobby channel
             Role role = EnvResolver.getRoleById(EnvKey.ROLE_ANTIFASHIST);
-            lobbyChannel.sendMessage("Hey " + role.getName() + "! Es ist Zeit zu quatschen ✨").queue();
+            lobbyChannel.sendMessage("Hey " + role.getAsMention() + "! Es ist Zeit zu quatschen ✨").queue();
         }
 
 

@@ -1,7 +1,6 @@
 package ch.frily.yubot.interaction.button;
 
-import ch.frily.yubot.interaction.button.btn.AwarenessButton;
-import ch.frily.yubot.interaction.button.btn.SupportButton;
+import ch.frily.yubot.interaction.button.btn.*;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -27,8 +26,12 @@ public class ButtonRegistry {
 
     public void loadButtons() {
         List<IButton> rawButtons = List.of(
-                new SupportButton(),
-                new AwarenessButton()
+                new TicketPanelSupportBtn(),
+                new TicketPanelAwarenessBtn(),
+                new TicketCloseRequestBtn(),
+                new TicketDeleteBtn(),
+                new TicketCloseRequestAcceptBtn(),
+                new TicketCloseRequestRejectBtn()
         );
         rawButtons.forEach(btn -> {
             String idOrUrl = btn.getId();

@@ -3,8 +3,8 @@ package ch.frily.yubot.interaction.command.cmd;
 import ch.frily.yubot.Client;
 import ch.frily.yubot.embed.PanelEmbed;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
-import ch.frily.yubot.interaction.button.btn.AwarenessButton;
-import ch.frily.yubot.interaction.button.btn.SupportButton;
+import ch.frily.yubot.interaction.button.btn.TicketPanelAwarenessBtn;
+import ch.frily.yubot.interaction.button.btn.TicketPanelSupportBtn;
 import ch.frily.yubot.util.EnvKey;
 import javassist.NotFoundException;
 import net.dv8tion.jda.api.Permission;
@@ -55,8 +55,8 @@ public class PanelSendCmd implements ISlashSubcommand {
                 throw new NotFoundException("Channel not found");
             }
             ActionRow actionrow = ActionRow.of(
-                    SupportButton.getInstance().build(),
-                    AwarenessButton.getInstance().build()
+                    TicketPanelSupportBtn.getInstance().build(),
+                    TicketPanelAwarenessBtn.getInstance().build()
             );
             channel.sendMessageEmbeds(embed).setComponents(actionrow).queue();
             event.reply("✅ Panel erfolgreich gesendet.").setEphemeral(true).queue();

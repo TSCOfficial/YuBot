@@ -14,7 +14,8 @@ public class TicketCmdGroup implements ISlashCommandGroup {
     @Override
     public List<ISlashSubcommand> getSubcommands() {
         return List.of(
-                new PanelSendCmd()
+                new PanelSendCmd(),
+                new TicketCloseCmd()
         );
     }
 }

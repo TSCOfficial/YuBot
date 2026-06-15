@@ -3,6 +3,8 @@ package ch.frily.yubot.util;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
+import java.time.Duration;
+import java.time.temporal.Temporal;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -33,5 +35,24 @@ public class Util {
             template = template.replaceFirst("\\{\\}", String.valueOf(args[i++]));
         }
         return template;
+    }
+
+    public static String calcDuration(Temporal startInclusive, Temporal endExclusive){
+        Duration duration = Duration.between(startInclusive, endExclusive);
+
+        long days = duration.toDays();
+        long hours = duration.toHoursPart();
+        long minutes = duration.toMinutesPart();
+
+        String openDuration;
+        if (days > 0) {
+            openDuration = String.format("%dd %dh %dmin", days, hours, minutes);
+        } else if (hours > 0) {
+            openDuration = String.format("%dh %dmin", hours, minutes);
+        } else {
+            openDuration = String.format("%dmin", minutes);
+        }
+
+        return openDuration;
     }
 }

@@ -1,89 +1,101 @@
 package ch.frily.yubot.feature;
 
+import ch.frily.yubot.database.DatabaseQuery;
+import ch.frily.yubot.database.Table;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
-import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
+import javassist.NotFoundException;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.channel.concrete.Category;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 
-@Slf4j
 public class TicketRepository {
 
-    private static TicketRepository instance;
-
-    private List<Permission> ownerPermissions = List.of(Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND); // This is just in case! Other permissions are set on the category.
-
-    public static TicketRepository getInstance() {
-        if (instance == null) {
-            instance = new TicketRepository();
-        }
-        return instance;
-    }
-
-    public void createTicket(TicketType type, Member ticketOwner, Consumer<TextChannel> onCreated) {
-
-        // check if permitted: Bewerbung-support -> Has linked account with minecraft?
-        isPermitted(type, ticketOwner);
-
-        Ticket ticket = new Ticket();
-        ticket.setType(type);
-        ticket.setOwner(ticketOwner);
-
-        Category ticketCategory = EnvResolver.getCategoryById(EnvKey.CATEGORY_TICKETS);
-
-        // Ticket settings
-        ticketCategory.createTextChannel(generateTicketName(type, ticketOwner))
-                .addMemberPermissionOverride(ticketOwner.getIdLong(), ownerPermissions, null)
-                .setTopic(type.getLabel())
-                .queue(textChannel -> {
-                    // Ticket content
-                    ticket.setChannel(textChannel);
-                    textChannel.sendMessage(ticketOwner.getAsMention() + " - " + type.getResponsibleRoles().stream().map(Role::getAsMention).collect(Collectors.joining(", ")))
-                            .addEmbeds(createEmbed(ticket)).queue();
-                    onCreated.accept(textChannel);
-        });
-    }
-
-    private MessageEmbed createEmbed(Ticket ticket) {
-        EmbedBuilder embed = new EmbedBuilder();
-        embed.setTitle(ticket.getType().getLabel());
-        String description = "Willkommen **" + ticket.getOwner().getUser().getGlobalName() + "**!" +
-                "\n" +
-                ticket.getType().getEmbedDescription();
-        embed.setDescription(description);
-        embed.setFooter(ticket.getChannel().getName());
-        embed.setTimestamp(new Date().toInstant());
-        embed.setColor(ticket.getOwner().getColors().getPrimary());
-        return embed.build();
-    }
-
-    private String generateTicketName(TicketType type, Member ticketOwner) {
-        String typeId = type.getId();
-        String username = ticketOwner.getUser().getGlobalName();
-        int randInt = ThreadLocalRandom.current().nextInt(100000, 999999);
-        return typeId + "-" + username  + "-" + randInt;
-    }
-
     /**
-     * Check if the ticket owner is permitted or not
-     * @param ticketOwner
+     * Fetch a Ticket from the database.
+     * @param id Ticket id (represented by the Ticket-Channel-ID)
+     * @return The instance of this Ticket
+     * @throws SQLException When the database is unreachable
+     * @throws NotFoundException When no ticket with given ID exist
      */
-    private void isPermitted(TicketType type, Member ticketOwner){
-//        if (type == TicketType.BEWERBUNG_SUPPORT || type == TicketType.BEWERBUNG_EVENTTEAM) { // sup + event bewerbungen temporär gesperrt, bis das ganze System steht
-//            throw new PermissionException("Du bist nicht berechtigt dies auszuführen");
-//        }
+    public static Ticket getTicketById(long id) throws SQLException, NotFoundException {
+        ResultSet resultSet = new DatabaseQuery(Table.TICKET)
+                .select()
+                .where(Table.TicketColumn.ID, DatabaseQuery.Operator.EQUALS, id).executeArchitectureQuery();
 
+        if (!resultSet.next()) {
+            throw new NotFoundException("Ticket mit ID " + id + " nicht gefunden.");
+        }
+
+        long ownerId = resultSet.getLong(Table.TicketColumn.OWNER_ID.getColumn());
+        long assigneeId = resultSet.getLong(Table.TicketColumn.ASSIGNEE_ID.getColumn());
+        long channelId = resultSet.getLong(Table.TicketColumn.CHANNEL_ID.getColumn());
+        String typeName = resultSet.getString(Table.TicketColumn.TYPE.getColumn());
+        Timestamp lastActivityAt = resultSet.getTimestamp(Table.TicketColumn.LAST_ACTIVITY_AT.getColumn());
+        long welcomeMessageId = resultSet.getLong(Table.TicketColumn.WELCOME_MESSAGE_ID.getColumn());
+        boolean isRequestPending = resultSet.getBoolean(Table.TicketColumn.IS_REQUEST_PENDING.getColumn());
+        int closeRequestCount = resultSet.getInt(Table.TicketColumn.CLOSE_REQUEST_COUNT.getColumn());
+        String statusName = resultSet.getString(Table.TicketColumn.STATUS.getColumn());
+        Timestamp updatedAt = resultSet.getTimestamp(Table.TicketColumn.UPDATED_AT.getColumn());
+
+        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+
+
+        Member owner = guild.getMemberById(ownerId);
+        TicketType type = TicketType.valueOf(typeName);
+        TicketStatus status = TicketStatus.valueOf(statusName);
+
+        Ticket ticket = new Ticket(owner, type);
+        ticket.setAssignee(guild.getMemberById(assigneeId));
+        ticket.setChannel(guild.getTextChannelById(channelId));
+        ticket.setLastActivityAt(lastActivityAt.toLocalDateTime());
+        ticket.setPendingRequest(isRequestPending);
+        ticket.setCloseRequestCount(closeRequestCount);
+        ticket.setStatus(status);
+        ticket.setUpdatedAt(updatedAt.toLocalDateTime());
+
+        ticket.setWelcomeMessageId(welcomeMessageId);
+        return ticket;
     }
 
+    public static void createTicket(Ticket ticket) {
+        try {
+            DatabaseQuery query = new DatabaseQuery(Table.TICKET);
+            query.insert(Table.TicketColumn.ID, ticket.getId());
+            query.insert(Table.TicketColumn.OWNER_ID, ticket.getOwner().getIdLong());
+            query.insert(Table.TicketColumn.CHANNEL_ID, ticket.getChannel().getIdLong());
+            query.insert(Table.TicketColumn.TYPE, ticket.getType().name());
+            query.insert(Table.TicketColumn.WELCOME_MESSAGE_ID, ticket.getWelcomeMessageId());
+            query.insert(Table.TicketColumn.LAST_ACTIVITY_AT, ticket.getLastActivityAt());
+            query.insert(Table.TicketColumn.UPDATED_AT, ticket.getUpdatedAt());
+            query.executeDataQuery();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void updateTicket(Ticket ticket) throws SQLException {
+        DatabaseQuery query = new DatabaseQuery(Table.TICKET);
+
+        if (ticket.getAssignee() != null) {
+            query.update(Table.TicketColumn.ASSIGNEE_ID, ticket.getAssignee().getIdLong());
+        }
+        query.update(Table.TicketColumn.LAST_ACTIVITY_AT, ticket.getLastActivityAt()); // todo check when to update activity
+        query.update(Table.TicketColumn.IS_REQUEST_PENDING, ticket.isRequestPending());
+        query.update(Table.TicketColumn.CLOSE_REQUEST_COUNT, ticket.getCloseRequestCount());
+        query.update(Table.TicketColumn.STATUS, ticket.getStatus().name());
+        query.update(Table.TicketColumn.UPDATED_AT, ticket.getUpdatedAt());
+        query.where(Table.TicketColumn.ID, DatabaseQuery.Operator.EQUALS, ticket.getId());
+        query.executeDataQuery();
+    }
+
+    public static void deleteTicket(Ticket ticket) throws SQLException {
+        DatabaseQuery query = new DatabaseQuery(Table.TICKET);
+
+        query.where(Table.TicketColumn.ID, DatabaseQuery.Operator.EQUALS, ticket.getId()).delete();
+        query.executeDataQuery();
+    }
 }

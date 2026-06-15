@@ -28,6 +28,12 @@
             <version>1.9.25</version>
         </dependency>
 
+        <dependency>
+            <groupId>dev.omardiaa</groupId>
+            <artifactId>discord-html-transcript-jda</artifactId>
+            <version>0.1.0-beta.2</version>
+        </dependency>
+
         <!-- Utils -->
         <dependency>
             <groupId>io.github.cdimascio</groupId>
@@ -57,6 +63,13 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.5.13</version>
+        </dependency>
+
+        <!-- Database -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.3</version>
         </dependency>
 
     </dependencies>

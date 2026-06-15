@@ -7,13 +7,13 @@ import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class AwarenessButton implements IButton {
+public class TicketPanelAwarenessBtn implements IButton {
 
-    private static AwarenessButton instance;
+    private static TicketPanelAwarenessBtn instance;
 
-    public static AwarenessButton getInstance(){
+    public static TicketPanelAwarenessBtn getInstance(){
         if (instance == null) {
-            instance = new AwarenessButton();
+            instance = new TicketPanelAwarenessBtn();
         }
         return instance;
     }
