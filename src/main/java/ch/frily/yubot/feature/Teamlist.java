@@ -56,6 +56,8 @@ public class Teamlist {
         fillWithBlankFields(embedBuilder);
 
         List<Member> activeMods = getUsersByRole(EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD));
+        embedBuilder.addBlankField(false);
+
         if (activeMods.isEmpty()) {
             embedBuilder.addField("Aktive Moderation (0)", "*Nicht besetzt*", false);
         } else {

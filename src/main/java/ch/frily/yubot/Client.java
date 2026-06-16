@@ -92,6 +92,7 @@ public class Client {
         jdaBuilder.setStatus(OnlineStatus.IDLE);
         jdaBuilder.setMemberCachePolicy(MemberCachePolicy.ALL);
         jdaBuilder.setActivity(Activity.listening("Yu"));
+
         // Event listeners
         jdaBuilder.addEventListeners(InteractionListener.getInstance());
         jdaBuilder.addEventListeners(OnReadyListener.getInstance());
