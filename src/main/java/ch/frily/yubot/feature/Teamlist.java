@@ -21,16 +21,17 @@ public class Teamlist {
     private static final List<EnvKey> ROLE_KEYWORDS = List.of(
             EnvKey.ROLE_OWNER,
             EnvKey.ROLE_SERVERLEITUNG,
-            EnvKey.ROLE_ORGA,
-            EnvKey.ROLE_DEVLEITUNG,
-            EnvKey.ROLE_DEVELOPER,
+            EnvKey.ROLE_ADMIN,
             EnvKey.ROLE_MODLEITUNG,
             EnvKey.ROLE_MODERATOR,
             EnvKey.ROLE_SUPPORT,
             EnvKey.ROLE_AWARENESSLEITUNG,
             EnvKey.ROLE_AWARENESS,
+            EnvKey.ROLE_DEVLEITUNG,
+            EnvKey.ROLE_DEVELOPER,
             EnvKey.ROLE_EVENTLEITUNG,
-            EnvKey.ROLE_EVENT
+            EnvKey.ROLE_EVENT,
+            EnvKey.ROLE_ORGA
     );
 
     private static final Pattern ROLE_NAME_PATTERN = Pattern.compile("[^\\p{L}\\p{N}\\-\\s\\*]");
@@ -49,7 +50,10 @@ public class Teamlist {
         List<Role> roles = ROLE_KEYWORDS.stream().map(EnvResolver::getRoleById).toList();
         List<MessageEmbed.Field> fields = roles.stream().map(this::generateFieldByRole).toList();
 
-        EmbedBuilder embedBuilder = new EmbedBuilder().setTitle(EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getName() + " Team");
+        List<Member> teamMembers = getUsersByRole(EnvResolver.getRoleById(EnvKey.ROLE_YUTEAM));
+
+        EmbedBuilder embedBuilder = new EmbedBuilder().setTitle(
+                String.format("%s's Team *(%s)*", EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getName(), teamMembers.size()));
         fields.forEach(embedBuilder::addField);
         embedBuilder.setTimestamp(new Date().toInstant());
         embedBuilder.setColor(new Color("cf3f05").get());
@@ -59,10 +63,10 @@ public class Teamlist {
         embedBuilder.addBlankField(false);
 
         if (activeMods.isEmpty()) {
-            embedBuilder.addField("Aktive Moderation (0)", "*Nicht besetzt*", false);
+            embedBuilder.addField("Aktive Moderation *(0)*", "*Nicht besetzt*", false);
         } else {
-            embedBuilder.addField("Aktive Moderation (" + activeMods.size() + ")",
-                    activeMods.stream().map(member -> member.getUser().getName()).collect(Collectors.joining(", ")), false);
+            embedBuilder.addField(String.format("Aktive Moderation *(%s)*", activeMods.size()),
+                    activeMods.stream().map(this::getFormattedUsername).collect(Collectors.joining(", ")), false);
         }
 
         return embedBuilder.build();
@@ -90,14 +94,18 @@ public class Teamlist {
         int userCount = 0;
 
         if (!getUsersByRole(role).isEmpty()) {
-            userList = getUsersByRole(role).stream().map(member -> "@" + Util.escapeMarkdown(member.getUser().getName())).collect(Collectors.joining("\n"));
+            userList = getUsersByRole(role).stream().map(this::getFormattedUsername).collect(Collectors.joining("\n"));
             userCount = getUsersByRole(role).size();
         }
         return new MessageEmbed.Field(
-                extractText(role.getName()) + " (" + userCount + ")",
+                String.format("%s *(%s)*", extractText(role.getName()), userCount),
                 role.getAsMention() + "\n" + userList,
                 true
         );
+    }
+
+    private String getFormattedUsername(Member member) {
+        return "@" + Util.escapeMarkdown(member.getUser().getName());
     }
 
     /**
@@ -112,6 +120,7 @@ public class Teamlist {
 
     private static String extractText(String input) {
         if (input == null || input.isBlank()) return input;
-        return ROLE_NAME_PATTERN.matcher(input).replaceAll("").trim();
+        String roleName = ROLE_NAME_PATTERN.matcher(input).replaceAll("").trim();
+        return Util.escapeMarkdown(roleName);
     }
 }
