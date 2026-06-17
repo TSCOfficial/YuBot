@@ -46,25 +46,23 @@ public class TicketCloseRequestRejectBtn implements IButton {
 
     @Override
     public void execute(@NotNull ButtonInteractionEvent event) {
-        try {
-            Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
-            ticket.rejectCloseRequest(event.getMember());
 
-            TicketCloseRejectedEmbed embed = new TicketCloseRejectedEmbed();
-            embed.setMember(event.getMember());
-            embed.setTicket(ticket);
+        Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
+        ticket.rejectCloseRequest(event.getMember());
 
-            event.editMessageEmbeds(embed.build())
-                    .setComponents(event.getMessage().getComponentTree().asDisabled())
-                    .queue();
+        TicketCloseRejectedEmbed embed = new TicketCloseRejectedEmbed();
+        embed.setMember(event.getMember());
+        embed.setTicket(ticket);
 
-            CompletableFuture<Message> welcomeMessage = EnvResolver.getMessageById(event.getGuild().getIdLong(), ticket.getChannel().getIdLong(), ticket.getWelcomeMessageId());
-            welcomeMessage.thenAccept(message -> {
-              message.editMessageComponents(message.getComponentTree().asEnabled()).queue();
-            });
-        } catch (SQLException | NotFoundException | PermissionException exception){
-            event.reply(exception.getMessage()).setEphemeral(true).queue();
-        }
+        event.editMessageEmbeds(embed.build())
+                .setComponents(event.getMessage().getComponentTree().asDisabled())
+                .queue();
+
+        CompletableFuture<Message> welcomeMessage = EnvResolver.getMessageById(event.getGuild().getIdLong(), ticket.getChannel().getIdLong(), ticket.getWelcomeMessageId());
+        welcomeMessage.thenAccept(message -> {
+          message.editMessageComponents(message.getComponentTree().asEnabled()).queue();
+        });
+
 
     }
 }

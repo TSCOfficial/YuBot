@@ -1,6 +1,8 @@
 package ch.frily.yubot;
 
 import ch.frily.yubot.database.Database;
+import ch.frily.yubot.exception.ExceptionHandler;
+import ch.frily.yubot.exception.HandledException;
 import ch.frily.yubot.interaction.button.ButtonRegistry;
 import ch.frily.yubot.interaction.modal.ModalRegistry;
 import ch.frily.yubot.listeners.InteractionListener;
@@ -55,13 +57,13 @@ public class Client {
         try {
             config = loadConfig();
 
-            Connection conn = Database.getInstance().connect();
-            if (conn != null) {
-                log.info("Database connected!");
-            } else {
-                throw new SQLException("Database could not be reached!");
-            }
-            Database.getInstance().disconnect();
+//            Connection conn = Database.getInstance().connect();
+//            if (conn != null) {
+//                log.info("Database connected!");
+//            } else {
+//                throw new SQLException("Database could not be reached!");
+//            }
+//            Database.getInstance().disconnect();
 
             client = createClient();
             client.awaitReady();
@@ -74,11 +76,8 @@ public class Client {
             ButtonRegistry.getInstance().loadButtons();
             ModalRegistry.getInstance().loadModals();
 
-        } catch (InterruptedException interruptedException) {
-            log.error(interruptedException.getMessage());
-        } catch (SQLException sqlException) {
-            log.error("SQLState: {}", sqlException.getSQLState());
-            log.error(sqlException.getMessage());
+        } catch (Exception exception) {
+            ExceptionHandler.handle(exception);
         }
     }
 

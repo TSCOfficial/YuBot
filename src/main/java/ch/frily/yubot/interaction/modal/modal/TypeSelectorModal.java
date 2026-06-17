@@ -51,19 +51,13 @@ public class TypeSelectorModal implements IModal {
 
     @Override
     public void execute(@NotNull ModalInteractionEvent event) {
-        try {
-            event.deferReply(true).queue();
-            TicketType ticketType = Arrays.stream(TicketType.values()).filter(type ->
-                    Objects.equals(type.getId(), event.getValue("select-menu:ticket-type-selector").getAsStringList().getFirst())
-            ).findFirst().orElseThrow(() -> new IllegalStateException("Tickettyp ist ungültig."));
+        event.deferReply(true).queue();
+        TicketType ticketType = Arrays.stream(TicketType.values()).filter(type ->
+                Objects.equals(type.getId(), event.getValue("select-menu:ticket-type-selector").getAsStringList().getFirst())
+        ).findFirst().orElseThrow(() -> new IllegalStateException("Tickettyp ist ungültig."));
 
-            TicketManager.getInstance().createTicket(ticketType, event.getMember(), channel -> {
-                event.getHook().sendMessage("Dein Ticket wurde erstellt: " + channel.getAsMention()).queue();
-            });
-        } catch (PermissionException permissionException) {
-            event.reply(permissionException.getMessage()).setEphemeral(true).queue();
-        } catch (Exception exception) {
-            event.reply("Ein unbekannter Fehler ist aufgetaucht. Bitte versuche es später erneut.").queue();
-        }
+        TicketManager.getInstance().createTicket(ticketType, event.getMember(), channel -> {
+            event.getHook().sendMessage("Dein Ticket wurde erstellt: " + channel.getAsMention()).queue();
+        });
     }
 }

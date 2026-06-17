@@ -39,24 +39,22 @@ public class TicketCloseRequestBtn implements IButton {
     @Override
     public void execute(@NotNull ButtonInteractionEvent event) {
         event.deferReply().queue();
-        try {
-            Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
-            ticket.requestClose(event.getMember());
 
-            ActionRow actionRow = ActionRow.of(
-                    new TicketCloseRequestAcceptBtn().build(),
-                    new TicketCloseRequestRejectBtn().build()
-            );
+        Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
+        ticket.requestClose(event.getMember());
 
-            TicketCloseRequestEmbed optionsEmbed = new TicketCloseRequestEmbed();
-            optionsEmbed.setInitiator(event.getMember());
-            optionsEmbed.setTicket(ticket);
+        ActionRow actionRow = ActionRow.of(
+                new TicketCloseRequestAcceptBtn().build(),
+                new TicketCloseRequestRejectBtn().build()
+        );
 
-            event.getHook().sendMessage(ticket.getOwner().getAsMention()).addEmbeds(optionsEmbed.build()).setComponents(actionRow).queue();
+        TicketCloseRequestEmbed optionsEmbed = new TicketCloseRequestEmbed();
+        optionsEmbed.setInitiator(event.getMember());
+        optionsEmbed.setTicket(ticket);
 
-            event.getMessage().editMessageComponents(event.getMessage().getComponentTree().asDisabled()).queue();
-        } catch (SQLException | NotFoundException | IllegalStateException | PermissionException exception) {
-            event.getHook().editOriginal(exception.getMessage()).queue();
-        }
+        event.getHook().sendMessage(ticket.getOwner().getAsMention()).addEmbeds(optionsEmbed.build()).setComponents(actionRow).queue();
+
+        event.getMessage().editMessageComponents(event.getMessage().getComponentTree().asDisabled()).queue();
+
     }
 }

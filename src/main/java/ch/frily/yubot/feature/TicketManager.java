@@ -1,5 +1,6 @@
 package ch.frily.yubot.feature;
 
+import ch.frily.yubot.database.Database;
 import ch.frily.yubot.embed.TicketOpenEmbed;
 import ch.frily.yubot.interaction.button.IButton;
 import ch.frily.yubot.interaction.button.btn.TicketCloseRequestBtn;
@@ -42,7 +43,6 @@ public class TicketManager {
     }
 
     public void createTicket(TicketType type, Member ticketOwner, Consumer<TextChannel> onCreated) {
-
         Ticket ticket = new Ticket(ticketOwner, type);
 
         Category ticketCategory = EnvResolver.getCategoryById(EnvKey.CATEGORY_TICKETS);
@@ -80,15 +80,9 @@ public class TicketManager {
      * Checks if the {@link TextChannel} is a Ticket or nor
      * @return True if its a Ticketchannel / False if not
      */
-    public boolean isTicketchannel(TextChannel channel) throws SQLException {
-        try {
-            TicketRepository.getTicketById(channel.getIdLong());
-            return true;
-        } catch (SQLException e) {
-            throw new SQLException(e);
-        } catch (NotFoundException e) {
-            return false;
-        }
+    public boolean isTicketchannel(TextChannel channel) {
+        TicketRepository.getTicketById(channel.getIdLong());
+        return true;
     }
 
     /**
@@ -98,7 +92,7 @@ public class TicketManager {
      */
     public static boolean userIsTeammember(User user) {
         Role teamRole = EnvResolver.getRoleById(EnvKey.ROLE_YUTEAM);
-            return EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getMemberById(user.getId()).getRoles().contains(teamRole);
+        return EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getMemberById(user.getId()).getRoles().contains(teamRole);
     }
 
     public IButton getButtonByTypeGroup(TicketTypeGroup typeGroup){

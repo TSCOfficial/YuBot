@@ -1,11 +1,11 @@
 package ch.frily.yubot.database;
 
+import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.Properties;
 
 public class Database {
@@ -14,9 +14,6 @@ public class Database {
 
     // init database constants
     private static final String DATABASE_DRIVER = "org.postgresql.Driver";
-    private static final String DATABASE_URL = EnvResolver.getString(EnvKey.CRED_DB_URL);
-    private static final String USERNAME = EnvResolver.getString(EnvKey.CRED_DB_USERNAME);
-    private static final String PASSWORD = EnvResolver.getString(EnvKey.CRED_DB_PASSWORD);
 
     // init connection object
     private Connection connection;
@@ -37,8 +34,8 @@ public class Database {
     private Properties getProperties() {
         if (properties == null) {
             properties = new Properties();
-            properties.setProperty("user", USERNAME);
-            properties.setProperty("password", PASSWORD);
+            properties.setProperty("user", EnvResolver.getString(EnvKey.CRED_DB_USERNAME));
+            properties.setProperty("password", EnvResolver.getString(EnvKey.CRED_DB_PASSWORD));
         }
         return properties;
     }
@@ -48,28 +45,28 @@ public class Database {
      * @return The database connection
      */
     public Connection connect() {
-        if (connection == null) {
-            try {
+        try {
+            if (connection == null) {
                 Class.forName(DATABASE_DRIVER);
-                connection = DriverManager.getConnection(DATABASE_URL, getProperties());
-            } catch (ClassNotFoundException | SQLException e) {
-                System.out.println(e);
+                connection = DriverManager.getConnection(EnvResolver.getString(EnvKey.CRED_DB_URL), getProperties());
             }
+            return connection;
+        } catch (Exception exception) {
+            return ExceptionHandler.fail(exception);
         }
-        return connection;
     }
 
     /**
      * Disconnect the current database connection
      */
     public void disconnect() {
-        if (connection != null) {
-            try {
+        try {
+            if (connection != null) {
                 connection.close();
                 connection = null;
-            } catch (SQLException e) {
-                System.out.println(e);
             }
+        } catch (Exception exception) {
+            ExceptionHandler.handle(exception);
         }
     }
 

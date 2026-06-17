@@ -1,6 +1,7 @@
 package ch.frily.yubot.util;
 
 import ch.frily.yubot.Client;
+import ch.frily.yubot.exception.ClientException;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
@@ -108,7 +109,7 @@ public class EnvResolver {
     }
 
     public static String getString(EnvKey keyword){
-        return Client.getInstance().getConfig().get(keyword.name());
+        return checkAndResolve(keyword, String.class);
     }
 
     /**
@@ -121,12 +122,12 @@ public class EnvResolver {
         if (Objects.equals(keyword, "")) {
             throw new IllegalArgumentException("Illegal keyword");
         }
-        log.error(keyword.name());
+
+        log.debug("Resolving keyword: {}", keyword.name());
         String value = Client.getInstance().getConfig().get(keyword.name());
 
-        log.debug(value);
 
-        if (Objects.equals(value, "") || value == null) throw new IllegalStateException("Keyword is null");
+        if (Objects.equals(value, "") || value == null) throw new ClientException(String.format("Keyword '%s' is null", keyword.name()));
         if (type == String.class) return type.cast(value);
         if (type == Integer.class) return type.cast(Integer.parseInt(value));
         if (type == Long.class)    return type.cast(Long.parseLong(value));

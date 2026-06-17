@@ -1,5 +1,7 @@
 package ch.frily.yubot.database;
 
+import ch.frily.yubot.exception.ExceptionHandler;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -222,24 +224,31 @@ public class DatabaseQuery {
     /**
      * Execute the database query for architectural purposes
      * @return The database results
-     * @throws SQLException Happens when the Database refuses the connection or is not reachable
      */
-    public ResultSet executeArchitectureQuery() throws SQLException {
-        Connection conn = Database.getInstance().connect();
-        PreparedStatement stmt = conn.prepareStatement(buildSQL());
-        setParameters(stmt);
-        return stmt.executeQuery();
+    public ResultSet executeDataQuery() {
+        try {
+            Connection conn = Database.getInstance().connect();
+            PreparedStatement stmt = conn.prepareStatement(buildSQL());
+            setParameters(stmt);
+            return stmt.executeQuery();
+        } catch (Exception exception) {
+            return ExceptionHandler.fail(exception);
+        }
+
     }
 
     /**
      * For every data manipulation query that does not return any {@link ResultSet}.
-     * @throws SQLException
      */
-    public void executeDataQuery() throws SQLException {
-        Connection conn = Database.getInstance().connect();
-        PreparedStatement stmt = conn.prepareStatement(buildSQL());
-        setParameters(stmt);
-        stmt.executeUpdate();
+    public void executeQuery() {
+        try {
+            Connection conn = Database.getInstance().connect();
+            PreparedStatement stmt = conn.prepareStatement(buildSQL());
+            setParameters(stmt);
+            stmt.executeUpdate();
+        } catch (Exception exception) {
+            ExceptionHandler.handle(exception);
+        }
     }
 
     /**

@@ -1,5 +1,6 @@
 package ch.frily.yubot.interaction.command.cmd;
 
+import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.feature.Closure;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.util.EnvResolver;
@@ -25,25 +26,19 @@ public class ClosureOptInCmd implements ISlashSubcommand {
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) {
-        try {
-            if (!Closure.isMod(event.getMember())) {
-                throw new PermissionException("Only mods are allowed to set themself as active!");
-            }
-            Role activeMod = EnvResolver.getRoleById(1513639704870912130L);
-            event.getGuild().addRoleToMember(event.getMember(), activeMod).submit().thenAccept(_ -> {
-                int activeModCount = Closure.getActiveMods().size();
-
-                String countInfo = "Es sind nun **" + activeModCount + "** aktive Moderator\\*innen.";
-                if (activeModCount == 1) {
-                    countInfo = "Es ist nun nurnoch **" + activeModCount + "** aktive\\*r Moderator\\*in";
-                }
-
-                event.reply("✅ Du wurdest als aktive\\*r moderator\\*in markiert.\n-# " + countInfo).setEphemeral(true).queue();
-            });
-        } catch (PermissionException permissionException) {
-            event.reply("❌ Du bist nicht dazu berechtigt dies auszuführen.\n-# Nur Moderator*innen können diesen Befehl ausführen.").setEphemeral(true).queue();
-        } catch (Exception e) {
-            event.reply(e.getMessage()).queue();
+        if (!Closure.isMod(event.getMember())) {
+            throw new PermissionDeniedException("Nur Moderator*innen können diesen Befehl ausführen.");
         }
+        Role activeMod = EnvResolver.getRoleById(1513639704870912130L);
+        event.getGuild().addRoleToMember(event.getMember(), activeMod).submit().thenAccept(_ -> {
+            int activeModCount = Closure.getActiveMods().size();
+
+            String countInfo = "Es sind nun **" + activeModCount + "** aktive Moderator\\*innen.";
+            if (activeModCount == 1) {
+                countInfo = "Es ist nun nurnoch **" + activeModCount + "** aktive\\*r Moderator\\*in";
+            }
+
+            event.reply("✅ Du wurdest als aktive\\*r moderator\\*in markiert.\n-# " + countInfo).setEphemeral(true).queue();
+        });
     }
 }

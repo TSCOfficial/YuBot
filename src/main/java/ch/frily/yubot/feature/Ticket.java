@@ -1,6 +1,7 @@
 package ch.frily.yubot.feature;
 
 import ch.frily.yubot.Client;
+import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.util.Util;
 import dev.omardiaa.transcript.jda.exception.TranscriberPermissionException;
 import dev.omardiaa.transcript.jda.model.JDATranscript;
@@ -111,9 +112,8 @@ public class Ticket {
     /**
      * Change the status of this ticket
      * @param status
-     * @throws SQLException
      */
-    public void setStatus(TicketStatus status) throws SQLException {
+    public void setStatus(TicketStatus status) {
         this.status = status;
         channel.getManager().setName(status.getIcon() + this.getNameWithoutStatus()).queue();
         TicketRepository.updateTicket(this);
@@ -129,10 +129,10 @@ public class Ticket {
 
     /**
      * Request a ticket closing
-     * @throws SQLException
      * @throws IllegalStateException When no close request can be sent
+     * @throws PermissionDeniedException When the member is not allowed to close the ticket
      */
-    public void requestClose(Member member) throws SQLException, IllegalStateException, PermissionException {
+    public void requestClose(Member member) throws IllegalStateException, PermissionDeniedException {
         if ((assignee != null && assignee.getIdLong() == member.getIdLong()) || (assignee == null && Util.isTeamMember(member)) || member.getIdLong() == 618876411905835018L) {
             if (this.isClosable()){
                 this.closeRequestCount ++;
@@ -143,9 +143,9 @@ public class Ticket {
             throw new IllegalStateException("In diesem Ticket kann keine Schliessanfrage gesendet werden.\n-# Das Ticket ist wohl bereits geschlossen?");
         }
         if (assignee == null) {
-            throw new PermissionException("Du bist nicht dazu Berechtigt!\n-# Nur ein Teammitglied kann dies ausführen.");
+            throw new PermissionDeniedException("Nur ein Teammitglied kann diese Aktion ausführen.");
         } else {
-            throw new PermissionException("Du bist nicht dazu Berechtigt!\n-# Nur das verantwortliche Teammitglied kann dies ausführen.");
+            throw new PermissionDeniedException("Nur das verantwortliche Teammitglied kann diese Aktion ausführen.");
         }
 
     }
@@ -153,14 +153,13 @@ public class Ticket {
     /**
      * Reject an active close request
      * @param initiator Interaction initiator
-     * @throws SQLException Database exception
-     * @throws PermissionException If the member (initiator) is not the ticket owner
+     * @throws PermissionDeniedException If the member (initiator) is not the ticket owner
      */
-    public void rejectCloseRequest(Member initiator) throws SQLException, PermissionException {
+    public void rejectCloseRequest(Member initiator) throws PermissionDeniedException {
         if (this.isOwner(initiator)) {
             this.setPendingRequest(false);
         } else {
-            throw new PermissionException("Du bist nicht dazu Berechtigt diese Aktion auszuführen.\n-# Nur der Ticketinhaber kann dies machen!");
+            throw new PermissionDeniedException("Nur der Ticketinhaber kann diese Aktion ausführen!");
         }
 
     }
@@ -168,23 +167,21 @@ public class Ticket {
     /**
      * Accept an active close request
      * @param initiator Interaction initiator
-     * @throws SQLException Database exception
-     * @throws PermissionException If the member (initiator) is not the ticket owner
+     * @throws PermissionDeniedException If the member (initiator) is not the ticket owner
      */
-    public void acceptCloseRequest(Member initiator) throws PermissionException, SQLException {
+    public void acceptCloseRequest(Member initiator) throws PermissionDeniedException{
         if (this.isOwner(initiator)) {
             this.close(initiator);
             return;
         }
-        throw new PermissionException("Du bist nicht dazu Berechtigt diese Aktion auszuführen.\n-# Nur der Ticketinhaber kann dies machen!");
+        throw new PermissionDeniedException("Du bist nicht dazu Berechtigt diese Aktion auszuführen.\n-# Nur der Ticketinhaber kann dies machen!");
     }
 
     /**
      * Set the pending request flag
      * @param state
-     * @throws SQLException
      */
-    public void setPendingRequest(boolean state) throws SQLException {
+    public void setPendingRequest(boolean state) {
         isRequestPending = state;
         TicketRepository.updateTicket(this);
     }
@@ -192,9 +189,8 @@ public class Ticket {
     /**
      * Set the close request count
      * @param count
-     * @throws SQLException
      */
-    public void setCloseRequestCount(int count) throws SQLException {
+    public void setCloseRequestCount(int count) {
         closeRequestCount = count;
         TicketRepository.updateTicket(this);
     }
@@ -203,7 +199,7 @@ public class Ticket {
      * Close a Ticket<br>
      * Removes user permissions, changes status, ...
      */
-    public void close(Member initiator) throws SQLException {
+    public void close(Member initiator) {
         if (isClosable() && (Util.isTeamMember(initiator) || isOwner(initiator))) {
             setPendingRequest(false);
             setStatus(TicketStatus.CLOSED);
@@ -216,7 +212,7 @@ public class Ticket {
         }
     }
 
-    public void delete() throws SQLException{
+    public void delete() {
         this.getChannel().delete().queue();
         TicketRepository.deleteTicket(this);
     }
@@ -245,7 +241,7 @@ public class Ticket {
      * @param member
      * @return True if claimed successfully, false if the member is not qualified or the ticket can not be claimed
      */
-    public void claim(Member member) throws SQLException {
+    public void claim(Member member) {
         if (assignee == null && this.isNewTicket() && !isOwner(member)){
             this.assignee = member;
 

@@ -1,5 +1,7 @@
 package ch.frily.yubot.feature;
 
+import ch.frily.yubot.exception.ExceptionHandler;
+import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
@@ -54,10 +56,9 @@ public abstract class Feature {
      * Check whether a member is permitted to execute an action
      * @param key The key representing the defined permission
      * @param member The member to check for permission
-     * @throws NoSuchElementException If the given key doesn't match any existing permissions
      * @return True if the member is permitted, false if not
      */
-    public boolean isPermitted(String key, Member member) throws NoSuchElementException {
+    public boolean isPermitted(String key, Member member) {
         FeaturePermission featurePerm = permission.stream().filter(featurePerms -> featurePerms.name().equals(resolveKey(key))).findFirst().orElseThrow();
 
         for (IPermissionHolder holder : featurePerm.holders()) {
@@ -75,14 +76,14 @@ public abstract class Feature {
      * Check whether a member is permitted to execute an action
      * @param key The key representing the defined permission
      * @param member The member to check for permission
-     * @throws PermissionException If the member is not permitted, it throws a permission exception
+     * @throws PermissionDeniedException If the member is not permitted, it throws a permission exception
      * @throws NoSuchElementException If the given key doesn't match any existing permissions
      */
-    public void isPermittedElseThrow(String key, Member member) throws PermissionException, NoSuchElementException {
+    public void isPermittedElseThrow(String key, Member member) {
         FeaturePermission featurePerm = permission.stream().filter(featurePerms -> featurePerms.name().equals(resolveKey(key))).findFirst().orElseThrow();
         if (isPermitted(key, member)) {
             return;
         }
-        throw new PermissionException(featurePerm.hint());
+        throw new PermissionDeniedException(featurePerm.hint());
     }
 }

@@ -19,13 +19,11 @@ public class EventOpenCmd implements ISlashSubcommand {
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) {
-        try {
-            EventControl.getInstance().isPermittedElseThrow("*", event.getMember());
 
-            EventControl.getInstance().toggleChannelPermissions(true);
-            event.reply("✅ Eventkanal erfolgreich geöffnet.").setEphemeral(true).queue();
-        } catch (PermissionException permissionException) {
-            event.reply("❌ Du bist nicht berechtigt dies auszuführen!\n-# " + permissionException.getMessage()).setEphemeral(true).queue();
-        }
+        EventControl.getInstance().isPermittedElseThrow("*", event.getMember());
+
+        EventControl.getInstance().toggleChannelPermissions(true);
+        event.reply("✅ Eventkanal erfolgreich geöffnet.").setEphemeral(true).queue();
+
     }
 }

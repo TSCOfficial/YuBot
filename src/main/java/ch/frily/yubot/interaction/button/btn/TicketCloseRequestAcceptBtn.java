@@ -46,7 +46,6 @@ public class TicketCloseRequestAcceptBtn implements IButton {
 
     @Override
     public void execute(@NotNull ButtonInteractionEvent event) {
-        try {
             Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
             log.debug("sending close request to ticket");
             ticket.acceptCloseRequest(event.getMember());
@@ -67,9 +66,5 @@ public class TicketCloseRequestAcceptBtn implements IButton {
             TicketClosedOptionsEmbed optionEmbed = new TicketClosedOptionsEmbed();
             optionEmbed.setTicket(ticket);
             event.getHook().sendMessageEmbeds(optionEmbed.build()).addComponents(actionRow).queue();
-
-        } catch (SQLException | NotFoundException | PermissionException exception) {
-            event.reply(exception.getMessage()).setEphemeral(true).queue();
-        }
     }
 }
