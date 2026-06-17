@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +30,7 @@ public interface ISlashCommand {
      * Execute a slashcommand by its interaction event.<br>
      * @param event The {@link SlashCommandInteractionEvent}
      */
-    void execute(@NotNull SlashCommandInteractionEvent event);
+    void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException;
 
     /**
      * Get the options and choices of a slashcommand.

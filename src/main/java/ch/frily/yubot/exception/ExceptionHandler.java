@@ -58,8 +58,8 @@ public final class ExceptionHandler {
             return;
         }
 
-
         if (cause instanceof InteractionException interactionException) {
+
             log(interactionException);
             replyToUser(callback, interactionException.toUserMessage(), interactionException.isEphemeral());
             return;
@@ -128,10 +128,11 @@ public final class ExceptionHandler {
      * Handles both un-acknowledged and already acknowledged interactions.
      */
     private static void replyToUser(IReplyCallback callback, String message, boolean ephemeral) {
+        log.debug("Replying to user");
         if (callback == null) {
             return;
         }
-
+        log.debug("trying callback");
         try {
             if (callback.isAcknowledged()) {
                 callback.getHook()

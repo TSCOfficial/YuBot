@@ -60,7 +60,7 @@ public class Closure extends Feature {
         if (isOpen) {
             TextChannel lobbyChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_LOBBY); // lobby channel
             Role role = EnvResolver.getRoleById(EnvKey.ROLE_ANTIFASHIST);
-            lobbyChannel.sendMessage("Hey " + role.getAsMention() + "! Es ist Zeit zu quatschen ✨").queue();
+            lobbyChannel.sendMessage("Hey " + role.getName() + "! Es ist Zeit zu quatschen ✨").queue();
         }
 
 

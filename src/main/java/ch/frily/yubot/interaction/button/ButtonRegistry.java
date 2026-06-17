@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,7 @@ public class ButtonRegistry {
         });
     }
 
-    public void dispatchButtonInteraction(ButtonInteractionEvent event){
+    public void dispatchButtonInteraction(ButtonInteractionEvent event) throws SQLException, IllegalStateException {
         String idOrUrl = event.getButton().getCustomId();
         if (event.getButton().getStyle() == ButtonStyle.LINK && event.getButton().getUrl() != null) {
             idOrUrl = event.getButton().getUrl();

@@ -31,7 +31,7 @@ public class TicketOpenEmbed implements IEmbed {
                 "\n" +
                 ticket.getType().getEmbedDescription() +
                 "\n" +
-                "-# Mit /ticket add können weitere benutzer hinzugefügt werden.\n" +
+                "-# Mit </ticket add:1511995068846968875> kann das Team dem Ticket weitere Personen hinzugefügt.\n" +
                 "-# Ticketinhalte werden zu Dokumentationszwecken sicher, und nur für die Serverleitung, hinterlegt.";
     }
 

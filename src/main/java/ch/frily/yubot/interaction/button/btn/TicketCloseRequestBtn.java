@@ -37,9 +37,7 @@ public class TicketCloseRequestBtn implements IButton {
     }
 
     @Override
-    public void execute(@NotNull ButtonInteractionEvent event) {
-        event.deferReply().queue();
-
+    public void execute(@NotNull ButtonInteractionEvent event) throws SQLException, IllegalStateException {
         Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
         ticket.requestClose(event.getMember());
 
@@ -52,9 +50,8 @@ public class TicketCloseRequestBtn implements IButton {
         optionsEmbed.setInitiator(event.getMember());
         optionsEmbed.setTicket(ticket);
 
-        event.getHook().sendMessage(ticket.getOwner().getAsMention()).addEmbeds(optionsEmbed.build()).setComponents(actionRow).queue();
+        event.reply(ticket.getOwner().getAsMention()).addEmbeds(optionsEmbed.build()).setComponents(actionRow).queue();
 
         event.getMessage().editMessageComponents(event.getMessage().getComponentTree().asDisabled()).queue();
-
     }
 }

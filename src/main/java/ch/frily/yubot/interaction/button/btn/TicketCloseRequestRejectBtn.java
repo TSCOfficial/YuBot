@@ -45,7 +45,7 @@ public class TicketCloseRequestRejectBtn implements IButton {
     }
 
     @Override
-    public void execute(@NotNull ButtonInteractionEvent event) {
+    public void execute(@NotNull ButtonInteractionEvent event) throws SQLException {
 
         Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
         ticket.rejectCloseRequest(event.getMember());

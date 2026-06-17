@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -114,7 +115,7 @@ public class SlashCommandRegistry {
      * Dispatch the event from an eventlistener to the appropriate interaction executor
      * @param event
      */
-    public void dispatchInteractionEvent(SlashCommandInteractionEvent event) throws NotFoundException {
+    public void dispatchInteractionEvent(SlashCommandInteractionEvent event) throws NotFoundException, SQLException {
         commands.putAll(subcommands);
 
         ISlashCommand command = commands.get(event.getFullCommandName());

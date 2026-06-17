@@ -1,5 +1,6 @@
 package ch.frily.yubot.listeners;
 
+import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.interaction.button.ButtonRegistry;
 import ch.frily.yubot.interaction.modal.ModalRegistry;
 import ch.frily.yubot.interaction.command.SlashCommandRegistry;
@@ -32,8 +33,8 @@ public class InteractionListener extends ListenerAdapter {
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         try {
             SlashCommandRegistry.getInstance().dispatchInteractionEvent(event);
-        } catch (NotFoundException notFoundException) {
-            event.reply(notFoundException.getMessage()).setEphemeral(true).queue();
+        } catch (Exception exception) {
+            ExceptionHandler.handle(exception, event);
         }
     }
 
@@ -48,12 +49,21 @@ public class InteractionListener extends ListenerAdapter {
 
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event){
-        ButtonRegistry.getInstance().dispatchButtonInteraction(event);
+        try {
+            ButtonRegistry.getInstance().dispatchButtonInteraction(event);
+        }catch (Exception exception) {
+            log.error("Error while dispatching button interaction: {}", exception.getMessage());
+            ExceptionHandler.handle(exception, event);
+        }
     }
 
     @Override
     public void onModalInteraction(@NotNull ModalInteractionEvent event) {
-        ModalRegistry.getInstance().dispatchModalInteraction(event);
+        try {
+            ModalRegistry.getInstance().dispatchModalInteraction(event);
+        } catch (Exception exception) {
+            ExceptionHandler.handle(exception, event);
+        }
     }
 
 

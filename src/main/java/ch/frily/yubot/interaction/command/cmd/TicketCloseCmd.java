@@ -42,23 +42,20 @@ public class TicketCloseCmd implements ISlashSubcommand {
     }
 
     @Override
-    public void execute(@NotNull SlashCommandInteractionEvent event) {
+    public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException {
         Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
 
         if (event.getOption("force") != null && event.getOption("force").getAsBoolean()) {
-            if (ticket.isForceClosable()) {
-                ActionRow actionRow = ActionRow.of(
-                        new TicketDeleteBtn().build()
-                );
-                ticket.close(event.getMember());
+            ActionRow actionRow = ActionRow.of(
+                    new TicketDeleteBtn().build()
+            );
+            ticket.forceClose(event.getMember());
 
-                TicketClosedOptionsEmbed optionsEmbed = new TicketClosedOptionsEmbed();
-                optionsEmbed.setTicket(ticket);
-                optionsEmbed.setForcedClosed(true);
-                event.replyEmbeds(optionsEmbed.build()).setComponents(actionRow).queue();
-                return;
-            }
-            throw new IllegalStateException("Ticket kann nicht geschlossen werden.\n-# Es müssen erst min. 2 Anfragen gestellt werden oder 7 Tage inaktivität.");
+            TicketClosedOptionsEmbed optionsEmbed = new TicketClosedOptionsEmbed();
+            optionsEmbed.setTicket(ticket);
+            optionsEmbed.setForcedClosed(true);
+            event.replyEmbeds(optionsEmbed.build()).setComponents(actionRow).queue();
+            return;
         } else {
             ActionRow actionRow = ActionRow.of(
                     new TicketCloseRequestAcceptBtn().build(),

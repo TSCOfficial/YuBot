@@ -1,6 +1,7 @@
 package ch.frily.yubot.feature;
 
 import ch.frily.yubot.Client;
+import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.util.Util;
 import dev.omardiaa.transcript.jda.exception.TranscriberPermissionException;
@@ -11,13 +12,13 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.utils.FileUpload;
 
-import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;;
@@ -29,7 +30,7 @@ public class Ticket {
     private static final int MIN_CLOSE_REQUEST_COUNT = 2;
 
     // minimal inactivity in days till ticket can be force-closed
-    private static final int MIN_INACTIVITY_DURATION = 7;
+    private static final int MIN_INACTIVITY_DURATION = 3;
 
 
     // Person who opened the Ticket
@@ -133,7 +134,7 @@ public class Ticket {
      * @throws PermissionDeniedException When the member is not allowed to close the ticket
      */
     public void requestClose(Member member) throws IllegalStateException, PermissionDeniedException {
-        if ((assignee != null && assignee.getIdLong() == member.getIdLong()) || (assignee == null && Util.isTeamMember(member)) || member.getIdLong() == 618876411905835018L) {
+        if (((assignee != null && assignee.getIdLong() == member.getIdLong()) || (assignee == null && Util.isTeamMember(member))) && !isOwner(member)) {
             if (this.isClosable()){
                 this.closeRequestCount ++;
                 this.isRequestPending = true;
@@ -159,7 +160,7 @@ public class Ticket {
         if (this.isOwner(initiator)) {
             this.setPendingRequest(false);
         } else {
-            throw new PermissionDeniedException("Nur der Ticketinhaber kann diese Aktion ausführen!");
+            throw new PermissionDeniedException(String.format("Nur der/die Ticketinhaber\\*in %s kann dies machen!", owner.getAsMention()));
         }
 
     }
@@ -174,7 +175,7 @@ public class Ticket {
             this.close(initiator);
             return;
         }
-        throw new PermissionDeniedException("Du bist nicht dazu Berechtigt diese Aktion auszuführen.\n-# Nur der Ticketinhaber kann dies machen!");
+        throw new PermissionDeniedException(String.format("Nur der/die Ticketinhaber\\*in %s kann dies machen!", owner.getAsMention()));
     }
 
     /**
@@ -193,6 +194,23 @@ public class Ticket {
     public void setCloseRequestCount(int count) {
         closeRequestCount = count;
         TicketRepository.updateTicket(this);
+    }
+
+    public void forceClose(Member initiator) throws PermissionDeniedException {
+        if (Util.isTeamMember(initiator) && !isOwner(initiator)) {
+            if (isForceClosable()) {
+                close(initiator);
+                return;
+            } else {
+                throw new InvalidStateException("Ticket kann nicht geschlossen werden.", "Es müssen erst min. 2 Anfragen gestellt werden oder 7 Tage inaktivität.");
+            }
+        }
+
+        if (assignee == null) {
+            throw new PermissionDeniedException("Nur ein Teammitglied kann diese Aktion ausführen.");
+        } else {
+            throw new PermissionDeniedException("Nur das verantwortliche Teammitglied kann diese Aktion ausführen.");
+        }
     }
 
     /**
@@ -250,6 +268,58 @@ public class Ticket {
 
             TicketRepository.updateTicket(this);
         };
+    }
+
+    /**
+     * Add a member to this ticket
+     * @param initiator
+     * @param member
+     * @throws PermissionDeniedException
+     * @throws InvalidStateException
+     */
+    public void addMember(Member initiator, Member member) throws PermissionDeniedException, InvalidStateException {
+        toggleAdditionalMember(initiator, member, true);
+    }
+
+    /**
+     * Remove member from this ticket
+     * @param initiator
+     * @param member
+     * @throws PermissionDeniedException
+     * @throws InvalidStateException
+     */
+    public void removeMember(Member initiator, Member member) throws PermissionDeniedException, InvalidStateException {
+        toggleAdditionalMember(initiator, member, false);
+    }
+
+    public void toggleAdditionalMember(Member initiator, Member member, boolean addMember) throws PermissionDeniedException, InvalidStateException {
+        if (!isOwner(initiator) && Util.isTeamMember(initiator)){
+            if (status != TicketStatus.CLOSED) {
+
+                if (addMember) {
+                    if (getMemberPermissionOverrides().contains(member)) {
+                        throw new InvalidStateException("Diese Person kann nicht hinzugefügt werden.", "Diese befindet sich bereits in diesem Ticket.");
+                    }
+                    channel.getManager().putPermissionOverride(member, TicketManager.USER_PERMISSION, List.of()).queue();
+                } else {
+                    log.debug("Removing member from ticket");
+                    if (!getMemberPermissionOverrides().contains(member)) {
+                        throw new InvalidStateException("Diese Person kann nicht entfernt werden.", "Diese befindet sich nicht im Ticket.");
+                    }
+                    if (member == owner) {
+                        throw new InvalidStateException("Diese Person kann nicht entfernt werden.", "Der/Die Ticketinhaber\\*in kann nicht entfernt werden.");
+                    }
+                    channel.getManager().removePermissionOverride(member).queue();
+                }
+                return;
+            }
+            throw new InvalidStateException("Das Ticket ist geschlossen.", "Es kann keine Person hinzugefügt werden, wenn das Ticket geschlossen ist.");
+        }
+        throw new PermissionDeniedException("Nur ein Teammitglied kann diese Aktion ausführen");
+    }
+
+    private List<Member> getMemberPermissionOverrides() {
+        return channel.getMemberPermissionOverrides().stream().map(PermissionOverride::getMember).toList();
     }
 
     /**

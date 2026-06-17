@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.SQLException;
+
 public interface IButton {
 
     String getId();
@@ -41,5 +43,5 @@ public interface IButton {
         return button;
     }
 
-    void execute(@NotNull ButtonInteractionEvent event);
+    void execute(@NotNull ButtonInteractionEvent event) throws SQLException;
 }

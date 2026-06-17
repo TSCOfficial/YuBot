@@ -1,6 +1,5 @@
 package ch.frily.yubot.feature;
 
-import ch.frily.yubot.database.Database;
 import ch.frily.yubot.embed.TicketOpenEmbed;
 import ch.frily.yubot.interaction.button.IButton;
 import ch.frily.yubot.interaction.button.btn.TicketCloseRequestBtn;
@@ -8,7 +7,6 @@ import ch.frily.yubot.interaction.button.btn.TicketPanelAwarenessBtn;
 import ch.frily.yubot.interaction.button.btn.TicketPanelSupportBtn;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
-import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
@@ -17,7 +15,6 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.exceptions.PermissionException;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -33,7 +30,7 @@ public class TicketManager {
 
     private static TicketManager instance;
 
-    private List<Permission> ownerPermissions = List.of(Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND);
+    protected static final List<Permission> USER_PERMISSION = List.of(Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND);
 
     public static TicketManager getInstance() {
         if (instance == null) {
@@ -53,7 +50,7 @@ public class TicketManager {
         embed.setTicket(ticket);
         // Ticket settings
         ticketCategory.createTextChannel(generateTicketName(type, ticketOwner))
-                .addMemberPermissionOverride(ticketOwner.getIdLong(), ownerPermissions, null)
+                .addMemberPermissionOverride(ticketOwner.getIdLong(), USER_PERMISSION, null)
                 .setTopic(type.getLabel())
                 .queue(textChannel -> {
                     // Ticket content
@@ -80,7 +77,7 @@ public class TicketManager {
      * Checks if the {@link TextChannel} is a Ticket or nor
      * @return True if its a Ticketchannel / False if not
      */
-    public boolean isTicketchannel(TextChannel channel) {
+    public boolean isTicketchannel(TextChannel channel) throws SQLException {
         TicketRepository.getTicketById(channel.getIdLong());
         return true;
     }

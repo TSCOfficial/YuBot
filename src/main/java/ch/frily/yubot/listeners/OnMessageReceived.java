@@ -1,5 +1,6 @@
 package ch.frily.yubot.listeners;
 
+import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.Ticket;
 import ch.frily.yubot.feature.TicketManager;
 import ch.frily.yubot.feature.TicketRepository;
@@ -26,15 +27,15 @@ public class OnMessageReceived extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
+        try {
+            if (event.getAuthor().isBot()) return;
 
-        if (event.getAuthor().isBot()) return;
-
-        if (TicketManager.getInstance().isTicketchannel(event.getChannel().asTextChannel()) && Util.isTeamMember(event.getMember())){
-            Ticket ticket = TicketRepository.getTicketById(event.getChannel().getIdLong());
-            ticket.claim(event.getMember());
+            if (TicketManager.getInstance().isTicketchannel(event.getChannel().asTextChannel()) && Util.isTeamMember(event.getMember())) {
+                Ticket ticket = TicketRepository.getTicketById(event.getChannel().getIdLong());
+                ticket.claim(event.getMember());
+            }
+        } catch (Exception exception) {
+            ExceptionHandler.handle(exception);
         }
-
     }
-
-
 }

@@ -123,7 +123,6 @@ public class EnvResolver {
             throw new IllegalArgumentException("Illegal keyword");
         }
 
-        log.debug("Resolving keyword: {}", keyword.name());
         String value = Client.getInstance().getConfig().get(keyword.name());
 
 
