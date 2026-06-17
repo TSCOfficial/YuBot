@@ -5,7 +5,6 @@ import lombok.Getter;
 public enum TicketStatus {
     NEW("👋", true, true),
     CLAIMED("🎫", true, false),
-    ARCHIVED("🗃️", false, false),
     CLOSED("🔻", false, false);
 
     // Ticket TextChannel name icon
