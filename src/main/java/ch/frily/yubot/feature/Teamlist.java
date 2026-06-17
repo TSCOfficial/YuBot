@@ -3,6 +3,7 @@ package ch.frily.yubot.feature;
 import ch.frily.yubot.util.Color;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
+import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
@@ -20,7 +21,6 @@ public class Teamlist {
     private static final List<EnvKey> ROLE_KEYWORDS = List.of(
             EnvKey.ROLE_OWNER,
             EnvKey.ROLE_SERVERLEITUNG,
-            EnvKey.ROLE_ORGALEITUNG,
             EnvKey.ROLE_ORGA,
             EnvKey.ROLE_DEVLEITUNG,
             EnvKey.ROLE_DEVELOPER,
@@ -62,7 +62,7 @@ public class Teamlist {
             embedBuilder.addField("Aktive Moderation (0)", "*Nicht besetzt*", false);
         } else {
             embedBuilder.addField("Aktive Moderation (" + activeMods.size() + ")",
-                    activeMods.stream().map(Member::getAsMention).collect(Collectors.joining(", ")), false);
+                    activeMods.stream().map(member -> member.getUser().getName()).collect(Collectors.joining(", ")), false);
         }
 
         return embedBuilder.build();
@@ -90,7 +90,7 @@ public class Teamlist {
         int userCount = 0;
 
         if (!getUsersByRole(role).isEmpty()) {
-            userList = getUsersByRole(role).stream().map(Member::getAsMention).collect(Collectors.joining("\n"));
+            userList = getUsersByRole(role).stream().map(member -> "@" + Util.escapeMarkdown(member.getUser().getName())).collect(Collectors.joining("\n"));
             userCount = getUsersByRole(role).size();
         }
         return new MessageEmbed.Field(

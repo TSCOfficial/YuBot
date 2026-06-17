@@ -55,4 +55,21 @@ public class Util {
 
         return openDuration;
     }
+
+    /**
+     * Escapes characters in a text that are interpreted as Markdown on Discord.
+     * @param input The string to escape
+     * @return The escaped string
+     */
+    public static String escapeMarkdown(String input) {
+        if (input == null) return null;
+
+        return input
+                .replace("*", "\\*")
+                .replace("_", "\\_")
+                .replace("~", "\\~")
+                .replace("`", "\\`")
+                .replace("|", "\\|");
+    }
+
 }
