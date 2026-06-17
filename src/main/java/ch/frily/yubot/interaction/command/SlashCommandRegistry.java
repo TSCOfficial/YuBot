@@ -49,8 +49,7 @@ public class SlashCommandRegistry {
 
         List<ISlashCommandGroup> slashCommandGroups = List.of(
                 new TicketCmdGroup(),
-                new ClosureCmdGroup(),
-                new EventControlCmdGroup()
+                new ClosureCmdGroup()
         );
 
         slashCommands.forEach(cmd -> {
