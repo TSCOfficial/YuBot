@@ -44,7 +44,8 @@ public class SlashCommandRegistry {
         List<ISlashCommand> slashCommands = List.of(
                 new TeamlistCmd(),
                 new SendEmbedCmd(),
-                new SendContainerCmd()
+                new SendContainerCmd(),
+                new TestCmd() // tests only
         );
 
         List<ISlashCommandGroup> slashCommandGroups = List.of(

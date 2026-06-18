@@ -23,13 +23,6 @@ public class Closure extends Feature {
 
     private static Closure instance;
 
-    private static final List<Category> CATEGORYKEYS = Stream.of(
-            EnvKey.CATEGORY_ANSAGEN,
-            EnvKey.CATEGORY_LIVEVENTS,
-            EnvKey.CATEGORY_COMMUNITYFLOOR,
-            EnvKey.CATEGORY_VOICE
-    ).map(EnvResolver::getCategoryById).toList();
-
     private static final List<Permission> PERMISSIONS = List.of(
             Permission.VIEW_CHANNEL
     );
@@ -96,29 +89,16 @@ public class Closure extends Feature {
     private void toggleCategoryPermissions(boolean isOpen) {
         Role everyoneRole = EnvResolver.getRoleById(EnvKey.ROLE_EVERYONE);
 
-        List<Permission> allowPerms = new ArrayList<>();
-        List<Permission> denyPerms = new ArrayList<>();
-
         if (isOpen) {
-            allowPerms.addAll(PERMISSIONS);
+            everyoneRole.getManager().givePermissions(PERMISSIONS).queue();
         } else {
-            denyPerms.addAll(PERMISSIONS);
+            everyoneRole.getManager().revokePermissions(PERMISSIONS).queue();
         }
+    }
 
-        for (Category category : CATEGORYKEYS) {
-
-            category.getManager()
-                    .putRolePermissionOverride(everyoneRole.getIdLong(), allowPerms, denyPerms)
-                    .complete();
-
-            for (GuildChannel channel : category.getChannels()) {
-                channel.getPermissionContainer()
-                        .upsertPermissionOverride(everyoneRole)
-                        .setDenied(denyPerms)
-                        .setAllowed(allowPerms)
-                        .complete();
-            }
-        }
+    private void kickMembersFromVoice() {
+        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+        guild.getAudioManager().closeAudioConnection();
     }
 
     public static List<Member> getActiveMods() {
