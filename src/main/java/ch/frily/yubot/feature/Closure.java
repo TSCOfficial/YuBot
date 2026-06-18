@@ -1,26 +1,20 @@
 package ch.frily.yubot.feature;
 
 import ch.frily.yubot.container.ClosureActivityRequestContainer;
-import ch.frily.yubot.embed.ClosureLogEmbed;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import ch.frily.yubot.feature.ClosureRepository;
 
 @Slf4j
 public class Closure extends Feature {
@@ -37,11 +31,13 @@ public class Closure extends Feature {
             EnvKey.ROLE_SERVERLEITUNG
     ).map(EnvResolver::getRoleById).toList();
 
+    /** How long a person needs to be inactive to trigger an activity request [in minutes] */
     @Getter
-    private static final int MIN_INACTIVITY_MINUTES = 10;
+    private static final int MIN_INACTIVITY_TIME = 5;
 
+    /** How long a activity request stays open till it gets automatically rejected [in minutes]*/
     @Getter
-    private static final int MAX_ACTIVITY_REQUEST_RESPONSE_MINUTES = 5;
+    private static final int MAX_ACTIVITY_REQUEST_RESPONSE_TIME = 1;
 
     public static Closure getInstance() {
         if (instance == null) {
@@ -175,12 +171,33 @@ public class Closure extends Feature {
     }
 
     /**
-     * When the active-mod is active for an amount of time, send a request to prove they're active
-     * @param moderator
+     * When the active-mod is inactive for an amount of time, send a request to prove they're active
+     * @param moderator mod-record {@link ActiveMod}
      */
     public static void requestActivityProve(ActiveMod moderator) {
         //TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
         TextChannel channel = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getTextChannelById(1516079055693287545L);
-        channel.sendMessageComponents(new ClosureActivityRequestContainer(moderator).build()).useComponentsV2().queue();
+        if (moderator.activityRequestedAt() == null) {
+            log.debug("Requesting activity");
+            channel.sendMessageComponents(new ClosureActivityRequestContainer(moderator).build()).useComponentsV2().queue(message -> {
+                ActiveMod updatedActiveMod = new ActiveMod(moderator.member(), moderator.lastActivityAt(), LocalDateTime.now(), message.getIdLong());
+                ClosureRepository.updateModerator(updatedActiveMod);
+            });
+        } else {
+            log.debug("Activity request already sent");
+            handleActivityProveTimeout(moderator);
+        }
+    }
+
+    /**
+     * Handle an unresponded activity request
+     * @param moderator
+     */
+    private static void handleActivityProveTimeout(ActiveMod moderator) {
+        if (moderator.activityRequestedAt().isBefore(LocalDateTime.now().minusMinutes(Closure.getMAX_ACTIVITY_REQUEST_RESPONSE_TIME()))) {
+            log.debug("cancelling activity request");
+            TextChannel channel = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getTextChannelById(1516079055693287545L);
+            channel.sendMessage("Activity request failed. Removing from active mods.").queue();
+        }
     }
 }
