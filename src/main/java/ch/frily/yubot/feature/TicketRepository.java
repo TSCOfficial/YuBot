@@ -26,7 +26,7 @@ public class TicketRepository {
     public static Ticket getTicketById(long id) throws SQLException, IllegalStateException {
         ResultSet resultSet = new DatabaseQuery(Table.TICKET)
                 .select()
-                .where(Table.TicketColumn.ID, DatabaseQuery.Operator.EQUALS, id).executeDataQuery();
+                .where(Table.TicketColumn.CHANNEL_ID, DatabaseQuery.Operator.EQUALS, id).executeDataQuery();
 
         if (!resultSet.next()) {
             throw new InvalidStateException("Ticket mit ID " + id + " nicht gefunden.");
@@ -65,7 +65,6 @@ public class TicketRepository {
 
     public static void createTicket(Ticket ticket) {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET);
-        query.insert(Table.TicketColumn.ID, ticket.getId());
         query.insert(Table.TicketColumn.OWNER_ID, ticket.getOwner().getIdLong());
         query.insert(Table.TicketColumn.CHANNEL_ID, ticket.getChannel().getIdLong());
         query.insert(Table.TicketColumn.TYPE, ticket.getType().name());
@@ -86,14 +85,14 @@ public class TicketRepository {
         query.update(Table.TicketColumn.CLOSE_REQUEST_COUNT, ticket.getCloseRequestCount());
         query.update(Table.TicketColumn.STATUS, ticket.getStatus().name());
         query.update(Table.TicketColumn.UPDATED_AT, ticket.getUpdatedAt());
-        query.where(Table.TicketColumn.ID, DatabaseQuery.Operator.EQUALS, ticket.getId());
+        query.where(Table.TicketColumn.CHANNEL_ID, DatabaseQuery.Operator.EQUALS, ticket.getId());
         query.executeQuery();
     }
 
     public static void deleteTicket(Ticket ticket) {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET);
 
-        query.where(Table.TicketColumn.ID, DatabaseQuery.Operator.EQUALS, ticket.getId()).delete();
+        query.where(Table.TicketColumn.CHANNEL_ID, DatabaseQuery.Operator.EQUALS, ticket.getId()).delete();
         query.executeQuery();
     }
 }

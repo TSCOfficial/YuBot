@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
+import java.time.ZoneId;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -110,6 +111,10 @@ public class EnvResolver {
 
     public static String getString(EnvKey keyword){
         return checkAndResolve(keyword, String.class);
+    }
+
+    public static ZoneId getZoneId(){
+        return ZoneId.of(checkAndResolve(EnvKey.TIMEZONE, String.class));
     }
 
     /**

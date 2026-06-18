@@ -1,9 +1,11 @@
 package ch.frily.yubot.interaction.command.cmd;
 
 import ch.frily.yubot.exception.PermissionDeniedException;
+import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.feature.Closure;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.util.EnvResolver;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -12,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+@Slf4j
 public class ClosureOptOutCmd implements ISlashSubcommand {
     @Override
     public String getName() {
@@ -30,7 +33,9 @@ public class ClosureOptOutCmd implements ISlashSubcommand {
         }
 
         Role activeMod = EnvResolver.getRoleById(1513639704870912130L);
+        log.debug("executing removeRoleFromMember");
         event.getGuild().removeRoleFromMember(event.getMember(), activeMod).submit().thenAccept(_ -> {
+            log.debug("Throwing consumer executed");
             int activeModCount = Closure.getActiveMods().size();
 
             String countInfo = "Es sind nun **" + activeModCount + "** aktive Moderator\\*innen";
