@@ -1,6 +1,7 @@
 package ch.frily.yubot.feature;
 
 import ch.frily.yubot.embed.TicketOpenEmbed;
+import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.interaction.button.IButton;
 import ch.frily.yubot.interaction.button.btn.TicketCloseRequestBtn;
 import ch.frily.yubot.interaction.button.btn.TicketPanelAwarenessBtn;
@@ -13,6 +14,7 @@ import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
@@ -30,7 +32,11 @@ public class TicketManager {
 
     private static TicketManager instance;
 
+    /** Permissions for the ticketowner and supportteam */
     protected static final List<Permission> USER_PERMISSION = List.of(Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND);
+
+    /** Maximum ticket count per Person over all categories */
+    private static final int MAX_TICKET_COUNT = 5;
 
     public static TicketManager getInstance() {
         if (instance == null) {
@@ -39,7 +45,18 @@ public class TicketManager {
         return instance;
     }
 
-    public void createTicket(TicketType type, Member ticketOwner, Consumer<TextChannel> onCreated) {
+    public void createTicket(TicketType type, Member ticketOwner, Consumer<TextChannel> onCreated) throws SQLException {
+        List<TextChannel> openedTickets = TicketRepository.getTicketsByMember(ticketOwner).stream().map(Ticket::getChannel).toList();
+        if (openedTickets.size() >= MAX_TICKET_COUNT) {
+            throw new PermissionDeniedException(String.format("""
+                    Du hast bereits zu viele Tickets offen *(%d)*!
+                    
+                    Verwende möglichst deine bereits geöffneten Tickets:
+                    - %s
+                    """, openedTickets.size(), openedTickets.stream().map(Channel::getAsMention).collect(Collectors.joining("\n- "))
+            ), "Falls dein aktuelles Anliegen zu keinem deiner offenen Tickets passt, melde dich bitte beim Moderations-Team."
+            );
+        }
         Ticket ticket = new Ticket(ticketOwner, type);
 
         Category ticketCategory = EnvResolver.getCategoryById(EnvKey.CATEGORY_TICKETS);
@@ -53,6 +70,12 @@ public class TicketManager {
                 .addMemberPermissionOverride(ticketOwner.getIdLong(), USER_PERMISSION, null)
                 .setTopic(type.getLabel())
                 .queue(textChannel -> {
+                    // Ticket team permissions
+                    ticket.getType().getResponsibleRoles().forEach(role -> {
+                        textChannel.getManager().putRolePermissionOverride(role.getIdLong(), USER_PERMISSION, null).queue();
+                    });
+
+
                     // Ticket content
                     ticket.setChannel(textChannel);
                     textChannel.sendMessage(ticketOwner.getAsMention() + " - " + type.getResponsibleRoles().stream().map(Role::getAsMention).collect(Collectors.joining(", ")))
@@ -83,16 +106,6 @@ public class TicketManager {
         }
         TicketRepository.getTicketById(channel.getIdLong());
         return true;
-    }
-
-    /**
-     * Checks if the user is a Teammember or nor
-     * @param user
-     * @return True if its a Teammember / False if not
-     */
-    public static boolean userIsTeammember(User user) {
-        Role teamRole = EnvResolver.getRoleById(EnvKey.ROLE_YUTEAM);
-        return EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getMemberById(user.getId()).getRoles().contains(teamRole);
     }
 
     public IButton getButtonByTypeGroup(TicketTypeGroup typeGroup){

@@ -39,7 +39,7 @@ public class TicketCloseRequestBtn implements IButton {
     @Override
     public void execute(@NotNull ButtonInteractionEvent event) throws SQLException, IllegalStateException {
         Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
-        ticket.requestClose(event.getMember());
+        ticket.requestClose(event.getMember(), false);
 
         ActionRow actionRow = ActionRow.of(
                 new TicketCloseRequestAcceptBtn().build(),
