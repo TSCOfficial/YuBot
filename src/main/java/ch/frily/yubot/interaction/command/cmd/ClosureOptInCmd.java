@@ -1,6 +1,7 @@
 package ch.frily.yubot.interaction.command.cmd;
 
 import ch.frily.yubot.exception.ExceptionHandler;
+import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.feature.Closure;
@@ -33,6 +34,10 @@ public class ClosureOptInCmd implements ISlashSubcommand {
             throw new PermissionDeniedException("Nur Moderator*innen können diesen Befehl ausführen.");
         }
         Role activeMod = EnvResolver.getRoleById(1513639704870912130L);
+
+        if (event.getMember().getRoles().contains(activeMod)) {
+            throw new InvalidStateException("Du bist bereits als aktiver moderator\\*in markiert.", null);
+        }
         event.getGuild().addRoleToMember(event.getMember(), activeMod).submit().thenAccept(_ -> {
             int activeModCount = 0;
 

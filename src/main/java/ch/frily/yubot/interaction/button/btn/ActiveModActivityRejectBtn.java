@@ -39,7 +39,7 @@ public class ActiveModActivityRejectBtn implements IButton {
         if (event.getMember().equals(forActiveMod.member())) {
             Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
             guild.removeRoleFromMember(forActiveMod.member(), EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD)).queue();
-
+            event.getMessage().delete().queue();
             event.reply("✅ Du wurdest erfolgreich als Active-mod entfernt.").setEphemeral(true).queue();
         } else {
             throw new PermissionDeniedException(String.format("Nur %s kann seine/ihre Anfrage ablehnen.", forActiveMod.member().getAsMention()));
