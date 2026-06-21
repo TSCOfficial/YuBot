@@ -33,7 +33,7 @@ public enum Table {
         CLOSE_REQUEST_COUNT("close_request_count"),
         STATUS("status"),
         UPDATED_AT("updated_at");
-        private final String column;
+        private final String column; // todo define second field: datatype, so that building an object can be automatized
     }
 
     // CLOSURE

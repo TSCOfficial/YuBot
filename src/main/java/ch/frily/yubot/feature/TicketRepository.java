@@ -15,6 +15,8 @@ import net.dv8tion.jda.api.exceptions.PermissionException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class TicketRepository {
 
@@ -63,6 +65,38 @@ public class TicketRepository {
         return ticket;
     }
 
+    public static List<Ticket> getTicketsByMember(Member member) throws SQLException {
+        DatabaseQuery query = new DatabaseQuery(Table.TICKET);
+        query.select().where(Table.TicketColumn.OWNER_ID, DatabaseQuery.Operator.EQUALS, member.getIdLong());
+        ResultSet resultSet = query.executeDataQuery();
+
+        List<Ticket> tickets = new java.util.ArrayList<>();
+        while (resultSet.next()) {
+            long assigneeId = resultSet.getLong(Table.TicketColumn.ASSIGNEE_ID.getColumn());
+            long channelId = resultSet.getLong(Table.TicketColumn.CHANNEL_ID.getColumn());
+            String typeName = resultSet.getString(Table.TicketColumn.TYPE.getColumn());
+            Timestamp lastActivityAt = resultSet.getTimestamp(Table.TicketColumn.LAST_ACTIVITY_AT.getColumn());
+            long welcomeMessageId = resultSet.getLong(Table.TicketColumn.WELCOME_MESSAGE_ID.getColumn());
+            boolean isRequestPending = resultSet.getBoolean(Table.TicketColumn.IS_REQUEST_PENDING.getColumn());
+            int closeRequestCount = resultSet.getInt(Table.TicketColumn.CLOSE_REQUEST_COUNT.getColumn());
+
+            TicketType type = TicketType.valueOf(typeName);
+            TicketStatus status = TicketStatus.valueOf(resultSet.getString(Table.TicketColumn.STATUS.getColumn()));
+
+            Ticket ticket = new Ticket(member, type);
+            ticket.setAssignee(member.getGuild().getMemberById(assigneeId));
+            ticket.setChannel(member.getGuild().getTextChannelById(channelId));
+            ticket.setLastActivityAt(lastActivityAt.toLocalDateTime());
+            ticket.setPendingRequest(isRequestPending);
+            ticket.setCloseRequestCount(closeRequestCount);
+            ticket.setStatus(status);
+
+            ticket.setWelcomeMessageId(welcomeMessageId);
+            tickets.add(ticket);
+        }
+        return tickets;
+    }
+
     public static void createTicket(Ticket ticket) {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET);
         query.insert(Table.TicketColumn.OWNER_ID, ticket.getOwner().getIdLong());
@@ -80,13 +114,22 @@ public class TicketRepository {
         if (ticket.getAssignee() != null) {
             query.update(Table.TicketColumn.ASSIGNEE_ID, ticket.getAssignee().getIdLong());
         }
-        query.update(Table.TicketColumn.LAST_ACTIVITY_AT, ticket.getLastActivityAt()); // todo check when to update activity
+        query.update(Table.TicketColumn.LAST_ACTIVITY_AT, ticket.getLastActivityAt());
         query.update(Table.TicketColumn.IS_REQUEST_PENDING, ticket.isRequestPending());
         query.update(Table.TicketColumn.CLOSE_REQUEST_COUNT, ticket.getCloseRequestCount());
         query.update(Table.TicketColumn.STATUS, ticket.getStatus().name());
         query.update(Table.TicketColumn.UPDATED_AT, ticket.getUpdatedAt());
         query.where(Table.TicketColumn.CHANNEL_ID, DatabaseQuery.Operator.EQUALS, ticket.getId());
         query.executeQuery();
+    }
+
+    /**
+     * Update the activity timestamp of the ticket owner
+     * @param ticket
+     */
+    public static void updateTicketLastActivityAt(Ticket ticket) {
+        ticket.setLastActivityAt(LocalDateTime.now());
+        updateTicket(ticket);
     }
 
     public static void deleteTicket(Ticket ticket) {

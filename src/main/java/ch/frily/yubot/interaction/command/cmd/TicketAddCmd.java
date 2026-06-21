@@ -35,7 +35,7 @@ public class TicketAddCmd implements ISlashSubcommand {
     @Override
     public List<OptionData> getOptions() {
         return List.of(
-                new OptionData(OptionType.USER, "user", "Person welche zum Ticket hinzugefügt werden soll.")
+                new OptionData(OptionType.USER, "user", "Person welche zum Ticket hinzugefügt werden soll.", true)
         );
     }
 

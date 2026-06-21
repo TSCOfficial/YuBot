@@ -32,14 +32,23 @@ public class OnMessageReceived extends ListenerAdapter {
         try {
             if (event.getAuthor().isBot()) return;
 
-            // Ticket claim funtion
+            // Ticket funtions
             if (event.getChannel() instanceof TextChannel
-                    && TicketManager.getInstance().isTicketchannel(event.getChannel().asTextChannel())
-                    && Util.isTeamMember(event.getMember())) {
+                    && TicketManager.getInstance().isTicketchannel(event.getChannel().asTextChannel())) {
                 Ticket ticket = TicketRepository.getTicketById(event.getChannel().getIdLong());
-                ticket.claim(event.getMember());
+
+                // ticket claim function
+                if (Util.isTeamMember(event.getMember())) {
+                    ticket.claim(event.getMember());
+                }
+
+                // ticket owner activity
+                if (ticket.isOwner(event.getMember())) {
+                    TicketRepository.updateTicketLastActivityAt(ticket);
+                }
             }
 
+            // adtive-mod activity
             if (Util.isActiveMod(event.getMember())) {
                 Closure.handleModActivity(event.getMember());
                 log.debug("Mod activity detected");

@@ -25,20 +25,6 @@ public class Util {
         return member.getRoles().contains(activeModRole);
     }
 
-    public static <T> boolean containsAny(Collection<T> collection, Collection<T> elements) {
-        for (T element : elements) {
-            if (collection.contains(element)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @SafeVarargs
-    public static <T> boolean containsAny(Collection<T> collection, T... elements) {
-        return containsAny(collection, Arrays.stream(elements).toList());
-    }
-
     public static String format(String template, Object... args) {
         int i = 0;
         while (template.contains("{}") && i < args.length) {

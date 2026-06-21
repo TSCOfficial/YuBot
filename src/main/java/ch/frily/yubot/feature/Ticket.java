@@ -3,6 +3,8 @@ package ch.frily.yubot.feature;
 import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.PermissionDeniedException;
+import ch.frily.yubot.util.EnvKey;
+import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
 import dev.omardiaa.transcript.jda.exception.TranscriberPermissionException;
 import dev.omardiaa.transcript.jda.model.JDATranscript;
@@ -13,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -21,7 +24,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;;
 
 @Slf4j
 public class Ticket {
@@ -29,7 +33,7 @@ public class Ticket {
     // minimal close-requests till ticket can be force-closed
     private static final int MIN_CLOSE_REQUEST_COUNT = 2;
 
-    // minimal inactivity in days till ticket can be force-closed
+    // minimal inactivity of the ticket-owner till ticket can be force-closed [in days]
     private static final int MIN_INACTIVITY_DURATION = 3;
 
 
@@ -73,6 +77,12 @@ public class Ticket {
     @Getter
     @Setter
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+    private static final List<Role> ALLOW_DIRECT_FORCECLOSE_ROLES = Stream.of(
+            EnvKey.ROLE_ADMIN,
+            EnvKey.ROLE_SERVERLEITUNG,
+            EnvKey.ROLE_MODLEITUNG
+    ).map(EnvResolver::getRoleById).toList();
 
     /**
      * Create a Ticket object<br>
@@ -133,22 +143,25 @@ public class Ticket {
      * @throws IllegalStateException When no close request can be sent
      * @throws PermissionDeniedException When the member is not allowed to close the ticket
      */
-    public void requestClose(Member member) throws IllegalStateException, PermissionDeniedException {
-        if (((assignee != null && assignee.getIdLong() == member.getIdLong()) || (assignee == null && Util.isTeamMember(member))) && !isOwner(member)) {
-            if (this.isClosable()){
-                this.closeRequestCount ++;
-                this.isRequestPending = true;
-                TicketRepository.updateTicket(this);
-                return;
-            }
-            throw new IllegalStateException("In diesem Ticket kann keine Schliessanfrage gesendet werden.\n-# Das Ticket ist wohl bereits geschlossen?");
-        }
-        if (assignee == null) {
-            throw new PermissionDeniedException("Nur ein Teammitglied kann diese Aktion ausführen.");
-        } else {
-            throw new PermissionDeniedException("Nur das verantwortliche Teammitglied kann diese Aktion ausführen.");
-        }
+    public void requestClose(Member initiator, boolean forceClose) throws IllegalStateException, PermissionDeniedException {
+        if (Util.isTeamMember(initiator)) {
+            if (!isOwner(initiator)) {
+                if (this.isClosable()) {
+                    if (forceClose) {
+                        forceClose(initiator);
+                    } else {
+                        this.closeRequestCount++;
+                        this.isRequestPending = true;
+                        TicketRepository.updateTicket(this);
+                    }
+                    return;
+                }
 
+                throw new IllegalStateException("In diesem Ticket kann keine Schliessanfrage gesendet werden.\n-# Das Ticket ist wohl bereits geschlossen?");
+            }
+            throw new PermissionDeniedException("Du, als Ticket-ersteller*in, kannst das Ticket nicht selbst schliessen.");
+        }
+        throw new PermissionDeniedException("Nur ein Teammitglied kann diese Aktion ausführen.");
     }
 
     /**
@@ -197,20 +210,26 @@ public class Ticket {
     }
 
     public void forceClose(Member initiator) throws PermissionDeniedException {
-        if (Util.isTeamMember(initiator) && !isOwner(initiator)) {
-            if (isForceClosable()) {
-                close(initiator);
-                return;
-            } else {
-                throw new InvalidStateException("Ticket kann nicht geschlossen werden.", "Es müssen erst min. 2 Anfragen gestellt werden oder 7 Tage inaktivität.");
+        if (Util.isTeamMember(initiator)) {
+            if (!isOwner(initiator)) {
+                if (ALLOW_DIRECT_FORCECLOSE_ROLES.stream().anyMatch(role -> initiator.getRoles().contains(role))) {
+                    close(initiator);
+                    return;
+                } else if (isForceClosable()) {
+                    close(initiator);
+                    return;
+                } else {
+                    throw new InvalidStateException(
+                            "Ticket kann nicht geschlossen werden.",
+                            String.format("Es müssen erst min. %d Anfragen gestellt werden oder %d Tage inaktivität.", MIN_CLOSE_REQUEST_COUNT, MIN_INACTIVITY_DURATION)
+                    );
+                }
             }
+
+
         }
 
-        if (assignee == null) {
-            throw new PermissionDeniedException("Nur ein Teammitglied kann diese Aktion ausführen.");
-        } else {
-            throw new PermissionDeniedException("Nur das verantwortliche Teammitglied kann diese Aktion ausführen.");
-        }
+
     }
 
     /**

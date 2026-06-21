@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.SQLException;
 import java.util.*;
 
 @Slf4j
@@ -43,6 +44,8 @@ public class TypeSelectorModal implements IModal {
         selectMenuBuilder.setMinValues(1);
         selectMenuBuilder.setMaxValues(1);
         selectMenuBuilder.setPlaceholder("Typ auswählen");
+        selectMenuBuilder.setRequired(true);
+        selectMenuBuilder.setDefaultOptions(selectMenuBuilder.getOptions().getFirst());
 
         components.put("Tickettyp", selectMenuBuilder.build());
 
@@ -50,7 +53,7 @@ public class TypeSelectorModal implements IModal {
     }
 
     @Override
-    public void execute(@NotNull ModalInteractionEvent event) {
+    public void execute(@NotNull ModalInteractionEvent event) throws SQLException {
         event.deferReply(true).queue();
         TicketType ticketType = Arrays.stream(TicketType.values()).filter(type ->
                 Objects.equals(type.getId(), event.getValue("select-menu:ticket-type-selector").getAsStringList().getFirst())

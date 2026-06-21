@@ -4,6 +4,7 @@ import ch.frily.yubot.interaction.modal.modal.TypeSelectorModal;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class ModalRegistry {
         });
     }
 
-    public void dispatchModalInteraction(ModalInteractionEvent event) {
+    public void dispatchModalInteraction(ModalInteractionEvent event) throws SQLException {
         log.debug("Modal interaction dispatched: {}", event.getModalId());
         modals.get(event.getModalId()).execute(event);
     }

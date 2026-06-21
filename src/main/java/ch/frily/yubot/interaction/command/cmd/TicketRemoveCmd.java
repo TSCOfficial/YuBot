@@ -34,7 +34,7 @@ public class TicketRemoveCmd implements ISlashSubcommand {
     @Override
     public List<OptionData> getOptions() {
         return List.of(
-                new OptionData(OptionType.USER, "user", "Person welche vom Ticket entfernt werden soll.")
+                new OptionData(OptionType.USER, "user", "Person welche vom Ticket entfernt werden soll.", true)
         );
     }
 

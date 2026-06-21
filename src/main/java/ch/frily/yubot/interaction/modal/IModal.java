@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.modals.Modal;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.SQLException;
 import java.util.Map;
 
 public interface IModal {
@@ -31,5 +32,5 @@ public interface IModal {
         return modalBuilder.build();
     }
 
-    void execute(@NotNull ModalInteractionEvent event);
+    void execute(@NotNull ModalInteractionEvent event) throws SQLException;
 }

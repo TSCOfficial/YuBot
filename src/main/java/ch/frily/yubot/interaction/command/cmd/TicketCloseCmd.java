@@ -49,7 +49,7 @@ public class TicketCloseCmd implements ISlashSubcommand {
             ActionRow actionRow = ActionRow.of(
                     new TicketDeleteBtn().build()
             );
-            ticket.forceClose(event.getMember());
+            ticket.requestClose(event.getMember(), true);
 
             TicketClosedOptionsEmbed optionsEmbed = new TicketClosedOptionsEmbed();
             optionsEmbed.setTicket(ticket);
@@ -62,7 +62,7 @@ public class TicketCloseCmd implements ISlashSubcommand {
                     new TicketCloseRequestRejectBtn().build()
             );
 
-            ticket.requestClose(event.getMember());
+            ticket.requestClose(event.getMember(), false);
 
             TicketCloseRequestEmbed requestEmbed = new TicketCloseRequestEmbed();
             requestEmbed.setInitiator(event.getMember());

@@ -20,7 +20,7 @@ public enum TicketType {
                     Das Supportteam meldet sich so schnell wie möglich bei dir.
                     """,
             TicketTypeGroup.SUPPORT,
-            List.of(EnvKey.ROLE_SUPPORT) // TODO: Rollen permission geben
+            List.of(EnvKey.ROLE_SUPPORT, EnvKey.ROLE_MODERATOR) // TODO: Rollen permission geben
     ),
     SUPPORT_REGELVERSTOSS(
             "report",
@@ -35,7 +35,7 @@ public enum TicketType {
                     Das Supportteam meldet sich so schnell wie möglich bei dir.
                     """,
             TicketTypeGroup.SUPPORT,
-            List.of(EnvKey.ROLE_SUPPORT)
+            List.of(EnvKey.ROLE_SUPPORT, EnvKey.ROLE_MODERATOR)
     ),
     SUPPORT_PROBEME(
             "sup",
@@ -50,7 +50,7 @@ public enum TicketType {
                     Das Supportteam meldet sich so schnell wie möglich bei dir.
                     """,
             TicketTypeGroup.SUPPORT,
-            List.of()
+            List.of(EnvKey.ROLE_SUPPORT, EnvKey.ROLE_MODERATOR)
     ),
     AWARENESS_PROBLEME(
             "aware",
@@ -62,7 +62,7 @@ public enum TicketType {
                     Du must nichts Sagen was du nicht Teilen möchtest.
                     """,
             TicketTypeGroup.AWARENESS,
-            List.of()
+            List.of(EnvKey.ROLE_AWARENESS)
     );
 
 
