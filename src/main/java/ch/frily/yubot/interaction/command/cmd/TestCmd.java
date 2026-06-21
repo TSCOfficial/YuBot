@@ -3,6 +3,7 @@ package ch.frily.yubot.interaction.command.cmd;
 import ch.frily.yubot.interaction.command.ISlashCommand;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
+import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -28,7 +29,9 @@ public class TestCmd implements ISlashCommand {
     public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException {
         Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
         guild.getVoiceStates().forEach(voiceState -> {
-            log.debug(voiceState.getMember().getUser().getAsTag() + " " + voiceState.getChannel().getName());
+            if (voiceState.getChannel().getParentCategory() == null || voiceState.getChannel().getParentCategory() != EnvResolver.getCategoryById(EnvKey.CATEGORY_TEAMBEREICH) ) {
+                guild.moveVoiceMember(voiceState.getMember(), null).queue();
+            }
         });
 
 

@@ -78,6 +78,9 @@ public class TicketManager {
      * @return True if its a Ticketchannel / False if not
      */
     public boolean isTicketchannel(TextChannel channel) throws SQLException {
+        if (channel.getParentCategory() == null || channel.getParentCategory().getIdLong() != EnvResolver.getCategoryById(EnvKey.CATEGORY_TICKETS).getIdLong()) {
+            return false;
+        }
         TicketRepository.getTicketById(channel.getIdLong());
         return true;
     }

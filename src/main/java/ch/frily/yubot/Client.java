@@ -2,7 +2,6 @@ package ch.frily.yubot;
 
 import ch.frily.yubot.database.Database;
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.exception.HandledException;
 import ch.frily.yubot.interaction.button.ButtonRegistry;
 import ch.frily.yubot.interaction.modal.ModalRegistry;
 import ch.frily.yubot.listeners.InteractionListener;
@@ -10,6 +9,7 @@ import ch.frily.yubot.listeners.OnMessageReceived;
 import ch.frily.yubot.listeners.OnReadyListener;
 import ch.frily.yubot.listeners.GuildMemberUpdateListener;
 import ch.frily.yubot.interaction.command.SlashCommandRegistry;
+import ch.frily.yubot.scheduler.SchedulerRegistry;
 import ch.frily.yubot.util.EnvKey;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.Getter;
@@ -75,6 +75,7 @@ public class Client {
             SlashCommandRegistry.getInstance().registerAll();
             ButtonRegistry.getInstance().loadButtons();
             ModalRegistry.getInstance().loadModals();
+            SchedulerRegistry.registerAll();
 
         } catch (Exception exception) {
             ExceptionHandler.handle(exception);

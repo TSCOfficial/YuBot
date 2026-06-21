@@ -1,6 +1,9 @@
 package ch.frily.yubot.interaction.command.cmd;
 
+import ch.frily.yubot.exception.ExceptionHandler;
+import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.PermissionDeniedException;
+import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.feature.Closure;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.util.EnvResolver;
@@ -11,6 +14,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class ClosureOptInCmd implements ISlashSubcommand {
@@ -30,8 +34,14 @@ public class ClosureOptInCmd implements ISlashSubcommand {
             throw new PermissionDeniedException("Nur Moderator*innen können diesen Befehl ausführen.");
         }
         Role activeMod = EnvResolver.getRoleById(1513639704870912130L);
+
+        if (event.getMember().getRoles().contains(activeMod)) {
+            throw new InvalidStateException("Du bist bereits als aktiver moderator\\*in markiert.", null);
+        }
         event.getGuild().addRoleToMember(event.getMember(), activeMod).submit().thenAccept(_ -> {
-            int activeModCount = Closure.getActiveMods().size();
+            int activeModCount = 0;
+
+            activeModCount = Closure.getActiveMods().size();
 
             String countInfo = "Es sind nun **" + activeModCount + "** aktive Moderator\\*innen.";
             if (activeModCount == 1) {

@@ -1,21 +1,23 @@
 package ch.frily.yubot.feature;
 
-import ch.frily.yubot.embed.ClosureLogEmbed;
+import ch.frily.yubot.embed.ClosureActivityRequestEmbed;
+import ch.frily.yubot.interaction.button.btn.ActiveModActivityProveBtn;
+import ch.frily.yubot.interaction.button.btn.ActiveModActivityRejectBtn;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
+import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -33,6 +35,14 @@ public class Closure extends Feature {
             EnvKey.ROLE_SERVERLEITUNG
     ).map(EnvResolver::getRoleById).toList();
 
+    /** How long a person needs to be inactive to trigger an activity request [in minutes] */
+    @Getter
+    private static final int MIN_INACTIVITY_TIME = 2;
+
+    /** How long an activity request stays open till it gets automatically rejected [in minutes]*/
+    @Getter
+    private static final int MAX_ACTIVITY_REQUEST_RESPONSE_TIME = 1;
+
     public static Closure getInstance() {
         if (instance == null) {
             instance = new Closure();
@@ -40,33 +50,39 @@ public class Closure extends Feature {
         return instance;
     }
 
-    public void triggerUpdate(){
+    /**
+     * Trigger the closure system.
+     * <p></p>
+     * This synchronizes the Database, handles closure & opening
+     * @throws SQLException
+     */
+    public void triggerUpdate() throws SQLException {
         List<Member> activeMods = getActiveMods();
-
-        log.debug(String.valueOf(activeMods.size()));
 
         boolean isOpen = !activeMods.isEmpty();
 
-        toggleCategoryPermissions(isOpen);
-        toggleServerClosedChannelPermissions(!isOpen);
+        syncDatabaseMods();
 
-        if (isOpen) {
-            TextChannel lobbyChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_LOBBY); // lobby channel
-            Role role = EnvResolver.getRoleById(EnvKey.ROLE_ANTIFASHIST);
-            lobbyChannel.sendMessage("Hey " + role.getName() + "! Es ist Zeit zu quatschen ✨").queue();
-        }
-
-
-        // Logging
-        TextChannel logChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_CLOSURELOGS); // Log channel
-        logChannel.sendMessageEmbeds(new ClosureLogEmbed(!activeMods.isEmpty()).build()).queue();
+//        toggleCategoryPermissions(isOpen);
+//        toggleServerClosedInfoChannelPermissions(!isOpen);
+//
+//        if (isOpen) {
+//            TextChannel lobbyChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_LOBBY); // lobby channel
+//            Role role = EnvResolver.getRoleById(EnvKey.ROLE_ANTIFASHIST);
+//            lobbyChannel.sendMessage("Hey " + role.getName() + "! Es ist Zeit zu quatschen ✨").queue();
+//        }
+//
+//
+//        // Logging
+//        TextChannel logChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_CLOSURELOGS); // Log channel
+//        logChannel.sendMessageEmbeds(new ClosureLogEmbed(!activeMods.isEmpty()).build()).queue();
     }
 
     /**
      * Toggle the permissions of the "server-geschlossen" channel
      * @param isOpen True if the channel should be open (Inverted value of closure's isOpen value)
      */
-    private void toggleServerClosedChannelPermissions(boolean isOpen) {
+    private void toggleServerClosedInfoChannelPermissions(boolean isOpen) {
         Role everyoneRole = EnvResolver.getRoleById(EnvKey.ROLE_EVERYONE);
         TextChannel serverClosedChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_SERVERGESCHLOSSEN);
 
@@ -93,20 +109,59 @@ public class Closure extends Feature {
             everyoneRole.getManager().givePermissions(PERMISSIONS).queue();
         } else {
             everyoneRole.getManager().revokePermissions(PERMISSIONS).queue();
+            kickMembersFromVoice();
         }
     }
 
     private void kickMembersFromVoice() {
         Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
-        guild.getAudioManager().closeAudioConnection();
+        guild.getVoiceStates().forEach(voiceState -> {
+            if (voiceState.getChannel().getParentCategory() == null || voiceState.getChannel().getParentCategory() != EnvResolver.getCategoryById(EnvKey.CATEGORY_TEAMBEREICH) ) {
+                guild.moveVoiceMember(voiceState.getMember(), null).queue();
+            }
+        });
     }
 
+    /**
+     * Get all currently active moderators (active: based if they have their role or not)
+     * @return
+     */
     public static List<Member> getActiveMods() {
         Role activeModRole = EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD);
         Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
-        List<Member> members = guild.getMembersWithRoles(activeModRole);
-        log.debug(members.stream().map(Member::getEffectiveName).collect(Collectors.joining(", ")));
-        return members;
+        return guild.getMembersWithRoles(activeModRole);
+    }
+
+    /**
+     * Add missing mods and remove still saved active-mods
+     */
+    private static void syncDatabaseMods() throws SQLException {
+        // All mods based on the database data
+        List<ActiveMod> currentModsInDatabase = ClosureRepository.getModerators();
+
+        List<Member> activeMods = getActiveMods();
+
+        List<Member> modsToRemove = currentModsInDatabase.stream()
+                .map(ActiveMod::member)
+                .filter(member -> !activeMods.contains(member))
+                .toList();
+
+        List<Member> modsToAdd = activeMods.stream()
+                .filter(member -> !currentModsInDatabase.contains(member))
+                .toList();
+
+        for (Member member : modsToRemove) {
+            ClosureRepository.deleteModerator(member);
+            log.info("Moderator mit der ID {} wurde aus der aktiven Liste entfernt.", member.getIdLong());
+        }
+
+        for (Member member : modsToAdd) {
+            ClosureRepository.createModerator(member);
+            log.info("Moderator mit der ID {} wurde zur aktiven Liste hinzugefügt.", member.getIdLong());
+        }
+
+        log.info("Aktualisierung der aktiven Moderatoren abgeschlossen!");
+
     }
 
     /**
@@ -122,5 +177,57 @@ public class Closure extends Feature {
             }
         });
         return value.get();
+    }
+
+    public static void handleModActivity(Member member) throws SQLException {
+        ActiveMod activeMod = ClosureRepository.getModerator(member);
+        log.debug("RequestMsg Id: " +activeMod.activityRequestMessageId() + activeMod.activityRequestMessageId().getClass());
+        if (activeMod.activityRequestMessageId() != null && activeMod.activityRequestMessageId() != 0) { // automatically accept an active activity-request
+            TextChannel channel = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getTextChannelById(1516079055693287545L);
+            channel.deleteMessageById(activeMod.activityRequestMessageId()).queue();
+        }
+        ClosureRepository.updateModeratorActivity(member);
+    }
+
+    /**
+     * When the active-mod is inactive for an amount of time, send a request to prove they're active
+     * @param moderator mod-record {@link ActiveMod}
+     */
+    public static void requestActivityProve(ActiveMod moderator) {
+        //TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
+        TextChannel channel = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getTextChannelById(1516079055693287545L);
+        if (moderator.activityRequestedAt() == null) {
+
+            ActionRow actionrow = ActionRow.of(new ActiveModActivityProveBtn().build(), new ActiveModActivityRejectBtn().build());
+
+            channel.sendMessageEmbeds(new ClosureActivityRequestEmbed(moderator).build()).setComponents(actionrow).queue(message -> {
+                ActiveMod updatedActiveMod = new ActiveMod(moderator.member(), moderator.lastActivityAt(), LocalDateTime.now(), message.getIdLong());
+                ClosureRepository.updateModerator(updatedActiveMod);
+            });
+        } else {
+            handleActivityProveTimeout(moderator);
+        }
+    }
+
+    /**
+     * Handle an unresponded activity request
+     * @param moderator
+     */
+    private static void handleActivityProveTimeout(ActiveMod moderator) {
+        if (moderator.activityRequestedAt().isBefore(LocalDateTime.now().minusMinutes(Closure.getMAX_ACTIVITY_REQUEST_RESPONSE_TIME()))) {
+            Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+            TextChannel channel = guild.getTextChannelById(1516079055693287545L);
+
+            long epochTime = moderator.lastActivityAt().atZone(EnvResolver.getZoneId()).toEpochSecond();
+
+            channel.retrieveMessageById(moderator.activityRequestMessageId()).queue(message -> {
+                message.editMessage(
+                        String.format("❌ %s hat die Aktivitätsbestätigungsanfrage ignoriert.\n-# Zuletzt erkannte Aktivität war um <t:%d:T> (<t:%d:R>).", moderator.member().getAsMention(), epochTime, epochTime)
+                ).setComponents().setEmbeds().queue();
+            });
+
+
+            guild.removeRoleFromMember(moderator.member(), EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD)).queue();
+        }
     }
 }

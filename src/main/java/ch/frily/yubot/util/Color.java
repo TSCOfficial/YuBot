@@ -11,8 +11,15 @@ public class Color {
 
     private final Integer blue;
 
+    // Color source: https://discordlabs.org/tools/color-palette
     public static final java.awt.Color RED = new java.awt.Color(231, 76, 60);
+    public static final java.awt.Color ORANGE = new java.awt.Color(230, 126, 34);
+    public static final java.awt.Color YELLOW = new java.awt.Color(241, 196, 15);
     public static final java.awt.Color GREEN = new java.awt.Color(46, 204, 113);
+    public static final java.awt.Color TURQUOISE = new java.awt.Color(26, 188, 156);
+    public static final java.awt.Color PURPLE = new java.awt.Color(155, 89, 182);
+    public static final java.awt.Color PLURPLE = new java.awt.Color(88, 101, 242);
+    public static final java.awt.Color BLUE = new java.awt.Color(52, 152, 219);
 
     public Color(Integer red, Integer green, Integer blue){
         this.red = red;
