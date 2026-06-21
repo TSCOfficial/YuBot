@@ -36,6 +36,47 @@ public class ClosureRepository {
         return activeMods;
     }
 
+    public static ActiveMod getModerator(Member member) throws SQLException {
+        DatabaseQuery query = new DatabaseQuery(Table.CLOSURE);
+        query.select().where(Table.ClosureColumn.MODERATOR_ID, DatabaseQuery.Operator.EQUALS, member.getIdLong());
+
+        ResultSet resultSet = query.executeDataQuery();
+
+        if (!resultSet.next()) {
+            return null;
+        }
+        LocalDateTime lastActivityAt = resultSet.getTimestamp(Table.ClosureColumn.LAST_ACTIVITY_AT.getColumn()).toLocalDateTime();
+        Timestamp activityRequestedAtTimestamp = resultSet.getTimestamp(Table.ClosureColumn.ACTIVITY_REQUESTED_AT.getColumn());
+        long activityRequestMessageId = resultSet.getLong(Table.ClosureColumn.ACTIVITY_REQUEST_MESSAGE_ID.getColumn());
+
+        return new ActiveMod(member, lastActivityAt, activityRequestedAtTimestamp == null ? null : activityRequestedAtTimestamp.toLocalDateTime(), activityRequestMessageId);
+    }
+
+    /**
+     * Get the {@link ActiveMod} by the activity-request message id
+     * <p></p>
+     * Useful when you need to get the moderator by a button action on a message
+     * @param messageId
+     * @return
+     * @throws SQLException
+     */
+    public static ActiveMod getModeratorByRequestMessageId(long messageId) throws SQLException {
+        DatabaseQuery query = new DatabaseQuery(Table.CLOSURE);
+        query.select().where(Table.ClosureColumn.ACTIVITY_REQUEST_MESSAGE_ID, DatabaseQuery.Operator.EQUALS, messageId);
+
+        ResultSet resultSet = query.executeDataQuery();
+
+        if (!resultSet.next()) {
+            return null;
+        }
+        Member member = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getMemberById(resultSet.getLong(Table.ClosureColumn.MODERATOR_ID.getColumn()));
+        LocalDateTime lastActivityAt = resultSet.getTimestamp(Table.ClosureColumn.LAST_ACTIVITY_AT.getColumn()).toLocalDateTime();
+        Timestamp activityRequestedAtTimestamp = resultSet.getTimestamp(Table.ClosureColumn.ACTIVITY_REQUESTED_AT.getColumn());
+        long activityRequestMessageId = resultSet.getLong(Table.ClosureColumn.ACTIVITY_REQUEST_MESSAGE_ID.getColumn());
+
+        return new ActiveMod(member, lastActivityAt, activityRequestedAtTimestamp == null ? null : activityRequestedAtTimestamp.toLocalDateTime(), activityRequestMessageId);
+    }
+
     public static void deleteModerator(Member member) {
         DatabaseQuery query = new DatabaseQuery(Table.CLOSURE);
         query.where(Table.ClosureColumn.MODERATOR_ID, DatabaseQuery.Operator.EQUALS, member.getIdLong()).delete();
@@ -54,7 +95,13 @@ public class ClosureRepository {
         query.update(Table.ClosureColumn.LAST_ACTIVITY_AT, activeMod.lastActivityAt());
         query.update(Table.ClosureColumn.ACTIVITY_REQUESTED_AT, activeMod.activityRequestedAt());
         query.update(Table.ClosureColumn.ACTIVITY_REQUEST_MESSAGE_ID, activeMod.activityRequestMessageId());
+        query.where(Table.ClosureColumn.MODERATOR_ID, DatabaseQuery.Operator.EQUALS, activeMod.member().getIdLong());
 
         query.executeQuery();
+    }
+
+    public static void updateModeratorActivity(Member member) {
+        ActiveMod activeMod = new ActiveMod(member, LocalDateTime.now(), null, null);
+        updateModerator(activeMod);
     }
 }

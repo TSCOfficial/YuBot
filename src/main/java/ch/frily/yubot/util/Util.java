@@ -10,9 +10,19 @@ import java.util.Collection;
 
 public class Util {
 
+    /**
+     * Check if a member has the {@link EnvKey#ROLE_YUTEAM} role
+     * @param member
+     * @return True if they have the role, false if not
+     */
     public static boolean isTeamMember(Member member) {
         Role teamRole = EnvResolver.getRoleById(EnvKey.ROLE_YUTEAM);
         return member.getRoles().contains(teamRole);
+    }
+
+    public static boolean isActiveMod(Member member) {
+        Role activeModRole = EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD);
+        return member.getRoles().contains(activeModRole);
     }
 
     public static <T> boolean containsAny(Collection<T> collection, Collection<T> elements) {

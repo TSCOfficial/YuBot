@@ -1,11 +1,15 @@
 package ch.frily.yubot.feature;
 
-import ch.frily.yubot.container.ClosureActivityRequestContainer;
+import ch.frily.yubot.embed.ClosureActivityRequestEmbed;
+import ch.frily.yubot.interaction.button.btn.ActiveModActivityProveBtn;
+import ch.frily.yubot.interaction.button.btn.ActiveModActivityRejectBtn;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
@@ -33,9 +37,9 @@ public class Closure extends Feature {
 
     /** How long a person needs to be inactive to trigger an activity request [in minutes] */
     @Getter
-    private static final int MIN_INACTIVITY_TIME = 5;
+    private static final int MIN_INACTIVITY_TIME = 2;
 
-    /** How long a activity request stays open till it gets automatically rejected [in minutes]*/
+    /** How long an activity request stays open till it gets automatically rejected [in minutes]*/
     @Getter
     private static final int MAX_ACTIVITY_REQUEST_RESPONSE_TIME = 1;
 
@@ -46,13 +50,18 @@ public class Closure extends Feature {
         return instance;
     }
 
+    /**
+     * Trigger the closure system.
+     * <p></p>
+     * This synchronizes the Database, handles closure & opening
+     * @throws SQLException
+     */
     public void triggerUpdate() throws SQLException {
         List<Member> activeMods = getActiveMods();
 
         boolean isOpen = !activeMods.isEmpty();
 
-        // Update database
-        updateActiveMods();
+        syncDatabaseMods();
 
 //        toggleCategoryPermissions(isOpen);
 //        toggleServerClosedInfoChannelPermissions(!isOpen);
@@ -126,7 +135,7 @@ public class Closure extends Feature {
     /**
      * Add missing mods and remove still saved active-mods
      */
-    private static void updateActiveMods() throws SQLException {
+    private static void syncDatabaseMods() throws SQLException {
         // All mods based on the database data
         List<ActiveMod> currentModsInDatabase = ClosureRepository.getModerators();
 
@@ -170,6 +179,16 @@ public class Closure extends Feature {
         return value.get();
     }
 
+    public static void handleModActivity(Member member) throws SQLException {
+        ActiveMod activeMod = ClosureRepository.getModerator(member);
+        log.debug("RequestMsg Id: " +activeMod.activityRequestMessageId() + activeMod.activityRequestMessageId().getClass());
+        if (activeMod.activityRequestMessageId() != null && activeMod.activityRequestMessageId() != 0) { // automatically accept an active activity-request
+            TextChannel channel = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getTextChannelById(1516079055693287545L);
+            channel.deleteMessageById(activeMod.activityRequestMessageId()).queue();
+        }
+        ClosureRepository.updateModeratorActivity(member);
+    }
+
     /**
      * When the active-mod is inactive for an amount of time, send a request to prove they're active
      * @param moderator mod-record {@link ActiveMod}
@@ -178,13 +197,14 @@ public class Closure extends Feature {
         //TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
         TextChannel channel = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getTextChannelById(1516079055693287545L);
         if (moderator.activityRequestedAt() == null) {
-            log.debug("Requesting activity");
-            channel.sendMessageComponents(new ClosureActivityRequestContainer(moderator).build()).useComponentsV2().queue(message -> {
+
+            ActionRow actionrow = ActionRow.of(new ActiveModActivityProveBtn().build(), new ActiveModActivityRejectBtn().build());
+
+            channel.sendMessageEmbeds(new ClosureActivityRequestEmbed(moderator).build()).setComponents(actionrow).queue(message -> {
                 ActiveMod updatedActiveMod = new ActiveMod(moderator.member(), moderator.lastActivityAt(), LocalDateTime.now(), message.getIdLong());
                 ClosureRepository.updateModerator(updatedActiveMod);
             });
         } else {
-            log.debug("Activity request already sent");
             handleActivityProveTimeout(moderator);
         }
     }
@@ -195,9 +215,19 @@ public class Closure extends Feature {
      */
     private static void handleActivityProveTimeout(ActiveMod moderator) {
         if (moderator.activityRequestedAt().isBefore(LocalDateTime.now().minusMinutes(Closure.getMAX_ACTIVITY_REQUEST_RESPONSE_TIME()))) {
-            log.debug("cancelling activity request");
-            TextChannel channel = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getTextChannelById(1516079055693287545L);
-            channel.sendMessage("Activity request failed. Removing from active mods.").queue();
+            Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+            TextChannel channel = guild.getTextChannelById(1516079055693287545L);
+
+            long epochTime = moderator.lastActivityAt().atZone(EnvResolver.getZoneId()).toEpochSecond();
+
+            channel.retrieveMessageById(moderator.activityRequestMessageId()).queue(message -> {
+                message.editMessage(
+                        String.format("❌ %s hat die Aktivitätsbestätigungsanfrage ignoriert.\n-# Zuletzt erkannte Aktivität war um <t:%d:T> (<t:%d:R>).", moderator.member().getAsMention(), epochTime, epochTime)
+                ).setComponents().setEmbeds().queue();
+            });
+
+
+            guild.removeRoleFromMember(moderator.member(), EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD)).queue();
         }
     }
 }
