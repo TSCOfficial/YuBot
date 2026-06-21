@@ -1,6 +1,7 @@
 package ch.frily.yubot.feature;
 
 import ch.frily.yubot.embed.ClosureActivityRequestEmbed;
+import ch.frily.yubot.embed.ClosureLogEmbed;
 import ch.frily.yubot.interaction.button.btn.ActiveModActivityProveBtn;
 import ch.frily.yubot.interaction.button.btn.ActiveModActivityRejectBtn;
 import ch.frily.yubot.util.EnvKey;
@@ -37,7 +38,7 @@ public class Closure extends Feature {
 
     /** How long a person needs to be inactive to trigger an activity request [in minutes] */
     @Getter
-    private static final int MIN_INACTIVITY_TIME = 2;
+    private static final int MIN_INACTIVITY_TIME = 1;
 
     /** How long an activity request stays open till it gets automatically rejected [in minutes]*/
     @Getter
@@ -63,19 +64,19 @@ public class Closure extends Feature {
 
         syncDatabaseMods();
 
-//        toggleCategoryPermissions(isOpen);
-//        toggleServerClosedInfoChannelPermissions(!isOpen);
-//
-//        if (isOpen) {
-//            TextChannel lobbyChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_LOBBY); // lobby channel
-//            Role role = EnvResolver.getRoleById(EnvKey.ROLE_ANTIFASHIST);
-//            lobbyChannel.sendMessage("Hey " + role.getName() + "! Es ist Zeit zu quatschen ✨").queue();
-//        }
-//
-//
-//        // Logging
-//        TextChannel logChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_CLOSURELOGS); // Log channel
-//        logChannel.sendMessageEmbeds(new ClosureLogEmbed(!activeMods.isEmpty()).build()).queue();
+        toggleCategoryPermissions(isOpen);
+        toggleServerClosedInfoChannelPermissions(!isOpen);
+
+        if (isOpen) {
+            TextChannel lobbyChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_LOBBY); // lobby channel
+            Role role = EnvResolver.getRoleById(EnvKey.ROLE_ANTIFASHIST);
+            lobbyChannel.sendMessage("Hey " + role.getName() + "! Es ist Zeit zu quatschen ✨").queue();
+        }
+
+
+        // Logging
+        TextChannel logChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_CLOSURELOGS); // Log channel
+        logChannel.sendMessageEmbeds(new ClosureLogEmbed(!activeMods.isEmpty()).build()).queue();
     }
 
     /**
@@ -183,7 +184,7 @@ public class Closure extends Feature {
         ActiveMod activeMod = ClosureRepository.getModerator(member);
         log.debug("RequestMsg Id: " +activeMod.activityRequestMessageId() + activeMod.activityRequestMessageId().getClass());
         if (activeMod.activityRequestMessageId() != null && activeMod.activityRequestMessageId() != 0) { // automatically accept an active activity-request
-            TextChannel channel = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getTextChannelById(1516079055693287545L);
+            TextChannel channel = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getTextChannelById(1516042711273046087L);
             channel.deleteMessageById(activeMod.activityRequestMessageId()).queue();
         }
         ClosureRepository.updateModeratorActivity(member);
@@ -195,7 +196,7 @@ public class Closure extends Feature {
      */
     public static void requestActivityProve(ActiveMod moderator) {
         //TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
-        TextChannel channel = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getTextChannelById(1516079055693287545L);
+        TextChannel channel = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getTextChannelById(1516042711273046087L);
         if (moderator.activityRequestedAt() == null) {
 
             ActionRow actionrow = ActionRow.of(new ActiveModActivityProveBtn().build(), new ActiveModActivityRejectBtn().build());
@@ -216,7 +217,7 @@ public class Closure extends Feature {
     private static void handleActivityProveTimeout(ActiveMod moderator) {
         if (moderator.activityRequestedAt().isBefore(LocalDateTime.now().minusMinutes(Closure.getMAX_ACTIVITY_REQUEST_RESPONSE_TIME()))) {
             Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
-            TextChannel channel = guild.getTextChannelById(1516079055693287545L);
+            TextChannel channel = guild.getTextChannelById(1516042711273046087L);
 
             long epochTime = moderator.lastActivityAt().atZone(EnvResolver.getZoneId()).toEpochSecond();
 

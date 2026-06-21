@@ -70,7 +70,7 @@ public class TicketManager {
                 .addMemberPermissionOverride(ticketOwner.getIdLong(), USER_PERMISSION, null)
                 .setTopic(type.getLabel())
                 .queue(textChannel -> {
-                    // Ticket team permissions
+                    // Ticket team permissions // todo DOESNT WORK
                     ticket.getType().getResponsibleRoles().forEach(role -> {
                         textChannel.getManager().putRolePermissionOverride(role.getIdLong(), USER_PERMISSION, null).queue();
                     });

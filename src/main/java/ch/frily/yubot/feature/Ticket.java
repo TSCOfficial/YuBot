@@ -364,7 +364,7 @@ public class Ticket {
         topic.append("**").append(type.getLabel()).append("**");
 
         if (assignee != null) {
-           topic.append(" | Ansprechsperson: ").append(assignee.getEffectiveName());
+           topic.append(" | Ansprechperson: ").append(assignee.getEffectiveName());
         }
         channel.getManager().setTopic(topic.toString()).queue();
     }
