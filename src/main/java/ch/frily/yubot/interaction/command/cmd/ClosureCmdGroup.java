@@ -9,7 +9,7 @@ import java.util.List;
 public class ClosureCmdGroup implements ISlashCommandGroup {
     @Override
     public String getName() {
-        return "closure";
+        return "activemod";
     }
 
     @Override

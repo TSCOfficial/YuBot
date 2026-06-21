@@ -210,26 +210,19 @@ public class Ticket {
     }
 
     public void forceClose(Member initiator) throws PermissionDeniedException {
-        if (Util.isTeamMember(initiator)) {
-            if (!isOwner(initiator)) {
-                if (ALLOW_DIRECT_FORCECLOSE_ROLES.stream().anyMatch(role -> initiator.getRoles().contains(role))) {
-                    close(initiator);
-                    return;
-                } else if (isForceClosable()) {
-                    close(initiator);
-                    return;
-                } else {
-                    throw new InvalidStateException(
-                            "Ticket kann nicht geschlossen werden.",
-                            String.format("Es müssen erst min. %d Anfragen gestellt werden oder %d Tage inaktivität.", MIN_CLOSE_REQUEST_COUNT, MIN_INACTIVITY_DURATION)
-                    );
-                }
-            }
 
-
+        if (ALLOW_DIRECT_FORCECLOSE_ROLES.stream().anyMatch(role -> initiator.getRoles().contains(role))) {
+            close(initiator);
+            return;
+        } else if (isForceClosable()) {
+            close(initiator);
+            return;
+        } else {
+            throw new InvalidStateException(
+                    "Ticket kann nicht geschlossen werden.",
+                    String.format("Es müssen erst min. %d Anfragen gestellt werden oder der/die Ticketinhaber\\*in muss seit min. %d Tage keine Nachricht mehr geschreiben haben.", MIN_CLOSE_REQUEST_COUNT, MIN_INACTIVITY_DURATION)
+            );
         }
-
-
     }
 
     /**
