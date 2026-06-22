@@ -48,7 +48,7 @@ public class TicketDeleteBtn implements IButton {
     public void execute(@NotNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
 
         Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
-        ticket.generateTranscript().thenAccept(fileUpload -> ThrowingConsumer.wrap(event, _ -> {
+        ticket.generateTranscript().thenAccept(ThrowingConsumer.wrap(event, fileUpload -> {
             fileUpload.setName("transkript-" + ticket.getNameWithoutStatus() + ".html");
             TextChannel logChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_TICKETLOGS);
             List<Container> containers = new TicketTranscriptContainer(event.getMember(), ticket, fileUpload).build();

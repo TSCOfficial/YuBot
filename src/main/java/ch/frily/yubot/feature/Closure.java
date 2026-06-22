@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -67,16 +68,29 @@ public class Closure extends Feature {
         toggleCommunityPermission(isOpen);
         toggleServerClosedInfoChannelPermissions(!isOpen);
 
-        if (isOpen) {
-            TextChannel lobbyChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_LOBBY); // lobby channel
-            Role role = EnvResolver.getRoleById(EnvKey.ROLE_ANTIFASHIST);
-            lobbyChannel.sendMessage("Hey " + role.getName() + "! Es ist Zeit zu quatschen ✨").queue();
+        Role everyoneRole = EnvResolver.getRoleById(EnvKey.ROLE_EVERYONE);
+        TextChannel logChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_CLOSURELOGS);
+
+        log.debug("can see channels: " + everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL));
+        log.debug("permissions: " + everyoneRole.getPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")));
+
+        // Opening the server
+        if (isOpen && !everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL)) {
+            TextChannel lobbyChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_LOBBY);
+            Role mentionRole = EnvResolver.getRoleById(EnvKey.ROLE_ANTIFASHIST);
+            lobbyChannel.sendMessage("Hey " + mentionRole.getName() + "! Es ist Zeit zu quatschen ✨").queue();
+
+            logChannel.sendMessageEmbeds(new ClosureLogEmbed(true).build()).queue();
+        }
+        // Closing the server
+        if (!isOpen && everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL)) {
+            logChannel.sendMessageEmbeds(new ClosureLogEmbed(false).build()).queue();
         }
 
 
         // Logging
-        TextChannel logChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_CLOSURELOGS); // Log channel
-        logChannel.sendMessageEmbeds(new ClosureLogEmbed(!activeMods.isEmpty()).build()).queue();
+
+
     }
 
     /**
@@ -162,18 +176,14 @@ public class Closure extends Feature {
                 .filter(member -> !databaseModIds.contains(member.getIdLong()))
                 .toList();
 
+
         for (Member member : modsToRemove) {
             ClosureRepository.deleteModerator(member);
-            log.info("Moderator mit der ID {} wurde aus der aktiven Liste entfernt.", member.getIdLong());
         }
 
         for (Member member : modsToAdd) {
             ClosureRepository.createModerator(member);
-            log.info("Moderator mit der ID {} wurde zur aktiven Liste hinzugefügt.", member.getIdLong());
         }
-
-        log.info("Aktualisierung der aktiven Moderatoren abgeschlossen!");
-
     }
 
     /**
@@ -193,7 +203,6 @@ public class Closure extends Feature {
 
     public static void handleModActivity(Member member) throws SQLException, ClassNotFoundException {
         ActiveMod activeMod = ClosureRepository.getModerator(member);
-        log.debug("RequestMsg Id: " +activeMod.activityRequestMessageId() + activeMod.activityRequestMessageId().getClass());
         if (activeMod.activityRequestMessageId() != null && activeMod.activityRequestMessageId() != 0) { // automatically accept an active activity-prove-request
             TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
             channel.deleteMessageById(activeMod.activityRequestMessageId()).queue();
@@ -211,7 +220,7 @@ public class Closure extends Feature {
 
             ActionRow actionrow = ActionRow.of(new ActiveModActivityProveBtn().build(), new ActiveModActivityRejectBtn().build());
 
-            channel.sendMessageEmbeds(new ClosureActivityRequestEmbed(moderator).build()).setComponents(actionrow).queue(message -> ThrowingConsumer.wrap(null, _ -> {
+            channel.sendMessageEmbeds(new ClosureActivityRequestEmbed(moderator).build()).setComponents(actionrow).queue(ThrowingConsumer.wrap(null, message -> {
                 ActiveMod updatedActiveMod = new ActiveMod(moderator.member(), moderator.lastActivityAt(), LocalDateTime.now(), message.getIdLong());
                 ClosureRepository.updateModerator(updatedActiveMod);
             }));
