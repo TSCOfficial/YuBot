@@ -89,7 +89,7 @@ public class Client {
     private JDA createClient() {
         JDABuilder jdaBuilder = JDABuilder.createDefault(config.get(EnvKey.CRED_TOKEN.name()));
         jdaBuilder.enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.MESSAGE_CONTENT);
-        jdaBuilder.setStatus(OnlineStatus.IDLE);
+        jdaBuilder.setStatus(OnlineStatus.ONLINE);
         jdaBuilder.setMemberCachePolicy(MemberCachePolicy.ALL);
         jdaBuilder.setActivity(Activity.listening("Yu"));
 
