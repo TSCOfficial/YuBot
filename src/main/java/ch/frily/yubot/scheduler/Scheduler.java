@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
  * Run a task in an interval of x units
  */
 public interface Scheduler {
-    void execute() throws SQLException;
+    void execute() throws SQLException, ClassNotFoundException;
 
     long interval();
 

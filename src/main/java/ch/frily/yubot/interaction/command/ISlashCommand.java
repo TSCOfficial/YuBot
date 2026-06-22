@@ -30,7 +30,7 @@ public interface ISlashCommand {
      * Execute a slashcommand by its interaction event.<br>
      * @param event The {@link SlashCommandInteractionEvent}
      */
-    void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException;
+    void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException;
 
     /**
      * Get the options and choices of a slashcommand.

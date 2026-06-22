@@ -32,5 +32,5 @@ public interface IModal {
         return modalBuilder.build();
     }
 
-    void execute(@NotNull ModalInteractionEvent event) throws SQLException;
+    void execute(@NotNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException;
 }

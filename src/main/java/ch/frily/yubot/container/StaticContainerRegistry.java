@@ -12,7 +12,8 @@ public enum StaticContainerRegistry {
 
     SERVER_CLOSE(new ServerClosedContainer().build()),
     RULES(new RulesContainer().build()),
-    TICKET_PANEL(new TicketPanelContainer().build());
+    TICKET_PANEL(new TicketPanelContainer().build()),
+    START_HERE(new StartHereContainer().build());
 
     @Getter
     private final List<Container> containers;

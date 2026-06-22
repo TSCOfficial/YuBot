@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
  * Behaviour:
  * <ul>
  *     <li>Every exception is logged according to its configured {@link Level}.</li>
- *     <li>{@link InteractionException}s are additionally reported back to the user (if an interaction is available).</li>
+ *     <li>Exceptions that are handled with an event are additionally reported back to the user with an optional hint.</li>
  *     <li>Unknown exceptions are wrapped and logged as errors, the user gets a generic fallback message.</li>
  * </ul>
  */
@@ -58,22 +58,19 @@ public final class ExceptionHandler {
             return;
         }
 
-        if (cause instanceof InteractionException interactionException) {
-
-            log(interactionException);
-            replyToUser(callback, interactionException.toUserMessage(), interactionException.isEphemeral());
-            return;
-        }
-
         if (cause instanceof ClientException clientException) {
             log(clientException);
+
+            if (callback != null) {
+                replyToUser(callback, clientException.toUserMessage());
+            }
             return;
         }
 
         // Unknown / unexpected exception
         log.error("Unhandled exception: {}", cause.getMessage(), cause);
         if (callback != null) {
-            replyToUser(callback, GENERIC_USER_MESSAGE + "\n-# " + GENERIC_USER_HINT, true);
+            replyToUser(callback, GENERIC_USER_MESSAGE + "\n-# " + GENERIC_USER_HINT);
         }
     }
 
@@ -127,21 +124,19 @@ public final class ExceptionHandler {
      * Sends a message back to the user if possible.
      * Handles both un-acknowledged and already acknowledged interactions.
      */
-    private static void replyToUser(IReplyCallback callback, String message, boolean ephemeral) {
-        log.debug("Replying to user");
+    private static void replyToUser(IReplyCallback callback, String message) {
         if (callback == null) {
             return;
         }
-        log.debug("trying callback");
         try {
             if (callback.isAcknowledged()) {
                 callback.getHook()
                         .sendMessage(message)
-                        .setEphemeral(ephemeral)
+                        .setEphemeral(true)
                         .queue();
             } else {
                 callback.reply(message)
-                        .setEphemeral(ephemeral)
+                        .setEphemeral(true)
                         .queue();
             }
         } catch (Exception sendError) {

@@ -25,7 +25,7 @@ public class TicketAddCmd implements ISlashSubcommand {
     }
 
     @Override
-    public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException {
+    public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
         Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
         ticket.addMember(event.getMember(), event.getOption("user").getAsMember());
 

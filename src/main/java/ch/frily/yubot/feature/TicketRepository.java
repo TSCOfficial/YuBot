@@ -25,7 +25,7 @@ public class TicketRepository {
      * @param id Ticket id (represented by the Ticket-Channel-ID)
      * @return The instance of this Ticket
      */
-    public static Ticket getTicketById(long id) throws SQLException, IllegalStateException {
+    public static Ticket getTicketById(long id) throws SQLException, IllegalStateException, ClassNotFoundException {
         ResultSet resultSet = new DatabaseQuery(Table.TICKET)
                 .select()
                 .where(Table.TicketColumn.CHANNEL_ID, DatabaseQuery.Operator.EQUALS, id).executeDataQuery();
@@ -65,7 +65,7 @@ public class TicketRepository {
         return ticket;
     }
 
-    public static List<Ticket> getTicketsByMember(Member member) throws SQLException {
+    public static List<Ticket> getTicketsByMember(Member member) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET);
         query.select().where(Table.TicketColumn.OWNER_ID, DatabaseQuery.Operator.EQUALS, member.getIdLong());
         ResultSet resultSet = query.executeDataQuery();
@@ -97,7 +97,7 @@ public class TicketRepository {
         return tickets;
     }
 
-    public static void createTicket(Ticket ticket) {
+    public static void createTicket(Ticket ticket) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET);
         query.insert(Table.TicketColumn.OWNER_ID, ticket.getOwner().getIdLong());
         query.insert(Table.TicketColumn.CHANNEL_ID, ticket.getChannel().getIdLong());
@@ -108,7 +108,7 @@ public class TicketRepository {
         query.executeQuery();
     }
 
-    public static void updateTicket(Ticket ticket) {
+    public static void updateTicket(Ticket ticket) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET);
 
         if (ticket.getAssignee() != null) {
@@ -127,12 +127,12 @@ public class TicketRepository {
      * Update the activity timestamp of the ticket owner
      * @param ticket
      */
-    public static void updateTicketLastActivityAt(Ticket ticket) {
+    public static void updateTicketLastActivityAt(Ticket ticket) throws SQLException, ClassNotFoundException {
         ticket.setLastActivityAt(LocalDateTime.now());
         updateTicket(ticket);
     }
 
-    public static void deleteTicket(Ticket ticket) {
+    public static void deleteTicket(Ticket ticket) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET);
 
         query.where(Table.TicketColumn.CHANNEL_ID, DatabaseQuery.Operator.EQUALS, ticket.getId()).delete();

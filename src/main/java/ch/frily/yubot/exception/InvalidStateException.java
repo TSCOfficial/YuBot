@@ -2,7 +2,7 @@ package ch.frily.yubot.exception;
 
 import org.slf4j.event.Level;
 
-public class InvalidStateException extends InteractionException {
+public class InvalidStateException extends ClientException {
 
     private static final String DEFAULT_MESSAGE = "Ungültiger Zustand!";
 

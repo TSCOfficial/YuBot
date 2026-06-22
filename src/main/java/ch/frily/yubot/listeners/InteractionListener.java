@@ -62,6 +62,7 @@ public class InteractionListener extends ListenerAdapter {
         try {
             ModalRegistry.getInstance().dispatchModalInteraction(event);
         } catch (Exception exception) {
+            log.debug("Error while dispatching modal interaction: {}", exception.getMessage());
             ExceptionHandler.handle(exception, event);
         }
     }

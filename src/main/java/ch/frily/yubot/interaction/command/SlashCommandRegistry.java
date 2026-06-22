@@ -115,13 +115,13 @@ public class SlashCommandRegistry {
      * Dispatch the event from an eventlistener to the appropriate interaction executor
      * @param event
      */
-    public void dispatchInteractionEvent(SlashCommandInteractionEvent event) throws NotFoundException, SQLException {
+    public void dispatchInteractionEvent(SlashCommandInteractionEvent event) throws NotFoundException, SQLException, ClassNotFoundException {
         commands.putAll(subcommands);
 
         ISlashCommand command = commands.get(event.getFullCommandName());
 
         if (command == null) {
-            throw new NotFoundException("Slashcommand " + event.getFullCommandName() + " could not be found.");
+            throw new NotFoundException(String.format("Slashcommand '%s' konnte nicht gefunden werden.", event.getFullCommandName()));
         }
 
         command.execute(event);

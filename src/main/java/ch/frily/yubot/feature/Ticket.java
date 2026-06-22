@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.utils.FileUpload;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -124,7 +125,7 @@ public class Ticket {
      * Change the status of this ticket
      * @param status
      */
-    public void setStatus(TicketStatus status) {
+    public void setStatus(TicketStatus status) throws SQLException, ClassNotFoundException {
         this.status = status;
         channel.getManager().setName(status.getIcon() + this.getNameWithoutStatus()).queue();
         TicketRepository.updateTicket(this);
@@ -143,7 +144,7 @@ public class Ticket {
      * @throws IllegalStateException When no close request can be sent
      * @throws PermissionDeniedException When the member is not allowed to close the ticket
      */
-    public void requestClose(Member initiator, boolean forceClose) throws IllegalStateException, PermissionDeniedException {
+    public void requestClose(Member initiator, boolean forceClose) throws IllegalStateException, PermissionDeniedException, SQLException, ClassNotFoundException {
         if (Util.isTeamMember(initiator)) {
             if (!isOwner(initiator)) {
                 if (this.isClosable()) {
@@ -169,7 +170,7 @@ public class Ticket {
      * @param initiator Interaction initiator
      * @throws PermissionDeniedException If the member (initiator) is not the ticket owner
      */
-    public void rejectCloseRequest(Member initiator) throws PermissionDeniedException {
+    public void rejectCloseRequest(Member initiator) throws PermissionDeniedException, SQLException, ClassNotFoundException {
         if (this.isOwner(initiator)) {
             this.setPendingRequest(false);
         } else {
@@ -183,7 +184,7 @@ public class Ticket {
      * @param initiator Interaction initiator
      * @throws PermissionDeniedException If the member (initiator) is not the ticket owner
      */
-    public void acceptCloseRequest(Member initiator) throws PermissionDeniedException{
+    public void acceptCloseRequest(Member initiator) throws PermissionDeniedException, SQLException, ClassNotFoundException {
         if (this.isOwner(initiator)) {
             this.close(initiator);
             return;
@@ -195,7 +196,7 @@ public class Ticket {
      * Set the pending request flag
      * @param state
      */
-    public void setPendingRequest(boolean state) {
+    public void setPendingRequest(boolean state) throws SQLException, ClassNotFoundException {
         isRequestPending = state;
         TicketRepository.updateTicket(this);
     }
@@ -204,19 +205,17 @@ public class Ticket {
      * Set the close request count
      * @param count
      */
-    public void setCloseRequestCount(int count) {
+    public void setCloseRequestCount(int count) throws SQLException, ClassNotFoundException {
         closeRequestCount = count;
         TicketRepository.updateTicket(this);
     }
 
-    public void forceClose(Member initiator) throws PermissionDeniedException {
+    public void forceClose(Member initiator) throws PermissionDeniedException, SQLException, ClassNotFoundException {
 
         if (ALLOW_DIRECT_FORCECLOSE_ROLES.stream().anyMatch(role -> initiator.getRoles().contains(role))) {
             close(initiator);
-            return;
         } else if (isForceClosable()) {
             close(initiator);
-            return;
         } else {
             throw new InvalidStateException(
                     "Ticket kann nicht geschlossen werden.",
@@ -229,7 +228,7 @@ public class Ticket {
      * Close a Ticket<br>
      * Removes user permissions, changes status, ...
      */
-    public void close(Member initiator) {
+    public void close(Member initiator) throws SQLException, ClassNotFoundException {
         if (isClosable() && (Util.isTeamMember(initiator) || isOwner(initiator))) {
             setPendingRequest(false);
             setStatus(TicketStatus.CLOSED);
@@ -242,7 +241,7 @@ public class Ticket {
         }
     }
 
-    public void delete() {
+    public void delete() throws SQLException, ClassNotFoundException {
         this.getChannel().delete().queue();
         TicketRepository.deleteTicket(this);
     }
@@ -271,7 +270,7 @@ public class Ticket {
      * @param member
      * @return True if claimed successfully, false if the member is not qualified or the ticket can not be claimed
      */
-    public void claim(Member member) {
+    public void claim(Member member) throws SQLException, ClassNotFoundException {
         if (assignee == null && this.isNewTicket() && !isOwner(member)){
             this.assignee = member;
 
