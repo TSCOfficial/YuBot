@@ -6,6 +6,7 @@ import ch.frily.yubot.util.EnvResolver;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Properties;
 
 public class Database {
@@ -44,16 +45,12 @@ public class Database {
      * Connect to the database
      * @return The database connection
      */
-    public Connection connect() {
-        try {
-            if (connection == null) {
-                Class.forName(DATABASE_DRIVER);
-                connection = DriverManager.getConnection(EnvResolver.getString(EnvKey.CRED_DB_URL), getProperties());
-            }
-            return connection;
-        } catch (Exception exception) {
-            return ExceptionHandler.fail(exception);
+    public Connection connect() throws SQLException, ClassNotFoundException {
+        if (connection == null) {
+            Class.forName(DATABASE_DRIVER);
+            connection = DriverManager.getConnection(EnvResolver.getString(EnvKey.CRED_DB_URL), getProperties());
         }
+        return connection;
     }
 
     /**

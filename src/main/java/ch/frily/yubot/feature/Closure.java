@@ -2,6 +2,7 @@ package ch.frily.yubot.feature;
 
 import ch.frily.yubot.embed.ClosureActivityRequestEmbed;
 import ch.frily.yubot.embed.ClosureLogEmbed;
+import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.interaction.button.btn.ActiveModActivityProveBtn;
 import ch.frily.yubot.interaction.button.btn.ActiveModActivityRejectBtn;
 import ch.frily.yubot.util.EnvKey;
@@ -9,7 +10,6 @@ import ch.frily.yubot.util.EnvResolver;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -57,14 +57,14 @@ public class Closure extends Feature {
      * This synchronizes the Database, handles closure & opening
      * @throws SQLException
      */
-    public void triggerUpdate() throws SQLException {
+    public void triggerUpdate() throws SQLException, ClassNotFoundException {
         List<Member> activeMods = getActiveMods();
 
         boolean isOpen = !activeMods.isEmpty();
 
         syncDatabaseMods();
 
-        toggleCategoryPermissions(isOpen);
+        toggleCommunityPermission(isOpen);
         toggleServerClosedInfoChannelPermissions(!isOpen);
 
         if (isOpen) {
@@ -103,7 +103,7 @@ public class Closure extends Feature {
      * Toggle the @everyone-holders category permissions - without progress
      * @param isOpen True if the categories should be open, false if they should be closed
      */
-    private void toggleCategoryPermissions(boolean isOpen) {
+    private void toggleCommunityPermission(boolean isOpen) {
         Role everyoneRole = EnvResolver.getRoleById(EnvKey.ROLE_EVERYONE);
 
         if (isOpen) {
@@ -136,19 +136,30 @@ public class Closure extends Feature {
     /**
      * Add missing mods and remove still saved active-mods
      */
-    private static void syncDatabaseMods() throws SQLException {
+    private static void syncDatabaseMods() throws SQLException, ClassNotFoundException {
         // All mods based on the database data
         List<ActiveMod> currentModsInDatabase = ClosureRepository.getModerators();
 
         List<Member> activeMods = getActiveMods();
 
+        // IDs of mods currently stored in the database
+        List<Long> databaseModIds = currentModsInDatabase.stream()
+                .map(ActiveMod::member)
+                .map(Member::getIdLong)
+                .toList();
+
+        // IDs of mods that actually hold the active-mod role
+        List<Long> activeModIds = activeMods.stream()
+                .map(Member::getIdLong)
+                .toList();
+
         List<Member> modsToRemove = currentModsInDatabase.stream()
                 .map(ActiveMod::member)
-                .filter(member -> !activeMods.contains(member))
+                .filter(member -> !activeModIds.contains(member.getIdLong()))
                 .toList();
 
         List<Member> modsToAdd = activeMods.stream()
-                .filter(member -> !currentModsInDatabase.contains(member))
+                .filter(member -> !databaseModIds.contains(member.getIdLong()))
                 .toList();
 
         for (Member member : modsToRemove) {
@@ -180,11 +191,11 @@ public class Closure extends Feature {
         return value.get();
     }
 
-    public static void handleModActivity(Member member) throws SQLException {
+    public static void handleModActivity(Member member) throws SQLException, ClassNotFoundException {
         ActiveMod activeMod = ClosureRepository.getModerator(member);
         log.debug("RequestMsg Id: " +activeMod.activityRequestMessageId() + activeMod.activityRequestMessageId().getClass());
-        if (activeMod.activityRequestMessageId() != null && activeMod.activityRequestMessageId() != 0) { // automatically accept an active activity-request
-            TextChannel channel = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getTextChannelById(1516042711273046087L);
+        if (activeMod.activityRequestMessageId() != null && activeMod.activityRequestMessageId() != 0) { // automatically accept an active activity-prove-request
+            TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
             channel.deleteMessageById(activeMod.activityRequestMessageId()).queue();
         }
         ClosureRepository.updateModeratorActivity(member);
@@ -195,16 +206,15 @@ public class Closure extends Feature {
      * @param moderator mod-record {@link ActiveMod}
      */
     public static void requestActivityProve(ActiveMod moderator) {
-        //TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
-        TextChannel channel = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getTextChannelById(1516042711273046087L);
+        TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
         if (moderator.activityRequestedAt() == null) {
 
             ActionRow actionrow = ActionRow.of(new ActiveModActivityProveBtn().build(), new ActiveModActivityRejectBtn().build());
 
-            channel.sendMessageEmbeds(new ClosureActivityRequestEmbed(moderator).build()).setComponents(actionrow).queue(message -> {
+            channel.sendMessageEmbeds(new ClosureActivityRequestEmbed(moderator).build()).setComponents(actionrow).queue(message -> ThrowingConsumer.wrap(null, _ -> {
                 ActiveMod updatedActiveMod = new ActiveMod(moderator.member(), moderator.lastActivityAt(), LocalDateTime.now(), message.getIdLong());
                 ClosureRepository.updateModerator(updatedActiveMod);
-            });
+            }));
         } else {
             handleActivityProveTimeout(moderator);
         }

@@ -32,7 +32,7 @@ public class ActiveModActivityProveBtn implements IButton {
     }
 
     @Override
-    public void execute(@NotNull ButtonInteractionEvent event) throws SQLException {
+    public void execute(@NotNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
         ActiveMod forActiveMod = ClosureRepository.getModeratorByRequestMessageId(event.getMessageIdLong());
         if (event.getMember().equals(forActiveMod.member())) {
             Closure.handleModActivity(event.getMember());

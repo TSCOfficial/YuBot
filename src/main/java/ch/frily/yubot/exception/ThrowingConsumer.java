@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 /**
  * For Consumers, use this Wrapper class to catch and handle exceptions.
  * <p></p>
- * When using async methods, exceptions can't be caught by the normal exception handler defined in {@link InteractionException}
+ * When using async methods, exceptions can't be caught by the normal exception handler defined in {@link ch.frily.yubot.listeners.InteractionListener}
  * or (at latest) in {@link ch.frily.yubot.Client}.
  * @param <T>
  */

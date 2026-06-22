@@ -34,7 +34,7 @@ public class ActiveModActivityRejectBtn implements IButton {
     }
 
     @Override
-    public void execute(@NotNull ButtonInteractionEvent event) throws SQLException {
+    public void execute(@NotNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
         ActiveMod forActiveMod = ClosureRepository.getModeratorByRequestMessageId(event.getMessageIdLong());
         if (event.getMember().equals(forActiveMod.member())) {
             Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);

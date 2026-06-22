@@ -45,7 +45,7 @@ public class TicketCloseRequestAcceptBtn implements IButton {
     }
 
     @Override
-    public void execute(@NotNull ButtonInteractionEvent event) throws SQLException {
+    public void execute(@NotNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
             Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
             log.debug("sending close request to ticket");
             ticket.acceptCloseRequest(event.getMember());

@@ -53,14 +53,13 @@ public class TypeSelectorModal implements IModal {
     }
 
     @Override
-    public void execute(@NotNull ModalInteractionEvent event) throws SQLException {
-        event.deferReply(true).queue();
+    public void execute(@NotNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException {
         TicketType ticketType = Arrays.stream(TicketType.values()).filter(type ->
                 Objects.equals(type.getId(), event.getValue("select-menu:ticket-type-selector").getAsStringList().getFirst())
         ).findFirst().orElseThrow(() -> new IllegalStateException("Tickettyp ist ungültig."));
 
         TicketManager.getInstance().createTicket(ticketType, event.getMember(), channel -> {
-            event.getHook().sendMessage("Dein Ticket wurde erstellt: " + channel.getAsMention()).queue();
+            event.reply("Dein Ticket wurde erstellt: " + channel.getAsMention()).queue();
         });
     }
 }

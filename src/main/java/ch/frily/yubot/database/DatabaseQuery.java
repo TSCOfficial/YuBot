@@ -225,30 +225,21 @@ public class DatabaseQuery {
      * Execute the database query for architectural purposes
      * @return The database results
      */
-    public ResultSet executeDataQuery() {
-        try {
-            Connection conn = Database.getInstance().connect();
-            PreparedStatement stmt = conn.prepareStatement(buildSQL());
-            setParameters(stmt);
-            return stmt.executeQuery();
-        } catch (Exception exception) {
-            return ExceptionHandler.fail(exception);
-        }
-
+    public ResultSet executeDataQuery() throws SQLException, ClassNotFoundException {
+        Connection conn = Database.getInstance().connect();
+        PreparedStatement stmt = conn.prepareStatement(buildSQL());
+        setParameters(stmt);
+        return stmt.executeQuery();
     }
 
     /**
      * For every data manipulation query that does not return any {@link ResultSet}.
      */
-    public void executeQuery() {
-        try {
-            Connection conn = Database.getInstance().connect();
-            PreparedStatement stmt = conn.prepareStatement(buildSQL());
-            setParameters(stmt);
-            stmt.executeUpdate();
-        } catch (Exception exception) {
-            ExceptionHandler.handle(exception);
-        }
+    public void executeQuery() throws SQLException, ClassNotFoundException {
+        Connection conn = Database.getInstance().connect();
+        PreparedStatement stmt = conn.prepareStatement(buildSQL());
+        setParameters(stmt);
+        stmt.executeUpdate();
     }
 
     /**

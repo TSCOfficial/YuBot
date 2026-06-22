@@ -15,7 +15,7 @@ import java.util.List;
 
 public class ClosureRepository {
 
-    public static List<ActiveMod> getModerators() throws SQLException {
+    public static List<ActiveMod> getModerators() throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.CLOSURE);
 
         ResultSet resultSet = query.select().executeDataQuery();
@@ -36,7 +36,7 @@ public class ClosureRepository {
         return activeMods;
     }
 
-    public static ActiveMod getModerator(Member member) throws SQLException {
+    public static ActiveMod getModerator(Member member) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.CLOSURE);
         query.select().where(Table.ClosureColumn.MODERATOR_ID, DatabaseQuery.Operator.EQUALS, member.getIdLong());
 
@@ -60,7 +60,7 @@ public class ClosureRepository {
      * @return
      * @throws SQLException
      */
-    public static ActiveMod getModeratorByRequestMessageId(long messageId) throws SQLException {
+    public static ActiveMod getModeratorByRequestMessageId(long messageId) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.CLOSURE);
         query.select().where(Table.ClosureColumn.ACTIVITY_REQUEST_MESSAGE_ID, DatabaseQuery.Operator.EQUALS, messageId);
 
@@ -77,20 +77,20 @@ public class ClosureRepository {
         return new ActiveMod(member, lastActivityAt, activityRequestedAtTimestamp == null ? null : activityRequestedAtTimestamp.toLocalDateTime(), activityRequestMessageId);
     }
 
-    public static void deleteModerator(Member member) {
+    public static void deleteModerator(Member member) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.CLOSURE);
         query.where(Table.ClosureColumn.MODERATOR_ID, DatabaseQuery.Operator.EQUALS, member.getIdLong()).delete();
         query.executeQuery();
     }
 
-    public static void createModerator(Member member) {
+    public static void createModerator(Member member) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.CLOSURE);
         query.insert(Table.ClosureColumn.MODERATOR_ID, member.getIdLong());
         query.insert(Table.ClosureColumn.LAST_ACTIVITY_AT, LocalDateTime.now());
         query.executeQuery();
     }
 
-    public static void updateModerator(ActiveMod activeMod) {
+    public static void updateModerator(ActiveMod activeMod) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.CLOSURE);
         query.update(Table.ClosureColumn.LAST_ACTIVITY_AT, activeMod.lastActivityAt());
         query.update(Table.ClosureColumn.ACTIVITY_REQUESTED_AT, activeMod.activityRequestedAt());
@@ -100,7 +100,7 @@ public class ClosureRepository {
         query.executeQuery();
     }
 
-    public static void updateModeratorActivity(Member member) {
+    public static void updateModeratorActivity(Member member) throws SQLException, ClassNotFoundException {
         ActiveMod activeMod = new ActiveMod(member, LocalDateTime.now(), null, null);
         updateModerator(activeMod);
     }

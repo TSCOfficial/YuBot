@@ -3,6 +3,7 @@ package ch.frily.yubot.interaction.button.btn;
 import ch.frily.yubot.container.TicketTranscriptContainer;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.HandledException;
+import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.feature.Ticket;
 import ch.frily.yubot.feature.TicketRepository;
 import ch.frily.yubot.interaction.button.IButton;
@@ -44,10 +45,10 @@ public class TicketDeleteBtn implements IButton {
     }
 
     @Override
-    public void execute(@NotNull ButtonInteractionEvent event) throws SQLException {
+    public void execute(@NotNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
 
         Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
-        ticket.generateTranscript().thenAccept(fileUpload -> {
+        ticket.generateTranscript().thenAccept(fileUpload -> ThrowingConsumer.wrap(event, _ -> {
             fileUpload.setName("transkript-" + ticket.getNameWithoutStatus() + ".html");
             TextChannel logChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_TICKETLOGS);
             List<Container> containers = new TicketTranscriptContainer(event.getMember(), ticket, fileUpload).build();
@@ -55,7 +56,7 @@ public class TicketDeleteBtn implements IButton {
 
             ticket.delete();
 
-        }).exceptionally(ExceptionHandler::fail);
+        }));
 
     }
 }

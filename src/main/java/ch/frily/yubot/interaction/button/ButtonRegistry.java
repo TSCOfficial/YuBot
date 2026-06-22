@@ -45,7 +45,7 @@ public class ButtonRegistry {
         });
     }
 
-    public void dispatchButtonInteraction(ButtonInteractionEvent event) throws SQLException, IllegalStateException {
+    public void dispatchButtonInteraction(ButtonInteractionEvent event) throws SQLException, IllegalStateException, ClassNotFoundException {
         String idOrUrl = event.getButton().getCustomId();
         if (event.getButton().getStyle() == ButtonStyle.LINK && event.getButton().getUrl() != null) {
             idOrUrl = event.getButton().getUrl();

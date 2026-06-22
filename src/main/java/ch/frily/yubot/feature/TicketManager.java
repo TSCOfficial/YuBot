@@ -2,6 +2,7 @@ package ch.frily.yubot.feature;
 
 import ch.frily.yubot.embed.TicketOpenEmbed;
 import ch.frily.yubot.exception.PermissionDeniedException;
+import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.interaction.button.IButton;
 import ch.frily.yubot.interaction.button.btn.TicketCloseRequestBtn;
 import ch.frily.yubot.interaction.button.btn.TicketPanelAwarenessBtn;
@@ -45,7 +46,7 @@ public class TicketManager {
         return instance;
     }
 
-    public void createTicket(TicketType type, Member ticketOwner, Consumer<TextChannel> onCreated) throws SQLException {
+    public void createTicket(TicketType type, Member ticketOwner, Consumer<TextChannel> onCreated) throws SQLException, ClassNotFoundException {
         List<TextChannel> openedTickets = TicketRepository.getTicketsByMember(ticketOwner).stream().map(Ticket::getChannel).toList();
         if (openedTickets.size() >= MAX_TICKET_COUNT) {
             throw new PermissionDeniedException(String.format("""
@@ -72,6 +73,7 @@ public class TicketManager {
                 .queue(textChannel -> {
                     // Ticket team permissions // todo DOESNT WORK
                     ticket.getType().getResponsibleRoles().forEach(role -> {
+                        log.debug("Adding role permission override for {}", role.getName());
                         textChannel.getManager().putRolePermissionOverride(role.getIdLong(), USER_PERMISSION, null).queue();
                     });
 
@@ -79,10 +81,10 @@ public class TicketManager {
                     // Ticket content
                     ticket.setChannel(textChannel);
                     textChannel.sendMessage(ticketOwner.getAsMention() + " - " + type.getResponsibleRoles().stream().map(Role::getAsMention).collect(Collectors.joining(", ")))
-                            .addEmbeds(embed.build()).setComponents(actionrow).queue( message -> {
+                            .addEmbeds(embed.build()).setComponents(actionrow).queue( message -> ThrowingConsumer.wrap(null, _ -> {
                                 ticket.setWelcomeMessageId(message.getIdLong());
                                 TicketRepository.createTicket(ticket);
-                            });
+                            }));
 
                     onCreated.accept(textChannel);
                 });
@@ -100,7 +102,7 @@ public class TicketManager {
      * Checks if the {@link TextChannel} is a Ticket or nor
      * @return True if its a Ticketchannel / False if not
      */
-    public boolean isTicketchannel(TextChannel channel) throws SQLException {
+    public boolean isTicketchannel(TextChannel channel) throws SQLException, ClassNotFoundException {
         if (channel.getParentCategory() == null || channel.getParentCategory().getIdLong() != EnvResolver.getCategoryById(EnvKey.CATEGORY_TICKETS).getIdLong()) {
             return false;
         }

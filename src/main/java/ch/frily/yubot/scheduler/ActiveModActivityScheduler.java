@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class ActiveModActivityScheduler implements Scheduler {
 
     @Override
-    public void execute() throws SQLException {
+    public void execute() throws SQLException, ClassNotFoundException {
         List<ActiveMod> outdatedActiveMods = ClosureRepository.getModerators().stream().filter(activeMod -> {
                     return activeMod.lastActivityAt().isBefore(LocalDateTime.now().minusMinutes(Closure.getMIN_INACTIVITY_TIME()));
         }).toList();

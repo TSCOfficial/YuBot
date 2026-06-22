@@ -36,9 +36,9 @@ public class ClosureActivityRequestEmbed implements IEmbed {
         if (activeModCount > 1) {
             builder.append(String.format("Es sind noch **%d** weitere Moderatoren*innen aktiv (exkl. du).\n", activeModCount));
         } else if (activeModCount == 1) {
-            builder.append("Es ist nur noch **1** weitere*r Moderator*in aktiv (exkl. du).\n");
+            builder.append("Es ist nur noch **1** weitere*r Moderator\\*in aktiv (exkl. du).\n");
         } else {
-            builder.append("⚠️ Es sind **keine** weiteren Moderatoren*innen aktiv ausser du. Falls du nicht bestätigst oder keine Kapazität mehr hast, wird der Server geschlossen.\n");
+            builder.append("⚠️ Es sind **keine** weiteren Moderatoren\\*innen aktiv ausser du. Falls du nicht bestätigst oder keine Kapazität mehr hast, wird der Server geschlossen.\n");
         }
 
         builder.append(

@@ -43,5 +43,5 @@ public interface IButton {
         return button;
     }
 
-    void execute(@NotNull ButtonInteractionEvent event) throws SQLException;
+    void execute(@NotNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException;
 }
