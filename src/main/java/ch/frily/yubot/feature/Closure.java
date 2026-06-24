@@ -39,11 +39,11 @@ public class Closure extends Feature {
 
     /** How long a person needs to be inactive to trigger an activity request [in minutes] */
     @Getter
-    private static final int MIN_INACTIVITY_TIME = 1;
+    private static final int MIN_INACTIVITY_TIME = 30;
 
     /** How long an activity request stays open till it gets automatically rejected [in minutes]*/
     @Getter
-    private static final int MAX_ACTIVITY_REQUEST_RESPONSE_TIME = 1;
+    private static final int MAX_ACTIVITY_REQUEST_RESPONSE_TIME = 10;
 
     public static Closure getInstance() {
         if (instance == null) {
@@ -71,14 +71,11 @@ public class Closure extends Feature {
         Role everyoneRole = EnvResolver.getRoleById(EnvKey.ROLE_EVERYONE);
         TextChannel logChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_CLOSURELOGS);
 
-        log.debug("can see channels: " + everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL));
-        log.debug("permissions: " + everyoneRole.getPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")));
-
         // Opening the server
         if (isOpen && !everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL)) {
             TextChannel lobbyChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_LOBBY);
             Role mentionRole = EnvResolver.getRoleById(EnvKey.ROLE_ANTIFASHIST);
-            lobbyChannel.sendMessage("Hey " + mentionRole.getName() + "! Es ist Zeit zu quatschen ✨").queue();
+            lobbyChannel.sendMessage("Hey " + mentionRole.getAsMention() + "! Es ist Zeit zu quatschen ✨").queue();
 
             logChannel.sendMessageEmbeds(new ClosureLogEmbed(true).build()).queue();
         }

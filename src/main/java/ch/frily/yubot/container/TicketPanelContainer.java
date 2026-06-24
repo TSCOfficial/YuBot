@@ -21,7 +21,7 @@ public class TicketPanelContainer extends Container {
         this.setColor(new Color("789bac").get());
 
         this.addTextDisplay("## Ticketsystem");
-        this.addTextDisplay("Wähle den passenden Kontaktbereich aus, drücke den dazugehörigen Button und wähle anschliessend die gewünschte Kategorie aus.");
+        this.addTextDisplay("Wähle die passende Kategorie aus, drücke den dazugehörigen Button und wähle anschliessend die gewünschte Ticketart aus.");
 
         Arrays.stream(TicketTypeGroup.values()).forEach(typeGroup -> {
 
@@ -36,7 +36,7 @@ public class TicketPanelContainer extends Container {
                     TextDisplay.of(Util.format("### {}", typeGroup.getLabel())),
                     TextDisplay.of(typeGroup.getDescription())
             );
-            this.addTextDisplay("**Verfügbare Kategorien:**");
+            this.addTextDisplay("**Verfügbare Arten:**");
             this.addTextDisplay(groupCategories);
 
         });
