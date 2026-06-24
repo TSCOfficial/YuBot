@@ -1,5 +1,6 @@
 package ch.frily.yubot.interaction.command.cmd;
 
+import ch.frily.yubot.feature.ExcelControl;
 import ch.frily.yubot.interaction.command.ISlashCommand;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
@@ -8,8 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.utils.FileUpload;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -27,15 +30,12 @@ public class TestCmd implements ISlashCommand {
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException {
-        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
-        guild.getVoiceStates().forEach(voiceState -> {
-            if (voiceState.getChannel().getParentCategory() == null || voiceState.getChannel().getParentCategory() != EnvResolver.getCategoryById(EnvKey.CATEGORY_TEAMBEREICH) ) {
-                guild.moveVoiceMember(voiceState.getMember(), null).queue();
-            }
-        });
-
-
-        event.reply("executed").setEphemeral(true).queue();
+        try {
+            FileUpload excelFile = ExcelControl.generateExcel();
+            event.replyFiles(excelFile).setEphemeral(true).queue();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

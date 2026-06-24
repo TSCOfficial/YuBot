@@ -53,6 +53,12 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency> <!-- Excel support -->
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.4.0</version>
+        </dependency>
+
         <!-- Logging  -->
         <dependency>
             <groupId>ch.qos.logback</groupId>

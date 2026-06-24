@@ -57,13 +57,13 @@ public class Client {
         try {
             config = loadConfig();
 
-            Connection conn = Database.getInstance().connect();
-            if (conn != null) {
-                log.info("Database connected!");
-            } else {
-                throw new SQLException("Database could not be reached!");
-            }
-            Database.getInstance().disconnect();
+//            Connection conn = Database.getInstance().connect();
+//            if (conn != null) {
+//                log.info("Database connected!");
+//            } else {
+//                throw new SQLException("Database could not be reached!");
+//            }
+//            Database.getInstance().disconnect();
 
             client = createClient();
             client.awaitReady();
