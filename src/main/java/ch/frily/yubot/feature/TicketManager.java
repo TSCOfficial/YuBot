@@ -18,9 +18,11 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.managers.channel.concrete.TextChannelManager;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -46,7 +48,7 @@ public class TicketManager {
         return instance;
     }
 
-    public void createTicket(TicketType type, Member ticketOwner, Consumer<TextChannel> onCreated) throws SQLException, ClassNotFoundException {
+    public void createTicket(TicketType type, Member ticketOwner, Consumer<TextChannel> onCreated) throws SQLException, ClassNotFoundException, NullPointerException {
         List<TextChannel> openedTickets = TicketRepository.getTicketsByMember(ticketOwner).stream().map(Ticket::getChannel).toList();
         if (openedTickets.size() >= MAX_TICKET_COUNT) {
             throw new PermissionDeniedException(String.format("""
@@ -72,16 +74,18 @@ public class TicketManager {
                 .setTopic(type.getLabel())
                 .queue(textChannel -> {
                     // Ticket team permissions // todo DOESNT WORK
+                    TextChannelManager ticketManager = textChannel.getManager();
                     ticket.getType().getResponsibleRoles().forEach(role -> {
                         log.debug("Adding role permission override for {}", role.getName());
-                        textChannel.getManager().putRolePermissionOverride(role.getIdLong(), USER_PERMISSION, null).queue();
+                        ticketManager.putRolePermissionOverride(role.getIdLong(), USER_PERMISSION, null);
                     });
+                    ticketManager.queue();
 
 
                     // Ticket content
                     ticket.setChannel(textChannel);
-                    textChannel.sendMessage(ticketOwner.getAsMention() + " - " + type.getResponsibleRoles().stream().map(Role::getAsMention).collect(Collectors.joining(", ")))
-                            .addEmbeds(embed.build()).setComponents(actionrow).queue( message -> ThrowingConsumer.wrap(null, _ -> {
+                    textChannel.sendMessage(ticketOwner.getAsMention() + " - " + type.getResponsibleRoles().stream().map(Role::getName).collect(Collectors.joining(", ")))
+                            .addEmbeds(embed.build()).setComponents(actionrow).queue(ThrowingConsumer.wrap(null, message -> {
                                 ticket.setWelcomeMessageId(message.getIdLong());
                                 TicketRepository.createTicket(ticket);
                             }));

@@ -7,6 +7,7 @@ import ch.frily.yubot.feature.TicketType;
 import ch.frily.yubot.feature.TicketTypeGroup;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -53,13 +54,14 @@ public class TypeSelectorModal implements IModal {
     }
 
     @Override
-    public void execute(@NotNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException {
+    public void execute(@NotNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException {
+        event.deferReply(true).queue();
         TicketType ticketType = Arrays.stream(TicketType.values()).filter(type ->
                 Objects.equals(type.getId(), event.getValue("select-menu:ticket-type-selector").getAsStringList().getFirst())
         ).findFirst().orElseThrow(() -> new IllegalStateException("Tickettyp ist ungültig."));
 
         TicketManager.getInstance().createTicket(ticketType, event.getMember(), channel -> {
-            event.reply("Dein Ticket wurde erstellt: " + channel.getAsMention()).queue();
+            event.getHook().editOriginal("Dein Ticket wurde erstellt: " + channel.getAsMention()).queue();
         });
     }
 }

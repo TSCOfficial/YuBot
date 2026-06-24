@@ -34,7 +34,7 @@ public class ModalRegistry {
         });
     }
 
-    public void dispatchModalInteraction(ModalInteractionEvent event) throws SQLException, ClassNotFoundException {
+    public void dispatchModalInteraction(ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException {
         log.debug("Modal interaction dispatched: {}", event.getModalId());
         modals.get(event.getModalId()).execute(event);
     }
