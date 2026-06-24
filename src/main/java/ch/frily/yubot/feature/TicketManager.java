@@ -72,7 +72,7 @@ public class TicketManager {
                 .addMemberPermissionOverride(ticketOwner.getIdLong(), USER_PERMISSION, null)
                 .setTopic(type.getLabel())
                 .queue(textChannel -> {
-                    // Ticket team permissions // todo DOESNT WORK
+                    // Ticket team permissions
                     TextChannelManager ticketManager = textChannel.getManager();
                     ticket.getType().getResponsibleRoles().forEach(role -> {
                         log.debug("Adding role permission override for {}", role.getName());
