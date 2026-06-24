@@ -160,7 +160,7 @@ public class Ticket {
 
                 throw new IllegalStateException("In diesem Ticket kann keine Schliessanfrage gesendet werden.\n-# Das Ticket ist wohl bereits geschlossen?");
             }
-            throw new PermissionDeniedException("Du, als Ticket-ersteller*in, kannst das Ticket nicht selbst schliessen.");
+            throw new PermissionDeniedException("Du, als Ticket-ersteller\\*in, kannst das Ticket nicht selbst schliessen.");
         }
         throw new PermissionDeniedException("Nur ein Teammitglied kann diese Aktion ausführen.");
     }
