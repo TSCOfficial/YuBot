@@ -75,7 +75,6 @@ public class TicketManager {
                     // Ticket team permissions
                     TextChannelManager ticketManager = textChannel.getManager();
                     ticket.getType().getResponsibleRoles().forEach(role -> {
-                        log.debug("Adding role permission override for {}", role.getName());
                         ticketManager.putRolePermissionOverride(role.getIdLong(), USER_PERMISSION, null);
                     });
                     ticketManager.queue();
