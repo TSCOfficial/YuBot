@@ -70,7 +70,11 @@ public final class ExceptionHandler {
         // Unknown / unexpected exception
         log.error("Unhandled exception: {}", cause.getMessage(), cause);
         if (callback != null) {
-            replyToUser(callback, GENERIC_USER_MESSAGE + "\n-# " + GENERIC_USER_HINT);
+            String errorMessage = "";
+            if (cause.getMessage() != null) {
+                errorMessage = "```\n" + cause.getMessage() + "\n```";
+            }
+            replyToUser(callback, String.format("%s\n%s\n-# %s", GENERIC_USER_MESSAGE, errorMessage, GENERIC_USER_HINT));
         }
     }
 

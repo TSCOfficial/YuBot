@@ -86,7 +86,7 @@ public class RulesContainer extends Container {
                         """
         );
         this.addTextDisplay("""
-                ² Auch Regelverstöße in Sprachchats führen zu Konsequenzen (siehe §7). Moderator\\*innen und Supporter\\*innen schauen alle halbe Stunde in den Voicechats nach dem Rechten und dem Wohlbefinden.
+                ² Auch Regelverstöße in Sprachchats führen zu Konsequenzen. Moderator\\*innen und Supporter\\*innen können in den Voicechats nach dem Rechten und dem Wohlbefinden schauen.
                 """
         );
 

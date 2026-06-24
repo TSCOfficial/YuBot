@@ -35,7 +35,7 @@ public class ClientException extends RuntimeException {
     }
 
     public ClientException(String message, String hint, Throwable cause, Level logLevel, boolean logStackTrace) {
-        super(message + " " + hint, cause);
+        super(message, cause);
         this.hint = hint;
         this.logLevel = logLevel;
         this.logStackTrace = logStackTrace;
