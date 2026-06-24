@@ -84,7 +84,7 @@ public class TicketManager {
 
                     // Ticket content
                     ticket.setChannel(textChannel);
-                    textChannel.sendMessage(ticketOwner.getAsMention() + " - " + type.getResponsibleRoles().stream().map(Role::getName).collect(Collectors.joining(", ")))
+                    textChannel.sendMessage(ticketOwner.getAsMention() + " - " + type.getResponsibleRoles().stream().map(Role::getAsMention).collect(Collectors.joining(", ")))
                             .addEmbeds(embed.build()).setComponents(actionrow).queue(ThrowingConsumer.wrap(null, message -> {
                                 ticket.setWelcomeMessageId(message.getIdLong());
                                 TicketRepository.createTicket(ticket);
