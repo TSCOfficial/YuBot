@@ -69,13 +69,14 @@ public class Client {
             client.awaitReady();
             log.info("Application started successfully!");
 
-            // Load/start stuff
-
+            // Load actions
             SlashCommandRegistry.getInstance().loadCommands();
-            SlashCommandRegistry.getInstance().registerAll();
             ButtonRegistry.getInstance().loadButtons();
             ModalRegistry.getInstance().loadModals();
+
+            // Register actions
             SchedulerRegistry.registerAll();
+            SlashCommandRegistry.getInstance().registerAll();
 
         } catch (Exception exception) {
             ExceptionHandler.handle(exception);

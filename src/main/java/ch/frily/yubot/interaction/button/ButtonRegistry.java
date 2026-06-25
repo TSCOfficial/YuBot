@@ -50,6 +50,10 @@ public class ButtonRegistry {
         if (event.getButton().getStyle() == ButtonStyle.LINK && event.getButton().getUrl() != null) {
             idOrUrl = event.getButton().getUrl();
         }
-        buttons.get(idOrUrl).execute(event);
+        IButton button = buttons.get(idOrUrl);
+        if (button == null) {
+            throw new IllegalStateException(String.format("Der Button '%s' konnte nicht gefunden werden.", idOrUrl));
+        }
+        button.execute(event);
     }
 }
