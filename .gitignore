@@ -1,6 +1,6 @@
 ### Custom ###
 *.env
-
+log/
 
 
 target/
