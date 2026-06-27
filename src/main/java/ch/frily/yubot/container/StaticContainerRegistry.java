@@ -13,7 +13,8 @@ public enum StaticContainerRegistry {
     SERVER_CLOSE(new ServerClosedContainer().build()),
     RULES(new RulesContainer().build()),
     TICKET_PANEL(new TicketPanelContainer().build()),
-    START_HERE(new StartHereContainer().build());
+    START_HERE(new StartHereContainer().build()),
+    MENTAL_HEALTH(new MentalHealthHelpContainer().build());
 
     @Getter
     private final List<Container> containers;
