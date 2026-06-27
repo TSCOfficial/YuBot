@@ -27,7 +27,7 @@ public class ClosureActivityRequestEmbed implements IEmbed {
     @Override
     public String getDescription() {
         StringBuilder builder = new StringBuilder();
-        builder.append(String.format("## %s, bestätige deine Anwesenheit\n", activeMod.member().getAsMention()));
+        builder.append(String.format("## %s, bestätige deine Anwesenheit\n", activeMod.member().getEffectiveName()));
         builder.append(String.format("Deine letzte Aktivität war um <t:%d:T> (<t:%d:R>). Bitte bestätige deine Anwesenheit.\n", epochTime, epochTime));
         builder.append("Du kannst dich auch direkt opt-outen, falls du keine Kapazität mehr hast.\n");
 

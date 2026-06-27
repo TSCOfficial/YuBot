@@ -217,10 +217,14 @@ public class Closure extends Feature {
 
             ActionRow actionrow = ActionRow.of(new ActiveModActivityProveBtn().build(), new ActiveModActivityRejectBtn().build());
 
-            channel.sendMessageEmbeds(new ClosureActivityRequestEmbed(moderator).build()).setComponents(actionrow).queue(ThrowingConsumer.wrap(null, message -> {
-                ActiveMod updatedActiveMod = new ActiveMod(moderator.member(), moderator.lastActivityAt(), LocalDateTime.now(), message.getIdLong());
-                ClosureRepository.updateModerator(updatedActiveMod);
-            }));
+            channel.sendMessage(moderator.member().getAsMention())
+                    .addEmbeds(new ClosureActivityRequestEmbed(moderator).build())
+                    .setComponents(actionrow)
+                    .queue(ThrowingConsumer.wrap(null, message -> {
+                        ActiveMod updatedActiveMod = new ActiveMod(moderator.member(), moderator.lastActivityAt(), LocalDateTime.now(), message.getIdLong());
+                        ClosureRepository.updateModerator(updatedActiveMod);
+                    }
+                    ));
         } else {
             handleActivityProveTimeout(moderator);
         }
