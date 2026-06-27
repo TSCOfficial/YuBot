@@ -14,6 +14,8 @@ import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -58,7 +60,7 @@ public class Closure extends Feature {
      * This synchronizes the Database, handles closure & opening
      * @throws SQLException
      */
-    public void triggerUpdate() throws SQLException, ClassNotFoundException {
+    public void triggerUpdate() throws SQLException, ClassNotFoundException, IOException {
         List<Member> activeMods = getActiveMods();
 
         boolean isOpen = !activeMods.isEmpty();
@@ -70,6 +72,7 @@ public class Closure extends Feature {
 
         Role everyoneRole = EnvResolver.getRoleById(EnvKey.ROLE_EVERYONE);
         TextChannel logChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_CLOSURELOGS);
+        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
 
         // Opening the server
         if (isOpen && !everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL)) {
@@ -78,10 +81,14 @@ public class Closure extends Feature {
             lobbyChannel.sendMessage("Hey " + mentionRole.getAsMention() + "! Es ist Zeit zu quatschen ✨").queue();
 
             logChannel.sendMessageEmbeds(new ClosureLogEmbed(true).build()).queue();
+            guild.getManager().setIcon(Icon.from(new File("src/main/resources/icon/server-icon.png"))).queue();
+            guild.getManager().setBanner(Icon.from(new File("src/main/resources/icon/server-banner.png"))).queue();
         }
         // Closing the server
         if (!isOpen && everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL)) {
             logChannel.sendMessageEmbeds(new ClosureLogEmbed(false).build()).queue();
+            guild.getManager().setIcon(Icon.from(new File("src/main/resources/icon/server-icon-closed.png"))).queue();
+            guild.getManager().setBanner(Icon.from(new File("src/main/resources/icon/server-banner-closed.png"))).queue();
         }
 
 
