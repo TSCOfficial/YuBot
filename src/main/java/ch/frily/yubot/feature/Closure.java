@@ -77,8 +77,8 @@ public class Closure extends Feature {
         // Opening the server
         if (isOpen && !everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL)) {
             TextChannel lobbyChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_LOBBY);
-            Role mentionRole = EnvResolver.getRoleById(EnvKey.ROLE_ANTIFASHIST);
-            lobbyChannel.sendMessage("Hey " + mentionRole.getAsMention() + "! Es ist Zeit zu quatschen ✨").queue();
+            Role mentionRole = EnvResolver.getRoleById(EnvKey.ROLE_EROEFFNUNGSPING);
+            lobbyChannel.sendMessage(String.format("%s, es ist Zeit zu quatschen ✨", mentionRole.getAsMention())).queue();
 
             logChannel.sendMessageEmbeds(new ClosureLogEmbed(true).build()).queue();
             guild.getManager().setIcon(Icon.from(new File("src/main/resources/icon/server-icon.png"))).queue();
