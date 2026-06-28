@@ -11,6 +11,7 @@ import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import java.util.Arrays;
@@ -26,8 +27,8 @@ public class TicketPanelContainer extends Container {
         this.addTextDisplay("## Ticketsystem");
         this.addTextDisplay("Wähle die passende Kategorie aus, drücke den dazugehörigen Button und wähle anschliessend die gewünschte Ticketart aus.");
         this.addTextDisplay(String.format(
-                "Falls du Ein Vorschlag oder anderweitiges Feedback geben willst, kannst du dies gerne in %s ",
-                EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_FEEDBACK).getAsMention()
+                "Falls du ein Vorschlag oder anderweitiges Feedback geben willst, kannst du dies gerne in %s schreiben.",
+                EnvResolver.getChannelById(ForumChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_FEEDBACK).getAsMention()
                 )
         );
 

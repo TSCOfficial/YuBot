@@ -107,6 +107,13 @@ public class Client {
      * @return {@link Dotenv} config object
      */
     private Dotenv loadConfig(){
-        return Dotenv.configure().load();
+        Dotenv dotenv = Dotenv.configure().load();
+
+        for (EnvKey key : EnvKey.values()) {
+            if (dotenv.get(key.name()) == null) {
+                throw new IllegalStateException(String.format("Missing key-configuration for '%s'", key.name()));
+            }
+        }
+        return dotenv;
     }
 }
