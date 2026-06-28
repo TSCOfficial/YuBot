@@ -50,14 +50,9 @@ public class RulesContainer extends Container {
         this.addInvisibleSeparator(Separator.Spacing.SMALL);
 
         this.addTextDisplay("**§2 Rechte und Pflichten einer Mitgliedschaft**");
-        this.addSection(
-                Button.link("https://discord.com/terms", "Discord ToS"),
-                TextDisplay.of("""
-                        ¹ Das Beitreten und Verweilen auf dem Servers steht jeder Person frei zur Wahl, welche 16 oder Älter ist. Ausnahmen bezüglich des Alters sind gemäss der Liste mit weltweiten Angaben zum Mindestalter vom Discord ToS zu entnehmen.
-                        """)
-        );
+        this.addTextDisplay("Das Beitreten und Verweilen auf dem Servers steht jeder Person frei zur Wahl, welche 16 oder Älter ist.");
         this.addTextDisplay("""
-                ² Der Nickname muss mit einer Standart-QWERTZ-Tastatur schreibbar sein. Außerdem darf er §3 nicht verletzen. Nicknames dienen der alltäglichen Identifizierung von Anderen und sollten deswegen mögllichst einzigartig sein. Entspricht ein Nickname nicht den genannten Regeln, wird er vom Serverteam geändert.
+                ² Benutzername und Nicknamesdürfen §3 nicht verletzen. Nicknames dienen der alltäglichen Identifizierung von Anderen und sollten deswegen mögllichst einzigartig sein. Entspricht ein Nickname nicht den genannten Regeln, wird er vom Serverteam geändert.
                 """
         );
 
