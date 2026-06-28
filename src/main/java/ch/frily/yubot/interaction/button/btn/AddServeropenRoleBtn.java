@@ -4,12 +4,14 @@ import ch.frily.yubot.interaction.button.IButton;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class AddServeropenRoleBtn implements IButton {
     @Override
@@ -34,7 +36,13 @@ public class AddServeropenRoleBtn implements IButton {
 
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
-            event.getGuild().addRoleToMember(event.getMember(), EnvResolver.getRoleById(EnvKey.ROLE_EROEFFNUNGSPING)).queue();
-            event.reply("Du wirst nun Benachrichtigt, sobald der Server öffnet!").setEphemeral(true).queue();
+        Role pingRole = EnvResolver.getRoleById(EnvKey.ROLE_EROEFFNUNGSPING);
+        event.getGuild().addRoleToMember(event.getMember(), pingRole).queue();
+        event.reply(String.format("""
+                        Du wirst nun Benachrichtigt, sobald der Server öffnet!
+                        -# Auf wunsch kannst du die %s Rolle im <id:customize> wieder abwählen.
+                        """
+                , pingRole.getAsMention()
+        )).setEphemeral(true).setAllowedMentions(List.of()).queue();
     }
 }
