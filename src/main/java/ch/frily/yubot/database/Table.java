@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Table {
     TICKET("ticket", TicketColumn.class),
+    TICKET_TYPE_CONTROL("ticket_type_control", TicketTypeControlColumn.class),
     CLOSURE("closure", ClosureColumn.class),
     DYNAMIC_MESSAGE("dynamic_message", DynamicMessageColumn.class);
 
@@ -40,9 +41,9 @@ public enum Table {
     // TICKET CONTROL
     @Getter
     @RequiredArgsConstructor
-    public enum TicketControlColumn implements Column {
+    public enum TicketTypeControlColumn implements Column {
         TYPE("type"),
-        STATUS("status");
+        IS_LOCKED("is_locked");
         private final String column;
     }
 

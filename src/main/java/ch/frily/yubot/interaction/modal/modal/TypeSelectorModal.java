@@ -44,11 +44,11 @@ public class TypeSelectorModal implements IModal {
         });
         selectMenuBuilder.setMinValues(1);
         selectMenuBuilder.setMaxValues(1);
-        selectMenuBuilder.setPlaceholder("Typ auswählen");
+        selectMenuBuilder.setPlaceholder("Ticketart auswählen");
         selectMenuBuilder.setRequired(true);
         selectMenuBuilder.setDefaultOptions(selectMenuBuilder.getOptions().getFirst());
 
-        components.put("Tickettyp", selectMenuBuilder.build());
+        components.put("Ticketart", selectMenuBuilder.build());
 
         return components;
     }

@@ -1,9 +1,8 @@
 package ch.frily.yubot.container;
 
-import ch.frily.yubot.feature.TicketManager;
-import ch.frily.yubot.feature.TicketStatus;
-import ch.frily.yubot.feature.TicketType;
-import ch.frily.yubot.feature.TicketTypeGroup;
+import ch.frily.yubot.exception.ExceptionHandler;
+import ch.frily.yubot.exception.ThrowingConsumer;
+import ch.frily.yubot.feature.*;
 import ch.frily.yubot.util.Color;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
@@ -15,6 +14,7 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -45,9 +45,20 @@ public class TicketPanelContainer extends Container {
 
         Arrays.stream(TicketTypeGroup.values()).forEach(typeGroup -> {
 
-            String groupCategories = Arrays.stream(TicketType.values()).filter(type -> type.getGroup() == typeGroup).map(type -> {
-                return Util.format("- {}", type.getLabel());
-            }).collect(Collectors.joining("\n"));
+            String groupCategories = Arrays.stream(TicketType.values())
+                    .filter(type -> type.getGroup() == typeGroup)
+                    .map(type -> {
+                        try {
+                            boolean typeIsLocked = TicketTypeControlRepository.isTypeLocked(type);
+
+                            if (typeIsLocked) {
+                                return Util.format("- %s (gesperrt)", type.getLabel());
+                            }
+                            return Util.format("- {}", type.getLabel());
+                        } catch (Exception e) {
+                            return ExceptionHandler.fail(e);
+                        }
+                    }).collect(Collectors.joining("\n"));
 
             this.addLineSeparator(Separator.Spacing.LARGE);
 

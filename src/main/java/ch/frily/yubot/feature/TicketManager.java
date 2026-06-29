@@ -59,6 +59,16 @@ public class TicketManager {
             ), "Falls dein aktuelles Anliegen zu keinem deiner offenen Tickets passt, melde dich bitte beim Moderations-Team."
             );
         }
+        if (TicketTypeControlRepository.isTypeLocked(type)) {
+            throw new PermissionDeniedException(String.format("""
+                    Das Tickettyp *%s* ist gesperrt!
+
+                    Melde dich bitte beim Moderations-Team.
+                    """, type.getLabel()
+            ), "Das Tickettyp ist gesperrt."
+            );
+        }
+
         Ticket ticket = new Ticket(ticketOwner, type);
 
         Category ticketCategory = EnvResolver.getCategoryById(EnvKey.CATEGORY_TICKETS);
