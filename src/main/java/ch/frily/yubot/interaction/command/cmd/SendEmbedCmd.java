@@ -1,6 +1,8 @@
 package ch.frily.yubot.interaction.command.cmd;
 
 import ch.frily.yubot.embed.StaticEmbedRegistry;
+import ch.frily.yubot.exception.ThrowingConsumer;
+import ch.frily.yubot.feature.DynamicMessageList;
 import ch.frily.yubot.interaction.command.ISlashCommand;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import net.dv8tion.jda.api.Permission;
@@ -15,10 +17,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class SendEmbedCmd implements ISlashCommand {
+public class SendEmbedCmd implements ISlashSubcommand {
     @Override
     public String getName() {
-        return "sendembed";
+        return "embed";
     }
 
     @Override
@@ -41,13 +43,22 @@ public class SendEmbedCmd implements ISlashCommand {
     public void execute(@NotNull SlashCommandInteractionEvent event) {
         String embedValue = event.getOption("embed").getAsString();
         MessageEmbed embed = StaticEmbedRegistry.valueOf(embedValue).getEmbed();
-        event.getChannel().sendMessageEmbeds(embed).queue();
-        event.reply("✅ Einbettung \"" + humanizeEnumName(embedValue) + "\" erfolgreich gesendet.").setEphemeral(true).queue();
-    }
 
-    @Override
-    public List<Permission> getDefaultPermissions() {
-        return ISlashCommand.super.getDefaultPermissions();
+        event.getChannel()
+                .sendMessageEmbeds(embed)
+                .queue(
+                        ThrowingConsumer.wrap(event, message -> {
+                            DynamicMessageList dynamicMessage = DynamicMessageList.fromRegistryName(embedValue);
+
+                            if (dynamicMessage != null) {
+                                dynamicMessage.remember(message);
+                            }
+
+                            event.reply("✅ Einbettung \"" + humanizeEnumName(embedValue) + "\" erfolgreich gesendet.")
+                                    .setEphemeral(true)
+                                    .queue();
+                        })
+                );
     }
 
     private String humanizeEnumName(String enumValue) {

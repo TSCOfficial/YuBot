@@ -2,7 +2,10 @@ package ch.frily.yubot.interaction.command.cmd;
 
 import ch.frily.yubot.container.StaticContainerRegistry;
 import ch.frily.yubot.embed.StaticEmbedRegistry;
+import ch.frily.yubot.exception.ThrowingConsumer;
+import ch.frily.yubot.feature.DynamicMessageList;
 import ch.frily.yubot.interaction.command.ISlashCommand;
+import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -15,10 +18,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.List;
 
-public class SendContainerCmd implements ISlashCommand {
+public class SendContainerCmd implements ISlashSubcommand {
     @Override
     public String getName() {
-        return "sendcontainer";
+        return "container";
     }
 
     @Override
@@ -39,19 +42,22 @@ public class SendContainerCmd implements ISlashCommand {
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) {
-        String embedValue = event.getOption("container").getAsString();
-        List<Container> containers = StaticContainerRegistry.valueOf(embedValue).getContainers();
+        String containerValue = event.getOption("container").getAsString();
+        List<Container> containers = StaticContainerRegistry.valueOf(containerValue).getContainers();
 
-        containers.forEach(container -> {
-            event.getChannel().sendMessageComponents(container).useComponentsV2().queue();
-        });
+        event.getChannel()
+                .sendMessageComponents(containers).useComponentsV2()
+                .setAllowedMentions(List.of()).queue(ThrowingConsumer.wrap(event, message -> {
+                    DynamicMessageList dynamicMessage = DynamicMessageList.fromRegistryName(containerValue);
 
-        event.reply("✅ Container \"" + humanizeEnumName(embedValue) + "\" erfolgreich gesendet.").setEphemeral(true).queue();
-    }
+                    if (dynamicMessage != null) {
+                        dynamicMessage.remember(message);
+                    }
 
-    @Override
-    public List<Permission> getDefaultPermissions() {
-        return ISlashCommand.super.getDefaultPermissions();
+                    event.reply("✅ Container \"" + humanizeEnumName(containerValue) + "\" erfolgreich gesendet.")
+                            .setEphemeral(true)
+                            .queue();
+                }));
     }
 
     private String humanizeEnumName(String enumValue) {

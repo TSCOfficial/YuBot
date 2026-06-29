@@ -44,13 +44,13 @@ public class SlashCommandRegistry {
         List<ISlashCommand> slashCommands = List.of(
                 new TeamlistCmd(),
                 new SendEmbedCmd(),
-                new SendContainerCmd(),
                 new TestCmd() // tests only
         );
 
         List<ISlashCommandGroup> slashCommandGroups = List.of(
                 new TicketCmdGroup(),
-                new ClosureCmdGroup()
+                new ClosureCmdGroup(),
+                new SendCmdGroup()
         );
 
         slashCommands.forEach(cmd -> {
