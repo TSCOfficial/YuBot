@@ -11,6 +11,7 @@ import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TicketPanelContainer extends Container {
 
-    public TicketPanelContainer() {
+    public TicketPanelContainer(boolean isServerOpen) {
         this.setColor(new Color("789bac").get());
 
         this.addTextDisplay("## Ticketsystem");
@@ -31,6 +32,16 @@ public class TicketPanelContainer extends Container {
                 EnvResolver.getChannelById(ForumChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_FEEDBACK).getAsMention()
                 )
         );
+
+        if (!isServerOpen) {
+            Channel serverClosedChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_SERVERGESCHLOSSEN);
+            Channel startHereChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_STARTHERE);
+            this.addTextDisplay(String.format("""
+                    ### ⚠️ Server geschlossen
+                    **Hinweis:** Der Server ist momentan geschlossen, du siehst also keine Communitychannels mehr. Das Ticketsystem ist aber weiterhin verfügbar.
+                    -# Für weitere Informationen, besuche %s und %s.
+                    """, serverClosedChannel.getAsMention(), startHereChannel.getAsMention()));
+        }
 
         Arrays.stream(TicketTypeGroup.values()).forEach(typeGroup -> {
 

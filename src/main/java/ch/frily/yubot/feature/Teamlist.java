@@ -69,7 +69,7 @@ public class Teamlist {
         } else {
             embedBuilder.addField(String.format("Aktive Moderation *(%s)*", activeMods.size()),
                     activeModRole.getAsMention() + "\n" +
-                    activeMods.stream().map(this::getFormattedUsername).collect(Collectors.joining(", ")), false);
+                    activeMods.stream().map(mod -> Util.escapeMarkdown(mod.getEffectiveName())).collect(Collectors.joining(", ")), false);
         }
 
         return embedBuilder.build();
@@ -97,7 +97,7 @@ public class Teamlist {
         int userCount = 0;
 
         if (!getUsersByRole(role).isEmpty()) {
-            userList = getUsersByRole(role).stream().map(this::getFormattedUsername).collect(Collectors.joining("\n"));
+            userList = getUsersByRole(role).stream().map(member -> Util.escapeMarkdown(member.getEffectiveName())).collect(Collectors.joining("\n"));
             userCount = getUsersByRole(role).size();
         }
         return new MessageEmbed.Field(
@@ -105,10 +105,6 @@ public class Teamlist {
                 role.getAsMention() + "\n" + userList,
                 true
         );
-    }
-
-    private String getFormattedUsername(Member member) {
-        return "@" + Util.escapeMarkdown(member.getUser().getName());
     }
 
     /**
