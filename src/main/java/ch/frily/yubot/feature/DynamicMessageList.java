@@ -21,6 +21,13 @@ import java.util.function.Supplier;
 
 /**
  * Define an embed or container as a dynamic message to update itself.
+ * <br>
+ * <b>Usage:</b>
+ * <pre><code>
+ *     DynamicMessageList.<ENUM_ITEM>.update(<arg1, arg2, ...>);
+ *     // Example
+ *     DynamicMessageList.TICKET_PANEL.update(true);
+ * </code></pre>
  */
 public enum DynamicMessageList {
 
@@ -30,7 +37,7 @@ public enum DynamicMessageList {
             null,
             args -> {
                 boolean isOpen = requireArg(args, 0, Boolean.class);
-                return new TicketPanelContainer(isOpen).build(); // use: DynamicMessageList.TICKET_PANEL.update(isOpen);
+                return new TicketPanelContainer(isOpen).build();
             }
     );
 
@@ -87,6 +94,8 @@ public enum DynamicMessageList {
 
     /**
      * Update the dynamic message
+     * <br>
+     * If no dynamic message could be retrieved, the reference is used to send a new message to the original channel.
      * @throws SQLException
      * @throws ClassNotFoundException
      */

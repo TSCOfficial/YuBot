@@ -1,5 +1,6 @@
 package ch.frily.yubot.interaction.command.cmd;
 
+import ch.frily.yubot.feature.DynamicMessageList;
 import ch.frily.yubot.interaction.command.ISlashCommand;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
@@ -26,13 +27,8 @@ public class TestCmd implements ISlashCommand {
     }
 
     @Override
-    public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException {
-        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
-        guild.getVoiceStates().forEach(voiceState -> {
-            if (voiceState.getChannel().getParentCategory() == null || voiceState.getChannel().getParentCategory() != EnvResolver.getCategoryById(EnvKey.CATEGORY_TEAMBEREICH) ) {
-                guild.moveVoiceMember(voiceState.getMember(), null).queue();
-            }
-        });
+    public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
+        DynamicMessageList.TICKET_PANEL.update(true);
 
 
         event.reply("executed").setEphemeral(true).queue();

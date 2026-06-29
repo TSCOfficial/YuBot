@@ -77,6 +77,7 @@ public class Closure extends Feature {
 
         // Opening the server
         if (isOpen && !everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL)) {
+            DynamicMessageList.TICKET_PANEL.update(true);
             Role mentionRole = EnvResolver.getRoleById(EnvKey.ROLE_EROEFFNUNGSPING);
             lobbyChannel.sendMessage(String.format("%s, es ist Zeit zu quatschen ✨", mentionRole.getAsMention())).queue();
 
@@ -86,6 +87,7 @@ public class Closure extends Feature {
         }
         // Closing the server
         if (!isOpen && everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL)) {
+            DynamicMessageList.TICKET_PANEL.update(false);
             logChannel.sendMessageEmbeds(new ClosureLogEmbed(false).build()).queue();
             lobbyChannel.sendMessage("""
                     Der server ist nun geschlossen.
