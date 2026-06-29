@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Table {
     TICKET("ticket", TicketColumn.class),
-    CLOSURE("closure", null);
+    CLOSURE("closure", ClosureColumn.class),
+    DYNAMIC_MESSAGE("dynamic_message", DynamicMessageColumn.class);
 
     private final String table;
     private final Class<? extends Column> columnClass;
@@ -33,7 +34,26 @@ public enum Table {
         CLOSE_REQUEST_COUNT("close_request_count"),
         STATUS("status"),
         UPDATED_AT("updated_at");
-        private final String column; // todo define second field: datatype, so that building an object can be automatized
+        private final String column; // todo define second field: datatype, so that building an object can be automatized over any table
+    }
+
+    // TICKET CONTROL
+    @Getter
+    @RequiredArgsConstructor
+    public enum TicketControlColumn implements Column {
+        TYPE("type"),
+        STATUS("status");
+        private final String column;
+    }
+
+    // DYNAMIC MESSAGES
+    @Getter
+    @RequiredArgsConstructor
+    public enum DynamicMessageColumn implements Column {
+        NAME("name"),
+        CHANNEL_ID("channel_id"),
+        MESSAGE_ID("message_id");
+        private final String column;
     }
 
     // CLOSURE
