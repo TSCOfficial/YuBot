@@ -34,7 +34,8 @@ public class ButtonRegistry {
                 new TicketCloseRequestAcceptBtn(),
                 new TicketCloseRequestRejectBtn(),
                 new ActiveModActivityProveBtn(),
-                new ActiveModActivityRejectBtn()
+                new ActiveModActivityRejectBtn(),
+                new AddServeropenRoleBtn()
         );
         rawButtons.forEach(btn -> {
             String idOrUrl = btn.getId();

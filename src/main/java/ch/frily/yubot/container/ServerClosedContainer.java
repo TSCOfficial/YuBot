@@ -27,12 +27,9 @@ public class ServerClosedContainer extends Container {
                 TextDisplay.of("## 🔒 Server geschlossen"),
                 TextDisplay.of("Der Server ist momentan geschlossen. Während der Server geschlossen ist, hast du kein Zugriff auf Community channels.")
         );
-        this.addSection(
-                new AddServeropenRoleBtn().build(),
-                TextDisplay.of("Willst du Benachrichtigt werden?")
-        );
 
         this.addInvisibleSeparator(Separator.Spacing.SMALL);
+
         this.addTextDisplay("In der zwischenzeit kannst du dir Yu's Inhalte anschauen:");
         this.addComponent(ActionRow.of(
                 Button.of(ButtonStyle.LINK, "https://www.instagram.com/einfachyu/", "Instagram", Emoji.fromCustom("instagram", 1513868079711649805L, false)),
@@ -41,7 +38,15 @@ public class ServerClosedContainer extends Container {
                 Button.of(ButtonStyle.LINK, "https://www.twitch.tv/einfachyu", "Twitch", Emoji.fromCustom("twitch", 1513866550615085196L, false)),
                 Button.of(ButtonStyle.LINK, "https://www.youtube.com/channel/UC-aJNxT5dDuRZrc8MTNo5ag", "YouTube", Emoji.fromCustom("youtube", 1513868081653354666L, false))
         ));
-        this.addInvisibleSeparator(Separator.Spacing.SMALL);
+
+        this.addInvisibleSeparator(Separator.Spacing.LARGE);
+
+        this.addSection(
+                new AddServeropenRoleBtn().build(),
+                TextDisplay.of("**Willst du Benachrichtigt werden, wenn der Server wieder öffnet?**"),
+                TextDisplay.of(String.format("Klicke auf den danebenstehenden Button um die %s-Rolle zu erhalten.", EnvResolver.getRoleById(EnvKey.ROLE_EROEFFNUNGSPING).getAsMention()))
+        );
+
         this.addComponent(Separator.createDivider(Separator.Spacing.LARGE));
         this.addComponent(TextDisplay.of("-# **Wieso ist der Server geschlossen?**"));
         this.addComponent(TextDisplay.of("-# Zum Schutz des Safespaces, und damit auch der Community, schliesst sich der Server automatisch, sobald es keine aktive Moderator*innen mehr gibt."));

@@ -73,10 +73,10 @@ public class Closure extends Feature {
         Role everyoneRole = EnvResolver.getRoleById(EnvKey.ROLE_EVERYONE);
         TextChannel logChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_CLOSURELOGS);
         Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+        TextChannel lobbyChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_LOBBY);
 
         // Opening the server
         if (isOpen && !everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL)) {
-            TextChannel lobbyChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_LOBBY);
             Role mentionRole = EnvResolver.getRoleById(EnvKey.ROLE_EROEFFNUNGSPING);
             lobbyChannel.sendMessage(String.format("%s, es ist Zeit zu quatschen ✨", mentionRole.getAsMention())).queue();
 
@@ -87,14 +87,13 @@ public class Closure extends Feature {
         // Closing the server
         if (!isOpen && everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL)) {
             logChannel.sendMessageEmbeds(new ClosureLogEmbed(false).build()).queue();
+            lobbyChannel.sendMessage("""
+                    Der server ist nun geschlossen.
+                    -# Es gibt keine aktiven Moderatoren mehr.
+                    """).queue();
             guild.getManager().setIcon(Icon.from(new File("src/main/resources/icon/server-icon-closed.png"))).queue();
             guild.getManager().setBanner(Icon.from(new File("src/main/resources/icon/server-banner-closed.png"))).queue();
         }
-
-
-        // Logging
-
-
     }
 
     /**
@@ -257,5 +256,9 @@ public class Closure extends Feature {
 
             guild.removeRoleFromMember(moderator.member(), EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD)).queue();
         }
+    }
+
+    private static void updateTicketPanel() {
+
     }
 }

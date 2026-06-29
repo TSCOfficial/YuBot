@@ -21,17 +21,12 @@ public class AddServeropenRoleBtn implements IButton {
 
     @Override
     public String getLabel() {
-        return "Werde Benachrichtigt!";
+        return "Benachrichtige mich!";
     }
 
     @Override
     public ButtonStyle getStyle() {
         return ButtonStyle.SUCCESS;
-    }
-
-    @Override
-    public EmojiUnion getEmoji() {
-        return Emoji.fromFormatted("\uD83D\uDCF2");
     }
 
     @Override
