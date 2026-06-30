@@ -1,5 +1,7 @@
 package ch.frily.yubot.feature;
 
+import ch.frily.yubot.util.EnvKey;
+import ch.frily.yubot.util.EnvResolver;
 import lombok.Getter;
 
 /**
@@ -18,6 +20,12 @@ public enum TicketTypeGroup {
             """
                     Erhalte hilfe bei persönlichen Schwierigkeiten oder Unwohlsein.
                     """
+    ),
+    BEWERBUNG(
+            "Bewerbung",
+            String.format("""
+                    Bewerbe dich auf eine offene stelle im %s.
+                    """, EnvResolver.getRoleById(EnvKey.ROLE_YUTEAM).getAsMention())
     );
 
     @Getter

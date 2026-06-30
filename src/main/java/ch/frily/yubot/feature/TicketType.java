@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Role;
 import java.util.List;
 
 public enum TicketType {
+    // SUPPORT
     SUPPORT_GENERAL(
             "help",
             "❔ Allgemeine Frage",
@@ -52,8 +53,9 @@ public enum TicketType {
             TicketTypeGroup.SUPPORT,
             List.of(EnvKey.ROLE_SUPPORT, EnvKey.ROLE_MODERATOR)
     ),
+    // AWARENESS
     AWARENESS_PROBLEME(
-            "aware",
+            "awrn",
             "😞 Probleme",
             "Unwohlsein oder weitere Persönliche Schwierigkeiten",
             """
@@ -63,6 +65,47 @@ public enum TicketType {
                     """,
             TicketTypeGroup.AWARENESS,
             List.of(EnvKey.ROLE_AWARENESS)
+    ),
+    // BEWERBUNG
+    BEWERBUNG_SUPPORT(
+            "besup",
+            "🔩",
+            "Bewerbung Fachbereich Support",
+            """
+                    n/a
+                    """,
+            TicketTypeGroup.BEWERBUNG,
+            List.of(EnvKey.ROLE_MODLEITUNG)
+    ),
+    BEWERBUNG_MODERATION(
+            "bemod",
+            "⚒️",
+            "Bewerbung Fachbereich Moderation",
+            """
+                    n/a
+                    """,
+            TicketTypeGroup.BEWERBUNG,
+            List.of(EnvKey.ROLE_SERVERLEITUNG)
+    ),
+    BEWERBUNG_AWARENESS(
+            "beawrn",
+            "💚",
+            "Bewerbung Fachbereich Awareness",
+            """
+                    n/a
+                    """,
+            TicketTypeGroup.BEWERBUNG,
+            List.of(EnvKey.ROLE_AWARENESSLEITUNG)
+    ),
+    BEWERBUNG_EVENT(
+            "beevnt",
+            "🎊",
+            "Bewerbung Fachbereich Event",
+            """
+                    n/a
+                    """,
+            TicketTypeGroup.BEWERBUNG,
+            List.of(EnvKey.ROLE_EVENTLEITUNG)
     );
 
 
