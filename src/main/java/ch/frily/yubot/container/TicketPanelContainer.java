@@ -1,7 +1,5 @@
 package ch.frily.yubot.container;
 
-import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.feature.*;
 import ch.frily.yubot.util.Color;
 import ch.frily.yubot.util.EnvKey;
@@ -14,15 +12,18 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
-import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Slf4j
 public class TicketPanelContainer extends Container {
 
-    public TicketPanelContainer(boolean isServerOpen) {
+    public TicketPanelContainer() {
+
+        boolean isServerOpen = ClosureRepository.hasActiveModerators();
+        AtomicBoolean hasAnyClosedTypes = new AtomicBoolean(false);
+
         this.setColor(new Color("789bac").get());
 
         this.addTextDisplay("## Ticketsystem");
@@ -52,11 +53,13 @@ public class TicketPanelContainer extends Container {
                             boolean typeIsLocked = TicketTypeControlRepository.isTypeLocked(type);
 
                             if (typeIsLocked) {
-                                return Util.format("- %s (gesperrt)", type.getLabel());
+                                hasAnyClosedTypes.set(true);
+                                return String.format("- %s <:lock:1521623305017102346>", type.getLabel());
                             }
-                            return Util.format("- {}", type.getLabel());
+                            return String.format("- %s", type.getLabel());
                         } catch (Exception e) {
-                            return ExceptionHandler.fail(e);
+                            log.error("Failed to format ticket type", e);
+                            return String.format("- %s", type.getLabel());
                         }
                     }).collect(Collectors.joining("\n"));
 
@@ -71,5 +74,10 @@ public class TicketPanelContainer extends Container {
             this.addTextDisplay(groupCategories);
 
         });
+
+        if (hasAnyClosedTypes.get()) {
+            this.addLineSeparator(Separator.Spacing.LARGE);
+            this.addTextDisplay("-# *<:lock:1521623305017102346>: Ticketart ist momentan gesperrt und kann nicht geöffnet werden.*");
+        }
     }
 }

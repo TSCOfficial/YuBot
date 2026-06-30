@@ -2,6 +2,7 @@ package ch.frily.yubot.feature;
 
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
+import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.entities.Member;
@@ -34,6 +35,21 @@ public class ClosureRepository {
             activeMods.add(activeMod);
         }
         return activeMods;
+    }
+
+    /**
+     * Check if there are any current active moderators
+     * <br>
+     * Useful if you want to check if ther server is open or closed
+     * @return True if there are active moderators (server opened), false if not (server closed)
+     */
+    public static boolean hasActiveModerators(){
+        try {
+            return !getModerators().isEmpty();
+        } catch (Exception exception) {
+            return ExceptionHandler.fail(exception);
+        }
+
     }
 
     public static ActiveMod getModerator(Member member) throws SQLException, ClassNotFoundException {

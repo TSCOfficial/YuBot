@@ -105,7 +105,7 @@ public enum TicketType {
                     n/a
                     """,
             TicketTypeGroup.BEWERBUNG,
-            List.of(EnvKey.ROLE_EVENTLEITUNG)
+            List.of() // EnvKey.ROLE_EVENTLEITUNG
     );
 
 

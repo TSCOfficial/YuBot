@@ -36,8 +36,7 @@ public enum DynamicMessageList {
             DynamicMessageType.CONTAINER,
             null,
             args -> {
-                boolean isOpen = requireArg(args, 0, Boolean.class);
-                return new TicketPanelContainer(isOpen).build();
+                return new TicketPanelContainer().build();
             }
     );
 
@@ -142,6 +141,7 @@ public enum DynamicMessageList {
             dynamicMessage.message()
                     .editMessageComponents(containerSupplier.apply(args))
                     .useComponentsV2()
+                    .setAllowedMentions(List.of())
                     .queue(
                             ThrowingConsumer.wrap(null, message -> DynamicMessageRepository.upsertDynamicMessage(new DynamicMessage(name(), message))),
                             exception -> {
