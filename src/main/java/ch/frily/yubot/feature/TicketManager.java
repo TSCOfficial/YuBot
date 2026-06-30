@@ -6,6 +6,7 @@ import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.interaction.button.IButton;
 import ch.frily.yubot.interaction.button.btn.TicketCloseRequestBtn;
 import ch.frily.yubot.interaction.button.btn.TicketPanelAwarenessBtn;
+import ch.frily.yubot.interaction.button.btn.TicketPanelBewerbungBtn;
 import ch.frily.yubot.interaction.button.btn.TicketPanelSupportBtn;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
@@ -126,6 +127,7 @@ public class TicketManager {
         return switch (typeGroup) {
             case SUPPORT -> new TicketPanelSupportBtn();
             case AWARENESS -> new TicketPanelAwarenessBtn();
+            case BEWERBUNG -> new TicketPanelBewerbungBtn();
         };
     }
 

@@ -69,7 +69,7 @@ public enum TicketType {
     // BEWERBUNG
     BEWERBUNG_SUPPORT(
             "besup",
-            "🔩",
+            "🔩 Fachbereich Support",
             "Bewerbung Fachbereich Support",
             """
                     n/a
@@ -79,7 +79,7 @@ public enum TicketType {
     ),
     BEWERBUNG_MODERATION(
             "bemod",
-            "⚒️",
+            "⚒️ Fachbereich Moderation",
             "Bewerbung Fachbereich Moderation",
             """
                     n/a
@@ -89,7 +89,7 @@ public enum TicketType {
     ),
     BEWERBUNG_AWARENESS(
             "beawrn",
-            "💚",
+            "💚 Fachbereich Awareness",
             "Bewerbung Fachbereich Awareness",
             """
                     n/a
@@ -99,7 +99,7 @@ public enum TicketType {
     ),
     BEWERBUNG_EVENT(
             "beevnt",
-            "🎊",
+            "🎊 Fachbereich Event",
             "Bewerbung Fachbereich Event",
             """
                     n/a

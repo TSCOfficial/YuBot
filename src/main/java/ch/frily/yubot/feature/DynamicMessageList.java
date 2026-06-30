@@ -188,6 +188,7 @@ public enum DynamicMessageList {
             if (type == DynamicMessageType.CONTAINER) {
                 channel.sendMessageComponents(containerSupplier.apply(args))
                         .useComponentsV2()
+                        .setAllowedMentions(List.of())
                         .queue(
                                 ThrowingConsumer.wrap(null, message -> DynamicMessageRepository.upsertDynamicMessage(new DynamicMessage(name(), message))),
                                 ExceptionHandler::handle

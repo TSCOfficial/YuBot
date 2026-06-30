@@ -1,42 +1,42 @@
 package ch.frily.yubot.interaction.button.btn;
 
-import ch.frily.yubot.interaction.button.IButton;
 import ch.frily.yubot.feature.TicketTypeGroup;
+import ch.frily.yubot.interaction.button.IButton;
 import ch.frily.yubot.interaction.modal.modal.TypeSelectorModal;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class TicketPanelSupportBtn implements IButton {
+public class TicketPanelBewerbungBtn implements IButton {
 
-    private static TicketPanelSupportBtn instance;
+    private static TicketPanelBewerbungBtn instance;
 
-    public static TicketPanelSupportBtn getInstance(){
+    public static TicketPanelBewerbungBtn getInstance(){
         if (instance == null) {
-            instance = new TicketPanelSupportBtn();
+            instance = new TicketPanelBewerbungBtn();
         }
         return instance;
     }
 
     @Override
     public String getId() {
-        return "ticket-support";
+        return "ticket-bewerbung-btn";
     }
 
     @Override
     public String getLabel() {
-        return "Support";
+        return "Bewerbung";
     }
 
     @Override
     public ButtonStyle getStyle() {
-        return ButtonStyle.SECONDARY;
+        return ButtonStyle.PRIMARY;
     }
 
     @Override
     public void execute(@NotNull ButtonInteractionEvent event) {
         TypeSelectorModal modal = new TypeSelectorModal();
-        modal.setTypeGroup(TicketTypeGroup.SUPPORT);
+        modal.setTypeGroup(TicketTypeGroup.BEWERBUNG);
         event.replyModal(modal.build()).queue();
     }
 }
