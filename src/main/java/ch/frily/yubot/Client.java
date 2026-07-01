@@ -1,8 +1,8 @@
 package ch.frily.yubot;
 
-import ch.frily.yubot.database.Database;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.interaction.button.ButtonRegistry;
+import ch.frily.yubot.interaction.contextmenu.ContextMenuRegistry;
 import ch.frily.yubot.interaction.modal.ModalRegistry;
 import ch.frily.yubot.listeners.InteractionListener;
 import ch.frily.yubot.listeners.OnMessageReceived;
@@ -11,6 +11,7 @@ import ch.frily.yubot.listeners.GuildMemberUpdateListener;
 import ch.frily.yubot.interaction.command.SlashCommandRegistry;
 import ch.frily.yubot.scheduler.SchedulerRegistry;
 import ch.frily.yubot.util.EnvKey;
+import ch.frily.yubot.util.EnvResolver;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -18,11 +19,13 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 public class Client {
@@ -69,14 +72,26 @@ public class Client {
             client.awaitReady();
             log.info("Application started successfully!");
 
+            Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
             // Load actions
+            ContextMenuRegistry.getInstance().loadContextMenus();
             SlashCommandRegistry.getInstance().loadCommands();
             ButtonRegistry.getInstance().loadButtons();
             ModalRegistry.getInstance().loadModals();
 
             // Register actions
             SchedulerRegistry.registerAll();
-            SlashCommandRegistry.getInstance().registerAll();
+            List<CommandData> slashcommand = SlashCommandRegistry.getInstance().prepareCommandsForRegistry();
+            List<CommandData> ctxcommand = ContextMenuRegistry.getInstance().prepareForRegistry();
+
+            ArrayList<CommandData> allCommands = new ArrayList<>();
+            allCommands.addAll(slashcommand);
+            allCommands.addAll(ctxcommand);
+
+            guild.updateCommands()
+                    .addCommands(allCommands)
+                    .queue();
+
 
         } catch (Exception exception) {
             ExceptionHandler.handle(exception);

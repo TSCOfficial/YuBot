@@ -7,10 +7,7 @@ import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -70,11 +67,14 @@ public class SlashCommandRegistry {
         });
     }
 
-    public void registerAll() {
-        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+    /**
+     * Prepare the commands to be able to register them
+     * @return list of prepared commands
+     */
+    public List<CommandData> prepareCommandsForRegistry() {
         List<CommandData> commandDataList = new ArrayList<>();
 
-        commands.forEach((name, cmd) -> {
+        commands.forEach((_, cmd) -> {
             commandDataList.add(buildCommand(cmd));
         });
 
@@ -82,10 +82,7 @@ public class SlashCommandRegistry {
             commandDataList.add(buildGroup(group));
         });
 
-        guild.updateCommands().addCommands(commandDataList).queue(
-                s -> log.info("Alle Commands registriert"),
-                e -> log.error("Fehler beim Registrieren: ", e)
-        );
+        return commandDataList;
     }
 
     private SlashCommandData buildCommand(ISlashCommand command) {
@@ -106,7 +103,6 @@ public class SlashCommandRegistry {
             slashCommand.setDefaultPermissions(DefaultMemberPermissions.enabledFor(group.getDefaultPermissions()));
 
         group.getSubcommands().forEach(sub -> {
-            log.debug(sub.getName());
             SubcommandData subData = new SubcommandData(sub.getName(), sub.getDescription());
             if (!sub.getOptions().isEmpty()) subData.addOptions(sub.getOptions());
             slashCommand.addSubcommands(subData);
@@ -120,14 +116,16 @@ public class SlashCommandRegistry {
      * @param event
      */
     public void dispatchInteractionEvent(SlashCommandInteractionEvent event) throws NotFoundException, SQLException, ClassNotFoundException {
-        commands.putAll(subcommands);
+        Map<String, ISlashCommand> allSlashCommands = new HashMap<>();
+        allSlashCommands.putAll(commands);
+        allSlashCommands.putAll(subcommands);
 
-        ISlashCommand command = commands.get(event.getFullCommandName());
-
+        ISlashCommand command = allSlashCommands.get(event.getFullCommandName());
         if (command == null) {
             throw new NotFoundException(String.format("Slashcommand '%s' konnte nicht gefunden werden.", event.getFullCommandName()));
         }
 
+        // Check if user is allowed to execute command
         if (!Util.isAdministrator(event.getMember()) && !command.getAllowedRoles().isEmpty() && command.getAllowedRoles().stream().noneMatch(role -> event.getMember().getRoles().contains(role))) {
             throw new PermissionDeniedException(String.format("Nur Mitglieder\\*innen mit einer der folgenden Rollen können diesen Befehl ausführen: %s", String.join(", ", command.getAllowedRoles().stream().map(role -> role.getAsMention()).toList())));
         }
@@ -136,7 +134,15 @@ public class SlashCommandRegistry {
     }
 
     public void dispatchAutocompleteEvent(CommandAutoCompleteInteractionEvent event) {
-        ISlashCommand command = commands.get(event.getFullCommandName());
+        Map<String, ISlashCommand> allSlashCommands = new HashMap<>();
+        allSlashCommands.putAll(commands);
+        allSlashCommands.putAll(subcommands);
+
+        ISlashCommand command = allSlashCommands.get(event.getFullCommandName());
+        if (command == null) {
+            return;
+        }
+
         String focusedOptionName = event.getFocusedOption().getName();
         List<?> choices = command.getAutocomplete().getOrDefault(focusedOptionName, List.of());
 

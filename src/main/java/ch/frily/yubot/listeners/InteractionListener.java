@@ -2,12 +2,14 @@ package ch.frily.yubot.listeners;
 
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.interaction.button.ButtonRegistry;
+import ch.frily.yubot.interaction.contextmenu.ContextMenuRegistry;
 import ch.frily.yubot.interaction.modal.ModalRegistry;
 import ch.frily.yubot.interaction.command.SlashCommandRegistry;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.GenericContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -53,6 +55,22 @@ public class InteractionListener extends ListenerAdapter {
             ButtonRegistry.getInstance().dispatchButtonInteraction(event);
         }catch (Exception exception) {
             log.error("Error while dispatching button interaction: {}", exception.getMessage());
+            ExceptionHandler.handle(exception, event);
+        }
+    }
+
+    /**
+     * Execute a context menu interaction
+     * <br>
+     * Both context menu types (USER & MESSAGE) are caught here
+     * @param event GenericContextInteractionEvent
+     */
+    @Override
+    public void onGenericContextInteraction(@NotNull GenericContextInteractionEvent<?> event) {
+        try {
+            ContextMenuRegistry.getInstance().dispatchInteractionEvent(event);
+        } catch (Exception exception) {
+            log.error("Error while dispatching context menu interaction: {}", exception.getMessage());
             ExceptionHandler.handle(exception, event);
         }
     }
