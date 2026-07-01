@@ -63,6 +63,19 @@ public enum TicketType {
             TicketTypeGroup.SUPPORT,
             List.of(EnvKey.ROLE_SUPPORT, EnvKey.ROLE_MODERATOR)
     ),
+    SUPPORT_LEITUNG(
+            "leit",
+            "🚨 Leitung",
+            "Teambeschwerden oder weitere sehr wichtig anliegen",
+            """
+                    Bitte beschreibe dein Anliegen so genau wie möglich:
+                    - Worum geht es? (Kurze Zusammenfassung)
+                    
+                    Die Serverleitung meldet sich so schnell wie möglich bei dir.
+                    """,
+            TicketTypeGroup.SUPPORT,
+            List.of(EnvKey.ROLE_ADMIN, EnvKey.ROLE_SERVERLEITUNG)
+    ),
     // AWARENESS
     AWARENESS_PROBLEME(
             "awrn",
@@ -115,7 +128,7 @@ public enum TicketType {
                     n/a
                     """,
             TicketTypeGroup.BEWERBUNG,
-            List.of() // EnvKey.ROLE_EVENTLEITUNG
+            List.of(EnvKey.ROLE_EVENTLEITUNG)
     );
 
 
