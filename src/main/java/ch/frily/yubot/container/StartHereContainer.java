@@ -12,9 +12,6 @@ import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 
 public class StartHereContainer extends Container {
     public StartHereContainer() {
-//        this.addComponent(
-//                MediaGallery.of(MediaGalleryItem.fromUrl(EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getBannerUrl()))
-//        );
 
         this.addTextDisplay(String.format("# Willkommen bei %s!", EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getName()));
         this.addTextDisplay("""

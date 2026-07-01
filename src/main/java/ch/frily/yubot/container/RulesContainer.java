@@ -18,7 +18,8 @@ public class RulesContainer extends Container {
     private static final Guild GUILD = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
 
     public RulesContainer() {
-        this.addComponent(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(new File("src/main/resources/img/regelwerk-header.png")))));
+        this.addComponent(MediaGallery.of(MediaGalleryItem.fromFile(
+                FileUpload.fromData(getClass().getResourceAsStream("/img/regelwerk-header.png"), "regelwerk-header.png"))));
         this.addTextDisplay(Util.format("## Serverregeln von {}", GUILD.getName()));
         this.addTextDisplay("-# *Stand 15. Juni 2026*");
 
@@ -105,7 +106,7 @@ public class RulesContainer extends Container {
 
         this.addInvisibleSeparator(Separator.Spacing.SMALL);
 
-        this.addTextDisplay(" **§6a Bewerbung anderer Discord Server**");
+        this.addTextDisplay("**§6a Bewerbung anderer Discord Server**");
         this.addTextDisplay("""
                         Wer andere Mitglieder über diesen Server dazu bewegt, auf andere Discord Server zu joinen, wird zum Schutz von Minderjährigen gebannt, da diese Server nicht von uns moderiert werden und wir nicht gewährleisten können, dass diese auch sicher sind.
                         """
