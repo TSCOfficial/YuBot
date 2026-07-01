@@ -94,9 +94,9 @@ public class TicketManager {
                             .addEmbeds(embed.build()).setComponents(actionrow).queue(ThrowingConsumer.wrap(null, message -> {
                                 ticket.setWelcomeMessageId(message.getIdLong());
                                 TicketRepository.createTicket(ticket);
-                            }));
 
-                    onCreated.accept(textChannel);
+                                onCreated.accept(textChannel); // reply at the very end, to let everything finish first
+                            }));
                 });
     }
 

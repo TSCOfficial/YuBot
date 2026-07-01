@@ -1,5 +1,6 @@
 package ch.frily.yubot.util;
 
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
@@ -7,6 +8,7 @@ import java.time.Duration;
 import java.time.temporal.Temporal;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 public class Util {
 
@@ -23,6 +25,18 @@ public class Util {
     public static boolean isActiveMod(Member member) {
         Role activeModRole = EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD);
         return member.getRoles().contains(activeModRole);
+    }
+
+    /**
+     * Check if a member has the {@link Permission#ADMINISTRATOR} permission
+     * @param member The member to check
+     * @return True if they are administrator, false if not
+     */
+    public static boolean isAdministrator(Member member) {
+        List<Role> adminRoles = member.getRoles().stream().filter(role -> {
+            return role.hasPermission(Permission.ADMINISTRATOR);
+        }).toList();
+        return !adminRoles.isEmpty();
     }
 
     public static String format(String template, Object... args) {

@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import org.slf4j.event.Level;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * Central place for handling exceptions throughout the client.
@@ -136,10 +137,12 @@ public final class ExceptionHandler {
             if (callback.isAcknowledged()) {
                 callback.getHook()
                         .sendMessage(message)
+                        .setAllowedMentions(List.of())
                         .setEphemeral(true)
                         .queue();
             } else {
                 callback.reply(message)
+                        .setAllowedMentions(List.of())
                         .setEphemeral(true)
                         .queue();
             }

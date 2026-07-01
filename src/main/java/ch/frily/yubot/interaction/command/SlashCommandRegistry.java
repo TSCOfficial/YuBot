@@ -1,11 +1,16 @@
 package ch.frily.yubot.interaction.command;
 
+import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.interaction.command.cmd.*;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
+import ch.frily.yubot.util.Util;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -121,6 +126,10 @@ public class SlashCommandRegistry {
 
         if (command == null) {
             throw new NotFoundException(String.format("Slashcommand '%s' konnte nicht gefunden werden.", event.getFullCommandName()));
+        }
+
+        if (!Util.isAdministrator(event.getMember()) && !command.getAllowedRoles().isEmpty() && command.getAllowedRoles().stream().noneMatch(role -> event.getMember().getRoles().contains(role))) {
+            throw new PermissionDeniedException(String.format("Nur Mitglieder\\*innen mit einer der folgenden Rollen können diesen Befehl ausführen: %s", String.join(", ", command.getAllowedRoles().stream().map(role -> role.getAsMention()).toList())));
         }
 
         command.execute(event);

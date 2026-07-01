@@ -2,6 +2,7 @@ package ch.frily.yubot.interaction.command.cmd;
 
 import ch.frily.yubot.embed.TicketCloseRequestEmbed;
 import ch.frily.yubot.embed.TicketClosedOptionsEmbed;
+import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.feature.Ticket;
 import ch.frily.yubot.feature.TicketManager;
 import ch.frily.yubot.feature.TicketRepository;
@@ -10,9 +11,11 @@ import ch.frily.yubot.interaction.button.btn.TicketCloseRequestAcceptBtn;
 import ch.frily.yubot.interaction.button.btn.TicketCloseRequestRejectBtn;
 import ch.frily.yubot.interaction.button.btn.TicketDeleteBtn;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
+import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -20,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class TicketOpenmodCmd implements ISlashSubcommand {
     @Override
@@ -40,11 +44,22 @@ public class TicketOpenmodCmd implements ISlashSubcommand {
     }
 
     @Override
+    public List<Role> getAllowedRoles() {
+        return Stream.of(
+                EnvKey.ROLE_SUPPORT,
+                EnvKey.ROLE_MODERATOR
+        ).map(EnvResolver::getRoleById).toList();
+    }
+
+    @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
 
         Member member = event.getOption("user").getAsMember();
-        TicketManager.getInstance().createTicket(TicketType.MODTICKET, member, channel -> {
+        TicketManager.getInstance().createTicket(TicketType.MODTICKET, member, ThrowingConsumer.wrap(event, channel -> {
             event.reply(String.format("Modticket wurde erstellt: %s", channel.getAsMention())).setEphemeral(true).queue();
-        });
+
+            Ticket ticket = TicketRepository.getTicketById(channel.getIdLong());
+            ticket.claim(event.getMember());
+        }));
     }
 }
