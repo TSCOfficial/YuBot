@@ -13,6 +13,7 @@ import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
@@ -21,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Slf4j
 public class TicketDeleteBtn implements IButton {
@@ -57,6 +59,12 @@ public class TicketDeleteBtn implements IButton {
             ticket.delete();
 
         }));
+    }
 
+    @Override
+    public List<Role> getAllowedRoles() {
+        return Stream.of(
+                EnvKey.ROLE_YUTEAM
+        ).map(EnvResolver::getRoleById).toList();
     }
 }

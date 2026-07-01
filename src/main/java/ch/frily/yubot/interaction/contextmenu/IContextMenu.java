@@ -14,7 +14,7 @@ public interface IContextMenu {
     Command.Type getType();
 
     /**
-     * Get the default permissions of a slashcommand
+     * Get the default permissions of a interaction
      * <br>
      * Default permissions are discord-permissions that a user needs to execute the command.
      * @return a list of {@link Permission}
@@ -24,7 +24,7 @@ public interface IContextMenu {
     }
 
     /**
-     * Get the allowed roles of a slashcommand.
+     * Get the allowed roles of a interaction.
      * <p>
      * Allowed roles are roles that a user needs to execute the command. (The user needs to have at least one of these roles)
      * <p>
