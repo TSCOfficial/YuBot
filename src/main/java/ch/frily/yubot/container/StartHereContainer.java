@@ -46,12 +46,11 @@ public class StartHereContainer extends Container {
 
         this.addTextDisplay(String.format("""
                 ## Öffnung des Servers
-                Der Server ist nur geöffnet, solange ausreichend Teammitglieder\\*innen anwesend sind, die sich um euch und mögliche Anliegen kümmern können. Ob der server geöffnet oder geschlossen ist, seht ihr anhand von %s und im %s.
+                Der Server ist nur geöffnet, solange ausreichend Teammitglieder\\*innen anwesend sind, die sich um euch und mögliche Anliegen kümmern können. Ob der server geöffnet oder geschlossen ist, seht ihr anhand von %s.
                 
                 Sollte der Server zwischenzeitlich geschlossen sein, könnt ihr euch trotzdem in %s die Zeit vertreiben und gemeinsam versuchen, bis ins Unendliche zu zählen. 1️⃣6️⃣1️⃣
                 Bitte achtet auch dort weiterhin auf die geltenden Regeln.
                 """, EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_SERVERGESCHLOSSEN).getAsMention(),
-                EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_DASTEAM).getAsMention(),
                 EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_COUNTING).getAsMention()));
 
         this.addInvisibleSeparator(Separator.Spacing.LARGE);
