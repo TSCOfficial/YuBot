@@ -31,12 +31,16 @@ public class TicketTypeControlCmd implements ISlashSubcommand {
 
     @Override
     public List<OptionData> getOptions() {
+        List<Command.Choice> choices = Arrays.stream(TicketType.values())
+                .filter(type -> type.getGroup() != null)
+                .map(type -> {
+                    String choiceName = String.format("%s / %s", type.getGroup().getLabel(), type.getLabel());
+                    return new Command.Choice(choiceName, type.name());
+                }).toList();
+
         return List.of(
                 new OptionData(OptionType.STRING, "type", "Der Tickettyp", true)
-                        .addChoices(Arrays.stream(TicketType.values()).map(type -> {
-                            String choiceName = String.format("%s / %s", type.getGroup().getLabel(), type.getLabel());
-                            return new Command.Choice(choiceName, type.name());
-                        }).toList()),
+                        .addChoices(choices),
                 new OptionData(OptionType.INTEGER, "status", "Tickettyp aktivieren", true)
                         .addChoice("Open", 1)
                         .addChoice("Close", 0)
@@ -51,8 +55,8 @@ public class TicketTypeControlCmd implements ISlashSubcommand {
     @Override
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
         String typeName = event.getOption("type").getAsString();
-        log.debug("status: {}", event.getOption("status").getAsInt());
         boolean isLocked = event.getOption("status").getAsInt() == 0 ? true : false;
+
         TicketType type = TicketType.valueOf(typeName);
         TicketTypeControlRepository.upsertType(type, isLocked);
 

@@ -47,7 +47,7 @@ public class TicketPanelContainer extends Container {
         Arrays.stream(TicketTypeGroup.values()).forEach(typeGroup -> {
 
             String groupCategories = Arrays.stream(TicketType.values())
-                    .filter(type -> type.getGroup() == typeGroup)
+                    .filter(type -> type.getGroup() != null && type.getGroup() == typeGroup)
                     .map(type -> {
                         try {
                             boolean typeIsLocked = TicketTypeControlRepository.isTypeLocked(type);

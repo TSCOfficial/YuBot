@@ -8,6 +8,16 @@ import net.dv8tion.jda.api.entities.Role;
 import java.util.List;
 
 public enum TicketType {
+    MODTICKET(
+            "modticket",
+            "🔰 Modticket",
+            null,
+            """
+                    Das Serverteam hat ein Ticket geöffnet.
+                    """,
+            null,
+            List.of()
+    ),
     // SUPPORT
     SUPPORT_GENERAL(
             "help",

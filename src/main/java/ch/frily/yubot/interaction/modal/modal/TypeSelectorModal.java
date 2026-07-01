@@ -40,11 +40,12 @@ public class TypeSelectorModal implements IModal {
 
         StringSelectMenu.Builder selectMenuBuilder = StringSelectMenu.create("select-menu:ticket-type-selector");
         types.forEach(type -> {
-            selectMenuBuilder.addOption(type.getLabel(), type.getId(), type.getSelectDescription());
+            if (type.getSelectDescription() != null) {
+                selectMenuBuilder.addOption(type.getLabel(), type.getId(), type.getSelectDescription());
+            }
         });
         selectMenuBuilder.setMinValues(1);
         selectMenuBuilder.setMaxValues(1);
-        selectMenuBuilder.setPlaceholder("Ticketart auswählen");
         selectMenuBuilder.setRequired(true);
         selectMenuBuilder.setDefaultOptions(selectMenuBuilder.getOptions().getFirst());
 

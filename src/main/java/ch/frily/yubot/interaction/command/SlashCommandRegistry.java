@@ -43,7 +43,6 @@ public class SlashCommandRegistry {
     public void loadCommands() {
         List<ISlashCommand> slashCommands = List.of(
                 new TeamlistCmd(),
-                new SendEmbedCmd(),
                 new TestCmd() // tests only
         );
 

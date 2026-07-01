@@ -61,8 +61,9 @@ public class TicketManager {
             );
         }
         if (TicketTypeControlRepository.isTypeLocked(type)) {
-            throw new PermissionDeniedException(String.format("Die Ticketart **%s** ist gesperrt!", type.getLabel()
-            ), "Vielen Dank für dein Interesse! Versuche es gerne ein ander mal wieder."
+            throw new PermissionDeniedException(
+                    String.format("Die Ticketart **%s** ist gesperrt!", type.getLabel()),
+                    "Vielen Dank für dein Interesse! Versuche es gerne ein ander mal wieder."
             );
         }
 
