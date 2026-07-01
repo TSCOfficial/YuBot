@@ -45,19 +45,27 @@ public class SendContainerCmd implements ISlashSubcommand {
         String containerValue = event.getOption("container").getAsString();
         List<Container> containers = StaticContainerRegistry.valueOf(containerValue).getContainers();
 
-        event.getChannel()
-                .sendMessageComponents(containers).useComponentsV2()
-                .setAllowedMentions(List.of()).queue(ThrowingConsumer.wrap(event, message -> {
-                    DynamicMessageList dynamicMessage = DynamicMessageList.fromRegistryName(containerValue);
+        try {
+            event.getChannel()
+                    .sendMessageComponents(containers).useComponentsV2()
+                    .setAllowedMentions(List.of()).queue(ThrowingConsumer.wrap(event, message -> {
+                        DynamicMessageList dynamicMessage = DynamicMessageList.fromRegistryName(containerValue);
 
-                    if (dynamicMessage != null) {
-                        dynamicMessage.remember(message);
-                    }
+                        if (dynamicMessage != null) {
+                            dynamicMessage.remember(message);
+                        }
 
-                    event.reply("✅ Container \"" + humanizeEnumName(containerValue) + "\" erfolgreich gesendet.")
-                            .setEphemeral(true)
-                            .queue();
-                }));
+                        event.reply("✅ Container \"" + humanizeEnumName(containerValue) + "\" erfolgreich gesendet.")
+                                .setEphemeral(true)
+                                .queue();
+                    }));
+        } catch (Exception e) {
+            containers.forEach(container -> {
+                event.getChannel().sendMessageComponents(container).useComponentsV2().queue();
+            });
+
+            event.reply("✅ Container \"" + humanizeEnumName(containerValue) + "\" erfolgreich gesendet.").setEphemeral(true).queue();
+        }
     }
 
     private String humanizeEnumName(String enumValue) {

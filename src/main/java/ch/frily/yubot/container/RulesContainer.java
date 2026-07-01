@@ -51,7 +51,7 @@ public class RulesContainer extends Container {
         this.addInvisibleSeparator(Separator.Spacing.SMALL);
 
         this.addTextDisplay("**§2 Rechte und Pflichten einer Mitgliedschaft**");
-        this.addTextDisplay("Das Beitreten und Verweilen auf dem Servers steht jeder Person frei zur Wahl, welche 16 oder Älter ist.");
+        this.addTextDisplay("¹ Das Beitreten und Verweilen auf dem Servers steht jeder Person frei zur Wahl, welche 16 oder Älter ist.");
         this.addTextDisplay("""
                 ² Benutzername und Nicknamesdürfen §3 nicht verletzen. Nicknames dienen der alltäglichen Identifizierung von Anderen und sollten deswegen mögllichst einzigartig sein. Entspricht ein Nickname nicht den genannten Regeln, wird er vom Serverteam geändert.
                 """
