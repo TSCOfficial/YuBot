@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class Teamlist {
+public class Teamlist { // todo replace with IEmbed and dynamic message
 
     private static Teamlist instance;
 
