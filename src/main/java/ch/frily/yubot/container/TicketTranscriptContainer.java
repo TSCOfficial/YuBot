@@ -17,7 +17,13 @@ public class TicketTranscriptContainer extends Container {
     public TicketTranscriptContainer(Member initiator, Ticket ticket, FileUpload transkript) {
         this.addComponent(TextDisplay.of(Util.format("### Ticket {} wurde geschlossen", ticket.getNameWithoutStatus())));
         this.addComponent(Separator.createInvisible(Separator.Spacing.SMALL));
-        this.addComponent(TextDisplay.of(Util.format("**Kategorie**: `{} / {}`", ticket.getType().getGroup().getLabel(), ticket.getType().getLabel())));
+
+        if (ticket.getType().getGroup() == null) {
+            this.addComponent(TextDisplay.of(Util.format("**Kategorie**: `{}`", ticket.getType().getLabel())));
+        } else {
+            this.addComponent(TextDisplay.of(Util.format("**Kategorie**: `{} / {}`", ticket.getType().getGroup().getLabel(), ticket.getType().getLabel())));
+        }
+
         this.addComponent(TextDisplay.of(Util.format("**Erstellt von**: {} ({})", ticket.getOwner().getAsMention(), ticket.getOwner().getUser().getName())));
 
         String assignedMember = "**Verantwortlich**: -";

@@ -41,23 +41,14 @@ public class TicketCloseCmd implements ISlashSubcommand {
         Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
 
         if (event.getOption("force") != null && event.getOption("force").getAsBoolean()) {
-            ActionRow actionRow = ActionRow.of(
-                    new TicketDeleteBtn().build()
-            );
-            ticket.requestClose(event.getMember(), true);
-
-            TicketClosedOptionsEmbed optionsEmbed = new TicketClosedOptionsEmbed();
-            optionsEmbed.setTicket(ticket);
-            optionsEmbed.setForcedClosed(true);
-            event.replyEmbeds(optionsEmbed.build()).setComponents(actionRow).queue();
-            return;
+            ticket.forceClose(event);
         } else {
             ActionRow actionRow = ActionRow.of(
                     new TicketCloseRequestAcceptBtn().build(),
                     new TicketCloseRequestRejectBtn().build()
             );
 
-            ticket.requestClose(event.getMember(), false);
+            ticket.requestClose(event);
 
             TicketCloseRequestEmbed requestEmbed = new TicketCloseRequestEmbed();
             requestEmbed.setInitiator(event.getMember());

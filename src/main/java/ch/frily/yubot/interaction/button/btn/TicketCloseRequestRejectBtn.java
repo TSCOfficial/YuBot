@@ -48,7 +48,7 @@ public class TicketCloseRequestRejectBtn implements IButton {
     public void execute(@NotNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
 
         Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
-        ticket.rejectCloseRequest(event.getMember());
+        ticket.rejectCloseRequest(event);
 
         TicketCloseRejectedEmbed embed = new TicketCloseRejectedEmbed();
         embed.setMember(event.getMember());

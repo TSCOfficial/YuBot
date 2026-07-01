@@ -1,8 +1,14 @@
 package ch.frily.yubot.feature;
 
 import ch.frily.yubot.Client;
+import ch.frily.yubot.embed.TicketCloseAcceptedEmbed;
+import ch.frily.yubot.embed.TicketCloseRequestEmbed;
+import ch.frily.yubot.embed.TicketClosedOptionsEmbed;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.PermissionDeniedException;
+import ch.frily.yubot.interaction.button.btn.TicketCloseRequestAcceptBtn;
+import ch.frily.yubot.interaction.button.btn.TicketCloseRequestRejectBtn;
+import ch.frily.yubot.interaction.button.btn.TicketDeleteBtn;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
@@ -13,11 +19,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.exceptions.PermissionException;
+import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.sql.SQLException;
@@ -144,13 +152,23 @@ public class Ticket {
      * @throws IllegalStateException When no close request can be sent
      * @throws PermissionDeniedException When the member is not allowed to close the ticket
      */
-    public void requestClose(Member initiator, boolean forceClose) throws IllegalStateException, PermissionDeniedException, SQLException, ClassNotFoundException {
-        if (Util.isTeamMember(initiator)) {
-            if (!isOwner(initiator)) {
+    public void requestClose(IReplyCallback event) throws IllegalStateException, PermissionDeniedException, SQLException, ClassNotFoundException {
+        if (Util.isTeamMember(event.getMember())) {
+            if (!isOwner(event.getMember())) {
                 if (this.isClosable()) {
-                    if (forceClose) {
-                        forceClose(initiator);
+                    if (type == TicketType.MODTICKET) { // ModTickets are always force-closed by the mod team
+                        forceClose(event);
                     } else {
+                        // send close request
+                        ActionRow actionRow = ActionRow.of(
+                                new TicketCloseRequestAcceptBtn().build(),
+                                new TicketCloseRequestRejectBtn().build()
+                        );
+                        TicketCloseRequestEmbed optionsEmbed = new TicketCloseRequestEmbed();
+                        optionsEmbed.setInitiator(event.getMember());
+                        optionsEmbed.setTicket(this);
+                        event.reply(getOwner().getAsMention()).addEmbeds(optionsEmbed.build()).setComponents(actionRow).queue();
+
                         this.closeRequestCount++;
                         this.isRequestPending = true;
                         TicketRepository.updateTicket(this);
@@ -167,11 +185,11 @@ public class Ticket {
 
     /**
      * Reject an active close request
-     * @param initiator Interaction initiator
+     * @param event Interaction
      * @throws PermissionDeniedException If the member (initiator) is not the ticket owner
      */
-    public void rejectCloseRequest(Member initiator) throws PermissionDeniedException, SQLException, ClassNotFoundException {
-        if (this.isOwner(initiator)) {
+    public void rejectCloseRequest(IReplyCallback event) throws PermissionDeniedException, SQLException, ClassNotFoundException {
+        if (this.isOwner(event.getMember())) {
             this.setPendingRequest(false);
         } else {
             throw new PermissionDeniedException(String.format("Nur der/die Ticketinhaber\\*in %s kann dies machen!", owner.getAsMention()));
@@ -181,12 +199,12 @@ public class Ticket {
 
     /**
      * Accept an active close request
-     * @param initiator Interaction initiator
+     * @param event Interaction
      * @throws PermissionDeniedException If the member (initiator) is not the ticket owner
      */
-    public void acceptCloseRequest(Member initiator) throws PermissionDeniedException, SQLException, ClassNotFoundException {
-        if (this.isOwner(initiator)) {
-            this.close(initiator);
+    public void acceptCloseRequest(IReplyCallback event) throws PermissionDeniedException, SQLException, ClassNotFoundException {
+        if (this.isOwner(event.getMember())) {
+            this.close(event, false);
             return;
         }
         throw new PermissionDeniedException(String.format("Nur der/die Ticketinhaber\\*in %s kann dies machen!", owner.getAsMention()));
@@ -210,12 +228,12 @@ public class Ticket {
         TicketRepository.updateTicket(this);
     }
 
-    public void forceClose(Member initiator) throws PermissionDeniedException, SQLException, ClassNotFoundException {
+    public void forceClose(IReplyCallback event) throws PermissionDeniedException, SQLException, ClassNotFoundException {
 
-        if (ALLOW_DIRECT_FORCECLOSE_ROLES.stream().anyMatch(role -> initiator.getRoles().contains(role))) {
-            close(initiator);
+        if (ALLOW_DIRECT_FORCECLOSE_ROLES.stream().anyMatch(role -> event.getMember().getRoles().contains(role))) {
+            close(event, true);
         } else if (isForceClosable()) {
-            close(initiator);
+            close(event, true);
         } else {
             throw new InvalidStateException(
                     "Ticket kann nicht geschlossen werden.",
@@ -228,10 +246,23 @@ public class Ticket {
      * Close a Ticket<br>
      * Removes user permissions, changes status, ...
      */
-    public void close(Member initiator) throws SQLException, ClassNotFoundException {
-        if (isClosable() && (Util.isTeamMember(initiator) || isOwner(initiator))) {
+    public void close(IReplyCallback event, boolean isForceClosed) throws SQLException, ClassNotFoundException {
+        if (isClosable() && (Util.isTeamMember(event.getMember()) || isOwner(event.getMember()))) {
             setPendingRequest(false);
             setStatus(TicketStatus.CLOSED);
+
+            ActionRow actionRow = ActionRow.of(
+                    new TicketDeleteBtn().build()
+            );
+
+
+            TicketClosedOptionsEmbed optionsEmbed = new TicketClosedOptionsEmbed();
+            optionsEmbed.setTicket(this);
+            optionsEmbed.setForceClosed(isForceClosed);
+            if (isForceClosed) { // add initiator at force-close, bc at close-request, it will always be the ticket-owner
+                optionsEmbed.setInitiator(event.getMember());
+            }
+            event.replyEmbeds(optionsEmbed.build()).setComponents(actionRow).queue();
 
             channel.getMemberPermissionOverrides().forEach(memberOverride -> {
                 memberOverride.delete().queue();
@@ -313,7 +344,6 @@ public class Ticket {
                     }
                     channel.getManager().putPermissionOverride(member, TicketManager.USER_PERMISSION, List.of()).queue();
                 } else {
-                    log.debug("Removing member from ticket");
                     if (!getMemberPermissionOverrides().contains(member)) {
                         throw new InvalidStateException("Diese Person kann nicht entfernt werden.", "Diese befindet sich nicht im Ticket.");
                     }

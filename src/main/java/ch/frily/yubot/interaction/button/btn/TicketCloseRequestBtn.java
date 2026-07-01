@@ -5,6 +5,7 @@ import ch.frily.yubot.feature.Ticket;
 import ch.frily.yubot.feature.TicketRepository;
 import ch.frily.yubot.interaction.button.IButton;
 import javassist.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
 
+@Slf4j
 public class TicketCloseRequestBtn implements IButton {
     @Override
     public String getId() {
@@ -39,18 +41,7 @@ public class TicketCloseRequestBtn implements IButton {
     @Override
     public void execute(@NotNull ButtonInteractionEvent event) throws SQLException, IllegalStateException, ClassNotFoundException {
         Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
-        ticket.requestClose(event.getMember(), false);
-
-        ActionRow actionRow = ActionRow.of(
-                new TicketCloseRequestAcceptBtn().build(),
-                new TicketCloseRequestRejectBtn().build()
-        );
-
-        TicketCloseRequestEmbed optionsEmbed = new TicketCloseRequestEmbed();
-        optionsEmbed.setInitiator(event.getMember());
-        optionsEmbed.setTicket(ticket);
-
-        event.reply(ticket.getOwner().getAsMention()).addEmbeds(optionsEmbed.build()).setComponents(actionRow).queue();
+        ticket.requestClose(event);
 
         event.getMessage().editMessageComponents(event.getMessage().getComponentTree().asDisabled()).queue();
     }

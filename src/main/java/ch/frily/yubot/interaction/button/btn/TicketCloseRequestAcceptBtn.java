@@ -46,25 +46,15 @@ public class TicketCloseRequestAcceptBtn implements IButton {
 
     @Override
     public void execute(@NotNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
-            Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
-            log.debug("sending close request to ticket");
-            ticket.acceptCloseRequest(event.getMember());
+        Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
+        ticket.acceptCloseRequest(event);
 
-            TicketCloseAcceptedEmbed acceptedEmbed = new TicketCloseAcceptedEmbed();
-            acceptedEmbed.setMember(event.getMember());
-            acceptedEmbed.setTicket(ticket);
+        TicketCloseAcceptedEmbed acceptedEmbed = new TicketCloseAcceptedEmbed();
+        acceptedEmbed.setMember(event.getMember());
+        acceptedEmbed.setTicket(ticket);
 
-            event.editMessageEmbeds(acceptedEmbed.build())
-                    .setComponents(event.getMessage().getComponentTree().asDisabled())
-                    .queue();
-
-            // Send options
-            ActionRow actionRow = ActionRow.of(List.of(
-                    new TicketDeleteBtn().build()
-            ));
-
-            TicketClosedOptionsEmbed optionEmbed = new TicketClosedOptionsEmbed();
-            optionEmbed.setTicket(ticket);
-            event.getHook().sendMessageEmbeds(optionEmbed.build()).addComponents(actionRow).queue();
+        event.getHook().editOriginalEmbeds(acceptedEmbed.build())
+                .setComponents(event.getMessage().getComponentTree().asDisabled())
+                .queue();
     }
 }
