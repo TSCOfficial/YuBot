@@ -16,7 +16,7 @@ public enum TicketType {
                     Das Serverteam hat ein Ticket geöffnet.
                     """,
             null,
-            List.of() //EnvKey.ROLE_SUPPORT, EnvKey.ROLE_MODERATOR
+            List.of(EnvKey.ROLE_SUPPORT, EnvKey.ROLE_MODERATOR)
     ),
     // SUPPORT
     SUPPORT_GENERAL(
