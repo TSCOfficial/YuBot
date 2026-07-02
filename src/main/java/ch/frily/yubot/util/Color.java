@@ -20,6 +20,8 @@ public class Color {
     public static final java.awt.Color PURPLE = new java.awt.Color(155, 89, 182);
     public static final java.awt.Color PLURPLE = new java.awt.Color(88, 101, 242);
     public static final java.awt.Color BLUE = new java.awt.Color(52, 152, 219);
+    /** Discord subtext gray */
+    public static final java.awt.Color LIGHT_GRAY = new java.awt.Color(171, 172, 178);
 
     public Color(Integer red, Integer green, Integer blue){
         this.red = red;

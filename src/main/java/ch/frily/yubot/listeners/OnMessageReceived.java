@@ -1,10 +1,9 @@
 package ch.frily.yubot.listeners;
 
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.feature.Closure;
-import ch.frily.yubot.feature.Ticket;
-import ch.frily.yubot.feature.TicketManager;
-import ch.frily.yubot.feature.TicketRepository;
+import ch.frily.yubot.feature.*;
+import ch.frily.yubot.util.EnvKey;
+import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +50,11 @@ public class OnMessageReceived extends ListenerAdapter {
             // adtive-mod activity
             if (Util.isActiveMod(event.getMember())) {
                 Closure.handleModActivity(event.getMember());
-                log.debug("Mod activity detected");
+            }
+
+            // Word-Chain game
+            if (event.getChannel().getId().equals(EnvResolver.getString(EnvKey.CHANNEL_KETTENBRIEF))) {
+                WordChainGame.handleWord(event.getMessage());
             }
         } catch (Exception exception) {
             ExceptionHandler.handle(exception);

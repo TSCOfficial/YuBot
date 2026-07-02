@@ -89,10 +89,11 @@ public class Closure extends Feature {
         if (!isOpen && everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL)) {
             DynamicMessageList.TICKET_PANEL.update();
             logChannel.sendMessageEmbeds(new ClosureLogEmbed(false).build()).queue();
-            lobbyChannel.sendMessage("""
+            lobbyChannel.sendMessage(String.format("""
+                    ## %s
                     Der server ist nun geschlossen.
                     -# Es gibt keine aktiven Moderatoren mehr.
-                    """).queue();
+                    """, EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_SERVERGESCHLOSSEN).getAsMention())).queue();
             guild.getManager().setIcon(Icon.from(new File("src/main/resources/icon/server-icon-closed.png"))).queue();
             guild.getManager().setBanner(Icon.from(new File("src/main/resources/icon/server-banner-closed.png"))).queue();
         }

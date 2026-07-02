@@ -1,5 +1,6 @@
 package ch.frily.yubot.interaction.button.btn;
 
+import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.interaction.button.IButton;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
@@ -31,6 +32,9 @@ public class AddServeropenRoleBtn implements IButton {
 
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
+        if (event.getMember().getRoles().contains(EnvResolver.getRoleById(EnvKey.ROLE_EROEFFNUNGSPING))) {
+            throw new InvalidStateException("Du wirst bereits benachrichtigt.", String.format("Du besitzt die %s Rolle bereits.", EnvResolver.getRoleById(EnvKey.ROLE_EROEFFNUNGSPING).getAsMention()));
+        }
         Role pingRole = EnvResolver.getRoleById(EnvKey.ROLE_EROEFFNUNGSPING);
         event.getGuild().addRoleToMember(event.getMember(), pingRole).queue();
         event.reply(String.format("""

@@ -43,8 +43,8 @@ public class ServerClosedContainer extends Container {
 
         this.addSection(
                 new AddServeropenRoleBtn().build(),
-                TextDisplay.of("**Willst du Benachrichtigt werden, wenn der Server wieder öffnet?**"),
-                TextDisplay.of(String.format("Klicke auf den danebenstehenden Button um die %s-Rolle zu erhalten.", EnvResolver.getRoleById(EnvKey.ROLE_EROEFFNUNGSPING).getAsMention()))
+                TextDisplay.of("**Willst du benachrichtigt werden, wenn der Server wieder öffnet?**"),
+                TextDisplay.of(String.format("Klicke auf den Button um die %s-Rolle zu erhalten.", EnvResolver.getRoleById(EnvKey.ROLE_EROEFFNUNGSPING).getAsMention()))
         );
 
         this.addComponent(Separator.createDivider(Separator.Spacing.LARGE));
