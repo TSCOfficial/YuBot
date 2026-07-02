@@ -53,7 +53,7 @@ public class TicketCloseRequestAcceptBtn implements IButton {
         acceptedEmbed.setMember(event.getMember());
         acceptedEmbed.setTicket(ticket);
 
-        event.getHook().editOriginalEmbeds(acceptedEmbed.build())
+        event.getMessage().editMessageEmbeds(acceptedEmbed.build())
                 .setComponents(event.getMessage().getComponentTree().asDisabled())
                 .queue();
     }

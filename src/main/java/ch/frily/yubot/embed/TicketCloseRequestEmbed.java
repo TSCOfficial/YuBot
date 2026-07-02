@@ -31,7 +31,7 @@ public class TicketCloseRequestEmbed implements IEmbed {
 
     @Override
     public String getDescription() {
-        return String.format("%s hat eine Schliessanfrage gestellt.\nMöchtest du, %s  das Ticket schliessen?", initiator.getAsMention(), ticket.getOwner().getAsMention());
+        return String.format("%s hat eine Schliessanfrage gestellt.\nMöchtest du, %s,  das Ticket schliessen?", initiator.getAsMention(), ticket.getOwner().getAsMention());
     }
 
     @Override

@@ -65,7 +65,7 @@ public class Teamlist { // todo replace with IEmbed and dynamic message
         if (activeMods.isEmpty()) {
             embedBuilder.addField(
                     "Aktive Moderation *(0)*",
-                    String.format("%s/n*Nicht besetzt*", activeModRole.getAsMention()), false);
+                    String.format("%s\n*Nicht besetzt*", activeModRole.getAsMention()), false);
         } else {
             embedBuilder.addField(String.format("Aktive Moderation *(%s)*", activeMods.size()),
                     activeModRole.getAsMention() + "\n" +

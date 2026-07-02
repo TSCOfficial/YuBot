@@ -175,7 +175,6 @@ public class Ticket {
                     }
                     return;
                 }
-
                 throw new IllegalStateException("In diesem Ticket kann keine Schliessanfrage gesendet werden.\n-# Das Ticket ist wohl bereits geschlossen?");
             }
             throw new PermissionDeniedException("Du, als Ticket-ersteller\\*in, kannst das Ticket nicht selbst schliessen.");
@@ -247,14 +246,21 @@ public class Ticket {
      * Removes user permissions, changes status, ...
      */
     public void close(IReplyCallback event, boolean isForceClosed) throws SQLException, ClassNotFoundException {
-        if (isClosable() && (Util.isTeamMember(event.getMember()) || isOwner(event.getMember()))) {
+        if (!isClosable()) {
+            throw new InvalidStateException("Ticket kann nicht geschlossen werden.");
+        }
+
+        if (Util.isTeamMember(event.getMember()) || isOwner(event.getMember())) {
             setPendingRequest(false);
             setStatus(TicketStatus.CLOSED);
+
+            channel.getMemberPermissionOverrides().forEach(memberOverride -> {
+                memberOverride.delete().queue();
+            });
 
             ActionRow actionRow = ActionRow.of(
                     new TicketDeleteBtn().build()
             );
-
 
             TicketClosedOptionsEmbed optionsEmbed = new TicketClosedOptionsEmbed();
             optionsEmbed.setTicket(this);
@@ -263,11 +269,6 @@ public class Ticket {
                 optionsEmbed.setInitiator(event.getMember());
             }
             event.replyEmbeds(optionsEmbed.build()).setComponents(actionRow).queue();
-
-            channel.getMemberPermissionOverrides().forEach(memberOverride -> {
-                memberOverride.delete().queue();
-            });
-
             TicketRepository.updateTicket(this);
         }
     }
