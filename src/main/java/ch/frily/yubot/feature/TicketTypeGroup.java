@@ -24,7 +24,7 @@ public enum TicketTypeGroup {
     BEWERBUNG(
             "Bewerbung",
             String.format("""
-                    Bewerbe dich auf eine offene stelle im %s.
+                    Bewirb dich auf eine offene Stelle im %s.
                     """, EnvResolver.getRoleById(EnvKey.ROLE_YUTEAM).getAsMention())
     );
 
