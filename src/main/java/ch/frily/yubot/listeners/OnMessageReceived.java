@@ -54,7 +54,7 @@ public class OnMessageReceived extends ListenerAdapter {
 
             // Word-Chain game
             if (event.getChannel().getId().equals(EnvResolver.getString(EnvKey.CHANNEL_KETTENBRIEF))) {
-                WordChainGame.handleWord(event.getMessage());
+                WordChainGame.handleWord(event);
             }
         } catch (Exception exception) {
             ExceptionHandler.handle(exception);

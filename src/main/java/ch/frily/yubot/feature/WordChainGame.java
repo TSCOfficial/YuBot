@@ -1,9 +1,14 @@
 package ch.frily.yubot.feature;
 
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,10 +28,13 @@ public class WordChainGame {
 
     /**
      * Handle a sent message
-     * @param message
+     * @param messageEvent
      */
-    public static void handleWord(Message message) {
-        String validateWord = validateWord(message.getContentRaw());
+    public static void handleWord(MessageReceivedEvent messageEvent) {
+        Message message = messageEvent.getMessage();
+
+
+        String validateWord = validateWord(messageEvent);
         if (validateWord != null) {
             log.info("Invalid word: {}", message.getContentRaw());
             message.delete().queue();
@@ -35,7 +43,6 @@ public class WordChainGame {
 
             String infoMessage = String.format("""
                     %s dein Wort ist ungültig.
-                    Bitte überprüfe, dass es nur ein Wort ist.
                     -# Grund: %s
                     -# *<:timer:1522290651742339122> Nachricht wird <t:%d:R> gelöscht.*
                     """, message.getAuthor().getAsMention(), validateWord, timestamp);
@@ -49,10 +56,24 @@ public class WordChainGame {
     /**
      * Check if a message is valid for the word chain game
      * <p>
-     * @param message
+     * @param messageEvent
      * @return null if valid, otherwise a string with the reason why it is invalid
      */
-    private static String validateWord(String message) {
+    private static String validateWord(MessageReceivedEvent messageEvent) {
+        List<Message> history = messageEvent.getChannel().getHistory().retrievePast(2).complete();
+
+        if (history.size() >= 2) {
+            Message previousMessage = history.get(1);
+            Member previousMember = previousMessage.getMember();
+            Member currentMember = messageEvent.getMember();
+
+            if (previousMember.getIdLong() == currentMember.getIdLong()) {
+                return "Du kannst nicht zweimal hintereinander ein Wort senden.";
+            }
+        }
+
+
+        String message = messageEvent.getMessage().getContentRaw();
         if (message.isBlank()) {
             return "Du musst ein Wort eingeben.";
         }
@@ -74,7 +95,7 @@ public class WordChainGame {
         if (!matcher.find()) {
             return null;
         }
-        return "Dein Wort darf keine Leer- oder Sonderzeichen enthalten.";
+        return "Das Wort darf keine Leer- oder Sonderzeichen enthalten.";
     }
 
     private static String containsAtLeastOneLetter(String message) {
@@ -83,7 +104,7 @@ public class WordChainGame {
         if (matcher.results().count() > 1) {
             return null;
         } else {
-            return "Dein Wort muss mindestens ein Buchstabe enthalten.";
+            return "Das Wort muss mindestens ein Buchstabe enthalten.";
         }
     }
 
