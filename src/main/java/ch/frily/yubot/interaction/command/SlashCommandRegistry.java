@@ -2,12 +2,9 @@ package ch.frily.yubot.interaction.command;
 
 import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.interaction.command.cmd.*;
-import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -50,7 +47,7 @@ public class SlashCommandRegistry {
 
         List<ISlashCommandGroup> slashCommandGroups = List.of(
                 new TicketCmdGroup(),
-                new ClosureCmdGroup(),
+                new ActiveModCmdGroup(),
                 new SendCmdGroup()
         );
 

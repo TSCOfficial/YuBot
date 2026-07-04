@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.Permission;
 
 import java.util.List;
 
-public class ClosureCmdGroup implements ISlashCommandGroup {
+public class ActiveModCmdGroup implements ISlashCommandGroup {
     @Override
     public String getName() {
         return "activemod";
@@ -15,8 +15,9 @@ public class ClosureCmdGroup implements ISlashCommandGroup {
     @Override
     public List<ISlashSubcommand> getSubcommands() {
         return List.of(
-                new ClosureOptInCmd(),
-                new ClosureOptOutCmd()
+                new ActiveModOptInCmd(),
+                new ActiveModOptOutCmd(),
+                new ActiveModKillCmd()
         );
     }
 
