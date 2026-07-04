@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 public enum Table {
     TICKET("ticket", TicketColumn.class),
     TICKET_TYPE_CONTROL("ticket_type_control", TicketTypeControlColumn.class),
-    CLOSURE("closure", ClosureColumn.class),
+    ACTIVE_MOD("active_mod", ActiveModColumn.class),
+    ACTIVE_MOD_TRACKING("active_mod_tracking", ActiveModTrackingColumn.class),
     DYNAMIC_MESSAGE("dynamic_message", DynamicMessageColumn.class);
 
     private final String table;
@@ -57,14 +58,24 @@ public enum Table {
         private final String column;
     }
 
-    // CLOSURE
+    // ACTIVE MOD
     @Getter
     @RequiredArgsConstructor
-    public enum ClosureColumn implements Column {
+    public enum ActiveModColumn implements Column {
         MODERATOR_ID("moderator_id"),
         LAST_ACTIVITY_AT("last_activity_at"),
         ACTIVITY_REQUESTED_AT("activity_requested_at"),
-        ACTIVITY_REQUEST_MESSAGE_ID("activity_request_message_id"),;
+        ACTIVITY_REQUEST_MESSAGE_ID("activity_request_message_id"),
+        REQUESTED_ATTENTION_MESSAGE_ID("requested_attention_message_id");
+        private final String column;
+    }
+
+    // ACTIVE MOD TRACKING
+    @Getter
+    @RequiredArgsConstructor
+    public enum ActiveModTrackingColumn implements Column {
+        MODERATOR_ID("moderator_id"),
+        ACTIVE_TIME("active_time");
         private final String column;
     }
 }

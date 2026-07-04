@@ -43,7 +43,7 @@ public class ClosureActivityRequestEmbed implements IEmbed {
 
         builder.append(
                 String.format("-# Du hast %d Minuten Zeit um deine Anwesenheit zu bestätigen. Falls du nicht bestätigst, wird dir die %s Rolle automatisch entfernt.",
-                        Closure.getMAX_ACTIVITY_REQUEST_RESPONSE_TIME(), activeModRole
+                        Closure.getMAX_NORMAL_ACTIVITY_REQUEST_RESPONSE_TIME(), activeModRole
                 )
         );
 

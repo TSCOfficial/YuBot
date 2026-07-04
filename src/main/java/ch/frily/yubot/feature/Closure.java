@@ -14,14 +14,13 @@ import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -45,7 +44,10 @@ public class Closure extends Feature {
 
     /** How long an activity request stays open till it gets automatically rejected [in minutes]*/
     @Getter
-    private static final int MAX_ACTIVITY_REQUEST_RESPONSE_TIME = 10;
+    private static final int MAX_NORMAL_ACTIVITY_REQUEST_RESPONSE_TIME = 10;
+    
+    /** How long an activity request stays open, if the mod is the only active mod [in minutes] */
+    private static final int PING_MODS_AFTER_ACTIVITY_REQUEST_IF_ALONE = 5;
 
     public static Closure getInstance() {
         if (instance == null) {
@@ -82,8 +84,8 @@ public class Closure extends Feature {
             lobbyChannel.sendMessage(String.format("%s, es ist Zeit zu quatschen ✨", mentionRole.getAsMention())).queue();
 
             logChannel.sendMessageEmbeds(new ClosureLogEmbed(true).build()).queue();
-            guild.getManager().setIcon(Icon.from(new File("src/main/resources/icon/server-icon.png"))).queue();
-            guild.getManager().setBanner(Icon.from(new File("src/main/resources/icon/server-banner.png"))).queue();
+            guild.getManager().setIcon(Icon.from(getClass().getResourceAsStream("icon/server-icon.png"))).queue();
+            guild.getManager().setBanner(Icon.from(getClass().getResourceAsStream("icon/server-banner.png"))).queue();
         }
         // Closing the server
         if (!isOpen && everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL)) {
@@ -94,8 +96,8 @@ public class Closure extends Feature {
                     Der server ist nun geschlossen.
                     -# Es gibt keine aktiven Moderatoren mehr.
                     """, EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_SERVERGESCHLOSSEN).getAsMention())).queue();
-            guild.getManager().setIcon(Icon.from(new File("src/main/resources/icon/server-icon-closed.png"))).queue();
-            guild.getManager().setBanner(Icon.from(new File("src/main/resources/icon/server-banner-closed.png"))).queue();
+            guild.getManager().setIcon(Icon.from(getClass().getResourceAsStream("/icon/server-icon-closed.png"))).queue();
+            guild.getManager().setBanner(Icon.from(getClass().getResourceAsStream("/icon/server-banner-closed.png"))).queue();
         }
     }
 
@@ -158,7 +160,7 @@ public class Closure extends Feature {
      */
     private static void syncDatabaseMods() throws SQLException, ClassNotFoundException {
         // All mods based on the database data
-        List<ActiveMod> currentModsInDatabase = ClosureRepository.getModerators();
+        List<ActiveMod> currentModsInDatabase = ActiveModRepository.getModerators();
 
         List<Member> activeMods = getActiveMods();
 
@@ -184,11 +186,11 @@ public class Closure extends Feature {
 
 
         for (Member member : modsToRemove) {
-            ClosureRepository.deleteModerator(member);
+            ActiveModRepository.deleteModerator(member);
         }
 
         for (Member member : modsToAdd) {
-            ClosureRepository.createModerator(member);
+            ActiveModRepository.createModerator(member);
         }
     }
 
@@ -208,12 +210,12 @@ public class Closure extends Feature {
     }
 
     public static void handleModActivity(Member member) throws SQLException, ClassNotFoundException {
-        ActiveMod activeMod = ClosureRepository.getModerator(member);
+        ActiveMod activeMod = ActiveModRepository.getModerator(member);
         if (activeMod.activityRequestMessageId() != null && activeMod.activityRequestMessageId() != 0) { // automatically accept an active activity-prove-request
             TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
             channel.deleteMessageById(activeMod.activityRequestMessageId()).queue();
         }
-        ClosureRepository.updateModeratorActivity(member);
+        ActiveModRepository.updateModeratorActivity(member);
     }
 
     /**
@@ -230,8 +232,8 @@ public class Closure extends Feature {
                     .addEmbeds(new ClosureActivityRequestEmbed(moderator).build())
                     .setComponents(actionrow)
                     .queue(ThrowingConsumer.wrap(null, message -> {
-                        ActiveMod updatedActiveMod = new ActiveMod(moderator.member(), moderator.lastActivityAt(), LocalDateTime.now(), message.getIdLong());
-                        ClosureRepository.updateModerator(updatedActiveMod);
+                        ActiveMod updatedActiveMod = new ActiveMod(moderator.member(), moderator.lastActivityAt(), LocalDateTime.now(), message.getIdLong(), moderator.activityRequestMessageId());
+                        ActiveModRepository.updateModerator(updatedActiveMod);
                     }
                     ));
         } else {
@@ -244,7 +246,25 @@ public class Closure extends Feature {
      * @param moderator
      */
     private static void handleActivityProveTimeout(ActiveMod moderator) {
-        if (moderator.activityRequestedAt().isBefore(LocalDateTime.now().minusMinutes(Closure.getMAX_ACTIVITY_REQUEST_RESPONSE_TIME()))) {
+        if (getActiveMods().size() == 1) {
+            if (moderator.activityRequestedAt().isBefore(LocalDateTime.now().minusMinutes(Closure.PING_MODS_AFTER_ACTIVITY_REQUEST_IF_ALONE)) && moderator.requestedAttentionMessageId() == null) {
+                TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
+                channel.sendMessage(String.format("""
+                                %s
+                                ⚠️ %s hat bislang noch nicht auf die Aktivitätsbestätigungsanfrage geantwortet.
+                                Der Server würde <t:%d:R> schliessen.
+                                -# Halte du den Server offen indem du dich </activemod opt-in:1518320360834207866> machst.
+                                """,
+                        EnvResolver.getRoleById(EnvKey.ROLE_MODERATOR).getAsMention(),
+                        moderator.member().getAsMention(),
+                        Instant.now().plus(5, java.time.temporal.ChronoUnit.MINUTES).toEpochMilli() / 1000
+                )).queue(ThrowingConsumer.wrap(null, message -> {
+                    ActiveMod updatedActiveMod = new ActiveMod(moderator.member(), moderator.lastActivityAt(), moderator.activityRequestedAt(), moderator.activityRequestMessageId(), message.getIdLong());
+                    ActiveModRepository.updateModerator(updatedActiveMod);
+                }));
+            }
+        }
+        if (moderator.activityRequestedAt().isBefore(LocalDateTime.now().minusMinutes(Closure.MAX_NORMAL_ACTIVITY_REQUEST_RESPONSE_TIME))) {
             Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
             TextChannel channel = guild.getTextChannelById(1516042711273046087L);
 
@@ -256,12 +276,7 @@ public class Closure extends Feature {
                 ).setComponents().setEmbeds().queue();
             });
 
-
             guild.removeRoleFromMember(moderator.member(), EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD)).queue();
         }
-    }
-
-    private static void updateTicketPanel() {
-
     }
 }

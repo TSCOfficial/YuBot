@@ -23,18 +23,12 @@ public class TicketClosedOptionsEmbed implements IEmbed {
 
     @Override
     public String getAuthorName() {
-        if (ticket.getAssignee() != null) {
-            return ticket.getAssignee().getEffectiveName();
-        }
-        return null;
+        return initiator.getEffectiveName();
     }
 
     @Override
     public String getAuthorIconUrl() {
-        if (ticket.getAssignee() != null) {
-            return ticket.getAssignee().getAvatarUrl();
-        }
-        return null;
+        return initiator.getEffectiveAvatarUrl();
     }
 
     @Override

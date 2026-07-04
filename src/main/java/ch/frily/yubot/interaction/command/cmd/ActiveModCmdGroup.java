@@ -17,7 +17,8 @@ public class ActiveModCmdGroup implements ISlashCommandGroup {
         return List.of(
                 new ActiveModOptInCmd(),
                 new ActiveModOptOutCmd(),
-                new ActiveModKillCmd()
+                new ActiveModKillCmd(),
+                new ActiveModStatisticCmd()
         );
     }
 

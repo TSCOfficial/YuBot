@@ -64,6 +64,8 @@ public interface IEmbed {
             builder.setAuthor(getAuthorName(), getAuthorUrl(), getAuthorIconUrl());
         } else if (getAuthorName() != null && getAuthorUrl() != null) {
             builder.setAuthor(getAuthorName(), getAuthorUrl());
+        } else if (getAuthorName() != null && getAuthorIconUrl() != null) {
+            builder.setAuthor(getAuthorName(), null, getAuthorIconUrl());
         } else if (getAuthorName() != null) {
             builder.setAuthor(getAuthorName());
         }

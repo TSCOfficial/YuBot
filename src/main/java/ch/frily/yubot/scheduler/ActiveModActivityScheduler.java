@@ -1,10 +1,8 @@
 package ch.frily.yubot.scheduler;
 
+import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.ThrowingConsumer;
-import ch.frily.yubot.feature.ActiveMod;
-import ch.frily.yubot.feature.Closure;
-import ch.frily.yubot.feature.ClosureRepository;
-import lombok.SneakyThrows;
+import ch.frily.yubot.feature.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
@@ -17,12 +15,16 @@ public class ActiveModActivityScheduler implements Scheduler {
 
     @Override
     public void execute() throws SQLException, ClassNotFoundException {
-        List<ActiveMod> outdatedActiveMods = ClosureRepository.getModerators().stream().filter(activeMod -> {
-                    return activeMod.lastActivityAt().isBefore(LocalDateTime.now().minusMinutes(Closure.getMIN_INACTIVITY_TIME()));
+        List<ActiveMod> outdatedActiveMods = ActiveModRepository.getModerators().stream().filter(activeMod -> {
+            try {
+                ActiveModTrackingRepository.upsertActiveMod(activeMod.member());
+            } catch (Exception exception) {
+                ExceptionHandler.handle(exception);
+            }
+            return activeMod.lastActivityAt().isBefore(LocalDateTime.now().minusMinutes(Closure.getMIN_INACTIVITY_TIME()));
         }).toList();
 
         outdatedActiveMods.forEach(Closure::requestActivityProve);
-        log.debug("Executed ActiveModActivityScheduler: {} outdated active mods found out of {} active mods.", outdatedActiveMods.size(), ClosureRepository.getModerators().size());
     }
 
     @Override

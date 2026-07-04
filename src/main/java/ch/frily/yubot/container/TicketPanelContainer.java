@@ -21,7 +21,7 @@ public class TicketPanelContainer extends Container {
 
     public TicketPanelContainer() {
 
-        boolean isServerOpen = ClosureRepository.hasActiveModerators();
+        boolean isServerOpen = ActiveModRepository.hasActiveModerators();
         AtomicBoolean hasAnyClosedTypes = new AtomicBoolean(false);
 
         this.setColor(new Color("789bac").get());

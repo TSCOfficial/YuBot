@@ -2,8 +2,7 @@ package ch.frily.yubot.interaction.button.btn;
 
 import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.feature.ActiveMod;
-import ch.frily.yubot.feature.Closure;
-import ch.frily.yubot.feature.ClosureRepository;
+import ch.frily.yubot.feature.ActiveModRepository;
 import ch.frily.yubot.interaction.button.IButton;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
@@ -35,7 +34,7 @@ public class ActiveModActivityRejectBtn implements IButton {
 
     @Override
     public void execute(@NotNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
-        ActiveMod forActiveMod = ClosureRepository.getModeratorByRequestMessageId(event.getMessageIdLong());
+        ActiveMod forActiveMod = ActiveModRepository.getModeratorByActivityRequestMessageId(event.getMessageIdLong());
         if (event.getMember().equals(forActiveMod.member())) {
             Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
             guild.removeRoleFromMember(forActiveMod.member(), EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD)).queue();

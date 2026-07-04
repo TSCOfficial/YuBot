@@ -66,6 +66,23 @@ public class Util {
         return openDuration;
     }
 
+    public static String calcDuration(int minutes) {
+        long days = minutes / 1440;
+        long hours = (minutes % 1440) / 60;
+        long minutesLeft = minutes % 60;
+
+        String openDuration;
+        if (days > 0) {
+            openDuration = String.format("%dd %dh %dmin", days, hours, minutesLeft);
+        } else if (hours > 0) {
+            openDuration = String.format("%dh %dmin", hours, minutesLeft);
+        } else {
+            openDuration = String.format("%dmin", minutesLeft);
+        }
+
+        return openDuration;
+    }
+
     /**
      * Escapes characters in a text that are interpreted as Markdown on Discord.
      * @param input The string to escape

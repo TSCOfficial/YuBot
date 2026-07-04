@@ -1,10 +1,9 @@
 package ch.frily.yubot.interaction.button.btn;
 
-import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.feature.ActiveMod;
 import ch.frily.yubot.feature.Closure;
-import ch.frily.yubot.feature.ClosureRepository;
+import ch.frily.yubot.feature.ActiveModRepository;
 import ch.frily.yubot.interaction.button.IButton;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -33,7 +32,7 @@ public class ActiveModActivityProveBtn implements IButton {
 
     @Override
     public void execute(@NotNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
-        ActiveMod forActiveMod = ClosureRepository.getModeratorByRequestMessageId(event.getMessageIdLong());
+        ActiveMod forActiveMod = ActiveModRepository.getModeratorByActivityRequestMessageId(event.getMessageIdLong());
         if (event.getMember().equals(forActiveMod.member())) {
             Closure.handleModActivity(event.getMember());
             event.reply("✅ Vielen dank, deine Aktivität wurde erfolgreich bestätigt.").setEphemeral(true).queue();

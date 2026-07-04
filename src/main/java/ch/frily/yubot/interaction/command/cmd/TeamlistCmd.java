@@ -7,6 +7,7 @@ import ch.frily.yubot.util.EnvResolver;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -14,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 @Slf4j
 public class TeamlistCmd implements ISlashCommand {
@@ -38,9 +40,17 @@ public class TeamlistCmd implements ISlashCommand {
         return Map.of();
     }
 
+//    @Override // temporarly removed until the teamlist was updated to dynamic message
+//    public List<Permission> getDefaultPermissions() {
+//        return List.of(Permission.ADMINISTRATOR);
+//    }
+
+
     @Override
-    public List<Permission> getDefaultPermissions() {
-        return List.of(Permission.ADMINISTRATOR);
+    public List<Role> getAllowedRoles() {
+        return Stream.of(
+                EnvKey.ROLE_YUTEAM
+        ).map(EnvResolver::getRoleById).toList();
     }
 
     @Override
@@ -52,7 +62,7 @@ public class TeamlistCmd implements ISlashCommand {
         EnvResolver.getMessageById(event.getGuild().getIdLong(), channel.getIdLong(), channel.getLatestMessageIdLong()).thenAccept(message -> {
             message.editMessageEmbeds(embed).queue();
         }).exceptionally(error -> {
-            channel.sendMessage("").addEmbeds(embed).queue();
+            channel.sendMessageEmbeds(embed).queue();
             return null;
         });
         event.getHook().sendMessage("✅ Teamliste wurde aktualisiert.").setEphemeral(true).queue();
