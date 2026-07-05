@@ -21,7 +21,8 @@ public class SendCmdGroup implements ISlashCommandGroup {
     public List<ISlashSubcommand> getSubcommands() {
         return List.of(
                 new SendContainerCmd(),
-                new SendEmbedCmd()
+                new SendEmbedCmd(),
+                new SendDynamicMsgCmd()
         );
     }
 }

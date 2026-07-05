@@ -65,7 +65,7 @@ public enum TicketType {
     ),
     SUPPORT_LEITUNG(
             "leit",
-            "🚨 Leitung",
+            "⚖️ Leitung",
             "Teambeschwerden oder weitere sehr wichtig anliegen",
             """
                     Bitte beschreibe dein Anliegen so genau wie möglich:

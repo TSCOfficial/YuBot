@@ -15,7 +15,8 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-public class SendDynamicMsgCmd implements ISlashSubcommand {
+@Deprecated
+public class SendDynamicMsgCmd implements ISlashSubcommand { // todo replace by an upsert with argument-support
     @Override
     public String getName() {
         return "dynamic";
@@ -40,7 +41,7 @@ public class SendDynamicMsgCmd implements ISlashSubcommand {
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
         String containerValue = event.getOption("message").getAsString();
-        DynamicMessageList.valueOf(containerValue).update(false);
+        DynamicMessageList.valueOf(containerValue).update(); // this can cause errors when the dynamic messages requests arguments!
 
         event.reply("✅ Dynamische Nachricht \"" + humanizeEnumName(containerValue) + "\" erfolgreich gesendet.")
                 .setEphemeral(true)
