@@ -246,8 +246,12 @@ public class Closure extends Feature {
      * @param moderator
      */
     private static void handleActivityProveTimeout(ActiveMod moderator) {
+        log.info("handling activity prove timeout");
         if (getActiveMods().size() == 1) {
-            if (moderator.activityRequestedAt().isBefore(LocalDateTime.now().minusMinutes(Closure.PING_MODS_AFTER_ACTIVITY_REQUEST_IF_ALONE)) && moderator.requestedAttentionMessageId() == null) {
+            log.info("active mod count: 1");
+            log.info("requtested attention message id: {}", moderator.requestedAttentionMessageId());
+            log.info("activity request was 5 minutes ago: {}", moderator.activityRequestedAt().isBefore(LocalDateTime.now().minusMinutes(Closure.PING_MODS_AFTER_ACTIVITY_REQUEST_IF_ALONE)));
+            if (moderator.activityRequestedAt().isBefore(LocalDateTime.now().minusMinutes(Closure.PING_MODS_AFTER_ACTIVITY_REQUEST_IF_ALONE)) && moderator.requestedAttentionMessageId() == 0) {
                 TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
                 channel.sendMessage(String.format("""
                                 %s
