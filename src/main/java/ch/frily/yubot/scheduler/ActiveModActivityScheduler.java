@@ -3,6 +3,7 @@ package ch.frily.yubot.scheduler;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.feature.*;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
@@ -24,7 +25,13 @@ public class ActiveModActivityScheduler implements Scheduler {
             return activeMod.lastActivityAt().isBefore(LocalDateTime.now().minusMinutes(Closure.getMIN_INACTIVITY_TIME()));
         }).toList();
 
-        outdatedActiveMods.forEach(Closure::requestActivityProve);
+        outdatedActiveMods.forEach(activeMod -> {
+            try {
+                Closure.requestActivityProve(activeMod);
+            } catch (Exception exception) {
+                ExceptionHandler.handle(exception);
+            }
+        });
     }
 
     @Override

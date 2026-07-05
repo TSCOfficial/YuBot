@@ -1,7 +1,9 @@
 package ch.frily.yubot.interaction.command.cmd;
 
+import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.PermissionDeniedException;
+import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.feature.Closure;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.util.EnvKey;
@@ -38,8 +40,9 @@ public class ActiveModOptInCmd implements ISlashSubcommand {
         if (event.getMember().getRoles().contains(activeMod)) {
             throw new InvalidStateException("Du bist bereits als aktiver moderator\\*in markiert.", null);
         }
-        event.getGuild().addRoleToMember(event.getMember(), activeMod).submit().thenAccept(_ -> {
+        event.getGuild().addRoleToMember(event.getMember(), activeMod).submit().thenAccept(ThrowingConsumer.wrap(null, _ -> {
             int activeModCount = Closure.getActiveMods().size();
+            Closure.deleteRequestedAttentionMessage();
 
             String countInfo = "Es sind nun **" + activeModCount + "** aktive Moderator\\*innen.";
             if (activeModCount == 1) {
@@ -47,6 +50,6 @@ public class ActiveModOptInCmd implements ISlashSubcommand {
             }
 
             event.reply("✅ Du wurdest als aktive\\*r moderator\\*in markiert.\n-# " + countInfo).setEphemeral(true).queue();
-        });
+        }));
     }
 }

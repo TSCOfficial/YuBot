@@ -96,6 +96,26 @@ public class ActiveModRepository {
         return new ActiveMod(member, lastActivityAt, activityRequestedAtTimestamp == null ? null : activityRequestedAtTimestamp.toLocalDateTime(), activityRequestMessageId, requestedAttentionMessageId);
     }
 
+    public static List<ActiveMod> getModeratorsByRequestedAttentionMessageId() throws SQLException, ClassNotFoundException {
+        DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD);
+        query.where(Table.ActiveModColumn.REQUESTED_ATTENTION_MESSAGE_ID, DatabaseQuery.Operator.NOT_EQUALS, 0L);
+        query.select();
+        ResultSet resultSet = query.executeDataQuery();
+
+        List<ActiveMod> activeMods = new ArrayList<>();
+        while (resultSet.next()) {
+            Member member = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getMemberById(resultSet.getLong(Table.ActiveModColumn.MODERATOR_ID.getColumn()));
+            LocalDateTime lastActivityAt = resultSet.getTimestamp(Table.ActiveModColumn.LAST_ACTIVITY_AT.getColumn()).toLocalDateTime();
+            Timestamp activityRequestedAtTimestamp = resultSet.getTimestamp(Table.ActiveModColumn.ACTIVITY_REQUESTED_AT.getColumn());
+            long activityRequestMessageId = resultSet.getLong(Table.ActiveModColumn.ACTIVITY_REQUEST_MESSAGE_ID.getColumn());
+            long requestedAttentionMessageId = resultSet.getLong(Table.ActiveModColumn.REQUESTED_ATTENTION_MESSAGE_ID.getColumn());
+            ActiveMod activeMod = new ActiveMod(member, lastActivityAt, activityRequestedAtTimestamp == null ? null : activityRequestedAtTimestamp.toLocalDateTime(), activityRequestMessageId, requestedAttentionMessageId);
+            activeMods.add(activeMod);
+        }
+
+        return activeMods;
+    }
+
     public static void deleteModerator(Member member) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD);
         query.where(Table.ActiveModColumn.MODERATOR_ID, DatabaseQuery.Operator.EQUALS, member.getIdLong()).delete();
