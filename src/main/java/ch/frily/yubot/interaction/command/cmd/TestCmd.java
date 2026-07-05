@@ -30,7 +30,13 @@ public class TestCmd implements ISlashCommand {
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
-
+        try {
+            Guild guild = event.getGuild();
+            guild.getManager().setIcon(Icon.from(getClass().getResourceAsStream("/icon/server-icon.png"))).queue();
+            guild.getManager().setBanner(Icon.from(getClass().getResourceAsStream("/icon/server-banner.png"))).queue();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         event.reply("executed").setEphemeral(true).queue();
     }
 

@@ -84,8 +84,8 @@ public class Closure extends Feature {
             lobbyChannel.sendMessage(String.format("%s, es ist Zeit zu quatschen ✨", mentionRole.getAsMention())).queue();
 
             logChannel.sendMessageEmbeds(new ClosureLogEmbed(true).build()).queue();
-            guild.getManager().setIcon(Icon.from(getClass().getResourceAsStream("icon/server-icon.png"))).queue();
-            guild.getManager().setBanner(Icon.from(getClass().getResourceAsStream("icon/server-banner.png"))).queue();
+            guild.getManager().setIcon(Icon.from(getClass().getResourceAsStream("/icon/server-icon.png"))).queue();
+            guild.getManager().setBanner(Icon.from(getClass().getResourceAsStream("/icon/server-banner.png"))).queue();
         }
         // Closing the server
         if (!isOpen && everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL)) {
