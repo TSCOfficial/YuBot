@@ -13,7 +13,7 @@ public enum TicketType {
             "🔰 Modticket",
             null,
             """
-                    Das Serverteam hat ein Ticket geöffnet.
+                    Das Serverteam hat ein Ticket für dich geöffnet, um ein geschützten Chatkanal mit dir führen zu können.
                     """,
             null,
             List.of(EnvKey.ROLE_SUPPORT, EnvKey.ROLE_MODERATOR)
@@ -66,7 +66,7 @@ public enum TicketType {
     SUPPORT_LEITUNG(
             "leit",
             "⚖️ Leitung",
-            "Teambeschwerden oder weitere sehr wichtig anliegen",
+            "Serverweite/wichtige Anliegen, Teambeschwerden o.Ä.",
             """
                     Bitte beschreibe dein Anliegen so genau wie möglich:
                     - Worum geht es? (Kurze Zusammenfassung)
@@ -74,7 +74,7 @@ public enum TicketType {
                     Die Serverleitung meldet sich so schnell wie möglich bei dir.
                     """,
             TicketTypeGroup.SUPPORT,
-            List.of(EnvKey.ROLE_ADMIN, EnvKey.ROLE_SERVERLEITUNG)
+            List.of(EnvKey.ROLE_SERVERLEITUNG)
     ),
     // AWARENESS
     AWARENESS_PROBLEME(
@@ -95,17 +95,33 @@ public enum TicketType {
             "🔩 Fachbereich Support",
             "Bewerbung Fachbereich Support",
             """
-                    n/a
+                    Bitte verfasse deine Bewerbung. Für deine Bewerbung ist uns Folgendes wichtig::
+                    
+                    - Kurze Vorstellung (Name, Alter, Pronomen, ...)
+                    - Warum möchtest du Teil des Supportteams werden?
+                    - Deine zeitliche Verfügbarkeit
+                    - Bisherige Erfahrungen in dem Bereich
+                    Du kannst gerne mehr schreiben!
+                    
+                    Sobald du deine Bewerbung geschrieben hast, meldet sich die zuständige Person bei dir.
                     """,
             TicketTypeGroup.BEWERBUNG,
-            List.of(EnvKey.ROLE_MODLEITUNG)
+            List.of(EnvKey.ROLE_SUPPORTLEITUNG)
     ),
     BEWERBUNG_MODERATION(
             "bemod",
             "⚒️ Fachbereich Moderation",
             "Bewerbung Fachbereich Moderation",
             """
-                    n/a
+                    Bitte verfasse deine Bewerbung. Für deine Bewerbung ist uns Folgendes wichtig::
+                    
+                    - Kurze Vorstellung (Name, Alter, Pronomen, ...)
+                    - Warum möchtest du Teil des Moderationsteam werden?
+                    - Deine zeitliche Verfügbarkeit
+                    - Bisherige Erfahrungen in dem Bereich
+                    Du kannst gerne mehr schreiben!
+                    
+                    Sobald du deine Bewerbung geschrieben hast, meldet sich die zuständige Person bei dir.
                     """,
             TicketTypeGroup.BEWERBUNG,
             List.of(EnvKey.ROLE_SERVERLEITUNG)
@@ -115,7 +131,15 @@ public enum TicketType {
             "💚 Fachbereich Awareness",
             "Bewerbung Fachbereich Awareness",
             """
-                    n/a
+                    Bitte verfasse deine Bewerbung. Für deine Bewerbung ist uns Folgendes wichtig::
+                    
+                    - Kurze Vorstellung (Name, Alter, Pronomen, ...)
+                    - Warum möchtest du Teil des Awarenessteam werden?
+                    - Deine zeitliche Verfügbarkeit
+                    - Bisherige Erfahrungen in dem Bereich
+                    Du kannst gerne mehr schreiben!
+                    
+                    Sobald du deine Bewerbung geschrieben hast, meldet sich die zuständige Person bei dir.
                     """,
             TicketTypeGroup.BEWERBUNG,
             List.of(EnvKey.ROLE_AWARENESSLEITUNG)
@@ -125,7 +149,15 @@ public enum TicketType {
             "🎊 Fachbereich Event",
             "Bewerbung Fachbereich Event",
             """
-                    n/a
+                    Bitte verfasse deine Bewerbung. Für deine Bewerbung ist uns Folgendes wichtig::
+                    
+                    - Kurze Vorstellung (Name, Alter, Pronomen, ...)
+                    - Warum möchtest du Teil des Eventteams werden?
+                    - Deine zeitliche Verfügbarkeit
+                    - Bisherige Erfahrungen in dem Bereich
+                    Du kannst gerne mehr schreiben!
+                    
+                    Sobald du deine Bewerbung geschrieben hast, meldet sich die zuständige Person bei dir.
                     """,
             TicketTypeGroup.BEWERBUNG,
             List.of(EnvKey.ROLE_EVENTLEITUNG)
