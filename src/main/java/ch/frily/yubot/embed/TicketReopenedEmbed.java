@@ -4,6 +4,8 @@ import ch.frily.yubot.feature.Ticket;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.Member;
 
+import java.awt.*;
+
 /**
  * Embed used after the Ticket was closed. Displays Ticket Informations
  */
@@ -34,6 +36,11 @@ public class TicketReopenedEmbed implements IEmbed {
     @Override
     public String getDescription() {
         return String.format("%s hat das Ticket erneut geöffnet.", initiator.getAsMention());
+    }
+
+    @Override
+    public Color getColor() {
+        return initiator.getColors().getPrimary();
     }
 
     @Override

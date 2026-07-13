@@ -41,7 +41,7 @@ public interface IEmbed {
     };
 
     default java.awt.Color getColor(){
-        return new Color("cf3f05").get();
+        return Color.LIGHT_GRAY;
     };
 
     default String getFooterText(){

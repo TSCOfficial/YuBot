@@ -4,6 +4,8 @@ import ch.frily.yubot.feature.Ticket;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.Member;
 
+import java.awt.*;
+
 /**
  * Embed used after the Ticket was closed. Displays Ticket Informations
  */
@@ -53,6 +55,14 @@ public class TicketClosedOptionsEmbed implements IEmbed {
         }
         description.append("Soll das Ticket gelöscht werden?\n-# Ein Transkript wird automatisch generiert und hinterlegt.");
         return description.toString();
+    }
+
+    @Override
+    public Color getColor() {
+        if (initiator != null) {
+            return initiator.getColors().getPrimary();
+        }
+        return ticket.getOwner().getColors().getPrimary();
     }
 
     @Override
