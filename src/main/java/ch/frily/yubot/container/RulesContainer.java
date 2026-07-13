@@ -3,6 +3,7 @@ package ch.frily.yubot.container;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
@@ -38,6 +39,8 @@ public class RulesContainer extends Container {
                 - §7 Umgang mit Regelbrüchen
                 - §8 Server-Staff
                 - §9 Vergabe und Entzug erweiterter Rechte
+                - §10 Datenschutzgrundverordnung (DSGVO)
+                - §11 Zusäzliche Werke
                 """);
 
         this.buildContainerWithCurrentComponents();
@@ -161,6 +164,29 @@ public class RulesContainer extends Container {
                 ² Ist die verantwortungsvolle Benutzung der Rechte aus Sicht des Serverowners, der Serverleitung oder der zuständigen Teamleitung nicht gegeben, können diese Rechte jederzeit wieder entzogen werden.
                 """
         );
+
+        this.addInvisibleSeparator(Separator.Spacing.SMALL);
+
+        this.addTextDisplay("**§10 Datenschutzgrundverordnung (DSGVO)**");
+        this.addTextDisplay("""
+                Der Schutz der Privatsphäre und persönlichen Daten aller User*innen ist uns sehr wichtig. Auf diesem Server gilt somit ausdrücklich die DSGVO.
+                Dies bedeutet z.B., dass das Aufnehmen von anderen Personen in Voice Calls, das Fotografieren, Veröffentlichen von Screenshots, Weitergeben privater Inhalte oder Verarbeiten personenbezogener Daten ist ohne ausdrückliche Zustimmung der betroffenen Person nicht gestattet ist.
+                Dies gilt insbesondere für Voice Calls, private Nachrichten, Bilder, persönliche Daten und andere sensible Inhalte. Verstöße gegen diese Regel können je nach Schwere Konsequenzen bis hin zum Ausschluss vom Server haben.
+                """
+        );
+
+        this.addInvisibleSeparator(Separator.Spacing.SMALL);
+
+        this.addTextDisplay("**§11 Zusäzliche Werke**");
+        this.addTextDisplay("Zusätzlich zu allen Server Regeln gelten auf diesem Server die deutschen Gesetze (Grundgesetz, etc.), sowie die Discord Nutzungsbedingungen (ToS).");
+        this.addComponent(
+                ActionRow.of(
+                        Button.link("https://www.gesetze-im-internet.de/", "Deutsches Gesetz"),
+                        Button.link("https://discord.com/terms", "Discord ToS")
+                )
+        );
+
+        this.addInvisibleSeparator(Separator.Spacing.SMALL);
 
         this.addLineSeparator(Separator.Spacing.LARGE);
 
