@@ -16,6 +16,7 @@ public class PermissionDeniedException extends ClientException {
      */
     public PermissionDeniedException(String hint) {
         super(DEFAULT_MESSAGE, hint);
+        this.setLogStackTrace(false);
     }
 
     /**

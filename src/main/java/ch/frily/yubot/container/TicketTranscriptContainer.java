@@ -24,7 +24,13 @@ public class TicketTranscriptContainer extends Container {
             this.addComponent(TextDisplay.of(Util.format("**Kategorie**: `{} / {}`", ticket.getType().getGroup().getLabel(), ticket.getType().getLabel())));
         }
 
-        this.addComponent(TextDisplay.of(Util.format("**Erstellt von**: {} ({})", ticket.getOwner().getAsMention(), ticket.getOwner().getUser().getName())));
+        if (ticket.getOwner() != null) {
+            this.addComponent(TextDisplay.of(Util.format("**Erstellt von**: {} ({})", ticket.getOwner().getAsMention(), ticket.getOwner().getUser().getName())));
+
+        } else {
+            this.addComponent(TextDisplay.of(Util.format("**Erstellt von**: *Person hat den Server verlassen*")))   ;
+
+        }
 
         String assignedMember = "**Verantwortlich**: -";
         if (ticket.getAssignee() != null) {

@@ -36,6 +36,7 @@ public class InteractionListener extends ListenerAdapter {
         try {
             SlashCommandRegistry.getInstance().dispatchInteractionEvent(event);
         } catch (Exception exception) {
+            log.error("Error while dispatching slashcommand interaction for {}: {}", event.getMember().getEffectiveName(), exception.getMessage());
             ExceptionHandler.handle(exception, event);
         }
     }
@@ -54,7 +55,7 @@ public class InteractionListener extends ListenerAdapter {
         try {
             ButtonRegistry.getInstance().dispatchButtonInteraction(event);
         }catch (Exception exception) {
-            log.error("Error while dispatching button interaction: {}", exception.getMessage());
+            log.error("Error while dispatching button interaction for {}: {}", event.getUser().getGlobalName(), exception.getMessage());
             ExceptionHandler.handle(exception, event);
         }
     }
@@ -70,7 +71,7 @@ public class InteractionListener extends ListenerAdapter {
         try {
             ContextMenuRegistry.getInstance().dispatchInteractionEvent(event);
         } catch (Exception exception) {
-            log.error("Error while dispatching context menu interaction: {}", exception.getMessage());
+            log.error("Error while dispatching context interaction for {}: {}", event.getUser().getEffectiveName(), exception.getMessage());
             ExceptionHandler.handle(exception, event);
         }
     }
@@ -80,7 +81,7 @@ public class InteractionListener extends ListenerAdapter {
         try {
             ModalRegistry.getInstance().dispatchModalInteraction(event);
         } catch (Exception exception) {
-            log.debug("Error while dispatching modal interaction: {}", exception.getMessage());
+            log.error("Error while dispatching modal interaction for {}: {}", event.getUser().getEffectiveName(), exception.getMessage());
             ExceptionHandler.handle(exception, event);
         }
     }

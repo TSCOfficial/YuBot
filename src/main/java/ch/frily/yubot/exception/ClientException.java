@@ -17,7 +17,8 @@ public class ClientException extends RuntimeException {
     private Level logLevel;
 
     /** Whether the full stack trace should be logged. */
-    private final boolean logStackTrace;
+    @Setter
+    private boolean logStackTrace;
 
     /** Small subtext shown below the error message. May be <code>null</code>. */
     private final String hint;
