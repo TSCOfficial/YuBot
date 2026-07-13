@@ -158,8 +158,8 @@ public class Ticket {
         if (Util.isTeamMember(event.getMember())) {
             if (!isOwner(event.getMember())) {
                 if (this.isClosable()) {
-                    if (type == TicketType.MODTICKET) { // ModTickets are always force-closed by the mod team
-                        forceClose(event);
+                    if (type == TicketType.MODTICKET || owner == null) { // ModTickets are always force-closed by the mod team
+                        forceClose(event, true);
                     } else {
                         // send close request
                         ActionRow actionRow = ActionRow.of(
@@ -230,8 +230,11 @@ public class Ticket {
     }
 
     public void forceClose(IReplyCallback event) throws PermissionDeniedException, SQLException, ClassNotFoundException {
+        forceClose(event, false);
+    }
+    public void forceClose(IReplyCallback event, boolean skipPermissionCheck) throws PermissionDeniedException, SQLException, ClassNotFoundException {
 
-        if (ALLOW_DIRECT_FORCECLOSE_ROLES.stream().anyMatch(role -> event.getMember().getRoles().contains(role))) {
+        if (!skipPermissionCheck && ALLOW_DIRECT_FORCECLOSE_ROLES.stream().anyMatch(role -> event.getMember().getRoles().contains(role))) {
             close(event, true);
         } else if (isForceClosable()) {
             close(event, true);
@@ -400,8 +403,9 @@ public class Ticket {
     }
 
     public boolean isOwner(Member initiator){
-        log.debug(String.valueOf(initiator.getIdLong()));
-        log.debug(String.valueOf(owner.getIdLong()));
+        if (owner == null) {
+            return false;
+        }
         return initiator.getIdLong() == owner.getIdLong();
     }
 
