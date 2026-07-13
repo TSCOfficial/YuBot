@@ -55,6 +55,11 @@ public abstract class Container {
         return this.components;
     }
 
+    public List<ContainerChildComponent> addComponents(ContainerChildComponent... components) {
+        this.components.addAll(Arrays.asList(components));
+        return this.components;
+    }
+
     /**
      * Add a {@link TextDisplay} component
      * @param text
