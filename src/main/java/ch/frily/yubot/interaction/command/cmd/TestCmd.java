@@ -9,11 +9,14 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -30,13 +33,20 @@ public class TestCmd implements ISlashCommand {
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
-        try {
-            Guild guild = event.getGuild();
-            guild.getManager().setIcon(Icon.from(getClass().getResourceAsStream("/icon/server-icon.png"))).queue();
-            guild.getManager().setBanner(Icon.from(getClass().getResourceAsStream("/icon/server-banner.png"))).queue();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        Role everyoneRole = EnvResolver.getRoleById(EnvKey.ROLE_EVERYONE);
+        TextChannel serverClosedChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_SERVERGESCHLOSSEN);
+
+        List<Permission> allowPerms = new ArrayList<>();
+        List<Permission> denyPerms = new ArrayList<>();
+        denyPerms.add(Permission.MESSAGE_SEND);
+
+        if (false) {
+            denyPerms.add(Permission.VIEW_CHANNEL);
+        } else {
+            allowPerms.add(Permission.VIEW_CHANNEL);
         }
+
+        serverClosedChannel.getManager().putRolePermissionOverride(everyoneRole.getIdLong(), allowPerms, denyPerms).queue();
         event.reply("executed").setEphemeral(true).queue();
     }
 

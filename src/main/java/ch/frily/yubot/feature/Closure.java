@@ -70,7 +70,7 @@ public class Closure extends Feature {
         syncDatabaseMods();
 
         toggleCommunityPermission(isOpen);
-        toggleServerClosedInfoChannelPermissions(!isOpen);
+        toggleServerClosedInfoChannelPermissions(isOpen);
 
         Role everyoneRole = EnvResolver.getRoleById(EnvKey.ROLE_EVERYONE);
         TextChannel logChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_CLOSURELOGS);
@@ -111,11 +111,12 @@ public class Closure extends Feature {
 
         List<Permission> allowPerms = new ArrayList<>();
         List<Permission> denyPerms = new ArrayList<>();
+        denyPerms.add(Permission.MESSAGE_SEND);
 
         if (isOpen) {
-            allowPerms.addAll(PERMISSIONS);
-        } else {
             denyPerms.addAll(PERMISSIONS);
+        } else {
+            allowPerms.addAll(PERMISSIONS);
         }
 
         serverClosedChannel.getManager().putRolePermissionOverride(everyoneRole.getIdLong(), allowPerms, denyPerms).queue();
