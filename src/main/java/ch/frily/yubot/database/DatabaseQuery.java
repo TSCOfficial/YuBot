@@ -276,7 +276,6 @@ public class DatabaseQuery {
 				.map(entry -> entry.getKey() + " " + entry.getValue().getName()).toList();
 			sql += " ORDER BY " + String.join(" ,", orderArray);
 		}
-		System.out.println(sql);
         return sql;
     }
 
