@@ -55,7 +55,7 @@ public class SendContainerCmd implements ISlashSubcommand {
                             dynamicMessage.remember(message);
                         }
 
-                        event.reply("✅ Container \"" + humanizeEnumName(containerValue) + "\" erfolgreich gesendet.")
+                        event.reply("✅ Container \"" + humanizeEnumName(containerValue) + "\" erfolgreich aktualisiert.")
                                 .setEphemeral(true)
                                 .queue();
                     }));

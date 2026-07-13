@@ -23,6 +23,16 @@ public class Color {
     /** Discord subtext gray */
     public static final java.awt.Color LIGHT_GRAY = new java.awt.Color(171, 172, 178);
 
+    // Custom Icons
+    // Parameter:
+    //      Icon size: 80
+    //      Shadow:
+    //          Color: 0, 0, 0, 0.5
+    //          Offset: 2, 2
+    //          Blur: 8
+    public static final java.awt.Color ICON_BACKGROUND = new java.awt.Color(32, 34, 37);
+    public static final java.awt.Color ICON_FOREGROUND = new java.awt.Color(185, 187, 190); // neutral foreground color d1d4d7
+
     public Color(Integer red, Integer green, Integer blue){
         this.red = red;
         this.green = green;
