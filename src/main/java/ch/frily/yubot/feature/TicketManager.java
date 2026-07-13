@@ -103,7 +103,11 @@ public class TicketManager {
     public String generateTicketName(TicketType type, Member owner) {
         String status = TicketStatus.NEW.getIcon();
         String typeId = type.getId();
-        String username = owner.getUser().getEffectiveName().substring(0, 26); // take only 25 chars of user's name
+        String username = owner.getUser().getEffectiveName();
+        if (owner.getUser().getEffectiveName().length() > 26) {
+            username = owner.getUser().getEffectiveName().substring(0, 26); // take only 25 chars of user's name
+        }
+
         int randInt = ThreadLocalRandom.current().nextInt(100000, 999999);
         return status + typeId + "-" + username  + "-" + randInt;
     }
