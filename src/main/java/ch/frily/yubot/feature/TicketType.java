@@ -124,7 +124,7 @@ public enum TicketType {
                     Sobald du deine Bewerbung geschrieben hast, meldet sich die zuständige Person bei dir.
                     """,
             TicketTypeGroup.BEWERBUNG,
-            List.of(EnvKey.ROLE_SERVERLEITUNG)
+            List.of(EnvKey.ROLE_MODLEITUNG, EnvKey.ROLE_SERVERLEITUNG)
     ),
     BEWERBUNG_AWARENESS(
             "beawrn",
