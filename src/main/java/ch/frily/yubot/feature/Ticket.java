@@ -88,7 +88,6 @@ public class Ticket {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     private static final List<Role> ALLOW_DIRECT_FORCECLOSE_ROLES = Stream.of(
-            EnvKey.ROLE_ADMIN,
             EnvKey.ROLE_SERVERLEITUNG,
             EnvKey.ROLE_MODLEITUNG
     ).map(EnvResolver::getRoleById).toList();
@@ -164,10 +163,10 @@ public class Ticket {
                                 new TicketCloseRequestAcceptBtn().build(),
                                 new TicketCloseRequestRejectBtn().build()
                         );
-                        TicketCloseRequestEmbed optionsEmbed = new TicketCloseRequestEmbed();
-                        optionsEmbed.setInitiator(event.getMember());
-                        optionsEmbed.setTicket(this);
-                        event.reply(getOwner().getAsMention()).addEmbeds(optionsEmbed.build()).setComponents(actionRow).queue();
+                        TicketCloseRequestEmbed closeRequestEmbed = new TicketCloseRequestEmbed();
+                        closeRequestEmbed.setInitiator(event.getMember());
+                        closeRequestEmbed.setTicket(this);
+                        event.reply(getOwner().getAsMention()).addEmbeds(closeRequestEmbed.build()).setComponents(actionRow).queue();
 
                         this.closeRequestCount++;
                         this.isRequestPending = true;
