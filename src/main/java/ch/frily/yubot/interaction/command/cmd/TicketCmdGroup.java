@@ -18,7 +18,8 @@ public class TicketCmdGroup implements ISlashCommandGroup {
                 new TicketAddCmd(),
                 new TicketRemoveCmd(),
                 new TicketTypeControlCmd(),
-                new TicketOpenmodCmd()
+                new TicketOpenmodCmd(),
+                new TicketReopenCmd()
         );
     }
 }

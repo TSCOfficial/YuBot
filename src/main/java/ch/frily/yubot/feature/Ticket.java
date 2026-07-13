@@ -4,9 +4,11 @@ import ch.frily.yubot.Client;
 import ch.frily.yubot.embed.TicketCloseAcceptedEmbed;
 import ch.frily.yubot.embed.TicketCloseRequestEmbed;
 import ch.frily.yubot.embed.TicketClosedOptionsEmbed;
+import ch.frily.yubot.embed.TicketReopenedEmbed;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.interaction.button.btn.TicketCloseRequestAcceptBtn;
+import ch.frily.yubot.interaction.button.btn.TicketCloseRequestBtn;
 import ch.frily.yubot.interaction.button.btn.TicketCloseRequestRejectBtn;
 import ch.frily.yubot.interaction.button.btn.TicketDeleteBtn;
 import ch.frily.yubot.util.EnvKey;
@@ -34,7 +36,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;;
+import java.util.stream.Stream;
+import static ch.frily.yubot.feature.TicketManager.USER_PERMISSION;
 
 @Slf4j
 public class Ticket {
@@ -312,6 +315,28 @@ public class Ticket {
         };
     }
 
+    public void reopen(Member member, IReplyCallback event) throws SQLException, ClassNotFoundException {
+        if (!status.equals(TicketStatus.CLOSED)) {
+            throw new InvalidStateException("Ticket kann nicht erneut eröffnet werden, da es nicht geschlossen ist.");
+        }
+
+        if (Util.isTeamMember(event.getMember())) {
+            setStatus(TicketStatus.CLAIMED);
+
+            channel.getManager().putPermissionOverride(owner, USER_PERMISSION, null).queue();
+
+            ActionRow actionRow = ActionRow.of(
+                    new TicketCloseRequestBtn().build()
+            );
+
+            TicketReopenedEmbed reopenedEmbed = new TicketReopenedEmbed();
+            reopenedEmbed.setTicket(this);
+            reopenedEmbed.setInitiator(member);
+            event.replyEmbeds(reopenedEmbed.build()).setComponents(actionRow).queue();
+            TicketRepository.updateTicket(this);
+        }
+    }
+
     /**
      * Add a member to this ticket
      * @param initiator
@@ -342,7 +367,7 @@ public class Ticket {
                     if (getMemberPermissionOverrides().contains(member)) {
                         throw new InvalidStateException("Diese Person kann nicht hinzugefügt werden.", "Diese befindet sich bereits in diesem Ticket.");
                     }
-                    channel.getManager().putPermissionOverride(member, TicketManager.USER_PERMISSION, List.of()).queue();
+                    channel.getManager().putPermissionOverride(member, USER_PERMISSION, List.of()).queue();
                 } else {
                     if (!getMemberPermissionOverrides().contains(member)) {
                         throw new InvalidStateException("Diese Person kann nicht entfernt werden.", "Diese befindet sich nicht im Ticket.");
