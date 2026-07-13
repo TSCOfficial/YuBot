@@ -21,8 +21,8 @@ public class Teamlist { // todo replace with IEmbed and dynamic message
     private static final List<EnvKey> ROLE_KEYWORDS = List.of(
             EnvKey.ROLE_OWNER,
             EnvKey.ROLE_SERVERLEITUNG,
-            EnvKey.ROLE_ADMIN,
             EnvKey.ROLE_MODLEITUNG,
+            EnvKey.ROLE_SUPPORTLEITUNG,
             EnvKey.ROLE_MODERATOR,
             EnvKey.ROLE_SUPPORT,
             EnvKey.ROLE_AWARENESSLEITUNG,
@@ -30,8 +30,7 @@ public class Teamlist { // todo replace with IEmbed and dynamic message
             EnvKey.ROLE_DEVLEITUNG,
             EnvKey.ROLE_DEVELOPER,
             EnvKey.ROLE_EVENTLEITUNG,
-            EnvKey.ROLE_EVENT,
-            EnvKey.ROLE_ORGA
+            EnvKey.ROLE_EVENT
     );
 
     private static final Pattern ROLE_NAME_PATTERN = Pattern.compile("[^\\p{L}\\p{N}\\-\\s\\*]");
