@@ -113,5 +113,18 @@ public class ActiveModStatisticContainer extends Container {
                 differenceLastMonth)
         );
 
+        // with buttons instead of dropdown:
+        // this.addSection(
+        //                Button.of(ButtonStyle.PRIMARY, "active-mod-tracking-view-profile-" + member.getIdLong(), "Profil anzeigen"),
+        //                TextDisplay.ofFormat("""
+        //                        **%s** - Total: %s
+        //                        %s
+        //                        %s
+        //                        """,
+        //                        member.getAsMention(), Util.calcDuration(totalActiveMinutes),
+        //                        thisMonth,
+        //                        differenceLastMonth)
+        //        );
+
     }
 }
