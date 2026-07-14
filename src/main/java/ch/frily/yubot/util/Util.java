@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
 import java.time.Duration;
+import java.time.Month;
 import java.time.temporal.Temporal;
 import java.util.Arrays;
 import java.util.Collection;
@@ -97,6 +98,23 @@ public class Util {
                 .replace("~", "\\~")
                 .replace("`", "\\`")
                 .replace("|", "\\|");
+    }
+
+    public static String translateMonth(Month month) {
+        return switch (month) {
+            case JANUARY -> "Januar";
+            case FEBRUARY -> "Februar";
+            case MARCH -> "März";
+            case APRIL -> "April";
+            case MAY -> "Mai";
+            case JUNE -> "Juni";
+            case JULY -> "Juli";
+            case AUGUST -> "August";
+            case SEPTEMBER -> "September";
+            case OCTOBER -> "Oktober";
+            case NOVEMBER -> "November";
+            case DECEMBER -> "Dezember";
+        };
     }
 
 }

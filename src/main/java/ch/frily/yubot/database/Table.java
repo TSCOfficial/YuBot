@@ -75,7 +75,9 @@ public enum Table {
     @RequiredArgsConstructor
     public enum ActiveModTrackingColumn implements Column {
         MODERATOR_ID("moderator_id"),
-        ACTIVE_TIME("active_time");
+        ACTIVE_TIME("active_time"),
+        LAST_TIME_ACTIVE("last_time_active"),
+        MONTH("month");
         private final String column;
     }
 }

@@ -9,10 +9,23 @@ import net.dv8tion.jda.api.entities.Member;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Year;
+import java.time.YearMonth;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+
+import static org.reflections.Reflections.log;
 
 public class ActiveModTrackingRepository {
 
+    /**
+     * Get all active moderators from the database.
+     * @return
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
     public static List<ActiveModTracking> getActiveModTrackings() throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD_TRACKING);
         ResultSet resultSet = query.select().executeDataQuery();
@@ -21,47 +34,92 @@ public class ActiveModTrackingRepository {
         while (resultSet.next()) {
             int activeTime = resultSet.getInt(Table.ActiveModTrackingColumn.ACTIVE_TIME.getColumn());
             long moderatorId = resultSet.getLong(Table.ActiveModTrackingColumn.MODERATOR_ID.getColumn());
+            LocalDateTime lastTimeActive = resultSet.getTimestamp(Table.ActiveModTrackingColumn.LAST_TIME_ACTIVE.getColumn()).toLocalDateTime();
+            LocalDate localDateMonth = resultSet.getDate(Table.ActiveModTrackingColumn.MONTH.getColumn()).toLocalDate();
+            YearMonth month = YearMonth.from(localDateMonth); // convert from LocalDate to YearMonth
 
             Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
             Member member = guild.getMemberById(moderatorId);
-            activeModTrackings.add(new ActiveModTracking(member, activeTime));
+            activeModTrackings.add(new ActiveModTracking(member, activeTime, lastTimeActive, month));
         }
         return activeModTrackings;
     }
 
-    public static ActiveModTracking getActiveModTracking(Member member) throws SQLException, ClassNotFoundException {
+    /**
+     * Get an active moderator's tracking data for a given month.
+     * @param member
+     * @param atMonth
+     * @return
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
+    public static ActiveModTracking getActiveModTracking(Member member, YearMonth atMonth) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD_TRACKING);
-        query.select().where(Table.ActiveModTrackingColumn.MODERATOR_ID, DatabaseQuery.Operator.EQUALS, member.getIdLong());
+        query.select();
+        query.where(Table.ActiveModTrackingColumn.MODERATOR_ID, DatabaseQuery.Operator.EQUALS, member.getIdLong());
+        query.where(Table.ActiveModTrackingColumn.MONTH, DatabaseQuery.Operator.EQUALS, atMonth.atDay(1));
         ResultSet resultSet = query.executeDataQuery();
 
         if (resultSet.next()) {
             int activeTime = resultSet.getInt(Table.ActiveModTrackingColumn.ACTIVE_TIME.getColumn());
-            return new ActiveModTracking(member, activeTime);
+            LocalDateTime lastTimeActive = resultSet.getTimestamp(Table.ActiveModTrackingColumn.LAST_TIME_ACTIVE.getColumn()).toLocalDateTime();
+            LocalDate localDateMonth = resultSet.getDate(Table.ActiveModTrackingColumn.MONTH.getColumn()).toLocalDate();
+            YearMonth month = YearMonth.from(localDateMonth); // convert from LocalDate to YearMonth
+            return new ActiveModTracking(member, activeTime, lastTimeActive, month);
         }
 
         throw new NullPointerException("ActiveModTracking for " + member.getIdLong() + " not found.");
     }
 
+    /**
+     * Create or update an existing ActiveModTracking entry for a given moderator.
+     * <p>
+     *     Using the {@link YearMonth}, the system checks for an existing activemod-tracking entry of given month (at day 1).
+     *     If there is no entry, a new entry is created for the current month.
+     * </p>
+     * @param member
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
     public static void upsertActiveMod(Member member) throws SQLException, ClassNotFoundException {
+        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
         try {
-            ActiveModTracking activeModTracking = getActiveModTracking(member);
-            ActiveModTracking updatedTracking = new ActiveModTracking(member, activeModTracking.activeTime() + 1);
-            updateActiveModTracking(updatedTracking);
+            ActiveModTracking tracking = getActiveModTracking(member, YearMonth.now());
+            if (!tracking.lastTimeActive().isBefore(now)) {
+                return;
+            }
+            ActiveModTracking updated = new ActiveModTracking(
+                    member, tracking.activeTime() + 1, now, tracking.month()
+            );
+            updateActiveModTracking(updated);
         } catch (NullPointerException e) {
             createActiveModTracking(member);
         }
     }
 
+    /**
+     * Create a new ActiveModTracking entry
+     * <p>
+     *     Month is set to the first day of the current month to be compatible with the DB's date type.
+     * </p>
+     * @param member The activemod to create a tracking entry for
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
     public static void createActiveModTracking(Member member) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD_TRACKING);
         query.insert(Table.ActiveModTrackingColumn.MODERATOR_ID, member.getIdLong());
+        query.insert(Table.ActiveModTrackingColumn.MONTH, YearMonth.now().atDay(1));
+        query.insert(Table.ActiveModTrackingColumn.LAST_TIME_ACTIVE, LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
         query.executeQuery();
     }
 
     public static void updateActiveModTracking(ActiveModTracking activeModTracking) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD_TRACKING);
         query.update(Table.ActiveModTrackingColumn.ACTIVE_TIME, activeModTracking.activeTime());
+        query.update(Table.ActiveModTrackingColumn.LAST_TIME_ACTIVE, LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
         query.where(Table.ActiveModTrackingColumn.MODERATOR_ID, DatabaseQuery.Operator.EQUALS, activeModTracking.moderator().getIdLong());
+        query.where(Table.ActiveModTrackingColumn.MONTH, DatabaseQuery.Operator.EQUALS, activeModTracking.month().atDay(1));
         query.executeQuery();
     }
 }
