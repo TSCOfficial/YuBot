@@ -34,6 +34,7 @@ public class ActiveModStatisticGoToHomeBtn implements IButton {
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
         Map<Member, List<ActiveModTracking>> activeModTrackings = ActiveModTrackingRepository.getActiveModTrackingsAsMap();
+        activeModTrackings = ActiveModTrackingRepository.completeWithMissingModerators(activeModTrackings);
         ActiveModStatisticContainer activeModStatisticContainer = new ActiveModStatisticContainer(activeModTrackings, event.getMember());
         event.editComponents(activeModStatisticContainer.build()).useComponentsV2().setAllowedMentions(List.of()).queue();
     }

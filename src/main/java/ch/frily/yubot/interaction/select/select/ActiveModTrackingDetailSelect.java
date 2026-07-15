@@ -27,6 +27,8 @@ public class ActiveModTrackingDetailSelect implements IStringSelect {
     @Setter
     private Map<Member, List<ActiveModTracking>> activeModTrackingMap;
 
+    // TODO add member to be able to remove them from the list when they are already beeing displayed
+
     @Override
     public String getId() {
         return "active-mod-tracking-detail-select";
@@ -56,7 +58,7 @@ public class ActiveModTrackingDetailSelect implements IStringSelect {
                     if (thisMonthsTracking != null) {
                         option = option.withDescription(String.format("Dieser Monat: %s", Util.calcDuration(thisMonthsTracking.activeTime())));
                     } else {
-                        option = option.withDescription("Dieser Monat: *Nicht registriert*");
+                        option = option.withDescription("Dieser Monat: Nicht registriert");
                     }
                     return option;
                 })
@@ -65,10 +67,10 @@ public class ActiveModTrackingDetailSelect implements IStringSelect {
 
     @Override
     public void execute(@NonNull StringSelectInteractionEvent event) throws SQLException, ClassNotFoundException {
-        log.info(event.getInteraction().getSelectedOptions().getFirst().getValue());
         String selectedMemberId = event.getInteraction().getSelectedOptions().getFirst().getValue();
         Member selectedMember = event.getGuild().getMemberById(selectedMemberId);
         Map<Member, List<ActiveModTracking>> activeModTrackingMap = ActiveModTrackingRepository.getActiveModTrackingsAsMap();
+        activeModTrackingMap = ActiveModTrackingRepository.completeWithMissingModerators(activeModTrackingMap);
         ActiveModStatisticDetailContainer activeModStatisticDetailContainer = new ActiveModStatisticDetailContainer(selectedMember, activeModTrackingMap);
         event.editComponents(activeModStatisticDetailContainer.build()).useComponentsV2().queue();
     }

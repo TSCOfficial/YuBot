@@ -21,6 +21,33 @@ import static org.reflections.Reflections.log;
 
 public class ActiveModTrackingRepository {
 
+    public static Map<Member, List<ActiveModTracking>> completeWithMissingModerators(Map<Member, List<ActiveModTracking>> groupedActiveMods) {
+        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+        List<Member> allModerators = guild.getMembersWithRoles(EnvResolver.getRoleById(EnvKey.ROLE_MODERATOR));
+        Map<Member, List<ActiveModTracking>> completeWithMissingModerators = new LinkedHashMap<>();
+
+        allModerators.forEach(moderator -> {
+            List<ActiveModTracking> activeModTrackings = groupedActiveMods.get(moderator);
+            if (activeModTrackings == null) {
+                activeModTrackings = new ArrayList<>();
+            }
+            completeWithMissingModerators.put(moderator, activeModTrackings);
+        });
+
+        return completeWithMissingModerators.entrySet().stream()
+                .sorted(Comparator.comparingInt(
+                        (Map.Entry<Member, List<ActiveModTracking>> entry) ->
+                                entry.getValue().stream().mapToInt(ActiveModTracking::activeTime).sum()
+                ).reversed())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+
+    }
+
     public static Map<Member, List<ActiveModTracking>> getActiveModTrackingsAsMap() throws SQLException, ClassNotFoundException {
         List <ActiveModTracking> activeModTrackings = getActiveModTrackings();
         Map<Member, List<ActiveModTracking>> groupedActiveMods = new LinkedHashMap<>();

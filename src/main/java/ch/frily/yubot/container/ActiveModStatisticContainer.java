@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ActiveModStatisticContainer extends Container {
 
+    // TODO display all members, even when they have no active mod tracking
+
     public ActiveModStatisticContainer(Map<Member, List<ActiveModTracking>> activeModTrackingMap, Member initiator) {
         addTextDisplay("## Statistik der aktiven Moderatoren");
 

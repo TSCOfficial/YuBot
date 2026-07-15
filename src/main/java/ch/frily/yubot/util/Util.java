@@ -100,6 +100,12 @@ public class Util {
                 .replace("|", "\\|");
     }
 
+    public static double calcPercentage(int value1, int value2) {
+        if (value2 == 0)
+            return 0;
+        return (double) value1 / (double) value2 * 100;
+    }
+
     public static String translateMonth(Month month) {
         return switch (month) {
             case JANUARY -> "Januar";
