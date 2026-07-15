@@ -77,12 +77,12 @@ public class ActiveModStatisticContainer extends Container {
         String activeTag = Util.isActiveMod(member) ? "<:active1:1526915284676509767><:active2:1526915285985136791><:active3:1526915287478177863>" : "";
 
         addTextDisplay(String.format("""
-                        ### %s %s %s
+                        ### [%s](https://discord.com/users/%s) %s %s
                         Total: %s
                         %s %s
                         -# ** **
                         """,
-                member.getAsMention(), activeTag, youTag,
+                member.getEffectiveName(), member.getId(), activeTag, youTag,
                 Util.calcDuration(totalActiveMinutes),
                 thisMonth, tendency)
         );
