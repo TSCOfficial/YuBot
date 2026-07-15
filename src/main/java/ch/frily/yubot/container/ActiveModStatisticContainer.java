@@ -1,5 +1,6 @@
 package ch.frily.yubot.container;
 
+import ch.frily.yubot.feature.ActiveModRepository;
 import ch.frily.yubot.feature.ActiveModTracking;
 import ch.frily.yubot.interaction.select.select.ActiveModTrackingDetailSelect;
 import ch.frily.yubot.util.Util;
@@ -15,6 +16,7 @@ import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.internal.entities.SelectMenuMentions;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.YearMonth;
@@ -26,7 +28,11 @@ public class ActiveModStatisticContainer extends Container {
 
     // TODO display all members, even when they have no active mod tracking
 
+    private final Member initiator;
+
     public ActiveModStatisticContainer(Map<Member, List<ActiveModTracking>> activeModTrackingMap, Member initiator) {
+        this.initiator = initiator;
+
         addTextDisplay("## Statistik der aktiven Moderatoren");
 
         activeModTrackingMap.forEach(this::addModSection);
@@ -45,7 +51,7 @@ public class ActiveModStatisticContainer extends Container {
         );
     }
 
-    public void addModSection(Member member, List<ActiveModTracking> trackings) {
+    public void addModSection(Member member, List<ActiveModTracking> trackings){
         int totalActiveMinutes = trackings.stream().map(ActiveModTracking::activeTime).reduce(0, Integer::sum);
         ActiveModTracking currentMonthTracking = trackings.stream().filter(tracking -> Objects.equals(tracking.month(), YearMonth.now())).findFirst().orElse(null);
         YearMonth lastMonth = YearMonth.now().minusMonths(1);
@@ -56,24 +62,29 @@ public class ActiveModStatisticContainer extends Container {
             thisMonth = String.format("Diesen Monat: %s", Util.calcDuration(currentMonthTracking.activeTime()));
         }
 
-        String differenceLastMonth = "";
+        String tendency = "";
         if (lastMonthTracking != null) {
             int difference = currentMonthTracking.activeTime() - lastMonthTracking.activeTime();
             if (difference > 0) {
-                differenceLastMonth = "📈";
+                tendency = "📈";
             } else if (difference < 0){
-                differenceLastMonth = "📉";
+                tendency = "📉";
             }
         }
 
+        String youTag = member == initiator ? "*(Du)*" : "";
+
+        String activeTag = Util.isActiveMod(member) ? "<:active1:1526915284676509767><:active2:1526915285985136791><:active3:1526915287478177863>" : "";
+
         addTextDisplay(String.format("""
-                        ### %s - Total: %s
+                        ### %s %s %s
+                        Total: %s
                         %s %s
                         -# ** **
                         """,
-                member.getAsMention(), Util.calcDuration(totalActiveMinutes),
-                thisMonth,
-                differenceLastMonth)
+                member.getAsMention(), activeTag, youTag,
+                Util.calcDuration(totalActiveMinutes),
+                thisMonth, tendency)
         );
     }
 }
