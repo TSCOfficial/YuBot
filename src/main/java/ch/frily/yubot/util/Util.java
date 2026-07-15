@@ -68,6 +68,10 @@ public class Util {
     }
 
     public static String calcDuration(int minutes) {
+        boolean isNegative = minutes < 0;
+        if (isNegative) {
+            minutes = minutes * -1;
+        }
         long days = minutes / 1440;
         long hours = (minutes % 1440) / 60;
         long minutesLeft = minutes % 60;
@@ -79,6 +83,10 @@ public class Util {
             openDuration = String.format("%dh %dmin", hours, minutesLeft);
         } else {
             openDuration = String.format("%dmin", minutesLeft);
+        }
+
+        if (isNegative) {
+            openDuration = "-" + openDuration;
         }
 
         return openDuration;

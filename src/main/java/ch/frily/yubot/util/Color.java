@@ -40,6 +40,10 @@ public class Color {
         this.blue = blue;
     }
 
+    /**
+     * Convert hexcode to color
+     * @param hexCode The hexcode to convert (without the #)
+     */
     public Color(String hexCode){
         red = Integer.valueOf(hexCode.substring(0, 2), 16);
         green = Integer.valueOf(hexCode.substring(2, 4), 16);

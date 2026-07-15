@@ -64,7 +64,9 @@ public class ActiveModStatisticDetailContainer extends Container {
                 Month month = activeModTracking.month().getMonth();
                 ActiveModTracking lastMonthTracking = activeModTrackings.stream().filter(tracking -> tracking.month().getMonth().equals(month.minus(1))).findFirst().orElse(null);
                 if (lastMonthTracking != null) {
+                    log.info("last month: {}, active time: {}", month.minus(1), lastMonthTracking.activeTime());
                     int difference = activeModTracking.activeTime() - lastMonthTracking.activeTime();
+                    log.info("difference: {}", difference);
                     if (difference > 0) {
                         differenceLastMonth = String.format("Vergleich zum %s: +%s", Util.translateMonth(month).toLowerCase(), Util.calcDuration(difference));
                     } else {
