@@ -77,7 +77,9 @@ public enum Table {
         MODERATOR_ID("moderator_id"),
         ACTIVE_TIME("active_time"),
         LAST_TIME_ACTIVE("last_time_active"),
-        MONTH("month");
+        MONTH("month"),
+        MISSED_ACTIVITY_REQUEST_COUNT("missed_activity_request_count"),
+        TOTAL_ACTIVITY_REQUEST_COUNT("total_activity_request_count");
         private final String column;
     }
 }

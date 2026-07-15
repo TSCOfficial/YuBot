@@ -15,7 +15,9 @@ public interface IButton {
 
     String getId();
 
-    String getLabel();
+    default String getLabel() {
+        return null;
+    };
 
     ButtonStyle getStyle();
 

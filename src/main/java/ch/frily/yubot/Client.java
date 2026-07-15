@@ -4,6 +4,7 @@ import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.interaction.button.ButtonRegistry;
 import ch.frily.yubot.interaction.contextmenu.ContextMenuRegistry;
 import ch.frily.yubot.interaction.modal.ModalRegistry;
+import ch.frily.yubot.interaction.select.SelectRegistry;
 import ch.frily.yubot.listeners.InteractionListener;
 import ch.frily.yubot.listeners.OnMessageReceived;
 import ch.frily.yubot.listeners.OnReadyListener;
@@ -78,6 +79,7 @@ public class Client {
             SlashCommandRegistry.getInstance().loadCommands();
             ButtonRegistry.getInstance().loadButtons();
             ModalRegistry.getInstance().loadModals();
+            SelectRegistry.getInstance().loadSelects();
 
             // Register actions
             SchedulerRegistry.registerAll();

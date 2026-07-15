@@ -14,11 +14,40 @@ import java.time.LocalDateTime;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.reflections.Reflections.log;
 
 public class ActiveModTrackingRepository {
+
+    public static Map<Member, List<ActiveModTracking>> getActiveModTrackingsAsMap() throws SQLException, ClassNotFoundException {
+        List <ActiveModTracking> activeModTrackings = getActiveModTrackings();
+        Map<Member, List<ActiveModTracking>> groupedActiveMods = new LinkedHashMap<>();
+
+        activeModTrackings.forEach(activeModTracking -> {
+            List<ActiveModTracking> groupedTrackings = groupedActiveMods.get(activeModTracking.moderator());
+            if (groupedTrackings == null) {
+                groupedTrackings = new ArrayList<>();
+                groupedActiveMods.put(activeModTracking.moderator(), groupedTrackings);
+            }
+            groupedTrackings.add(activeModTracking);
+            groupedActiveMods.replace(activeModTracking.moderator(), groupedTrackings);
+        });
+
+        // sort by total time
+        return groupedActiveMods.entrySet().stream()
+                .sorted(Comparator.comparingInt(
+                        (Map.Entry<Member, List<ActiveModTracking>> entry) ->
+                                entry.getValue().stream().mapToInt(ActiveModTracking::activeTime).sum()
+                ).reversed())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+    };
 
     /**
      * Get all active moderators from the database.
@@ -37,10 +66,12 @@ public class ActiveModTrackingRepository {
             LocalDateTime lastTimeActive = resultSet.getTimestamp(Table.ActiveModTrackingColumn.LAST_TIME_ACTIVE.getColumn()).toLocalDateTime();
             LocalDate localDateMonth = resultSet.getDate(Table.ActiveModTrackingColumn.MONTH.getColumn()).toLocalDate();
             YearMonth month = YearMonth.from(localDateMonth); // convert from LocalDate to YearMonth
+            int missedActivityRequestCount = resultSet.getInt(Table.ActiveModTrackingColumn.MISSED_ACTIVITY_REQUEST_COUNT.getColumn());
+            int totalActivityRequestCount = resultSet.getInt(Table.ActiveModTrackingColumn.TOTAL_ACTIVITY_REQUEST_COUNT.getColumn());
 
             Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
             Member member = guild.getMemberById(moderatorId);
-            activeModTrackings.add(new ActiveModTracking(member, activeTime, lastTimeActive, month));
+            activeModTrackings.add(new ActiveModTracking(member, activeTime, lastTimeActive, month, missedActivityRequestCount, totalActivityRequestCount));
         }
         return activeModTrackings;
     }
@@ -65,7 +96,9 @@ public class ActiveModTrackingRepository {
             LocalDateTime lastTimeActive = resultSet.getTimestamp(Table.ActiveModTrackingColumn.LAST_TIME_ACTIVE.getColumn()).toLocalDateTime();
             LocalDate localDateMonth = resultSet.getDate(Table.ActiveModTrackingColumn.MONTH.getColumn()).toLocalDate();
             YearMonth month = YearMonth.from(localDateMonth); // convert from LocalDate to YearMonth
-            return new ActiveModTracking(member, activeTime, lastTimeActive, month);
+            int missedActivityRequestCount = resultSet.getInt(Table.ActiveModTrackingColumn.MISSED_ACTIVITY_REQUEST_COUNT.getColumn());
+            int totalActivityRequestCount = resultSet.getInt(Table.ActiveModTrackingColumn.TOTAL_ACTIVITY_REQUEST_COUNT.getColumn());
+            return new ActiveModTracking(member, activeTime, lastTimeActive, month, missedActivityRequestCount, totalActivityRequestCount);
         }
 
         throw new NullPointerException("ActiveModTracking for " + member.getIdLong() + " not found.");
@@ -89,12 +122,30 @@ public class ActiveModTrackingRepository {
                 return;
             }
             ActiveModTracking updated = new ActiveModTracking(
-                    member, tracking.activeTime() + 1, now, tracking.month()
+                    member, tracking.activeTime() + 1, now, tracking.month(), tracking.missedActivityRequestCount(), tracking.totalActivityRequestCount()
             );
             updateActiveModTracking(updated);
         } catch (NullPointerException e) {
             createActiveModTracking(member);
         }
+    }
+
+    public static void incrementMissedActivityRequestCount(Member member) throws SQLException, ClassNotFoundException {
+
+        ActiveModTracking tracking = getActiveModTracking(member, YearMonth.now());
+        ActiveModTracking updated = new ActiveModTracking(
+                member, tracking.activeTime(), tracking.lastTimeActive(), tracking.month(), tracking.missedActivityRequestCount() + 1, tracking.totalActivityRequestCount()
+        );
+        updateActiveModTracking(updated);
+    }
+
+    public static void incrementTotalActivityRequestCount(Member member) throws SQLException, ClassNotFoundException {
+
+        ActiveModTracking tracking = getActiveModTracking(member, YearMonth.now());
+        ActiveModTracking updated = new ActiveModTracking(
+                member, tracking.activeTime(), tracking.lastTimeActive(), tracking.month(), tracking.missedActivityRequestCount(), tracking.totalActivityRequestCount() + 1
+        );
+        updateActiveModTracking(updated);
     }
 
     /**

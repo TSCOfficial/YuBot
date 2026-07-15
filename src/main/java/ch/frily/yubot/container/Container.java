@@ -69,6 +69,10 @@ public abstract class Container {
         return addComponent(TextDisplay.of(text));
     }
 
+    public List<ContainerChildComponent> addFormatedText(String format, Object... args){
+        return addComponent(TextDisplay.ofFormat(format, args));
+    }
+
     public List<ContainerChildComponent> addSection(SectionAccessoryComponent accessory, SectionContentComponent... components){
         return addComponent(Section.of(accessory, Arrays.asList(components)));
     }

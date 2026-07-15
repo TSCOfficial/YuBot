@@ -1,8 +1,6 @@
 package ch.frily.yubot.interaction.command.cmd;
 
-import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.InvalidStateException;
-import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.feature.Closure;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
@@ -42,7 +40,7 @@ public class ActiveModOptInCmd implements ISlashSubcommand {
         }
         event.getGuild().addRoleToMember(event.getMember(), activeMod).submit().thenAccept(ThrowingConsumer.wrap(null, _ -> {
             int activeModCount = Closure.getActiveMods().size();
-            Closure.deleteRequestedAttentionMessage();
+            Closure.deleteRequestedAttentionMessages();
 
             String countInfo = "Es sind nun **" + activeModCount + "** aktive Moderator\\*innen.";
             if (activeModCount == 1) {

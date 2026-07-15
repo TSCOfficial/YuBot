@@ -10,6 +10,8 @@ public record ActiveModTracking(
         Member moderator,
         int activeTime,
         LocalDateTime lastTimeActive,
-        YearMonth month
+        YearMonth month,
+        int missedActivityRequestCount,
+        int totalActivityRequestCount
         ) {
 }

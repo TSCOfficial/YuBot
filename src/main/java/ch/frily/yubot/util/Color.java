@@ -30,6 +30,7 @@ public class Color {
     //          Color: 0, 0, 0, 0.5
     //          Offset: 2, 2
     //          Blur: 8
+    // Icons without background: use size 140
     public static final java.awt.Color ICON_BACKGROUND = new java.awt.Color(32, 34, 37);
     public static final java.awt.Color ICON_FOREGROUND = new java.awt.Color(185, 187, 190); // neutral foreground color d1d4d7
 
