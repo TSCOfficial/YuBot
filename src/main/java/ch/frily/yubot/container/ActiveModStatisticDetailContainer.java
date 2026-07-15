@@ -31,7 +31,8 @@ public class ActiveModStatisticDetailContainer extends Container {
     public ActiveModStatisticDetailContainer(Member member, Map<Member, List<ActiveModTracking>> activeModTrackingMap) {
         List<ActiveModTracking> activeModTrackings = activeModTrackingMap.get(member);
 
-        addFormatedText("# Statistik von %s", member.getEffectiveName());
+        String activeTag = Util.isActiveMod(member) ? "<:active1:1527044015927721984><:active2:1527044016942616748><:active3:1527044018276536403>" : "";
+        addFormatedText("# Statistik von %s %s", member.getEffectiveName(), activeTag);
 
         if (activeModTrackings.isEmpty()) {
             addTextDisplay("Keine Daten vorhanden.");
@@ -98,6 +99,7 @@ public class ActiveModStatisticDetailContainer extends Container {
 
         ActiveModTrackingDetailSelect detailSelect = new ActiveModTrackingDetailSelect();
         detailSelect.setActiveModTrackingMap(activeModTrackingMap);
+        detailSelect.setSelectedMember(member);
 
         this.addComponent(
                 ActionRow.of(

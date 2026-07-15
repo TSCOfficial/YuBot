@@ -74,7 +74,7 @@ public class ActiveModStatisticContainer extends Container {
 
         String youTag = member == initiator ? "*(Du)*" : "";
 
-        String activeTag = Util.isActiveMod(member) ? "<:active1:1526915284676509767><:active2:1526915285985136791><:active3:1526915287478177863>" : "";
+        String activeTag = Util.isActiveMod(member) ? "<:active1:1527044015927721984><:active2:1527044016942616748><:active3:1527044018276536403>" : "";
 
         addTextDisplay(String.format("""
                         ### [%s](https://discord.com/users/%s) %s %s

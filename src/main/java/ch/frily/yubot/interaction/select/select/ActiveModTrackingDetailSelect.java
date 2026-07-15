@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.sql.SQLException;
 import java.time.YearMonth;
@@ -26,6 +27,10 @@ public class ActiveModTrackingDetailSelect implements IStringSelect {
     @Getter
     @Setter
     private Map<Member, List<ActiveModTracking>> activeModTrackingMap;
+
+    @Setter
+    @Nullable
+    private Member selectedMember;
 
     // TODO add member to be able to remove them from the list when they are already beeing displayed
 
@@ -52,6 +57,12 @@ public class ActiveModTrackingDetailSelect implements IStringSelect {
     @Override
     public List<SelectOption> getOptions() {
         return activeModTrackingMap.entrySet().stream()
+                .filter(entry -> {
+                    if (selectedMember == null) {
+                        return true;
+                    }
+                    return !entry.getKey().getId().equals(selectedMember.getId());
+                })
                 .map(entry -> {
                     SelectOption option = SelectOption.of(entry.getKey().getEffectiveName(), entry.getKey().getId());
                     ActiveModTracking thisMonthsTracking = entry.getValue().stream().filter(tracking -> Objects.equals(tracking.month(), YearMonth.now())).findFirst().orElse(null);
