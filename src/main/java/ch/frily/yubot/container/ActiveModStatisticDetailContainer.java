@@ -1,5 +1,6 @@
 package ch.frily.yubot.container;
 
+import ch.frily.yubot.feature.ActiveModStatisticChart;
 import ch.frily.yubot.feature.ActiveModTracking;
 import ch.frily.yubot.interaction.button.btn.ActiveModStatisticGoToHomeBtn;
 import ch.frily.yubot.interaction.select.select.ActiveModTrackingDetailSelect;
@@ -7,6 +8,8 @@ import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
+import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Member;
@@ -95,6 +98,10 @@ public class ActiveModStatisticDetailContainer extends Container {
             addFormatedText("-# %d / %d Monate werden angezeigt", index, activeModTrackings.size());
 
         }
+
+        this.addComponent(MediaGallery.of(
+                MediaGalleryItem.fromFile(new ActiveModStatisticChart().generateChart(activeModTrackingMap, member))
+        ));
 
 
         addLineSeparator(Separator.Spacing.LARGE);
