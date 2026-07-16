@@ -38,7 +38,7 @@ public class InteractionListener extends ListenerAdapter {
         try {
             SlashCommandRegistry.getInstance().dispatchInteractionEvent(event);
         } catch (Exception exception) {
-            log.error("Error while dispatching slashcommand interaction for {}: {}", event.getMember().getEffectiveName(), exception.getMessage());
+            log.error("Error while dispatching slashcommand '{}' interaction for {}: {}", event.getInteraction().getFullCommandName(), event.getMember().getEffectiveName(), exception.getMessage());
             ExceptionHandler.handle(exception, event);
         }
     }
@@ -57,7 +57,7 @@ public class InteractionListener extends ListenerAdapter {
         try {
             ButtonRegistry.getInstance().dispatchButtonInteraction(event);
         }catch (Exception exception) {
-            log.error("Error while dispatching button interaction for {}: {}", event.getUser().getGlobalName(), exception.getMessage());
+            log.error("Error while dispatching button '{}' interaction for {}: {}", event.getButton().getCustomId(), event.getUser().getGlobalName(), exception.getMessage());
             ExceptionHandler.handle(exception, event);
         }
     }
@@ -73,7 +73,7 @@ public class InteractionListener extends ListenerAdapter {
         try {
             ContextMenuRegistry.getInstance().dispatchInteractionEvent(event);
         } catch (Exception exception) {
-            log.error("Error while dispatching context interaction for {}: {}", event.getUser().getEffectiveName(), exception.getMessage());
+            log.error("Error while dispatching '{}' context interaction for {}: {}", event.getInteraction().getFullCommandName(), event.getUser().getEffectiveName(), exception.getMessage());
             ExceptionHandler.handle(exception, event);
         }
     }
@@ -83,7 +83,7 @@ public class InteractionListener extends ListenerAdapter {
         try {
             ModalRegistry.getInstance().dispatchModalInteraction(event);
         } catch (Exception exception) {
-            log.error("Error while dispatching modal interaction for {}: {}", event.getUser().getEffectiveName(), exception.getMessage());
+            log.error("Error while dispatching modal '{}' interaction for {}: {}", event.getModalId(), event.getUser().getEffectiveName(), exception.getMessage());
             ExceptionHandler.handle(exception, event);
         }
     }
@@ -93,7 +93,7 @@ public class InteractionListener extends ListenerAdapter {
         try {
             SelectRegistry.getInstance().dispatchSelectInteraction(event);
         } catch (Exception exception) {
-            log.error("Error while dispatching select interaction for {}: {}", event.getUser().getEffectiveName(), exception.getMessage());
+            log.error("Error while dispatching select '{}' interaction for {}: {}", event.getInteraction().getCustomId(), event.getUser().getEffectiveName(), exception.getMessage());
             ExceptionHandler.handle(exception, event);
         }
     }
