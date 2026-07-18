@@ -29,7 +29,7 @@ public final class ActiveModStatisticChart {
 
     public FileUpload generateChart(Map<Member, List<ActiveModTracking>> activeModTrackingMap, @Nullable Member highlightMember) {
         List<ActiveModStatisticChartData> chartData = prepareData(activeModTrackingMap, highlightMember);
-        ActiveModStatisticChart chart = generateLineChart(chartData, "Activemod History", "Moderator*in", "Stunden");
+        ActiveModStatisticChart chart = generateLineChart(chartData, "Activemod History", "Monat", "Aktive Zeit [in h]");
         return chart.toFile("chart.png");
     }
 
