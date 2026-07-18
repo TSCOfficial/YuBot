@@ -29,6 +29,7 @@ public class Closure extends Feature {
     private static Closure instance;
 
     private static final List<Permission> PERMISSIONS = List.of(
+            Permission.MESSAGE_SEND,
             Permission.VIEW_CHANNEL
     );
 
