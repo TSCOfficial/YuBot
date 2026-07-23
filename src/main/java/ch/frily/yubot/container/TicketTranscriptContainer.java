@@ -1,6 +1,8 @@
 package ch.frily.yubot.container;
 
 import ch.frily.yubot.feature.Ticket;
+import ch.frily.yubot.feature.TicketType;
+import ch.frily.yubot.feature.TicketTypeGroup;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
@@ -19,30 +21,33 @@ public class TicketTranscriptContainer extends Container {
         this.addComponent(Separator.createInvisible(Separator.Spacing.SMALL));
 
         if (ticket.getType().getGroup() == null) {
-            this.addComponent(TextDisplay.of(Util.format("**Kategorie**: `{}`", ticket.getType().getLabel())));
+            addFormatedText("**Kategorie**: `%s`", ticket.getType().getLabel());
         } else {
-            this.addComponent(TextDisplay.of(Util.format("**Kategorie**: `{} / {}`", ticket.getType().getGroup().getLabel(), ticket.getType().getLabel())));
+            addFormatedText("**Kategorie**: `%s / %s`", ticket.getType().getGroup().getLabel(), ticket.getType().getLabel());
         }
 
+        String labelOwner = "Erstellt von";
+        if (ticket.getType() == TicketType.MODTICKET) {
+            labelOwner = "Erstellt für";
+        }
         if (ticket.getOwner() != null) {
-            this.addComponent(TextDisplay.of(Util.format("**Erstellt von**: {} ({})", ticket.getOwner().getAsMention(), ticket.getOwner().getUser().getName())));
-
+            addFormatedText("**%s**: %s (%s)", labelOwner, ticket.getOwner().getAsMention(), ticket.getOwner().getUser().getName());
         } else {
-            this.addComponent(TextDisplay.of(Util.format("**Erstellt von**: *Person hat den Server verlassen*")))   ;
-
+            addFormatedText("**%s**: *Person hat den Server verlassen*", labelOwner);
         }
 
         String assignedMember = "**Verantwortlich**: -";
+
         if (ticket.getAssignee() != null) {
-            assignedMember = Util.format("**Verantwortlich**: {} (@{})", ticket.getAssignee().getAsMention(), ticket.getAssignee().getUser().getName());
+            assignedMember = String.format("**Verantwortlich**: %s (@%s)", ticket.getAssignee().getAsMention(), ticket.getAssignee().getUser().getName());
         }
 
         this.addComponent(TextDisplay.of(assignedMember));
-        this.addComponent(TextDisplay.of(Util.format("**Gelöscht von**: {} (@{})", initiator.getAsMention(), initiator.getUser().getName())));
+        this.addFormatedText("**Gelöscht von**: %s (@%s)", initiator.getAsMention(), initiator.getUser().getName());
 
         long epochTimeCreated = ticket.getChannel().getTimeCreated().toEpochSecond();
         String opendTimeSinceCreation = Util.calcDuration(ticket.getChannel().getTimeCreated(), OffsetDateTime.now());
-        this.addComponent(TextDisplay.of(Util.format("**Geöffnet am**: <t:{}:F> ({})", epochTimeCreated, opendTimeSinceCreation)));
+        addFormatedText("**Geöffnet am**: <t:%d:F> ({})", epochTimeCreated, opendTimeSinceCreation);
         this.addComponent(Separator.createDivider(Separator.Spacing.LARGE));
         this.addComponent(FileDisplay.fromFile(transkript));
     }

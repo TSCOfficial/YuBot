@@ -158,7 +158,9 @@ public class Ticket {
         if (Util.isTeamMember(event.getMember())) {
             if (!isOwner(event.getMember())) {
                 if (this.isClosable()) {
-                    if (type == TicketType.MODTICKET || owner == null) { // ModTickets are always force-closed by the mod team
+                    if (owner == null) { // execute forceclose if owner left server
+                        forceClose(event, true);
+                    } else if (type == TicketType.MODTICKET) { // ModTickets are always force-closed by the mod team
                         forceClose(event, true);
                     } else {
                         // send close request
@@ -234,7 +236,12 @@ public class Ticket {
     }
     public void forceClose(IReplyCallback event, boolean skipPermissionCheck) throws PermissionDeniedException, SQLException, ClassNotFoundException {
 
-        if (!skipPermissionCheck && ALLOW_DIRECT_FORCECLOSE_ROLES.stream().anyMatch(role -> event.getMember().getRoles().contains(role))) {
+        if (skipPermissionCheck) {
+            close(event, true);
+            return;
+        }
+
+        if (ALLOW_DIRECT_FORCECLOSE_ROLES.stream().anyMatch(role -> event.getMember().getRoles().contains(role))) {
             close(event, true);
         } else if (isForceClosable()) {
             close(event, true);

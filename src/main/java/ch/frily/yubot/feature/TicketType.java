@@ -161,7 +161,17 @@ public enum TicketType {
                     """,
             TicketTypeGroup.BEWERBUNG,
             List.of(EnvKey.ROLE_EVENTLEITUNG)
-    );
+    ),
+    BEWERBUNG_SOCIALMEDIA(
+            "besm",
+            "🎬 Fachbereich Social Media - Grafiker\\*in/Cutter\\*in",
+            "Bewerbung Fachbereich Social Media",
+            """
+                    *Dieser Text ist noch nicht vorhanden*
+                    """,
+            TicketTypeGroup.BEWERBUNG,
+            List.of(EnvKey.ROLE_SERVERLEITUNG)
+    );;
 
 
     @Getter
