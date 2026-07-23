@@ -15,7 +15,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -49,7 +48,7 @@ public class TicketManager {
     }
 
     public void createTicket(TicketType type, Member ticketOwner, Consumer<TextChannel> onCreated) throws SQLException, ClassNotFoundException {
-        List<TextChannel> openedTickets = TicketRepository.getTicketsByMember(ticketOwner).stream().map(Ticket::getChannel).toList();
+        List<TextChannel> openedTickets = TicketRepository.getTicketsByUser(ticketOwner.getUser()).stream().map(Ticket::getChannel).toList();
         if (openedTickets.size() >= MAX_TICKET_COUNT) {
             throw new PermissionDeniedException(String.format("""
                     Du hast bereits zu viele Tickets offen *(%d)*!

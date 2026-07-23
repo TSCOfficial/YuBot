@@ -164,7 +164,7 @@ public enum TicketType {
     ),
     BEWERBUNG_SOCIALMEDIA(
             "besm",
-            "🎬 Fachbereich Social Media - Grafiker\\*in/Cutter\\*in",
+            "🎬 Fachbereich Social Media",
             "Bewerbung Fachbereich Social Media",
             """
                     *Dieser Text ist noch nicht vorhanden*

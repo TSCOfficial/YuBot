@@ -1,7 +1,6 @@
 package ch.frily.yubot.feature;
 
 import ch.frily.yubot.Client;
-import ch.frily.yubot.embed.TicketCloseAcceptedEmbed;
 import ch.frily.yubot.embed.TicketCloseRequestEmbed;
 import ch.frily.yubot.embed.TicketClosedOptionsEmbed;
 import ch.frily.yubot.embed.TicketReopenedEmbed;
@@ -32,7 +31,6 @@ import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -107,6 +105,14 @@ public class Ticket {
         this.type = type;
         this.lastActivityAt = LocalDateTime.now();
         this.status = TicketStatus.NEW;
+    }
+
+    /**
+     * Ticket without owner - only used when the owner left the server
+     * @param type
+     */
+    public Ticket(TicketType type){
+        this(null, type);
     }
 
     public long getId(){
@@ -262,27 +268,35 @@ public class Ticket {
             throw new InvalidStateException("Ticket kann nicht geschlossen werden.");
         }
 
-        if (Util.isTeamMember(event.getMember()) || isOwner(event.getMember())) {
-            setPendingRequest(false);
-            setStatus(TicketStatus.CLOSED);
-
-            channel.getMemberPermissionOverrides().forEach(memberOverride -> {
-                memberOverride.delete().queue();
-            });
-
-            ActionRow actionRow = ActionRow.of(
-                    new TicketDeleteBtn().build()
-            );
-
-            TicketClosedOptionsEmbed optionsEmbed = new TicketClosedOptionsEmbed();
-            optionsEmbed.setTicket(this);
-            optionsEmbed.setForceClosed(isForceClosed);
-            if (isForceClosed) { // add initiator at force-close, bc at close-request, it will always be the ticket-owner
-                optionsEmbed.setInitiator(event.getMember());
-            }
-            event.replyEmbeds(optionsEmbed.build()).setComponents(actionRow).queue();
-            TicketRepository.updateTicket(this);
+        if (event != null && !Util.isTeamMember(event.getMember()) && !isOwner(event.getMember())) {
+            throw new PermissionDeniedException("Nur Teammitglieder oder der/die Ticketinhaber\\*in können Tickets schliessen.");
         }
+
+        setPendingRequest(false);
+        setStatus(TicketStatus.CLOSED);
+
+        channel.getMemberPermissionOverrides().forEach(memberOverride -> {
+            memberOverride.delete().queue();
+        });
+
+        ActionRow actionRow = ActionRow.of(
+                new TicketDeleteBtn().build()
+        );
+
+        TicketClosedOptionsEmbed optionsEmbed = new TicketClosedOptionsEmbed();
+        optionsEmbed.setTicket(this);
+        optionsEmbed.setForceClosed(isForceClosed);
+        if (isForceClosed && event != null) { // add initiator at force-close, bc at close-request, it will always be the ticket-owner
+            optionsEmbed.setInitiator(event.getMember());
+        }
+        if (event != null) {
+            event.replyEmbeds(optionsEmbed.build()).setComponents(actionRow).queue();
+        } else {
+            channel.sendMessageEmbeds(optionsEmbed.build()).setComponents(actionRow).queue();
+        }
+
+        TicketRepository.updateTicket(this);
+
     }
 
     public void delete() throws SQLException, ClassNotFoundException {

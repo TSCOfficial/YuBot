@@ -2,15 +2,12 @@ package ch.frily.yubot.feature;
 
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
-import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.InvalidStateException;
-import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
-import javassist.NotFoundException;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.exceptions.PermissionException;
+import net.dv8tion.jda.api.entities.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -65,9 +62,19 @@ public class TicketRepository {
         return ticket;
     }
 
-    public static List<Ticket> getTicketsByMember(Member member) throws SQLException, ClassNotFoundException {
+    /**
+     * Get a ticket by the owner-user
+     * <p>
+     *     Here the {@link User} is used in order to be able to get tickets from users that left the server and therefore aren't {@link Member}s
+     * </p>
+     * @param user
+     * @return
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
+    public static List<Ticket> getTicketsByUser(User user) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET);
-        query.select().where(Table.TicketColumn.OWNER_ID, DatabaseQuery.Operator.EQUALS, member.getIdLong());
+        query.select().where(Table.TicketColumn.OWNER_ID, DatabaseQuery.Operator.EQUALS, user.getIdLong());
         ResultSet resultSet = query.executeDataQuery();
 
         List<Ticket> tickets = new java.util.ArrayList<>();
@@ -83,9 +90,11 @@ public class TicketRepository {
             TicketType type = TicketType.valueOf(typeName);
             TicketStatus status = TicketStatus.valueOf(resultSet.getString(Table.TicketColumn.STATUS.getColumn()));
 
-            Ticket ticket = new Ticket(member, type);
-            ticket.setAssignee(member.getGuild().getMemberById(assigneeId));
-            ticket.setChannel(member.getGuild().getTextChannelById(channelId));
+            Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+
+            Ticket ticket = new Ticket(null, type);
+            ticket.setAssignee(guild.getMemberById(assigneeId));
+            ticket.setChannel(guild.getTextChannelById(channelId));
             ticket.setLastActivityAt(lastActivityAt.toLocalDateTime());
             ticket.setPendingRequest(isRequestPending);
             ticket.setCloseRequestCount(closeRequestCount);
