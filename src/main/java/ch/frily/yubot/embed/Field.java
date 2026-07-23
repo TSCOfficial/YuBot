@@ -9,7 +9,7 @@ public class Field extends MessageEmbed.Field {
      * @param inline Field inline state
      */
     public Field(boolean inline){
-        super(null, null, inline);
+        super(" ", " ", inline);
     }
 
     /**

@@ -45,6 +45,9 @@ public class Color {
      * @param hexCode The hexcode to convert (without the #)
      */
     public Color(String hexCode){
+        if (hexCode.startsWith("#")) {
+            hexCode = hexCode.substring(1);
+        }
         red = Integer.valueOf(hexCode.substring(0, 2), 16);
         green = Integer.valueOf(hexCode.substring(2, 4), 16);
         blue = Integer.valueOf(hexCode.substring(4, 6), 16);

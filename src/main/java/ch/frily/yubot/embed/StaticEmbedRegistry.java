@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
  */
 public enum StaticEmbedRegistry {
 
-    NONE(null);
+    TEAMLIST(new TeamlistEmbed().build());
 
     @Getter
     private final MessageEmbed embed;

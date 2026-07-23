@@ -2,11 +2,13 @@ package ch.frily.yubot.feature;
 
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 public class DynamicMessageRepository {
 
     /**
@@ -90,8 +92,10 @@ public class DynamicMessageRepository {
 
     public static void upsertDynamicMessage(DynamicMessage dynamicMessage) throws SQLException, ClassNotFoundException {
         if (exists(dynamicMessage.name())) {
+            log.info("Dynamic message {} already exists, updating...", dynamicMessage.name());
             updateDynamicMessage(dynamicMessage);
         } else {
+            log.info("Dynamic message {} does not exist, creating...", dynamicMessage.name());
             createDynamicMessage(dynamicMessage);
         }
     }

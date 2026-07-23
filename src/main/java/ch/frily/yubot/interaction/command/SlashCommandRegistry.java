@@ -41,7 +41,6 @@ public class SlashCommandRegistry {
      */
     public void loadCommands() {
         List<ISlashCommand> slashCommands = List.of(
-                new TeamlistCmd(),
                 new TestCmd() // tests only
         );
 

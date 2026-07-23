@@ -1,6 +1,7 @@
 package ch.frily.yubot.embed;
 
 import ch.frily.yubot.util.Color;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
@@ -85,7 +86,8 @@ public interface IEmbed {
         // Fields
         if (getFields() != null) {
             for (Field field : getFields()) {
-                if (field.getName() == null && field.getValue() == null) {
+                if (field.getName() == " " && field.getValue() == " ") {
+                    System.out.println("blank field");
                     builder.addBlankField(field.isInline());
                 } else {
                     builder.addField(field);

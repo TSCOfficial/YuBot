@@ -3,6 +3,7 @@ package ch.frily.yubot.feature;
 import ch.frily.yubot.container.StaticContainerRegistry;
 import ch.frily.yubot.container.TicketPanelContainer;
 import ch.frily.yubot.embed.StaticEmbedRegistry;
+import ch.frily.yubot.embed.TeamlistEmbed;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.util.EnvKey;
@@ -17,7 +18,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * Define an embed or container as a dynamic message to update itself.
@@ -38,6 +38,14 @@ public enum DynamicMessageList {
             args -> {
                 return new TicketPanelContainer().build();
             }
+    ),
+    TEAMLIST(
+            StaticEmbedRegistry.TEAMLIST.name(),
+            DynamicMessageType.EMBED,
+            args -> {
+                return new TeamlistEmbed().build();
+            },
+            null
     );
 
     @Getter
