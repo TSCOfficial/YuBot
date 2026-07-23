@@ -92,10 +92,8 @@ public class DynamicMessageRepository {
 
     public static void upsertDynamicMessage(DynamicMessage dynamicMessage) throws SQLException, ClassNotFoundException {
         if (exists(dynamicMessage.name())) {
-            log.info("Dynamic message {} already exists, updating...", dynamicMessage.name());
             updateDynamicMessage(dynamicMessage);
         } else {
-            log.info("Dynamic message {} does not exist, creating...", dynamicMessage.name());
             createDynamicMessage(dynamicMessage);
         }
     }

@@ -5,6 +5,7 @@ import ch.frily.yubot.embed.ClosureLogEmbed;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.interaction.button.btn.ActiveModActivityProveBtn;
 import ch.frily.yubot.interaction.button.btn.ActiveModActivityRejectBtn;
+import ch.frily.yubot.interaction.button.btn.DeleteActivityRequestMsgBtn;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import lombok.Getter;
@@ -278,7 +279,7 @@ public class Closure extends Feature {
             channel.retrieveMessageById(moderator.activityRequestMessageId()).queue(message -> {
                 message.editMessage(
                         String.format("❌ %s hat die Aktivitätsbestätigungsanfrage ignoriert.\n-# Zuletzt erkannte Aktivität war um <t:%d:T> (<t:%d:R>).", moderator.member().getAsMention(), epochTime, epochTime)
-                ).setComponents().setEmbeds().queue();
+                ).setComponents(ActionRow.of(new DeleteActivityRequestMsgBtn().build())).setEmbeds().queue();
             });
 
             guild.removeRoleFromMember(moderator.member(), EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD)).queue();

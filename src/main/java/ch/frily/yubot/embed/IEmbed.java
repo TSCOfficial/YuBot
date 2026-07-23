@@ -87,7 +87,6 @@ public interface IEmbed {
         if (getFields() != null) {
             for (Field field : getFields()) {
                 if (field.getName() == " " && field.getValue() == " ") {
-                    System.out.println("blank field");
                     builder.addBlankField(field.isInline());
                 } else {
                     builder.addField(field);
