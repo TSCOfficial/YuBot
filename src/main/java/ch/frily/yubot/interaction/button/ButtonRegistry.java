@@ -39,7 +39,8 @@ public class ButtonRegistry {
                 new ActiveModActivityProveBtn(),
                 new ActiveModActivityRejectBtn(),
                 new AddServeropenRoleBtn(),
-                new ActiveModStatisticGoToHomeBtn()
+                new ActiveModStatisticGoToHomeBtn(),
+                new DeleteActivityRequestMsgBtn()
         );
         rawButtons.forEach(btn -> {
             String idOrUrl = btn.getId();
