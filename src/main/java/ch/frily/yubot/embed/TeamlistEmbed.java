@@ -96,7 +96,6 @@ public class TeamlistEmbed implements IEmbed {
             int blanksNeeded = 3 - fieldCountOffset;
             for (int i = 0; i < blanksNeeded; i++) {
                 currentFields.add(new Field(true));
-                log.info("Added blank field to keep embed structured");
             }
         }
         return currentFields;
