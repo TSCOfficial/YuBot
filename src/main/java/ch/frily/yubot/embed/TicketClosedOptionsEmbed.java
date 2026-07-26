@@ -5,6 +5,7 @@ import lombok.Setter;
 import net.dv8tion.jda.api.entities.Member;
 
 import java.awt.*;
+import java.time.Instant;
 
 /**
  * Embed used after the Ticket was closed. Displays Ticket Informations
@@ -62,7 +63,10 @@ public class TicketClosedOptionsEmbed implements IEmbed {
         if (initiator != null) {
             return initiator.getColors().getPrimary();
         }
-        return ticket.getOwner().getColors().getPrimary();
+        if (ticket.getOwner() != null) {
+            return ticket.getOwner().getColors().getPrimary();
+        }
+        return IEmbed.super.getColor();
     }
 
     @Override
