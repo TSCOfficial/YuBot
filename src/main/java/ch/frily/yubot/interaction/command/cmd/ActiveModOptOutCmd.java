@@ -40,7 +40,7 @@ public class ActiveModOptOutCmd implements ISlashSubcommand {
 
             String countInfo = "Es sind nun **" + activeModCount + "** aktive Moderator\\*innen";
             if (activeModCount == 1) {
-                countInfo = "Es ist nun nurnoch **" + activeModCount + "** aktive*r Modderator*in";
+                countInfo = "Es ist nun nurnoch **" + activeModCount + "** aktive\\*r Modderator\\*in";
             } else if (activeModCount == 0) {
                 countInfo = "Es sind nun keine aktive Moderator*innen mehr da - der Server wird geschlossen.";
             }

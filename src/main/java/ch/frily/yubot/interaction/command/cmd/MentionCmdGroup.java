@@ -15,7 +15,8 @@ public class MentionCmdGroup implements ISlashCommandGroup {
     public List<ISlashSubcommand> getSubcommands() {
         return List.of(
                 new MentionModCmd(),
-                new MentionSupCmd()
+                new MentionSupCmd(),
+                new MentionEventCmd()
         );
     }
 }
