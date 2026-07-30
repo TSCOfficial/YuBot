@@ -37,6 +37,7 @@ public class ServerClosedContainer extends Container {
                 Button.of(ButtonStyle.LINK, "https://tiktok.com/@einfachyu", "Tiktok", Emoji.fromCustom("tiktok", 1514163991331475526L, false)),
                 Button.of(ButtonStyle.LINK, "https://www.twitch.tv/einfachyu", "Twitch", Emoji.fromCustom("twitch", 1513866550615085196L, false)),
                 Button.of(ButtonStyle.LINK, "https://www.youtube.com/channel/UC-aJNxT5dDuRZrc8MTNo5ag", "YouTube", Emoji.fromCustom("youtube", 1513868081653354666L, false))
+                //Button.of(ButtonStyle.LINK, "https://losr.de", "Losr Shop", Emoji.fromCustom("youtube", 1513868081653354666L, false))
         ));
 
         this.addInvisibleSeparator(Separator.Spacing.LARGE);

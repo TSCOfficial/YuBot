@@ -1,5 +1,6 @@
 package ch.frily.yubot;
 
+import ch.frily.yubot.database.Database;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.interaction.button.ButtonRegistry;
 import ch.frily.yubot.interaction.contextmenu.ContextMenuRegistry;
@@ -25,6 +26,8 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,13 +64,13 @@ public class Client {
         try {
             config = loadConfig();
 
-//            Connection conn = Database.getInstance().connect();
-//            if (conn != null) {
-//                log.info("Database connected!");
-//            } else {
-//                throw new SQLException("Database could not be reached!");
-//            }
-//            Database.getInstance().disconnect();
+            Connection conn = Database.getInstance().connect();
+            if (conn != null) {
+                log.info("Database connected!");
+            } else {
+                throw new SQLException("Database could not be reached!");
+            }
+            Database.getInstance().disconnect();
 
             client = createClient();
             client.awaitReady();
@@ -120,7 +123,7 @@ public class Client {
     }
 
     /**
-     * Load .env-file configurations
+     * Load ..env-file configurations
      * @return {@link Dotenv} config object
      */
     private Dotenv loadConfig(){

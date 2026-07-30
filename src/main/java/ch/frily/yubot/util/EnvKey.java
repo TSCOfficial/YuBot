@@ -64,4 +64,4 @@ public enum EnvKey {
         return EnvResolver.getString(this);
     }
 }
-// todo evntl sogar funktional? dass die enum elemente vars sind welche den .env-aufruf automatisch machen und den wert direkt ausgeben?
+// todo evntl sogar funktional? dass die enum elemente vars sind welche den ..env-aufruf automatisch machen und den wert direkt ausgeben?
