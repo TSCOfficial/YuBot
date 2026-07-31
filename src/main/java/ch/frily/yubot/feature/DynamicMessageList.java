@@ -1,5 +1,6 @@
 package ch.frily.yubot.feature;
 
+import ch.frily.yubot.container.AbsenceOverviewContainer;
 import ch.frily.yubot.container.StaticContainerRegistry;
 import ch.frily.yubot.container.TicketPanelContainer;
 import ch.frily.yubot.embed.StaticEmbedRegistry;
@@ -46,6 +47,14 @@ public enum DynamicMessageList {
                 return new TeamlistEmbed().build();
             },
             null
+    ),
+    ABSENCES(
+            StaticContainerRegistry.ABSENCE_OVERVIEW.name(),
+            DynamicMessageType.CONTAINER,
+            null,
+            args -> {
+                return new AbsenceOverviewContainer().build();
+            }
     );
 
     @Getter

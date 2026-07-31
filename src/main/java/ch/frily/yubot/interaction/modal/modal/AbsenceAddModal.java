@@ -1,5 +1,8 @@
 package ch.frily.yubot.interaction.modal.modal;
 
+import ch.frily.yubot.feature.Absence;
+import ch.frily.yubot.feature.AbsenceRepository;
+import ch.frily.yubot.feature.DynamicMessageList;
 import ch.frily.yubot.interaction.modal.IModal;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
@@ -17,6 +20,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class AbsenceAddModal implements IModal {
+
+    private static final String DATE_TIME_FORMAT = "dd.MM.yyyy HH:mm";
+
     @Override
     public String getTitle() {
         return "Abwesenheit anlegen";
@@ -31,12 +37,12 @@ public class AbsenceAddModal implements IModal {
     public List<ModalTopLevelComponent> getComponents() {
         TextInput.Builder startTime = TextInput.create("start-time", TextInputStyle.SHORT);
         startTime.setRequiredRange(16, 16);
-        startTime.setValue(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")));
+        startTime.setValue(LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
         startTime.setRequired(true);
 
         TextInput.Builder endTime = TextInput.create("end-time", TextInputStyle.SHORT);
         endTime.setRequiredRange(16, 16);
-        endTime.setValue(LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")));
+        endTime.setValue(LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
         endTime.setRequired(true);
 
         TextInput.Builder reason = TextInput.create("reason", TextInputStyle.PARAGRAPH);
@@ -44,8 +50,8 @@ public class AbsenceAddModal implements IModal {
         reason.setRequired(true);
 
         return List.of(
-                Label.of("Startzeit (dd.MM.yyyy HH:mm)", startTime.build()),
-                Label.of("Endzeit (dd.MM.yyyy HH:mm)", endTime.build()),
+                Label.of(String.format("Startzeit (%s)", DATE_TIME_FORMAT), startTime.build()),
+                Label.of(String.format("Endzeit (%s)", DATE_TIME_FORMAT), endTime.build()),
                 Label.of("Begründung", reason.build()),
                 Label.of("Anwesenheitsmeldung senden", Checkbox.of("absence-message", false)),
                 TextDisplay.of("-# Die Abwesenheitsmeldung wird automatisch versendet, wenn dich jemand während deiner Abwesenheit erwähnt.")
@@ -54,6 +60,19 @@ public class AbsenceAddModal implements IModal {
 
     @Override
     public void execute(@NonNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException {
-        event.reply("Modal executed").setEphemeral(true).queue();
+        String startTimeString = event.getValue("start-time").getAsString();
+        LocalDateTime startTime = LocalDateTime.parse(startTimeString, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
+        String endTimeString = event.getValue("end-time").getAsString();
+        LocalDateTime endTime = LocalDateTime.parse(endTimeString, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
+        String reason = event.getValue("reason").getAsString();
+        boolean showNotice = event.getValue("absence-message").getAsBoolean();
+
+        Absence absence = new Absence(null, event.getMember(), startTime, endTime, reason, showNotice);
+
+        AbsenceRepository.createAbsence(absence);
+
+        event.reply("Deine Abwesenheit wurde erfolgreich angelegt.").setEphemeral(true).queue();
+
+        DynamicMessageList.ABSENCES.update();
     }
 }

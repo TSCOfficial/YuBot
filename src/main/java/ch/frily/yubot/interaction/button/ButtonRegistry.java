@@ -41,7 +41,8 @@ public class ButtonRegistry {
                 new AddServeropenRoleBtn(),
                 new ActiveModStatisticGoToHomeBtn(),
                 new DeleteActivityRequestMsgBtn(),
-                new AbsenceAddBtn()
+                new AbsenceAddBtn(),
+                new AbsenceDetailBtn()
         );
         rawButtons.forEach(btn -> {
             String idOrUrl = btn.getId().split("\\?")[0];

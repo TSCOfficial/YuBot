@@ -92,8 +92,8 @@ public enum Table {
         MEMBER_ID("member_id"),
         START_DATETIME("start_datetime"),
         END_DATETIME("end_datetime"),
-        ABSENCE_MESSAGE("absence_message"),
-        REASON("reason");
+        REASON("reason"),
+        SEND_NOTICE("send_notice");
         private final String column;
     }
 }

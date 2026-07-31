@@ -26,18 +26,16 @@ public class AbsenceRepository {
         query.select();
         ResultSet rs = query.executeDataQuery();
         while (rs.next()) {
-            log.info("Processing absence record");
             int id = rs.getInt(Table.AbsenceColumn.ID.getColumn());
             String memberId = rs.getString(Table.AbsenceColumn.MEMBER_ID.getColumn());
             LocalDateTime startDateTime = rs.getTimestamp(Table.AbsenceColumn.START_DATETIME.getColumn()).toLocalDateTime();
             LocalDateTime endDateTime = rs.getTimestamp(Table.AbsenceColumn.END_DATETIME.getColumn()).toLocalDateTime();
             String reason = rs.getString(Table.AbsenceColumn.REASON.getColumn());
-            String absenceMessage = rs.getString(Table.AbsenceColumn.ABSENCE_MESSAGE.getColumn());
+            boolean sendNotice = rs.getBoolean(Table.AbsenceColumn.SEND_NOTICE.getColumn());
 
             Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
             Member member = guild.getMemberById(memberId);
-            Absence absence = new Absence(id, member, startDateTime, endDateTime, reason, absenceMessage);
-            log.info(absence.toString());
+            Absence absence = new Absence(id, member, startDateTime, endDateTime, reason, sendNotice);
             absences.add(absence);
         }
         return absences;
@@ -54,14 +52,24 @@ public class AbsenceRepository {
             LocalDateTime startDateTime = rs.getTimestamp(Table.AbsenceColumn.START_DATETIME.getColumn()).toLocalDateTime();
             LocalDateTime endDateTime = rs.getTimestamp(Table.AbsenceColumn.END_DATETIME.getColumn()).toLocalDateTime();
             String reason = rs.getString(Table.AbsenceColumn.REASON.getColumn());
-            String absenceMessage = rs.getString(Table.AbsenceColumn.ABSENCE_MESSAGE.getColumn());
+            boolean sendNotice = rs.getBoolean(Table.AbsenceColumn.SEND_NOTICE.getColumn());
 
             Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
             Member member = guild.getMemberById(memberId);
-            Absence absence = new Absence(id, member, startDateTime, endDateTime, reason, absenceMessage);
-            log.info(absence.toString());
+            Absence absence = new Absence(id, member, startDateTime, endDateTime, reason, sendNotice);
             return absence;
         }
         throw new NoSuchMethodException("Abwesenheit nicht gefunden");
+    }
+
+    public static void createAbsence(Absence absence) throws SQLException, ClassNotFoundException {
+        DatabaseQuery query = new DatabaseQuery(Table.ABSENCE);
+        query.insert(Table.AbsenceColumn.MEMBER_ID, absence.member().getId());
+        query.insert(Table.AbsenceColumn.START_DATETIME, absence.fromDateTime());
+        query.insert(Table.AbsenceColumn.END_DATETIME, absence.toDateTime());
+        query.insert(Table.AbsenceColumn.REASON, absence.reason());
+        query.insert(Table.AbsenceColumn.SEND_NOTICE, absence.absenceMessage());
+
+        query.executeQuery();
     }
 }

@@ -32,7 +32,7 @@ public interface IButton {
      * To retrieve and dispatch the button, split at <code>?</code>.
      * @return
      */
-    default String getId(){
+    default String getId(){ // TODO This system fails due to duplicate IDs. find solution!
         return defineId() + "?" + arguments.entrySet().stream()
                 .map(entry -> entry.getKey() + "=" + entry.getValue())
                 .reduce((a, b) -> a + "&" + b)

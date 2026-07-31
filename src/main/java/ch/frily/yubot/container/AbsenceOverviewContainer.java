@@ -4,6 +4,7 @@ import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.Absence;
 import ch.frily.yubot.feature.AbsenceRepository;
 import ch.frily.yubot.interaction.button.btn.AbsenceAddBtn;
+import ch.frily.yubot.interaction.button.btn.AbsenceDetailBtn;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
@@ -178,12 +180,18 @@ public class AbsenceOverviewContainer extends Container {
 //
 //        }
 
-        this.addFormatedText("""
+        AbsenceDetailBtn detailBtn = new AbsenceDetailBtn();
+        detailBtn.addArgument("absence_id", absence.id().toString());
+
+        this.addSection(detailBtn.build(), TextDisplay.ofFormat("""
                 > **[%s](https://discord.com/users/%s)**
                 > -# %s
                 > %s
                 """,
-                absence.member().getEffectiveName(), absence.member().getId(), getTeamRoles(absence.member()).stream().map(Role::getAsMention).collect(Collectors.joining(", ")), timeRange);
+                absence.member().getEffectiveName(), absence.member().getId(),
+                getTeamRoles(absence.member()).stream().map(Role::getAsMention).collect(Collectors.joining(", ")),
+                timeRange)
+        );
     }
 
     /**
