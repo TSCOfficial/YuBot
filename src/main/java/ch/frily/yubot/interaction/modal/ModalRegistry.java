@@ -1,5 +1,6 @@
 package ch.frily.yubot.interaction.modal;
 
+import ch.frily.yubot.interaction.modal.modal.AbsenceAddModal;
 import ch.frily.yubot.interaction.modal.modal.TypeSelectorModal;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -25,7 +26,8 @@ public class ModalRegistry {
 
     public void loadModals(){
         List<IModal> rawModals = List.of(
-                new TypeSelectorModal()
+                new TypeSelectorModal(),
+                new AbsenceAddModal()
         );
 
         rawModals.forEach(modal -> {

@@ -1,6 +1,7 @@
 package ch.frily.yubot.interaction.button.btn;
 
 import ch.frily.yubot.interaction.button.IButton;
+import ch.frily.yubot.interaction.modal.modal.AbsenceAddModal;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
@@ -37,7 +38,7 @@ public class AbsenceAddBtn implements IButton {
 
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
-
+        event.replyModal(new AbsenceAddModal().build()).queue();
     }
 
     @Override

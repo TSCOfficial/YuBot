@@ -180,7 +180,7 @@ public class AbsenceOverviewContainer extends Container {
 
         this.addFormatedText("""
                 > **[%s](https://discord.com/users/%s)**
-                > %s
+                > -# %s
                 > %s
                 """,
                 absence.member().getEffectiveName(), absence.member().getId(), getTeamRoles(absence.member()).stream().map(Role::getAsMention).collect(Collectors.joining(", ")), timeRange);

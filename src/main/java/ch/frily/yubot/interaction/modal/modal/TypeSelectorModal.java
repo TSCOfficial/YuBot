@@ -8,6 +8,8 @@ import ch.frily.yubot.feature.TicketTypeGroup;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.ModalTopLevelComponent;
+import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -34,8 +36,8 @@ public class TypeSelectorModal implements IModal {
     }
 
     @Override
-    public Map<String, LabelChildComponent> getComponents() {
-        Map<String, LabelChildComponent> components = new HashMap<>();
+    public List<ModalTopLevelComponent> getComponents() {
+        List<ModalTopLevelComponent> components = new ArrayList<>();
         List<TicketType> types = Arrays.stream(TicketType.values()).filter(type -> type.getGroup() == typeGroup).toList();
 
         StringSelectMenu.Builder selectMenuBuilder = StringSelectMenu.create("select-menu:ticket-type-selector");
@@ -49,7 +51,7 @@ public class TypeSelectorModal implements IModal {
         selectMenuBuilder.setRequired(true);
         selectMenuBuilder.setDefaultOptions(selectMenuBuilder.getOptions().getFirst());
 
-        components.put("Ticketart", selectMenuBuilder.build());
+        components.add(Label.of("Ticketart", selectMenuBuilder.build()));
 
         return components;
     }
