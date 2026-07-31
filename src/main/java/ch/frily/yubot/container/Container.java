@@ -30,6 +30,8 @@ public abstract class Container {
     @Setter
     private Color color;
 
+    public static final int MAX_COMPONENTS = 40;
+
     /**
      * Add a component to the container<br>
      * Available components:
@@ -108,7 +110,7 @@ public abstract class Container {
             List<ContainerChildComponent> newComponents = new ArrayList<>();
 
             for (int i = 0; i < components.size(); i++) {
-                if (i > 0 && i % 40 == 0) {
+                if (i > 0 && i % MAX_COMPONENTS == 0) {
                     net.dv8tion.jda.api.components.container.Container newContainer =
                             net.dv8tion.jda.api.components.container.Container.of(newComponents);
                     newContainer = newContainer.withAccentColor(color);

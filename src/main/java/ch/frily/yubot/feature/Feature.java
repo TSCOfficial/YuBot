@@ -17,7 +17,9 @@ import java.util.*;
 /**
  * Basic feature class<br>
  * Define feature-based permissions
+ * @deprecated This feature related permissionsystem was taken over by the slashcommand role-permission system and will be deleted
  */
+@Deprecated
 @Slf4j
 public abstract class Feature {
 

@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 @Slf4j
-public class Closure extends Feature {
+public class Closure {
 
     private static Closure instance;
 

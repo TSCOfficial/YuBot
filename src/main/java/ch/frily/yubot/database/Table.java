@@ -10,7 +10,8 @@ public enum Table {
     TICKET_TYPE_CONTROL("ticket_type_control", TicketTypeControlColumn.class),
     ACTIVE_MOD("active_mod", ActiveModColumn.class),
     ACTIVE_MOD_TRACKING("active_mod_tracking", ActiveModTrackingColumn.class),
-    DYNAMIC_MESSAGE("dynamic_message", DynamicMessageColumn.class);
+    DYNAMIC_MESSAGE("dynamic_message", DynamicMessageColumn.class),
+    ABSENCE("absence", AbsenceColumn.class);
 
     private final String table;
     private final Class<? extends Column> columnClass;
@@ -80,6 +81,19 @@ public enum Table {
         MONTH("month"),
         MISSED_ACTIVITY_REQUEST_COUNT("missed_activity_request_count"),
         TOTAL_ACTIVITY_REQUEST_COUNT("total_activity_request_count");
+        private final String column;
+    }
+
+    // ABSCENCE
+    @Getter
+    @RequiredArgsConstructor
+    public enum AbsenceColumn implements Column {
+        ID("id"),
+        MEMBER_ID("member_id"),
+        START_DATETIME("start_datetime"),
+        END_DATETIME("end_datetime"),
+        ABSENCE_MESSAGE("absence_message"),
+        REASON("reason");
         private final String column;
     }
 }

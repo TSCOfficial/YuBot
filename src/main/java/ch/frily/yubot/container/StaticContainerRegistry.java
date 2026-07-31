@@ -14,7 +14,8 @@ public enum StaticContainerRegistry {
     RULES(new RulesContainer().build()),
     TICKET_PANEL(new TicketPanelContainer().build()),
     START_HERE(new StartHereContainer().build()),
-    MENTAL_HEALTH(new MentalHealthHelpContainer().build());
+    MENTAL_HEALTH(new MentalHealthHelpContainer().build()),
+    ABSENCE_OVERVIEW(new AbsenceOverviewContainer().build());
 
     @Getter
     private final List<Container> containers;
