@@ -42,4 +42,26 @@ public class AbsenceRepository {
         }
         return absences;
     }
+
+    public static Absence getAbsenceById(int id) throws SQLException, ClassNotFoundException, NoSuchMethodException {
+
+        DatabaseQuery query = new DatabaseQuery(Table.ABSENCE);
+        query.select();
+        query.where(Table.AbsenceColumn.ID, DatabaseQuery.Operator.EQUALS, id);
+        ResultSet rs = query.executeDataQuery();
+        if (rs.next()) {
+            String memberId = rs.getString(Table.AbsenceColumn.MEMBER_ID.getColumn());
+            LocalDateTime startDateTime = rs.getTimestamp(Table.AbsenceColumn.START_DATETIME.getColumn()).toLocalDateTime();
+            LocalDateTime endDateTime = rs.getTimestamp(Table.AbsenceColumn.END_DATETIME.getColumn()).toLocalDateTime();
+            String reason = rs.getString(Table.AbsenceColumn.REASON.getColumn());
+            String absenceMessage = rs.getString(Table.AbsenceColumn.ABSENCE_MESSAGE.getColumn());
+
+            Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+            Member member = guild.getMemberById(memberId);
+            Absence absence = new Absence(id, member, startDateTime, endDateTime, reason, absenceMessage);
+            log.info(absence.toString());
+            return absence;
+        }
+        throw new NoSuchMethodException("Abwesenheit nicht gefunden");
+    }
 }

@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class TicketDeleteBtn implements IButton {
     @Override
-    public String getId() {
+    public String defineId() {
         return "ticket-delete-btn";
     }
 

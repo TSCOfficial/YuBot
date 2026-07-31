@@ -16,7 +16,7 @@ import java.sql.SQLException;
  */
 public class ActiveModActivityProveBtn implements IButton {
     @Override
-    public String getId() {
+    public String defineId() {
         return "activemod-activity-prove-btn";
     }
 

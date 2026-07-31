@@ -19,7 +19,7 @@ public class TicketPanelAwarenessBtn implements IButton {
     }
 
     @Override
-    public String getId() {
+    public String defineId() {
         return "ticket-awareness";
     }
 

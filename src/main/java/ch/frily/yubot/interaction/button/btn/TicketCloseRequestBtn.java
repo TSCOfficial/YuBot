@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class TicketCloseRequestBtn implements IButton {
     @Override
-    public String getId() {
+    public String defineId() {
         return "ticket-close-request-btn";
     }
 

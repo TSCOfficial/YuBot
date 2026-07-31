@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class ActiveModStatisticGoToHomeBtn implements IButton {
     @Override
-    public String getId() {
+    public String defineId() {
         return "activemod-statistic-home-btn";
     }
 

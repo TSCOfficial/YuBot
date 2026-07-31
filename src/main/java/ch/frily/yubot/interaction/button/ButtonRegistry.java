@@ -40,10 +40,11 @@ public class ButtonRegistry {
                 new ActiveModActivityRejectBtn(),
                 new AddServeropenRoleBtn(),
                 new ActiveModStatisticGoToHomeBtn(),
-                new DeleteActivityRequestMsgBtn()
+                new DeleteActivityRequestMsgBtn(),
+                new AbsenceAddBtn()
         );
         rawButtons.forEach(btn -> {
-            String idOrUrl = btn.getId();
+            String idOrUrl = btn.getId().split("\\?")[0];
             if (btn.getStyle() == ButtonStyle.LINK && btn.getUrl() != null) {
                 idOrUrl = btn.getUrl();
             }
@@ -52,7 +53,7 @@ public class ButtonRegistry {
     }
 
     public void dispatchButtonInteraction(ButtonInteractionEvent event) throws SQLException, IllegalStateException, ClassNotFoundException {
-        String idOrUrl = event.getButton().getCustomId();
+        String idOrUrl = event.getButton().getCustomId().split("\\?")[0];
         if (event.getButton().getStyle() == ButtonStyle.LINK && event.getButton().getUrl() != null) {
             idOrUrl = event.getButton().getUrl();
         }

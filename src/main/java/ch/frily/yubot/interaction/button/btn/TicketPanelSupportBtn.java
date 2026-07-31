@@ -19,7 +19,7 @@ public class TicketPanelSupportBtn implements IButton {
     }
 
     @Override
-    public String getId() {
+    public String defineId() {
         return "ticket-support";
     }
 

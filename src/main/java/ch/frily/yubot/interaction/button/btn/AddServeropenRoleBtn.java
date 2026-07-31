@@ -16,7 +16,7 @@ import java.util.List;
 
 public class AddServeropenRoleBtn implements IButton {
     @Override
-    public String getId() {
+    public String defineId() {
         return "add-serveropen-role-btn";
     }
 

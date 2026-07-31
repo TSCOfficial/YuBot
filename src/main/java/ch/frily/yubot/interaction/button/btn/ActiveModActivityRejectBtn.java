@@ -18,7 +18,7 @@ import java.sql.SQLException;
  */
 public class ActiveModActivityRejectBtn implements IButton {
     @Override
-    public String getId() {
+    public String defineId() {
         return "activemod-activity-reject-btn";
     }
 

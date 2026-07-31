@@ -10,10 +10,38 @@ import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public interface IButton {
 
-    String getId();
+    Map<String, String> arguments = new TreeMap<>();
+
+    /**
+     * Define the ID of the button
+     * @return
+     */
+    String defineId();
+
+    /**
+     * Get the ID of the button
+     * <p>This method uses the defined-ID from {@link #defineId()} and populates the arguments on the ID.
+     * <pre><code>
+     *     my-btn-id?arg1=value1&arg2=value2
+     * </code></pre></p>
+     * To retrieve and dispatch the button, split at <code>?</code>.
+     * @return
+     */
+    default String getId(){
+        return defineId() + "?" + arguments.entrySet().stream()
+                .map(entry -> entry.getKey() + "=" + entry.getValue())
+                .reduce((a, b) -> a + "&" + b)
+                .orElse("");
+    };
+
+    default void addArgument(String key, String value){
+        arguments.put(key, value);
+    }
 
     default String getLabel() {
         return null;

@@ -25,7 +25,7 @@ public class TicketCloseRequestAcceptBtn implements IButton {
     private boolean disabled = false;
 
     @Override
-    public String getId() {
+    public String defineId() {
         return "ticket-close-request-accept-btn";
     }
 

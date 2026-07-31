@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.Role;
 
 import java.time.Duration;
 import java.time.Month;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.Arrays;
 import java.util.Collection;
@@ -65,6 +66,13 @@ public class Util {
         }
 
         return openDuration;
+    }
+
+    public static String calcDuration(Temporal startInclusive, Temporal end, boolean includeEnd) {
+        if (includeEnd) {
+            end = end.plus(1, ChronoUnit.MINUTES);
+        }
+        return calcDuration(startInclusive, end);
     }
 
     public static String calcDuration(int minutes) {

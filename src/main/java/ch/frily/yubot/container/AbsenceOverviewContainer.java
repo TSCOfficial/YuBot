@@ -3,11 +3,14 @@ package ch.frily.yubot.container;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.Absence;
 import ch.frily.yubot.feature.AbsenceRepository;
+import ch.frily.yubot.interaction.button.btn.AbsenceAddBtn;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -68,6 +71,11 @@ public class AbsenceOverviewContainer extends Container {
                 }
                 addDaySection(entry.getKey(), entry.getValue());
             }
+
+            addComponent(ActionRow.of(
+                    new AbsenceAddBtn().build()
+            ));
+
         } catch (Exception e) {
             ExceptionHandler.handle(e);
         }
@@ -160,12 +168,22 @@ public class AbsenceOverviewContainer extends Container {
             }
         }
 
+// prototype / experiment
+//        String originalAbsenceTime = "";
+//        try {
+//            Absence originalAbsence = AbsenceRepository.getAbsenceById(absence.id());
+//            originalAbsenceTime = String.format("Abwesend vom <t:%d:f> bis <t:%d:f> (%s)",
+//                    toEpochSeconds(originalAbsence.fromDateTime()), toEpochSeconds(originalAbsence.toDateTime()), Util.calcDuration(originalAbsence.fromDateTime(), originalAbsence.toDateTime(), true));
+//        } catch (Exception e) {
+//
+//        }
+
         this.addFormatedText("""
                 > **[%s](https://discord.com/users/%s)**
                 > %s
                 > %s
                 """,
-                absence.member().getEffectiveName(), absence.member().getId(),getTeamRoles(absence.member()).stream().map(Role::getAsMention).collect(Collectors.joining(", ")), timeRange);
+                absence.member().getEffectiveName(), absence.member().getId(), getTeamRoles(absence.member()).stream().map(Role::getAsMention).collect(Collectors.joining(", ")), timeRange);
     }
 
     /**
