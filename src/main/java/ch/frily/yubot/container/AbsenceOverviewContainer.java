@@ -182,6 +182,7 @@ public class AbsenceOverviewContainer extends Container {
 
         AbsenceDetailBtn detailBtn = new AbsenceDetailBtn();
         detailBtn.addArgument("absence_id", absence.id().toString());
+        log.info(detailBtn.getId());
 
         this.addSection(detailBtn.build(), TextDisplay.ofFormat("""
                 > **[%s](https://discord.com/users/%s)**

@@ -18,7 +18,7 @@ public class ButtonRegistry {
     private static ButtonRegistry instance;
 
     // id/url, Button
-    public Map<String, IButton> buttons = new HashMap<>();
+    public Map<String, Button> buttons = new HashMap<>();
 
     public static ButtonRegistry getInstance(){
         if (instance == null) {
@@ -28,7 +28,7 @@ public class ButtonRegistry {
     }
 
     public void loadButtons() {
-        List<IButton> rawButtons = List.of(
+        List<Button> rawButtons = List.of(
                 new TicketPanelSupportBtn(),
                 new TicketPanelAwarenessBtn(),
                 new TicketPanelBewerbungBtn(),
@@ -53,12 +53,12 @@ public class ButtonRegistry {
         });
     }
 
-    public void dispatchButtonInteraction(ButtonInteractionEvent event) throws SQLException, IllegalStateException, ClassNotFoundException {
+    public void dispatchButtonInteraction(ButtonInteractionEvent event) throws SQLException, IllegalStateException, ClassNotFoundException, NoSuchMethodException {
         String idOrUrl = event.getButton().getCustomId().split("\\?")[0];
         if (event.getButton().getStyle() == ButtonStyle.LINK && event.getButton().getUrl() != null) {
             idOrUrl = event.getButton().getUrl();
         }
-        IButton button = buttons.get(idOrUrl);
+        Button button = buttons.get(idOrUrl);
         if (button == null) {
             throw new IllegalStateException(String.format("Der Button '%s' konnte nicht gefunden werden.", idOrUrl));
         }

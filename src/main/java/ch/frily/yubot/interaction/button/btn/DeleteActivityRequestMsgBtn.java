@@ -2,6 +2,7 @@ package ch.frily.yubot.interaction.button.btn;
 
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.PermissionDeniedException;
+import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.button.IButton;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
@@ -17,7 +18,7 @@ import java.util.regex.Pattern;
  * This mention inside the message (event.getMessage() is used to identify the ex-activemod and only allow them to execute this button.
  */
 @Slf4j
-public class DeleteActivityRequestMsgBtn implements IButton {
+public class DeleteActivityRequestMsgBtn extends Button {
     @Override
     public String defineId() {
         return "delete-activity-request-msg-btn";

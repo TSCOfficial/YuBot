@@ -6,6 +6,7 @@ import ch.frily.yubot.exception.HandledException;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.feature.Ticket;
 import ch.frily.yubot.feature.TicketRepository;
+import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.button.IButton;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
@@ -25,7 +26,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Slf4j
-public class TicketDeleteBtn implements IButton {
+public class TicketDeleteBtn extends Button {
     @Override
     public String defineId() {
         return "ticket-delete-btn";

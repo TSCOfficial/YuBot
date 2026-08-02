@@ -4,6 +4,7 @@ import ch.frily.yubot.embed.TicketCloseAcceptedEmbed;
 import ch.frily.yubot.embed.TicketClosedOptionsEmbed;
 import ch.frily.yubot.feature.Ticket;
 import ch.frily.yubot.feature.TicketRepository;
+import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.button.IButton;
 import ch.frily.yubot.util.Util;
 import javassist.NotFoundException;
@@ -19,7 +20,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Slf4j
-public class TicketCloseRequestAcceptBtn implements IButton {
+public class TicketCloseRequestAcceptBtn extends Button {
 
     @Setter
     private boolean disabled = false;

@@ -12,36 +12,15 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 public interface IButton {
-
-    Map<String, String> arguments = new TreeMap<>();
 
     /**
      * Define the ID of the button
      * @return
      */
     String defineId();
-
-    /**
-     * Get the ID of the button
-     * <p>This method uses the defined-ID from {@link #defineId()} and populates the arguments on the ID.
-     * <pre><code>
-     *     my-btn-id?arg1=value1&arg2=value2
-     * </code></pre></p>
-     * To retrieve and dispatch the button, split at <code>?</code>.
-     * @return
-     */
-    default String getId(){ // TODO This system fails due to duplicate IDs. find solution!
-        return defineId() + "?" + arguments.entrySet().stream()
-                .map(entry -> entry.getKey() + "=" + entry.getValue())
-                .reduce((a, b) -> a + "&" + b)
-                .orElse("");
-    };
-
-    default void addArgument(String key, String value){
-        arguments.put(key, value);
-    }
 
     default String getLabel() {
         return null;
@@ -64,19 +43,7 @@ public interface IButton {
         return null;
     }
 
-    default Button build(){
-        String idOrUrl = getId();
-        if (getStyle() == ButtonStyle.LINK && getUrl() != null) {
-            idOrUrl = getUrl();
-        }
-        Button button = Button.of(getStyle(), idOrUrl, getLabel(), getEmoji());
-        if (isDisabled()) {
-            button.asDisabled();
-        }
-        return button;
-    }
-
-    void execute(@NotNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException;
+    void execute(@NotNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException;
 
     /**
      * Get the allowed roles of an interaction.

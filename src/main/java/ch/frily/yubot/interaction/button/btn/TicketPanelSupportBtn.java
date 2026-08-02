@@ -1,5 +1,6 @@
 package ch.frily.yubot.interaction.button.btn;
 
+import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.button.IButton;
 import ch.frily.yubot.feature.TicketTypeGroup;
 import ch.frily.yubot.interaction.modal.modal.TypeSelectorModal;
@@ -7,7 +8,7 @@ import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class TicketPanelSupportBtn implements IButton {
+public class TicketPanelSupportBtn extends Button {
 
     private static TicketPanelSupportBtn instance;
 

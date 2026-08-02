@@ -3,6 +3,7 @@ package ch.frily.yubot.interaction.button.btn;
 import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.feature.ActiveMod;
 import ch.frily.yubot.feature.ActiveModRepository;
+import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.button.IButton;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
@@ -16,7 +17,7 @@ import java.sql.SQLException;
 /**
  * Reject the activity request and opt-out
  */
-public class ActiveModActivityRejectBtn implements IButton {
+public class ActiveModActivityRejectBtn extends Button {
     @Override
     public String defineId() {
         return "activemod-activity-reject-btn";

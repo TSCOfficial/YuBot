@@ -3,6 +3,7 @@ package ch.frily.yubot.interaction.button.btn;
 import ch.frily.yubot.embed.TicketCloseRejectedEmbed;
 import ch.frily.yubot.feature.Ticket;
 import ch.frily.yubot.feature.TicketRepository;
+import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.button.IButton;
 import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
@@ -19,7 +20,7 @@ import java.sql.SQLException;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
-public class TicketCloseRequestRejectBtn implements IButton {
+public class TicketCloseRequestRejectBtn extends Button {
 
     @Setter
     private boolean disabled = false;

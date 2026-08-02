@@ -3,6 +3,7 @@ package ch.frily.yubot.feature;
 import ch.frily.yubot.embed.TicketOpenEmbed;
 import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.exception.ThrowingConsumer;
+import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.button.IButton;
 import ch.frily.yubot.interaction.button.btn.TicketCloseRequestBtn;
 import ch.frily.yubot.interaction.button.btn.TicketPanelAwarenessBtn;
@@ -123,7 +124,7 @@ public class TicketManager {
         return true;
     }
 
-    public IButton getButtonByTypeGroup(TicketTypeGroup typeGroup){
+    public Button getButtonByTypeGroup(TicketTypeGroup typeGroup){
         return switch (typeGroup) {
             case SUPPORT -> new TicketPanelSupportBtn();
             case AWARENESS -> new TicketPanelAwarenessBtn();

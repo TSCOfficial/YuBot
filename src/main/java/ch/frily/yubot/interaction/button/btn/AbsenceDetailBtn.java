@@ -1,8 +1,12 @@
 package ch.frily.yubot.interaction.button.btn;
 
+import ch.frily.yubot.feature.Absence;
+import ch.frily.yubot.feature.AbsenceRepository;
+import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.button.IButton;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -17,16 +21,12 @@ import java.util.stream.Stream;
 /**
  * Allowes the team to view an absance in detail
  */
-public class AbsenceDetailBtn implements IButton {
+@Slf4j
+public class AbsenceDetailBtn extends Button {
 
     @Override
     public String defineId() {
         return "absence-detail-btn";
-    }
-
-    @Override
-    public void addArgument(String key, String value) {
-        IButton.super.addArgument(key, value);
     }
 
     @Override
@@ -40,8 +40,11 @@ public class AbsenceDetailBtn implements IButton {
     }
 
     @Override
-    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
-        event.reply(event.getComponentId()).queue();
+    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
+        log.info(event.getComponentId());
+        log.info(getArgument(event, "absence_id"));
+        Absence absence = AbsenceRepository.getAbsenceById(Integer.parseInt(getArgument(event, "absence_id")));
+        event.reply(absence.toString()).queue();
     }
 
     @Override

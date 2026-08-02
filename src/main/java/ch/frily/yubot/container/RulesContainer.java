@@ -22,7 +22,7 @@ public class RulesContainer extends Container {
         this.addComponent(MediaGallery.of(MediaGalleryItem.fromFile(
                 FileUpload.fromData(getClass().getResourceAsStream("/img/regelwerk-header.png"), "regelwerk-header.png"))));
         this.addTextDisplay(Util.format("## Serverregeln von {}", GUILD.getName()));
-        this.addTextDisplay("-# *Stand 15. Juni 2026*");
+        this.addTextDisplay("-# *Vom 15. Juni 2026 (Stand 02. August 2026)*");
 
         this.addTextDisplay(Util.format("Dies sind die allgemein gültigen Regeln des öffentlichen Community-Servers: \"{}\". Sie sind entsprechend des Reglements verbindlich für alle Mitglieder des Discord-Servers.", GUILD.getName()));
         this.addInvisibleSeparator(Separator.Spacing.LARGE);
@@ -64,8 +64,10 @@ public class RulesContainer extends Container {
 
         this.addTextDisplay("**§3 Recht des Anderen**");
         this.addTextDisplay("""
-                        
-                        Auf diesem Server hat jede Person das Recht, würdevoll und respektvoll behandelt zu werden. Belästigung, Sexismus, Rassismus, Volksverhetzung, Queerfeindlichkeit und Diskriminierung werden nicht toleriert. (Strafen siehe §7)
+                ¹ Auf diesem Server hat jede Person das Recht, würdevoll und respektvoll behandelt zu werden. Belästigung, Sexismus, Rassismus, Volksverhetzung, Queerfeindlichkeit und Diskriminierung werden nicht toleriert.
+                ² Das Immitieren von Personen auf diesem Server verstößt gegen das Recht des Anderen und wird dementsprechend behandelt.
+                ³ Das Verbreiten von Falschaussagen oder gefälschten Nachrichten fällt ebenfalls unter würde- und respektloses Verhalten.
+                Die Konsequenzen, die durch einen Verstoß dieses Paragraphen in Kraft treten, können unter §7 nachgelesen werden
                         """
         );
 

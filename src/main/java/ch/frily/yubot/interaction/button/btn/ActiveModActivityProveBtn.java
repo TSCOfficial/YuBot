@@ -4,6 +4,7 @@ import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.feature.ActiveMod;
 import ch.frily.yubot.feature.Closure;
 import ch.frily.yubot.feature.ActiveModRepository;
+import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.button.IButton;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -14,7 +15,7 @@ import java.sql.SQLException;
 /**
  * Accept/Prove the activity of an active-mod when the moderator was inactive for a while
  */
-public class ActiveModActivityProveBtn implements IButton {
+public class ActiveModActivityProveBtn extends Button {
     @Override
     public String defineId() {
         return "activemod-activity-prove-btn";

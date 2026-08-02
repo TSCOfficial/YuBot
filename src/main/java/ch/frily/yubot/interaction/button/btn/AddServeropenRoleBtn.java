@@ -1,6 +1,7 @@
 package ch.frily.yubot.interaction.button.btn;
 
 import ch.frily.yubot.exception.InvalidStateException;
+import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.button.IButton;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
@@ -14,7 +15,7 @@ import org.jspecify.annotations.NonNull;
 import java.sql.SQLException;
 import java.util.List;
 
-public class AddServeropenRoleBtn implements IButton {
+public class AddServeropenRoleBtn extends Button {
     @Override
     public String defineId() {
         return "add-serveropen-role-btn";

@@ -3,6 +3,7 @@ package ch.frily.yubot.interaction.button.btn;
 import ch.frily.yubot.container.ActiveModStatisticContainer;
 import ch.frily.yubot.feature.ActiveModTracking;
 import ch.frily.yubot.feature.ActiveModTrackingRepository;
+import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.button.IButton;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Member;
@@ -15,7 +16,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-public class ActiveModStatisticGoToHomeBtn implements IButton {
+public class ActiveModStatisticGoToHomeBtn extends Button {
     @Override
     public String defineId() {
         return "activemod-statistic-home-btn";

@@ -1,5 +1,6 @@
 package ch.frily.yubot.interaction.button.btn;
 
+import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.button.IButton;
 import ch.frily.yubot.interaction.modal.modal.AbsenceAddModal;
 import ch.frily.yubot.util.EnvKey;
@@ -14,7 +15,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class AbsenceAddBtn implements IButton {
+public class AbsenceAddBtn extends Button {
 
     @Override
     public String defineId() {
@@ -29,11 +30,6 @@ public class AbsenceAddBtn implements IButton {
     @Override
     public ButtonStyle getStyle() {
         return ButtonStyle.PRIMARY;
-    }
-
-    @Override
-    public EmojiUnion getEmoji() {
-        return IButton.super.getEmoji();
     }
 
     @Override

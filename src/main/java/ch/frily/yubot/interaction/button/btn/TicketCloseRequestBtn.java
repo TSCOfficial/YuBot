@@ -3,6 +3,7 @@ package ch.frily.yubot.interaction.button.btn;
 import ch.frily.yubot.embed.TicketCloseRequestEmbed;
 import ch.frily.yubot.feature.Ticket;
 import ch.frily.yubot.feature.TicketRepository;
+import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.button.IButton;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
@@ -22,7 +23,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Slf4j
-public class TicketCloseRequestBtn implements IButton {
+public class TicketCloseRequestBtn extends Button {
     @Override
     public String defineId() {
         return "ticket-close-request-btn";
