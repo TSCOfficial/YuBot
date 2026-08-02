@@ -47,7 +47,7 @@ public class TicketTranscriptContainer extends Container {
 
         long epochTimeCreated = ticket.getChannel().getTimeCreated().toEpochSecond();
         String opendTimeSinceCreation = Util.calcDuration(ticket.getChannel().getTimeCreated(), OffsetDateTime.now());
-        addFormatedText("**Geöffnet am**: <t:%d:F> ({})", epochTimeCreated, opendTimeSinceCreation);
+        addFormatedText("**Geöffnet am**: <t:%d:F> (%s)", epochTimeCreated, opendTimeSinceCreation);
         this.addComponent(Separator.createDivider(Separator.Spacing.LARGE));
         this.addComponent(FileDisplay.fromFile(transkript));
     }
