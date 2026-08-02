@@ -29,10 +29,11 @@ public class ActiveModStatisticCmd implements ISlashSubcommand {
 
     @Override
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
+        event.deferReply(true).queue();
         Map<Member, List<ActiveModTracking>> activeModTrackings = ActiveModTrackingRepository.getActiveModTrackingsAsMap();
         activeModTrackings = ActiveModTrackingRepository.completeWithMissingModerators(activeModTrackings);
         ActiveModStatisticContainer activeModStatisticContainer = new ActiveModStatisticContainer(activeModTrackings, event.getMember());
-        event.replyComponents(activeModStatisticContainer.build()).useComponentsV2().setAllowedMentions(List.of()).setEphemeral(true).queue();
+        event.getHook().sendMessageComponents(activeModStatisticContainer.build()).useComponentsV2().setAllowedMentions(List.of()).setEphemeral(true).queue();
     }
 
     @Override

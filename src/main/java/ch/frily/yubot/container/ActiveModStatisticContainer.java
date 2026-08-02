@@ -61,7 +61,7 @@ public class ActiveModStatisticContainer extends Container {
         }
 
         String tendency = "";
-        if (lastMonthTracking != null) {
+        if (currentMonthTracking != null && lastMonthTracking != null) {
             int difference = currentMonthTracking.activeTime() - lastMonthTracking.activeTime();
             if (difference > 0) {
                 tendency = "📈";
