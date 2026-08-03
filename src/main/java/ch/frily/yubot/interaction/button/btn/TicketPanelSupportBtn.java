@@ -20,7 +20,7 @@ public class TicketPanelSupportBtn extends Button {
     }
 
     @Override
-    public String defineId() {
+    public String getId() {
         return "ticket-support";
     }
 

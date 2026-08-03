@@ -19,7 +19,7 @@ import java.sql.SQLException;
  */
 public class ActiveModActivityRejectBtn extends Button {
     @Override
-    public String defineId() {
+    public String getId() {
         return "activemod-activity-reject-btn";
     }
 

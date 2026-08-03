@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
@@ -98,6 +99,10 @@ public class Util {
         }
 
         return openDuration;
+    }
+
+    public static long toEpochSeconds(LocalDateTime dateTime) {
+        return dateTime.atZone(EnvResolver.getZoneId()).toEpochSecond();
     }
 
     /**

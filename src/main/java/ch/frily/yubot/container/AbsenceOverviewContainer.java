@@ -11,13 +11,11 @@ import ch.frily.yubot.util.Util;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -81,7 +79,6 @@ public class AbsenceOverviewContainer extends Container {
         } catch (Exception e) {
             ExceptionHandler.handle(e);
         }
-
     }
 
     /**
@@ -159,13 +156,13 @@ public class AbsenceOverviewContainer extends Container {
         if (!isWholeDay(day, absence)) {
             if (absence.toDateTime().toLocalTime() == LocalTime.MAX) {
                 timeRange = String.format("Ab <t:%d:t> bis Tagesende",
-                        toEpochSeconds(absence.fromDateTime()));
+                        Util.toEpochSeconds(absence.fromDateTime()));
             } else if (absence.fromDateTime().toLocalTime() == LocalTime.of(0, 0)) {
                 timeRange = String.format("Tagesanfang bis <t:%d:t>",
-                        toEpochSeconds(absence.toDateTime()));
+                        Util.toEpochSeconds(absence.toDateTime()));
             } else {
                 timeRange = String.format("<t:%d:t> - <t:%d:t>",
-                        toEpochSeconds(absence.fromDateTime()), toEpochSeconds(absence.toDateTime()));
+                        Util.toEpochSeconds(absence.fromDateTime()), Util.toEpochSeconds(absence.toDateTime()));
 
             }
         }
@@ -182,7 +179,7 @@ public class AbsenceOverviewContainer extends Container {
 
         AbsenceDetailBtn detailBtn = new AbsenceDetailBtn();
         detailBtn.addArgument("absence_id", absence.id().toString());
-        log.info(detailBtn.getId());
+        log.info(detailBtn.getFullIdentification());
 
         this.addSection(detailBtn.build(), TextDisplay.ofFormat("""
                 > **[%s](https://discord.com/users/%s)**
@@ -213,9 +210,5 @@ public class AbsenceOverviewContainer extends Container {
     private static boolean isWholeDay(LocalDate day, Absence absence) {
         return !absence.fromDateTime().isAfter(day.atStartOfDay())
                 && !absence.toDateTime().isBefore(day.atTime(LocalTime.MAX).withNano(0));
-    }
-
-    private static long toEpochSeconds(LocalDateTime dateTime) {
-        return dateTime.atZone(EnvResolver.getZoneId()).toEpochSecond();
     }
 }

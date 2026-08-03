@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 public class AbsenceAddBtn extends Button {
 
     @Override
-    public String defineId() {
+    public String getId() {
         return "add-absence-btn";
     }
 
@@ -35,12 +35,5 @@ public class AbsenceAddBtn extends Button {
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
         event.replyModal(new AbsenceAddModal().build()).queue();
-    }
-
-    @Override
-    public List<Role> getAllowedRoles() {
-        return Stream.of(
-                EnvKey.ROLE_YUTEAM
-        ).map(EnvResolver::getRoleById).toList();
     }
 }

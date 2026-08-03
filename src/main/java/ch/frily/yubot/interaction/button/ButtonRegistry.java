@@ -1,6 +1,7 @@
 package ch.frily.yubot.interaction.button;
 
 import ch.frily.yubot.exception.PermissionDeniedException;
+import ch.frily.yubot.interaction.ArgumentComponent;
 import ch.frily.yubot.interaction.button.btn.*;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
@@ -42,10 +43,11 @@ public class ButtonRegistry {
                 new ActiveModStatisticGoToHomeBtn(),
                 new DeleteActivityRequestMsgBtn(),
                 new AbsenceAddBtn(),
-                new AbsenceDetailBtn()
+                new AbsenceDetailBtn(),
+                new AbsenceEditBtn()
         );
         rawButtons.forEach(btn -> {
-            String idOrUrl = btn.getId().split("\\?")[0];
+            String idOrUrl = btn.getId();
             if (btn.getStyle() == ButtonStyle.LINK && btn.getUrl() != null) {
                 idOrUrl = btn.getUrl();
             }
@@ -54,7 +56,7 @@ public class ButtonRegistry {
     }
 
     public void dispatchButtonInteraction(ButtonInteractionEvent event) throws SQLException, IllegalStateException, ClassNotFoundException, NoSuchMethodException {
-        String idOrUrl = event.getButton().getCustomId().split("\\?")[0];
+        String idOrUrl = ArgumentComponent.extractId(event.getButton().getCustomId());
         if (event.getButton().getStyle() == ButtonStyle.LINK && event.getButton().getUrl() != null) {
             idOrUrl = event.getButton().getUrl();
         }

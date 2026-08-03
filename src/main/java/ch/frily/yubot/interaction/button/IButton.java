@@ -15,13 +15,6 @@ import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 public interface IButton {
-
-    /**
-     * Define the ID of the button
-     * @return
-     */
-    String defineId();
-
     default String getLabel() {
         return null;
     };

@@ -5,6 +5,7 @@ import ch.frily.yubot.interaction.modal.IModal;
 import ch.frily.yubot.feature.TicketRepository;
 import ch.frily.yubot.feature.TicketType;
 import ch.frily.yubot.feature.TicketTypeGroup;
+import ch.frily.yubot.interaction.modal.Modal;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
@@ -20,7 +21,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 @Slf4j
-public class TypeSelectorModal implements IModal {
+public class TypeSelectorModal extends Modal {
 
     @Setter
     private TicketTypeGroup typeGroup;

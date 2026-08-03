@@ -3,7 +3,11 @@ package ch.frily.yubot.interaction.modal.modal;
 import ch.frily.yubot.feature.Absence;
 import ch.frily.yubot.feature.AbsenceRepository;
 import ch.frily.yubot.feature.DynamicMessageList;
+import ch.frily.yubot.interaction.ArgumentComponent;
 import ch.frily.yubot.interaction.modal.IModal;
+import ch.frily.yubot.interaction.modal.Modal;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.api.components.checkbox.Checkbox;
@@ -19,12 +23,29 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class AbsenceAddModal implements IModal {
+/**
+ * The modal for adding and editing absences
+ */
+@Slf4j
+public class AbsenceAddModal extends Modal {
 
     private static final String DATE_TIME_FORMAT = "dd.MM.yyyy HH:mm";
 
+    private boolean isEditing = false;
+    private Absence absence;
+
+    public void setAbsence(Absence absence) {
+        this.isEditing = true;
+        this.absence = absence;
+        this.addArgument("absence_id", absence.id().toString());
+
+        log.info("Modal identification: {}", getFullIdentification());
+    }
+
     @Override
     public String getTitle() {
+        if (isEditing)
+            return "Abwesenheit bearbeiten";
         return "Abwesenheit anlegen";
     }
 
@@ -39,27 +60,53 @@ public class AbsenceAddModal implements IModal {
         startTime.setRequiredRange(16, 16);
         startTime.setValue(LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
         startTime.setRequired(true);
+        if (isEditing) {
+            startTime.setValue(absence.fromDateTime().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
+        }
 
         TextInput.Builder endTime = TextInput.create("end-time", TextInputStyle.SHORT);
         endTime.setRequiredRange(16, 16);
         endTime.setValue(LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
         endTime.setRequired(true);
+        if (isEditing) {
+            endTime.setValue(absence.toDateTime().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
+        }
 
         TextInput.Builder reason = TextInput.create("reason", TextInputStyle.PARAGRAPH);
         reason.setRequiredRange(10, 100);
         reason.setRequired(true);
+        if (isEditing) {
+            reason.setValue(absence.reason());
+        }
+
+        boolean absenceMessageChecked = false;
+        if (isEditing) {
+            absenceMessageChecked = absence.absenceMessage();
+        }
+
+        log.info("Is edit getComponents: " + isEditing);
 
         return List.of(
                 Label.of(String.format("Startzeit (%s)", DATE_TIME_FORMAT), startTime.build()),
                 Label.of(String.format("Endzeit (%s)", DATE_TIME_FORMAT), endTime.build()),
                 Label.of("Begründung", reason.build()),
-                Label.of("Anwesenheitsmeldung senden", Checkbox.of("absence-message", false)),
+                Label.of("Anwesenheitsmeldung senden", Checkbox.of("absence-message", absenceMessageChecked)),
                 TextDisplay.of("-# Die Abwesenheitsmeldung wird automatisch versendet, wenn dich jemand während deiner Abwesenheit erwähnt.")
         );
     }
 
     @Override
     public void execute(@NonNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException {
+        Integer id = null;
+
+        try {
+            id = Integer.parseInt(getArgument(event.getModalId(), "absence_id"));
+            log.info("Absence ID: {}", id);
+        } catch (IllegalStateException e) {
+            log.error("Absence ID could not be parsed", e);
+            return;
+        }
+
         String startTimeString = event.getValue("start-time").getAsString();
         LocalDateTime startTime = LocalDateTime.parse(startTimeString, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
         String endTimeString = event.getValue("end-time").getAsString();
@@ -67,9 +114,9 @@ public class AbsenceAddModal implements IModal {
         String reason = event.getValue("reason").getAsString();
         boolean showNotice = event.getValue("absence-message").getAsBoolean();
 
-        Absence absence = new Absence(null, event.getMember(), startTime, endTime, reason, showNotice);
+        Absence absence = new Absence(id, event.getMember(), startTime, endTime, reason, showNotice);
 
-        AbsenceRepository.createAbsence(absence);
+        AbsenceRepository.upsertAbsence(absence);
 
         event.reply("Deine Abwesenheit wurde erfolgreich angelegt.").setEphemeral(true).queue();
 

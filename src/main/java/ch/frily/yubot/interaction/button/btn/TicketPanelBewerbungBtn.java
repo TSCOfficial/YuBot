@@ -20,7 +20,7 @@ public class TicketPanelBewerbungBtn extends Button {
     }
 
     @Override
-    public String defineId() {
+    public String getId() {
         return "ticket-bewerbung-btn";
     }
 

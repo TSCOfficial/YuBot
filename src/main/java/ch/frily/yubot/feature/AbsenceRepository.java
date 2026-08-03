@@ -62,7 +62,7 @@ public class AbsenceRepository {
         throw new NoSuchMethodException("Abwesenheit nicht gefunden");
     }
 
-    public static void createAbsence(Absence absence) throws SQLException, ClassNotFoundException {
+    private static void createAbsence(Absence absence) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.ABSENCE);
         query.insert(Table.AbsenceColumn.MEMBER_ID, absence.member().getId());
         query.insert(Table.AbsenceColumn.START_DATETIME, absence.fromDateTime());
@@ -71,5 +71,26 @@ public class AbsenceRepository {
         query.insert(Table.AbsenceColumn.SEND_NOTICE, absence.absenceMessage());
 
         query.executeQuery();
+    }
+
+    private static void updateAbsence(Absence absence) throws SQLException, ClassNotFoundException {
+        DatabaseQuery query = new DatabaseQuery(Table.ABSENCE);
+        query.update(Table.AbsenceColumn.START_DATETIME, absence.fromDateTime());
+        query.update(Table.AbsenceColumn.END_DATETIME, absence.toDateTime());
+        query.update(Table.AbsenceColumn.REASON, absence.reason());
+        query.update(Table.AbsenceColumn.SEND_NOTICE, absence.absenceMessage());
+        query.where(Table.AbsenceColumn.ID, DatabaseQuery.Operator.EQUALS, absence.id());
+
+        query.executeQuery();
+    }
+
+    public static void upsertAbsence(Absence absence) throws SQLException, ClassNotFoundException {
+        if (absence.id() == null) {
+            log.info("Creating absence for member {}", absence.member().getId());
+            createAbsence(absence);
+        } else {
+            log.info("Updating absence for member {}", absence.member().getId());
+            updateAbsence(absence);
+        }
     }
 }

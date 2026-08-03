@@ -1,5 +1,6 @@
 package ch.frily.yubot.interaction.modal;
 
+import ch.frily.yubot.interaction.ArgumentComponent;
 import ch.frily.yubot.interaction.modal.modal.AbsenceAddModal;
 import ch.frily.yubot.interaction.modal.modal.TypeSelectorModal;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,7 @@ public class ModalRegistry {
 
     private static ModalRegistry instance;
 
-    private Map<String, IModal> modals = new HashMap<>();
+    private Map<String, Modal> modals = new HashMap<>();
 
     public static ModalRegistry getInstance(){
         if (instance == null) {
@@ -25,7 +26,7 @@ public class ModalRegistry {
     }
 
     public void loadModals(){
-        List<IModal> rawModals = List.of(
+        List<Modal> rawModals = List.of(
                 new TypeSelectorModal(),
                 new AbsenceAddModal()
         );
@@ -37,7 +38,10 @@ public class ModalRegistry {
     }
 
     public void dispatchModalInteraction(ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException {
-        IModal modal = modals.get(event.getModalId());
+        String id = ArgumentComponent.extractId(event.getModalId());
+        log.info("Dispatching modal with id {}", id);
+        log.info("modals: {}", modals.keySet().stream().map(String::valueOf).toList());
+        Modal modal = modals.get(id);
         if (modal == null) {
             throw new NullPointerException(String.format("Modal '%s' konnte nicht gefunden werden.", event.getModalId()));
         }

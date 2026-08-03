@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public class DeleteActivityRequestMsgBtn extends Button {
     @Override
-    public String defineId() {
+    public String getId() {
         return "delete-activity-request-msg-btn";
     }
 

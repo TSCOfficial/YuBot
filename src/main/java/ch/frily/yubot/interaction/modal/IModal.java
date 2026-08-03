@@ -16,20 +16,11 @@ public interface IModal {
 
     String getTitle();
 
-    String getId();
-
     /**
      * Component tree with Label & component
      * @return
      */
     List<ModalTopLevelComponent> getComponents();
-
-    default Modal build() {
-
-        Modal.Builder modalBuilder = Modal.create(getId(), getTitle());
-        modalBuilder.addComponents(getComponents());
-        return modalBuilder.build();
-    }
 
     void execute(@NotNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException;
 }

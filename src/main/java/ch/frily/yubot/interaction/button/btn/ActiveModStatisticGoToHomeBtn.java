@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class ActiveModStatisticGoToHomeBtn extends Button {
     @Override
-    public String defineId() {
+    public String getId() {
         return "activemod-statistic-home-btn";
     }
 
