@@ -12,6 +12,7 @@ import ch.frily.yubot.util.Util;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Member;
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
-public class AbsenceOverviewContainer extends Container {
+public class AbsenceOverviewContainer extends PaginationContainer {
 
     /** max componentcount may be filled before the overview gets truncated */
     private static final int MAX_DISPLAYED_COMPONENTS = 30;
@@ -65,6 +66,7 @@ public class AbsenceOverviewContainer extends Container {
             }
 
             for (Map.Entry<LocalDate, List<Absence>> entry : dayAbsences.entrySet()) {
+                log.info("displaying components: " + getComponents().size());
                 if (getComponents().size() > MAX_DISPLAYED_COMPONENTS) {
                     this.addTextDisplay("-# Es werden nicht alle Abwesenheiten angezeigt.");
                     break;
@@ -135,7 +137,7 @@ public class AbsenceOverviewContainer extends Container {
         detailBtn.addArgument("absence_id", absence.id().toString());
         log.info(detailBtn.getFullIdentification());
 
-        this.addSection(detailBtn.build(), TextDisplay.ofFormat("""
+        this.addItem(Section.of(detailBtn.build(), TextDisplay.ofFormat("""
                 > **[%s](https://discord.com/users/%s)**
                 > -# %s
                 > %s
@@ -143,7 +145,7 @@ public class AbsenceOverviewContainer extends Container {
                 absence.member().getEffectiveName(), absence.member().getId(),
                 getTeamRoles(absence.member()).stream().map(Role::getAsMention).collect(Collectors.joining(", ")),
                 timeRange)
-        );
+        ));
     }
 
     /**
