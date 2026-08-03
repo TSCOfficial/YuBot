@@ -93,7 +93,9 @@ public enum Table {
         START_DATETIME("start_datetime"),
         END_DATETIME("end_datetime"),
         REASON("reason"),
-        SEND_NOTICE("send_notice");
+        SEND_NOTICE("send_notice"),
+        CREATED_AT("created_at"),
+        UPDATED_AT("updated_at");
         private final String column;
     }
 }

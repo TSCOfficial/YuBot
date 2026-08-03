@@ -5,6 +5,7 @@ import ch.frily.yubot.feature.Absence;
 import ch.frily.yubot.feature.AbsenceRepository;
 import ch.frily.yubot.interaction.button.btn.AbsenceAddBtn;
 import ch.frily.yubot.interaction.button.btn.AbsenceDetailBtn;
+import ch.frily.yubot.interaction.button.btn.AbsenceEditOwnBtn;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
@@ -54,8 +55,7 @@ public class AbsenceOverviewContainer extends Container {
 
     public AbsenceOverviewContainer() {
         try {
-            List<Absence> absences = AbsenceRepository.getAbsences();
-            this.dayAbsences = groupByDay(absences);
+            this.dayAbsences = AbsenceRepository.getAbsencesPerDay();
 
             this.addTextDisplay("## Abwesenheiten");
 
@@ -72,62 +72,16 @@ public class AbsenceOverviewContainer extends Container {
                 addDaySection(entry.getKey(), entry.getValue());
             }
 
+            addLineSeparator(Separator.Spacing.LARGE);
+
             addComponent(ActionRow.of(
-                    new AbsenceAddBtn().build()
+                    new AbsenceAddBtn().build(),
+                    new AbsenceEditOwnBtn().build()
             ));
 
         } catch (Exception e) {
             ExceptionHandler.handle(e);
         }
-    }
-
-    /**
-     * Split every absence into day-absences and group them by their day
-     * @param absences The absences to convert - may contain absences spanning multiple days
-     * @return The day-absences of each day, sorted by day and by start time within a day
-     */
-    private static Map<LocalDate, List<Absence>> groupByDay(List<Absence> absences) {
-        Map<LocalDate, List<Absence>> groupedAbsences = new TreeMap<>();
-
-        absences.stream()
-                .flatMap(absence -> splitIntoDayAbsences(absence).stream())
-                .sorted(Comparator.comparing(Absence::fromDateTime))
-                .forEach(dayAbsence -> groupedAbsences
-                        .computeIfAbsent(dayAbsence.fromDateTime().toLocalDate(), day -> new ArrayList<>())
-                        .add(dayAbsence));
-
-        return groupedAbsences;
-    }
-
-    /**
-     * Convert an absence into one absence per day for multi-day absences
-     * <p></p>
-     * The original start- and end-time are kept on the first and the last day, every day in between
-     * covers the whole day. A single-day absence is returned unchanged
-     * @param absence The absence to split
-     * @return One day-absence per covered day, empty if the absence ends before it starts
-     */
-    private static List<Absence> splitIntoDayAbsences(Absence absence) {
-        List<Absence> splitAbsences = new ArrayList<>();
-
-        LocalDate firstDay = absence.fromDateTime().toLocalDate();
-        LocalDate lastDay = absence.toDateTime().toLocalDate();
-
-        for (LocalDate day = firstDay; !day.isAfter(lastDay); day = day.plusDays(1)) {
-            LocalDateTime fromDateTime = day.equals(firstDay) ? absence.fromDateTime() : day.atStartOfDay();
-            LocalDateTime toDateTime = day.equals(lastDay) ? absence.toDateTime() : day.atTime(LocalTime.MAX);
-
-            splitAbsences.add(new Absence(
-                    absence.id(),
-                    absence.member(),
-                    fromDateTime,
-                    toDateTime,
-                    absence.reason(),
-                    absence.absenceMessage()
-            ));
-        }
-
-        return splitAbsences;
     }
 
     /**

@@ -44,7 +44,8 @@ public class ButtonRegistry {
                 new DeleteActivityRequestMsgBtn(),
                 new AbsenceAddBtn(),
                 new AbsenceDetailBtn(),
-                new AbsenceEditBtn()
+                new AbsenceEditBtn(),
+                new AbsenceEditOwnBtn()
         );
         rawButtons.forEach(btn -> {
             String idOrUrl = btn.getId();

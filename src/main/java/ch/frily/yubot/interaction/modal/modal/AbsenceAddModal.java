@@ -97,16 +97,6 @@ public class AbsenceAddModal extends Modal {
 
     @Override
     public void execute(@NonNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException {
-        Integer id = null;
-
-        try {
-            id = Integer.parseInt(getArgument(event.getModalId(), "absence_id"));
-            log.info("Absence ID: {}", id);
-        } catch (IllegalStateException e) {
-            log.error("Absence ID could not be parsed", e);
-            return;
-        }
-
         String startTimeString = event.getValue("start-time").getAsString();
         LocalDateTime startTime = LocalDateTime.parse(startTimeString, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
         String endTimeString = event.getValue("end-time").getAsString();
@@ -114,11 +104,21 @@ public class AbsenceAddModal extends Modal {
         String reason = event.getValue("reason").getAsString();
         boolean showNotice = event.getValue("absence-message").getAsBoolean();
 
-        Absence absence = new Absence(id, event.getMember(), startTime, endTime, reason, showNotice);
+        Absence absence = null;
+        String responseText = "Deine Abwesenheit wurde erfolgreich angelegt.";
+        if (hasArgument(event.getModalId(), "absence_id")) {
+            int id = Integer.parseInt(getArgument(event.getModalId(), "absence_id"));
+            Absence existingAbsence = AbsenceRepository.getAbsenceById(id);
+            absence = new Absence(existingAbsence.id(), event.getMember(), startTime, endTime, reason, showNotice, existingAbsence.createdAt(), LocalDateTime.now());
+            responseText = "Deine Abwesenheit wurde erfolgreich aktualisiert.";
+        } else {
+            absence = new Absence(null, event.getMember(), startTime, endTime, reason, showNotice, LocalDateTime.now(), LocalDateTime.now());
+        }
+
 
         AbsenceRepository.upsertAbsence(absence);
 
-        event.reply("Deine Abwesenheit wurde erfolgreich angelegt.").setEphemeral(true).queue();
+        event.reply(responseText).setEphemeral(true).queue();
 
         DynamicMessageList.ABSENCES.update();
     }

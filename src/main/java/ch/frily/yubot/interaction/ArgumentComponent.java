@@ -33,6 +33,13 @@ public abstract class ArgumentComponent {
         arguments.put(key, value);
     }
 
+    public boolean hasArgument(String componentId, String key){
+        String arguments = extractArgs(componentId);
+        Optional<String> searchedKeyValue = Arrays.stream(arguments.split("&"))
+                .filter(arg -> arg.startsWith(key + "=")).findFirst();
+        return searchedKeyValue.isPresent();
+    }
+
     /**
      * Get an argument from the component ID
      * @param componentId
