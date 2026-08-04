@@ -21,10 +21,10 @@ public class RulesContainer extends Container {
     public RulesContainer() {
         this.addComponent(MediaGallery.of(MediaGalleryItem.fromFile(
                 FileUpload.fromData(getClass().getResourceAsStream("/img/regelwerk-header.png"), "regelwerk-header.png"))));
-        this.addTextDisplay(Util.format("## Serverregeln von {}", GUILD.getName()));
+        this.addTextDisplay(String.format("## Serverregeln von %s", GUILD.getName()));
         this.addTextDisplay("-# *Vom 15. Juni 2026 (Stand 02. August 2026)*");
 
-        this.addTextDisplay(Util.format("Dies sind die allgemein gültigen Regeln des öffentlichen Community-Servers: \"{}\". Sie sind entsprechend des Reglements verbindlich für alle Mitglieder des Discord-Servers.", GUILD.getName()));
+        this.addTextDisplay(String.format("Dies sind die allgemein gültigen Regeln des öffentlichen Community-Servers: \"%s\". Sie sind entsprechend des Reglements verbindlich für alle Mitglieder des Discord-Servers.", GUILD.getName()));
         this.addInvisibleSeparator(Separator.Spacing.LARGE);
         
         this.addTextDisplay("### Inhaltsverzeichnis");
@@ -46,8 +46,8 @@ public class RulesContainer extends Container {
         this.buildContainerWithCurrentComponents();
 
         this.addTextDisplay("**§1 Zielsetzung**");
-        this.addTextDisplay(Util.format("""
-                       {} ist der offizielle deutschsprachige Community-Server von Yu. Auf ihm soll ein gemütliches, friedliches und freundschaftliches Miteinander ermöglicht werden.
+        this.addTextDisplay(String.format("""
+                       %s ist der offizielle deutschsprachige Community-Server von Yu. Auf ihm soll ein gemütliches, friedliches und freundschaftliches Miteinander ermöglicht werden.
                         """, GUILD.getName())
         );
 

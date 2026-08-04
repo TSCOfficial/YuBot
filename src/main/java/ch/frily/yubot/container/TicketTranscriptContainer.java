@@ -17,7 +17,7 @@ import java.time.OffsetDateTime;
 public class TicketTranscriptContainer extends Container {
 
     public TicketTranscriptContainer(Member initiator, Ticket ticket, FileUpload transkript) {
-        this.addComponent(TextDisplay.of(Util.format("### Ticket {} wurde geschlossen", ticket.getNameWithoutStatus())));
+        this.addComponent(TextDisplay.of(String.format("### Ticket {} wurde geschlossen", ticket.getNameWithoutStatus())));
         this.addComponent(Separator.createInvisible(Separator.Spacing.SMALL));
 
         if (ticket.getType().getGroup() == null) {

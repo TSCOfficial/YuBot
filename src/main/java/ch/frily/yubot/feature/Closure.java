@@ -105,7 +105,7 @@ public class Closure {
 
     /**
      * Toggle the permissions of the "server-geschlossen" channel
-     * @param isOpen True if the channel should be open (Inverted value of closure's isOpen value)
+     * @param isOpen True if the channel should be open
      */
     private void toggleServerClosedInfoChannelPermissions(boolean isOpen) {
         Role everyoneRole = EnvResolver.getRoleById(EnvKey.ROLE_EVERYONE);
@@ -113,12 +113,11 @@ public class Closure {
 
         List<Permission> allowPerms = new ArrayList<>();
         List<Permission> denyPerms = new ArrayList<>();
-        denyPerms.add(Permission.MESSAGE_SEND);
 
         if (isOpen) {
-            denyPerms.addAll(PERMISSIONS);
+            denyPerms.add(Permission.VIEW_CHANNEL);
         } else {
-            allowPerms.addAll(PERMISSIONS);
+            allowPerms.add(Permission.VIEW_CHANNEL);
         }
 
         serverClosedChannel.getManager().putRolePermissionOverride(everyoneRole.getIdLong(), allowPerms, denyPerms).queue();

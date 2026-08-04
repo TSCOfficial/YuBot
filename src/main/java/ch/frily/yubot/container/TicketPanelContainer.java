@@ -67,7 +67,7 @@ public class TicketPanelContainer extends Container {
 
             this.addSection(
                     TicketManager.getInstance().getButtonByTypeGroup(typeGroup).build(),
-                    TextDisplay.of(Util.format("### {}", typeGroup.getLabel())),
+                    TextDisplay.of(String.format("### %s", typeGroup.getLabel())),
                     TextDisplay.of(typeGroup.getDescription())
             );
             this.addTextDisplay("**Verfügbare Arten:**");

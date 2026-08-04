@@ -42,14 +42,6 @@ public class Util {
         return !adminRoles.isEmpty();
     }
 
-    public static String format(String template, Object... args) {
-        int i = 0;
-        while (template.contains("{}") && i < args.length) {
-            template = template.replaceFirst("\\{\\}", String.valueOf(args[i++]));
-        }
-        return template;
-    }
-
     public static String calcDuration(Temporal startInclusive, Temporal endExclusive){
         Duration duration = Duration.between(startInclusive, endExclusive);
 
