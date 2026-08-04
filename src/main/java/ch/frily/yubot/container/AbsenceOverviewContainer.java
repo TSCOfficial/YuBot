@@ -54,32 +54,31 @@ public class AbsenceOverviewContainer extends PaginationContainer {
     @Getter
     private Map<LocalDate, List<Absence>> dayAbsences = new TreeMap<>();
 
-    public AbsenceOverviewContainer() {
+    public AbsenceOverviewContainer(int currentPage) {
+        super(currentPage);
         try {
             this.dayAbsences = AbsenceRepository.getAbsencesPerDay();
 
-            this.addTextDisplay("## Abwesenheiten");
+            PaginationItem header = new PaginationItem();
+            header.addChild(TextDisplay.of("## Abwesenheiten"));
+            setHeader(header);
 
             if (dayAbsences.isEmpty()) {
-                this.addTextDisplay("Es sind keine Abwesenheiten vorhanden.");
+                addItem(TextDisplay.of("Es sind keine Abwesenheiten vorhanden."));
                 return;
             }
 
             for (Map.Entry<LocalDate, List<Absence>> entry : dayAbsences.entrySet()) {
-                log.info("displaying components: " + getComponents().size());
-                if (getComponents().size() > MAX_DISPLAYED_COMPONENTS) {
-                    this.addTextDisplay("-# Es werden nicht alle Abwesenheiten angezeigt.");
-                    break;
-                }
                 addDaySection(entry.getKey(), entry.getValue());
             }
 
-            addLineSeparator(Separator.Spacing.LARGE);
-
-            addComponent(ActionRow.of(
+            PaginationItem footer = new PaginationItem();
+            footer.addChild(Separator.createDivider(Separator.Spacing.LARGE));
+            footer.addChild(ActionRow.of(
                     new AbsenceAddBtn().build(),
                     new AbsenceEditOwnBtn().build()
             ));
+            setFooter(footer);
 
         } catch (Exception e) {
             ExceptionHandler.handle(e);
@@ -92,12 +91,14 @@ public class AbsenceOverviewContainer extends PaginationContainer {
      * @param absences The day-absences of that day
      */
     private void addDaySection(LocalDate day, List<Absence> absences) {
-        this.addLineSeparator(Separator.Spacing.LARGE);
+        PaginationItem daySection = new PaginationItem();
+        daySection.addChild(Separator.createDivider(Separator.Spacing.LARGE));
+        addItem(daySection);
 
         String todayTag = day.equals(LocalDate.now(EnvResolver.getZoneId())) ? "*(Heute)*" : "";
 
-        this.addFormatedText("### %d. %s %d %s",
-                day.getDayOfMonth(), Util.translateMonth(day.getMonth()), day.getYear(), todayTag);
+        daySection.addChild(TextDisplay.ofFormat("### %d. %s %d %s",
+                day.getDayOfMonth(), Util.translateMonth(day.getMonth()), day.getYear(), todayTag));
 
         absences.forEach(absence -> addAbsenceText(day, absence));
     }

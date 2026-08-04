@@ -1,6 +1,8 @@
 package ch.frily.yubot.container;
 
 import ch.frily.yubot.interaction.button.btn.PaginationNavBtn;
+import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
@@ -19,51 +21,60 @@ public abstract class PaginationContainer extends Container {
     private static final Logger log = LoggerFactory.getLogger(PaginationContainer.class);
 
     /**
-     * Holds a list of children components that are bound contextually, to prevent unfortunat splits when builder the pages
-     * @param children
-     */
-    record Item(List<ContainerChildComponent> children){}
-
-    /**
      * Holds a list of items that build up a page
      * @param number
      * @param items
      */
-    record Page(int number, List<Item> items){}
+    record Page(int number, List<PaginationItem> items){}
 
-    private static final int MAX_COMPONENTS_PER_PAGE = 38;
+    private int currentPage = 0;
+
+    private static final int MAX_COMPONENTS_PER_PAGE = 30;
 
     /** List of the items */
-    private List<Item> items = new ArrayList<>();
+    private List<PaginationItem> items = new ArrayList<>();
+
+    @Getter
+    @Setter
+    private PaginationItem header;
+
+    @Getter
+    @Setter
+    private PaginationItem footer;
 
     /** List of the pages */
     private List<Page> pages = new ArrayList<>();
 
-    protected void addItem(List<ContainerChildComponent> children){
-        items.add(new Item(children));
-    }
-
-    protected void addItem(ContainerChildComponent[] children){
-        items.add(new Item(List.of(children)));
+    protected void addItem(PaginationItem item){
+        this.items.add(item);
     }
 
     protected void addItem(ContainerChildComponent child){
-        items.add(new Item(List.of(child)));
+        this.items.add(new PaginationItem(child));
     }
 
-    private void addPage(int number, List<Item> items){
-        pages.add(new Page(number, items));
+    protected void addItems(PaginationItem[] items){
+        this.items.addAll(List.of(items));
+    }
+
+    private void addPage(int number, List<PaginationItem> items){
+        pages.add(new Page(number, List.copyOf(items)));
+    }
+
+    public PaginationContainer(int currentPage){
+        this.currentPage = currentPage;
     }
 
     /**
      * Build the pages from the items
      */
     private void buildPages(){
-        List<Item> currentProcessedItems = new ArrayList<>();
-        AtomicInteger currentComponentsCount = new AtomicInteger(0);
+        List<PaginationItem> currentProcessedItems = new ArrayList<>();
+        AtomicInteger componentsCount = new AtomicInteger(0);
         log.info("amount of items: {} at start of build", items.size());
         items.forEach(item -> {
-            int newComponentCount = currentComponentsCount.addAndGet(1);
+            int componentLength = item.getChildren().size();
+            int newComponentCount = componentsCount.addAndGet(1);
             log.info("Adding item to page: " + newComponentCount);
             currentProcessedItems.add(item);
 
@@ -71,13 +82,13 @@ public abstract class PaginationContainer extends Container {
                 log.info("adding page and clearning info");
                 addPage(pages.size() + 1, currentProcessedItems);
                 currentProcessedItems.clear();
-                currentComponentsCount.set(0);
+                componentsCount.set(0);
             }
         });
         addPage(pages.size() + 1, currentProcessedItems);
         log.info("Built Fallback page pages with {} items", currentProcessedItems.size());
         currentProcessedItems.clear();
-        currentComponentsCount.set(0);
+        componentsCount.set(0);
     }
 
     public net.dv8tion.jda.api.components.container.Container buildPagination() {
@@ -85,9 +96,9 @@ public abstract class PaginationContainer extends Container {
         log.info("Built {} pages with {} items", pages.size(), pages.getFirst().items().size());
         log.info("Pages: {}", pages); // -> Pages: [Page[number=1, items=[]]]
         List<ContainerChildComponent> components = new ArrayList<>();
-        pages.getFirst().items().forEach(item -> { // the pages seem to loos their items??
-            log.info("Child item count: " + item.children().size());
-            components.addAll(item.children());
+        pages.get(currentPage).items().forEach(item -> { // the pages seem to loos their items??
+            log.info("Child item count: " + item.getChildren().size());
+            components.addAll(item.getChildren());
         });
         return net.dv8tion.jda.api.components.container.Container.of(components);
     }

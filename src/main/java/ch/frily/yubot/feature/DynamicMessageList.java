@@ -53,7 +53,8 @@ public enum DynamicMessageList {
             DynamicMessageType.CONTAINER,
             null,
             args -> {
-                return new AbsenceOverviewContainer().build();
+                int currentPage = requireArg(args, 0, Integer.class);
+                return new AbsenceOverviewContainer(currentPage).build();
             }
     );
 
