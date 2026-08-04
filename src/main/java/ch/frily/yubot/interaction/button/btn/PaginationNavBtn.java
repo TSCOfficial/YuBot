@@ -1,7 +1,10 @@
 package ch.frily.yubot.interaction.button.btn;
 
+import ch.frily.yubot.feature.DynamicMessageList;
 import ch.frily.yubot.interaction.button.Button;
 import lombok.Setter;
+import lombok.extern.flogger.Flogger;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
@@ -11,6 +14,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.sql.SQLException;
 
+@Slf4j
 public class PaginationNavBtn extends Button {
 
     @Setter
@@ -56,8 +60,12 @@ public class PaginationNavBtn extends Button {
 
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
+        log.info(event.getComponentId());
         if (hasArgument(event.getComponentId(), "navigateTo")){
-
+            DynamicMessageList.ABSENCES.update(Integer.valueOf(getArgument(event.getComponentId(), "navigateTo")));
+            event.reply("").setEphemeral(true).queue(); // Empty ephemeral message
+        } else {
+            throw new IllegalArgumentException("Invalid button interaction for Argument 'navigateTo'");
         }
     }
 }

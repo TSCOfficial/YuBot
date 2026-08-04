@@ -54,11 +54,13 @@ public class ButtonRegistry {
                 idOrUrl = btn.getUrl();
             }
             buttons.put(idOrUrl, btn);
+            log.info("Registered button with id/url: {}", idOrUrl);
         });
     }
 
     public void dispatchButtonInteraction(ButtonInteractionEvent event) throws SQLException, IllegalStateException, ClassNotFoundException, NoSuchMethodException {
         String idOrUrl = ArgumentComponent.extractId(event.getButton().getCustomId());
+        log.info("Received button interaction with id/url: {}", idOrUrl);
         if (event.getButton().getStyle() == ButtonStyle.LINK && event.getButton().getUrl() != null) {
             idOrUrl = event.getButton().getUrl();
         }

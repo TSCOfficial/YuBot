@@ -6,6 +6,8 @@ import lombok.Setter;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.components.utils.ComponentIterator;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -64,6 +66,7 @@ public abstract class PaginationContainer extends Container {
 
     public PaginationContainer(int currentPage){
         this.currentPage = currentPage;
+        log.info("new pagination container with current page {}", currentPage);
     }
 
     /**
@@ -75,9 +78,9 @@ public abstract class PaginationContainer extends Container {
      * @return The components left over for the items of one page
      */
     private int getItemComponentBudget(){
-        log.info("control components: {}", (int) ComponentIterator.createStream(List.of(getControls())).count());
+        log.info("control components: {}", (int) ComponentIterator.createStream(getControls().getChildren()).count());
         int reserved = CONTAINER_COMPONENT_COUNT
-                + (int) ComponentIterator.createStream(List.of(getControls())).count()
+                + (int) ComponentIterator.createStream(getControls().getChildren()).count()
                 + (header == null ? 0 : header.getComponentCount())
                 + (footer == null ? 0 : footer.getComponentCount());
         return Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE - reserved;
@@ -144,7 +147,7 @@ public abstract class PaginationContainer extends Container {
             components.addAll(footer.getChildren());
         }
         if (pages.size() > 1) {
-            components.add(getControls());
+            components.addAll(getControls().getChildren());
         }
 
         net.dv8tion.jda.api.components.container.Container container =
@@ -155,27 +158,41 @@ public abstract class PaginationContainer extends Container {
         return container;
     }
 
-    public ActionRow getControls() {
+    public PaginationItem getControls() {
+        PaginationItem controls = new PaginationItem();
+
         PaginationNavBtn homeBtn = new PaginationNavBtn();
         homeBtn.setEmoji(Emoji.fromFormatted("<:home:1526737131282763816>"));
-        homeBtn.addArgument("navigateTo", "1");
+        homeBtn.addArgument("navigateTo", "0");
+        if (currentPage == 0) {
+            homeBtn.setDisabled(true);
+        }
 
         PaginationNavBtn prevBtn = new PaginationNavBtn();
         prevBtn.setLabel("<");
         prevBtn.setStyle(ButtonStyle.SECONDARY);
-        prevBtn.addArgument("navigateTo", "prev");
+        prevBtn.addArgument("navigateTo", String.valueOf(currentPage - 1));
+        if (currentPage <= 0) {
+            prevBtn.setDisabled(true);
+        }
 
         PaginationNavBtn currentBtn = new PaginationNavBtn();
-        currentBtn.setLabel("current");
+        currentBtn.setLabel(String.valueOf(currentPage + 1)); // +1 only to display human-readable page number (instead of index 0)
         currentBtn.setStyle(ButtonStyle.SECONDARY);
         currentBtn.setDisabled(true);
 
         PaginationNavBtn nextBtn = new PaginationNavBtn();
         nextBtn.setLabel(">");
         nextBtn.setStyle(ButtonStyle.SECONDARY);
-        nextBtn.addArgument("navigateTo", "next");
+        nextBtn.addArgument("navigateTo", String.valueOf(currentPage + 1));
+        if (currentPage >= pages.size() - 1) {
+            nextBtn.setDisabled(true);
+        }
 
-        return ActionRow.of(homeBtn.build(), prevBtn.build(), currentBtn.build(), nextBtn.build());
+        controls.addChild(Separator.createDivider(Separator.Spacing.LARGE));
+        controls.addChild(ActionRow.of(homeBtn.build(), prevBtn.build(), currentBtn.build(), nextBtn.build()));
+        controls.addChild(TextDisplay.ofFormat("-# Seite %s / %s", currentPage + 1, pages.size()));
+        return controls;
     }
 
 //    @Override

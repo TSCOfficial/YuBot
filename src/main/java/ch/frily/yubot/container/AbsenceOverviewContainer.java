@@ -92,15 +92,15 @@ public class AbsenceOverviewContainer extends PaginationContainer {
      */
     private void addDaySection(LocalDate day, List<Absence> absences) {
         PaginationItem daySection = new PaginationItem();
-        daySection.addChild(Separator.createDivider(Separator.Spacing.LARGE));
-        addItem(daySection);
 
         String todayTag = day.equals(LocalDate.now(EnvResolver.getZoneId())) ? "*(Heute)*" : "";
 
         daySection.addChild(TextDisplay.ofFormat("### %d. %s %d %s",
                 day.getDayOfMonth(), Util.translateMonth(day.getMonth()), day.getYear(), todayTag));
 
-        absences.forEach(absence -> addAbsenceText(day, absence));
+        absences.forEach(absence -> addAbsenceText(daySection, day, absence));
+
+        addItem(daySection);
     }
 
     /**
@@ -108,7 +108,7 @@ public class AbsenceOverviewContainer extends PaginationContainer {
      * @param day The day the absence belongs to
      * @param absence The day-absence to display
      */
-    private void addAbsenceText(LocalDate day, Absence absence) {
+    private void addAbsenceText(PaginationItem pageItem, LocalDate day, Absence absence) {
         String timeRange = "Ganzer Tag";
         if (!isWholeDay(day, absence)) {
             if (absence.toDateTime().toLocalTime() == LocalTime.MAX) {
@@ -138,7 +138,7 @@ public class AbsenceOverviewContainer extends PaginationContainer {
         detailBtn.addArgument("absence_id", absence.id().toString());
         log.info(detailBtn.getFullIdentification());
 
-        this.addItem(Section.of(detailBtn.build(), TextDisplay.ofFormat("""
+        pageItem.addChild(Section.of(detailBtn.build(), TextDisplay.ofFormat("""
                 > **[%s](https://discord.com/users/%s)**
                 > -# %s
                 > %s
