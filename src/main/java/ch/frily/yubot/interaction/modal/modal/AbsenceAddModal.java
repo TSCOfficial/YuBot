@@ -73,7 +73,7 @@ public class AbsenceAddModal extends Modal {
         }
 
         TextInput.Builder reason = TextInput.create("reason", TextInputStyle.PARAGRAPH);
-        reason.setRequiredRange(10, 100);
+        reason.setRequiredRange(5, 100);
         reason.setRequired(true);
         if (isEditing) {
             reason.setValue(absence.reason());
@@ -91,7 +91,7 @@ public class AbsenceAddModal extends Modal {
                 Label.of(String.format("Endzeit (%s)", DATE_TIME_FORMAT), endTime.build()),
                 Label.of("Begründung", reason.build()),
                 Label.of("Anwesenheitsmeldung senden", Checkbox.of("absence-message", absenceMessageChecked)),
-                TextDisplay.of("-# Die Abwesenheitsmeldung wird automatisch versendet, wenn dich jemand während deiner Abwesenheit erwähnt.")
+                TextDisplay.of("-# Die Abwesenheitsmeldung wird automatisch versendet, wenn dich jemand während deiner Abwesenheit erwähnt.") // todo replace by delete button if edit, else show this message
         );
     }
 

@@ -31,9 +31,8 @@ public class AbsenceDetailContainer extends Container{
         AbsenceEditBtn btn = new AbsenceEditBtn();
         btn.addArgument("absence_id", absence.id().toString());
 
-        String updatedAt = absence.updatedAt() == null ? "" : String.format(", zuletzt aktualisiert am: <t:%d:F>", Util.toEpochSeconds(absence.updatedAt()));
         this.addSection(btn.build(),
-                TextDisplay.ofFormat("-# Erstellt am: <t:%d:F>%s", Util.toEpochSeconds(absence.createdAt()), updatedAt),
+                TextDisplay.ofFormat("-# Erstellt am: <t:%d:F>", Util.toEpochSeconds(absence.createdAt())),
                 absence.updatedAt() != null ? TextDisplay.ofFormat("-# Aktualisiert am: <t:%d:F>", Util.toEpochSeconds(absence.updatedAt())) : null
         );
     }

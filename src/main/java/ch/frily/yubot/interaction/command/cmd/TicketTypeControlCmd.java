@@ -34,7 +34,13 @@ public class TicketTypeControlCmd implements ISlashSubcommand {
         List<Command.Choice> choices = Arrays.stream(TicketType.values())
                 .filter(type -> type.getGroup() != null)
                 .map(type -> {
-                    String choiceName = String.format("%s / %s", type.getGroup().getLabel(), type.getLabel());
+                    String status = "";
+                    try {
+                        status = TicketTypeControlRepository.isTypeLocked(type) ? " (🔒)" : " (🔓)";
+                    } catch (SQLException | ClassNotFoundException e) {
+                        log.error("Failed to get ticket type", e);
+                    }
+                    String choiceName = String.format("%s / %s %s", type.getGroup().getLabel(), type.getLabel(), status);
                     return new Command.Choice(choiceName, type.name());
                 }).toList();
 
@@ -62,6 +68,7 @@ public class TicketTypeControlCmd implements ISlashSubcommand {
 
         event.reply(String.format("✅ Tickettyp '%s' erfolgreich auf **%s** gesetzt", type.getLabel(), isLocked ? "geschlossen" : "geöffnet")).setEphemeral(true).queue();
 
-        DynamicMessageList.TICKET_PANEL.update(); // todo save server state to database and get it here
+        DynamicMessageList.TICKET_PANEL.update();
+        DynamicMessageList.TEAMLIST.update();
     }
 }

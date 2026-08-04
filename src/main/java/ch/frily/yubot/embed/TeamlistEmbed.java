@@ -1,16 +1,24 @@
 package ch.frily.yubot.embed;
 
+import ch.frily.yubot.exception.ExceptionHandler;
+import ch.frily.yubot.feature.TicketType;
+import ch.frily.yubot.feature.TicketTypeControlRepository;
+import ch.frily.yubot.feature.TicketTypeGroup;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
 import java.awt.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -36,8 +44,11 @@ public class TeamlistEmbed implements IEmbed {
 
     @Override
     public String getTitle() {
-        List<Member> teamMembers = getUsersByRole(EnvResolver.getRoleById(EnvKey.ROLE_YUTEAM));
-        return String.format("%s's Team *(%s)*", EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getName(), teamMembers.size());
+        Role teamRole = EnvResolver.getRoleById(EnvKey.ROLE_YUTEAM);
+        List<Member> teamMembers = teamRole == null ? List.of() : getUsersByRole(teamRole);
+        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+        String guildName = guild == null ? "YuServer" : guild.getName();
+        return String.format("%s's Team *(%s)*", guildName, teamMembers.size());
     }
 
     @Override
@@ -51,22 +62,53 @@ public class TeamlistEmbed implements IEmbed {
         ROLE_KEYWORDS.forEach(roleKey -> fields.add(generateFieldByRole(roleKey)));
 
         Role activeModRole = EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD);
-        List<Member> activeMods = getUsersByRole(activeModRole);
+        List<Member> activeMods = activeModRole == null ? List.of() : getUsersByRole(activeModRole);
 
         if (activeMods.isEmpty()) {
             fields.add(new Field(
                     "Aktive Moderation *(0)*",
-                    String.format("%s\n*Nicht besetzt*", activeModRole.getAsMention()),
+                    String.format("%s\n*Nicht besetzt*", getRoleMention(activeModRole)),
                     false)
             );
         } else {
             fields.add(new Field(
                     String.format("Aktive Moderation *(%s)*", activeMods.size()),
-                    activeModRole.getAsMention() + "\n" +
+                    getRoleMention(activeModRole) + "\n" +
                             activeMods.stream().map(mod -> Util.escapeMarkdown(mod.getEffectiveName())).collect(Collectors.joining(", ")),
                     false)
             );
         }
+
+        List<TicketType> openedTypes = Arrays.stream(TicketType.values()).filter(type -> {
+                    try {
+                        if (type.getGroup() != TicketTypeGroup.BEWERBUNG) return false;
+                        return !TicketTypeControlRepository.isTypeLocked(type);
+                    } catch (Exception e) {
+                        return false;
+                    }
+        }).toList();
+
+        List<Role> mappedTypes = openedTypes.stream().map(type -> {
+            return switch (type) {
+                case BEWERBUNG_SUPPORT -> EnvResolver.getRoleById(EnvKey.ROLE_SUPPORT);
+                case BEWERBUNG_MODERATION -> EnvResolver.getRoleById(EnvKey.ROLE_MODERATOR);
+                case BEWERBUNG_EVENT -> EnvResolver.getRoleById(EnvKey.ROLE_EVENT);
+                case BEWERBUNG_AWARENESS -> EnvResolver.getRoleById(EnvKey.ROLE_AWARENESS);
+                default -> null;
+            };
+        }).filter(Objects::nonNull).toList();
+
+        String searchedRoles = mappedTypes.isEmpty()
+                ? "keinem Bereich"
+                : mappedTypes.stream().map(Role::getAsMention).collect(Collectors.joining(", "));
+
+        if (mappedTypes.isEmpty()) {}
+        fields.add(new Field(
+                "Wir suchen Teammitglieder*innen ✨",
+                String.format("In %s suchen wir noch Teammitglieder. Bewerbe dich in <#%s>",
+                searchedRoles,
+                EnvResolver.getString(EnvKey.CHANNEL_SUPPORT)), false
+        ));
 
         return fillWithBlankFields(fields);
     }
@@ -81,8 +123,8 @@ public class TeamlistEmbed implements IEmbed {
             userCount = getUsersByRole(role).size();
         }
         return new Field(
-                String.format("%s *(%s)*", extractText(role.getName()), userCount),
-                role.getAsMention() + "\n" + userList,
+                String.format("%s *(%s)*", getRoleName(roleKey, role), userCount),
+                getRoleMention(role) + "\n" + userList,
                 true
         );
     }
@@ -108,7 +150,24 @@ public class TeamlistEmbed implements IEmbed {
      */
     private List<Member> getUsersByRole(Role role) {
         Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+        if (guild == null || role == null) {
+            return List.of();
+        }
         return guild.getMembersWithRoles(role);
+    }
+
+    private String getRoleName(EnvKey roleKey, Role role) {
+        if (role == null) {
+            return roleKey.name();
+        }
+        return extractText(role.getName());
+    }
+
+    private String getRoleMention(Role role) {
+        if (role == null) {
+            return "`Role nicht gefunden`";
+        }
+        return role.getAsMention();
     }
 
     private static String extractText(String input) {
