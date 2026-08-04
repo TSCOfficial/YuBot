@@ -14,7 +14,7 @@ public abstract class Button extends ArgumentComponent implements IButton {
         }
         net.dv8tion.jda.api.components.buttons.Button button = net.dv8tion.jda.api.components.buttons.Button.of(getStyle(), idOrUrl, getLabel(), getEmoji());
         if (isDisabled()) {
-            button.asDisabled();
+            button = button.asDisabled();
         }
         return button;
     }
