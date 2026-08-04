@@ -120,6 +120,6 @@ public class AbsenceAddModal extends Modal {
 
         event.reply(responseText).setEphemeral(true).queue();
 
-        DynamicMessageList.ABSENCES.update(0);
+        DynamicMessageList.ABSENCES.update();
     }
 }

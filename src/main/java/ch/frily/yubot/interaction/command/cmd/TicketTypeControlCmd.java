@@ -62,6 +62,6 @@ public class TicketTypeControlCmd implements ISlashSubcommand {
 
         event.reply(String.format("✅ Tickettyp '%s' erfolgreich auf **%s** gesetzt", type.getLabel(), isLocked ? "geschlossen" : "geöffnet")).setEphemeral(true).queue();
 
-        DynamicMessageList.TICKET_PANEL.update(true); // todo save server state to database and get it here
+        DynamicMessageList.TICKET_PANEL.update(); // todo save server state to database and get it here
     }
 }

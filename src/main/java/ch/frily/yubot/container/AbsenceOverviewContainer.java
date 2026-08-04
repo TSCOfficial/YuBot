@@ -54,8 +54,8 @@ public class AbsenceOverviewContainer extends PaginationContainer {
     @Getter
     private Map<LocalDate, List<Absence>> dayAbsences = new TreeMap<>();
 
-    public AbsenceOverviewContainer(int currentPage) {
-        super(StaticContainerRegistry.ABSENCE_OVERVIEW, currentPage);
+    public AbsenceOverviewContainer(ContainerContext context) {
+        super(StaticContainerRegistry.ABSENCE_OVERVIEW, context);
         try {
             this.dayAbsences = AbsenceRepository.getAbsencesPerDay();
 

@@ -1,19 +1,17 @@
 package ch.frily.yubot.interaction.button.btn;
 
+import ch.frily.yubot.container.ContainerContext;
 import ch.frily.yubot.container.StaticContainerRegistry;
-import ch.frily.yubot.feature.DynamicMessageList;
 import ch.frily.yubot.interaction.button.Button;
 import lombok.Setter;
-import lombok.extern.flogger.Flogger;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-import java.sql.SQLException;
+import java.util.List;
 
 @Slf4j
 public class PaginationNavBtn extends Button {
@@ -42,15 +40,11 @@ public class PaginationNavBtn extends Button {
 
     @Override
     public EmojiUnion getEmoji() {
-        if (emoji == null)
-            return null;
-        return Emoji.fromFormatted("<:home:1526737131282763816>");
+        return emoji;
     }
 
     @Override
     public String getLabel() {
-        if (label == null)
-            return null;
         return label;
     }
 
@@ -59,17 +53,25 @@ public class PaginationNavBtn extends Button {
         return isDisabled;
     }
 
+    /**
+     * Re-render the paginated container on the page this button points to.
+     * <p>
+     * The container gets rebuilt instead of cached, so a page always shows current data.
+     * Everything needed for that comes out of the component ID and the event itself, which is why
+     * this works for any paginated container without knowing what that container requires.
+     */
     @Override
-    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
-        log.info(event.getComponentId());
-        if (hasArgument(event.getComponentId(), "identifier")){
-            String identifier = getArgument(event.getComponentId(), "identifier");
-            // todo find the correct container, apply args and execute edit
-        }
-        if (hasArgument(event.getComponentId(), "navigateTo")){
-            DynamicMessageList.ABSENCES.update(Integer.valueOf(getArgument(event.getComponentId(), "navigateTo")));
-        } else {
-            throw new IllegalArgumentException("Invalid button interaction for Argument 'navigateTo'");
-        }
+    public void execute(@NonNull ButtonInteractionEvent event) {
+        String componentId = event.getComponentId();
+        log.debug("Pagination navigation for component ID {}", componentId);
+
+        StaticContainerRegistry registry = StaticContainerRegistry.valueOf(
+                getArgument(componentId, ContainerContext.ARG_IDENTIFIER));
+        ContainerContext context = ContainerContext.fromComponentId(event);
+
+        event.editComponents(registry.getContainer(context))
+                .useComponentsV2()
+                .setAllowedMentions(List.of())
+                .queue();
     }
 }

@@ -1,6 +1,6 @@
 package ch.frily.yubot.feature;
 
-import ch.frily.yubot.container.AbsenceOverviewContainer;
+import ch.frily.yubot.container.ContainerContext;
 import ch.frily.yubot.container.StaticContainerRegistry;
 import ch.frily.yubot.container.TicketPanelContainer;
 import ch.frily.yubot.embed.StaticEmbedRegistry;
@@ -25,9 +25,9 @@ import java.util.function.Function;
  * <br>
  * <b>Usage:</b>
  * <pre><code>
- *     DynamicMessageList.<ENUM_ITEM>.update(<arg1, arg2, ...>);
+ *     DynamicMessageList.<ENUM_ITEM>.update(<context>);
  *     // Example
- *     DynamicMessageList.TICKET_PANEL.update(true);
+ *     DynamicMessageList.ABSENCES.update(ContainerContext.defaults());
  * </code></pre>
  */
 public enum DynamicMessageList {
@@ -36,14 +36,14 @@ public enum DynamicMessageList {
             StaticContainerRegistry.TICKET_PANEL.name(),
             DynamicMessageType.CONTAINER,
             null,
-            args -> {
+            ctx -> {
                 return new TicketPanelContainer().build();
             }
     ),
     TEAMLIST(
             StaticEmbedRegistry.TEAMLIST.name(),
             DynamicMessageType.EMBED,
-            args -> {
+            ctx -> {
                 return new TeamlistEmbed().build();
             },
             null
@@ -52,24 +52,21 @@ public enum DynamicMessageList {
             StaticContainerRegistry.ABSENCE_OVERVIEW.name(),
             DynamicMessageType.CONTAINER,
             null,
-            args -> {
-                int currentPage = requireArg(args, 0, Integer.class);
-                return new AbsenceOverviewContainer(currentPage).build();
-            }
+            StaticContainerRegistry.ABSENCE_OVERVIEW::getContainer
     );
 
     @Getter
     private final String registryName;
 
     private final DynamicMessageType type;
-    private final Function<Object[], MessageEmbed> embedSupplier;
-    private final Function<Object[], List<Container>> containerSupplier;
+    private final Function<ContainerContext, MessageEmbed> embedSupplier;
+    private final Function<ContainerContext, List<Container>> containerSupplier;
 
     DynamicMessageList(
             String registryName,
             DynamicMessageType type,
-            Function<Object[], MessageEmbed> embedSupplier,
-            Function<Object[], List<Container>> containerSupplier
+            Function<ContainerContext, MessageEmbed> embedSupplier,
+            Function<ContainerContext, List<Container>> containerSupplier
     ) {
         this.registryName = registryName;
         this.type = type;
@@ -116,14 +113,26 @@ public enum DynamicMessageList {
      * @throws SQLException
      * @throws ClassNotFoundException
      */
-    public void update(Object... args) throws SQLException, ClassNotFoundException {
+    public void update() throws SQLException, ClassNotFoundException {
+        update(ContainerContext.defaults());
+    }
+
+    /**
+     * Update the dynamic message
+     * <br>
+     * If no dynamic message could be retrieved, the reference is used to send a new message to the original channel.
+     * @param context the arguments the embed/container gets built with
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
+    public void update(ContainerContext context) throws SQLException, ClassNotFoundException {
         DynamicMessageRepository.DynamicMessageReference reference =
                 DynamicMessageRepository.getDynamicMessageReference(name());
 
         DynamicMessage.retrieve(reference.name(), reference.channelId(), reference.messageId())
-                .thenAccept(dynamicMessage -> update(dynamicMessage, args))
+                .thenAccept(dynamicMessage -> update(dynamicMessage, context))
                 .exceptionally(exception -> {
-                    sendNewMessage(reference, args);
+                    sendNewMessage(reference, context);
                     return null;
                 });
     }
@@ -134,10 +143,10 @@ public enum DynamicMessageList {
      * If a message could not be found, the reference is used to send a new message to the original channel.
      * @param dynamicMessage
      */
-    public void update(DynamicMessage dynamicMessage, Object... args) {
+    public void update(DynamicMessage dynamicMessage, ContainerContext context) {
         if (type == DynamicMessageType.EMBED) {
             dynamicMessage.message()
-                    .editMessageEmbeds(embedSupplier.apply(args))
+                    .editMessageEmbeds(embedSupplier.apply(context))
                     .queue(
                             ThrowingConsumer.wrap(null, message -> DynamicMessageRepository.upsertDynamicMessage(new DynamicMessage(name(), message))),
                             exception -> {
@@ -148,7 +157,7 @@ public enum DynamicMessageList {
                                                 dynamicMessage.message().getChannel().getIdLong(),
                                                 dynamicMessage.message().getIdLong()
                                         ),
-                                        args
+                                        context
                                 );
                             }
                     );
@@ -157,7 +166,7 @@ public enum DynamicMessageList {
 
         if (type == DynamicMessageType.CONTAINER) {
             dynamicMessage.message()
-                    .editMessageComponents(containerSupplier.apply(args))
+                    .editMessageComponents(containerSupplier.apply(context))
                     .useComponentsV2()
                     .setAllowedMentions(List.of())
                     .queue(
@@ -170,7 +179,7 @@ public enum DynamicMessageList {
                                                 dynamicMessage.message().getChannel().getIdLong(),
                                                 dynamicMessage.message().getIdLong()
                                         ),
-                                        args
+                                        context
                                 );
                             }
                     );
@@ -180,9 +189,9 @@ public enum DynamicMessageList {
     /**
      * Send a new dynamic message to the stored channel when the old message is missing or unreachable.
      * @param reference stored dynamic message reference
-     * @param args arguments passed to the embed/container builder
+     * @param context arguments passed to the embed/container builder
      */
-    private void sendNewMessage(DynamicMessageRepository.DynamicMessageReference reference, Object... args) {
+    private void sendNewMessage(DynamicMessageRepository.DynamicMessageReference reference, ContainerContext context) {
         try {
             long guildId = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getIdLong();
             MessageChannel channel = EnvResolver.getChannelById(MessageChannel.class, guildId, reference.channelId());
@@ -195,7 +204,7 @@ public enum DynamicMessageList {
             }
 
             if (type == DynamicMessageType.EMBED) {
-                channel.sendMessageEmbeds(embedSupplier.apply(args))
+                channel.sendMessageEmbeds(embedSupplier.apply(context))
                         .queue(
                                 ThrowingConsumer.wrap(null, message -> DynamicMessageRepository.upsertDynamicMessage(new DynamicMessage(name(), message))),
                                 ExceptionHandler::handle
@@ -204,7 +213,7 @@ public enum DynamicMessageList {
             }
 
             if (type == DynamicMessageType.CONTAINER) {
-                channel.sendMessageComponents(containerSupplier.apply(args))
+                channel.sendMessageComponents(containerSupplier.apply(context))
                         .useComponentsV2()
                         .setAllowedMentions(List.of())
                         .queue(
@@ -215,31 +224,6 @@ public enum DynamicMessageList {
         } catch (Exception exception) {
             ExceptionHandler.handle(exception);
         }
-    }
-
-    /**
-     * Check arguments for a dynamic message
-     * @param args
-     * @param index
-     * @param type
-     * @return
-     * @param <T>
-     */
-    private static <T> T requireArg(Object[] args, int index, Class<T> type) {
-        if (args.length <= index) {
-            throw new IllegalArgumentException("Missing argument at index " + index + " of type " + type.getSimpleName());
-        }
-
-        Object value = args[index];
-
-        if (!type.isInstance(value)) {
-            throw new IllegalArgumentException(
-                    "Invalid argument at index " + index + ". Expected " + type.getSimpleName()
-                            + ", got " + (value == null ? "null" : value.getClass().getSimpleName())
-            );
-        }
-
-        return type.cast(value);
     }
 
     private enum DynamicMessageType {

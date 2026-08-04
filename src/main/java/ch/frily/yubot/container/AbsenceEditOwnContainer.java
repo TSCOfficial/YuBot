@@ -23,12 +23,15 @@ import java.util.stream.Collectors;
 
 public class AbsenceEditOwnContainer extends PaginationContainer {
 
-    public AbsenceEditOwnContainer(int currentPage, Member member) {
-        super(StaticContainerRegistry.ABSENCE_EDITOWN, currentPage);
+    public AbsenceEditOwnContainer(ContainerContext context) {
+        super(StaticContainerRegistry.ABSENCE_EDITOWN, context);
         try {
             PaginationItem header = new PaginationItem();
             header.addChild(TextDisplay.of("# Deine Absenzen"));
             setHeader(header);
+
+            // Derived from the interaction, so it is restored on every navigation click by itself
+            Member member = context.member();
 
             if (member == null) {
                 addItem(TextDisplay.of("Member not defined"));
@@ -46,9 +49,9 @@ public class AbsenceEditOwnContainer extends PaginationContainer {
                 addItem(noAbsences);
             }
 
-            addItem(ActionRow.of(
-                    new AbsenceAddBtn().build()
-            ));
+            PaginationItem footer = new PaginationItem();
+            footer.addChild(ActionRow.of(new AbsenceAddBtn().build()));
+            setFooter(footer);
 
         } catch (Exception e) {
             ExceptionHandler.handle(e);

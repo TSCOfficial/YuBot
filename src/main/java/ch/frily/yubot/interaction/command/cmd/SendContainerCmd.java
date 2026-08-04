@@ -1,5 +1,6 @@
 package ch.frily.yubot.interaction.command.cmd;
 
+import ch.frily.yubot.container.ContainerContext;
 import ch.frily.yubot.container.StaticContainerRegistry;
 import ch.frily.yubot.embed.StaticEmbedRegistry;
 import ch.frily.yubot.exception.ThrowingConsumer;
@@ -33,7 +34,7 @@ public class SendContainerCmd implements ISlashSubcommand {
     public List<OptionData> getOptions() {
         return List.of(
                 new OptionData(OptionType.STRING, "container", "Wähle ein container aus", true)
-                        .addChoices(Arrays.stream(StaticContainerRegistry.values()).map(container -> {
+                        .addChoices(StaticContainerRegistry.sendable().stream().map(container -> {
                             return new Command.Choice(humanizeEnumName(container.name()), container.name());
                         }).toList()
                         )
@@ -43,7 +44,8 @@ public class SendContainerCmd implements ISlashSubcommand {
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) {
         String containerValue = event.getOption("container").getAsString();
-        List<Container> containers = StaticContainerRegistry.valueOf(containerValue).getContainer(0);
+        List<Container> containers = StaticContainerRegistry.valueOf(containerValue)
+                .getContainer(ContainerContext.of(event));
 
         try {
             event.getChannel()

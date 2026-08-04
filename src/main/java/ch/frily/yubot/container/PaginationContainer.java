@@ -28,10 +28,13 @@ public abstract class PaginationContainer extends Container {
      */
     record Page(int number, List<PaginationItem> items){}
 
-    private StaticContainerRegistry identifier;
+    private final StaticContainerRegistry identifier;
+
+    /** The arguments this container was built with, propagated into the navigation buttons */
+    private final ContainerContext context;
 
     /** Zero based index of the page that gets rendered */
-    private int currentPage = 0;
+    private int currentPage;
 
     /** The container wrapping a page counts as a component itself */
     private static final int CONTAINER_COMPONENT_COUNT = 1;
@@ -66,10 +69,16 @@ public abstract class PaginationContainer extends Container {
         pages.add(new Page(pages.size() + 1, List.copyOf(items)));
     }
 
-    public PaginationContainer(StaticContainerRegistry container, int currentPage){
-        this.currentPage = currentPage;
-        this.identifier = StaticContainerRegistry.valueOf(container.name());
-        log.info("Created pagination container with identifier {}", identifier);
+    protected PaginationContainer(StaticContainerRegistry identifier, ContainerContext context){
+        this.identifier = identifier;
+        this.context = context;
+        this.currentPage = context.page();
+        log.debug("Created pagination container with identifier {} on page {}", identifier, currentPage);
+    }
+
+    /** The arguments this container was built with */
+    protected ContainerContext getContext(){
+        return context;
     }
 
     /**
@@ -158,36 +167,49 @@ public abstract class PaginationContainer extends Container {
         return container;
     }
 
+    /**
+     * Build a navigation button that rebuilds this very container on a different page.
+     * <p>
+     * Next to the identifier and the target page, every foreign argument of the
+     * {@link ContainerContext} is written into the button as well. That is what lets a container
+     * with extra requirements survive a navigation click: the arguments it was built with are
+     * handed back to it, while member and guild get derived from the interaction.
+     * @param targetPage Zero based index of the page the button navigates to
+     * @return The prepared button, still without label, emoji or style
+     */
+    private PaginationNavBtn navBtn(int targetPage) {
+        PaginationNavBtn btn = new PaginationNavBtn();
+        btn.addArgument(ContainerContext.ARG_IDENTIFIER, identifier.name());
+        btn.addArgument(ContainerContext.ARG_PAGE, String.valueOf(targetPage));
+        context.args().forEach(btn::addArgument);
+        return btn;
+    }
+
     public PaginationItem getControls() {
         PaginationItem controls = new PaginationItem();
 
-        PaginationNavBtn homeBtn = new PaginationNavBtn();
+        PaginationNavBtn homeBtn = navBtn(0);
         homeBtn.setEmoji(Emoji.fromFormatted("<:home:1526737131282763816>"));
-        homeBtn.addArgument("identifier", identifier.name());
-        homeBtn.addArgument("navigateTo", "0");
         if (currentPage == 0) {
             homeBtn.setDisabled(true);
         }
 
-        PaginationNavBtn prevBtn = new PaginationNavBtn();
+        PaginationNavBtn prevBtn = navBtn(currentPage - 1);
         prevBtn.setLabel("<");
         prevBtn.setStyle(ButtonStyle.SECONDARY);
-        prevBtn.addArgument("identifier", identifier.name());
-        prevBtn.addArgument("navigateTo", String.valueOf(currentPage - 1));
         if (currentPage <= 0) {
             prevBtn.setDisabled(true);
         }
 
+        // Serves as a page indicator only, so it carries no navigation target
         PaginationNavBtn currentBtn = new PaginationNavBtn();
         currentBtn.setLabel(String.valueOf(currentPage + 1)); // +1 only to display human-readable page number (instead of index 0)
         currentBtn.setStyle(ButtonStyle.SECONDARY);
         currentBtn.setDisabled(true);
 
-        PaginationNavBtn nextBtn = new PaginationNavBtn();
+        PaginationNavBtn nextBtn = navBtn(currentPage + 1);
         nextBtn.setLabel(">");
         nextBtn.setStyle(ButtonStyle.SECONDARY);
-        nextBtn.addArgument("identifier", identifier.name());
-        nextBtn.addArgument("navigateTo", String.valueOf(currentPage + 1));
         if (currentPage >= pages.size() - 1) {
             nextBtn.setDisabled(true);
         }
