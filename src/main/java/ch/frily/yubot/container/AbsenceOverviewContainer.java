@@ -55,7 +55,7 @@ public class AbsenceOverviewContainer extends PaginationContainer {
     private Map<LocalDate, List<Absence>> dayAbsences = new TreeMap<>();
 
     public AbsenceOverviewContainer(int currentPage) {
-        super(currentPage);
+        super(StaticContainerRegistry.ABSENCE_OVERVIEW, currentPage);
         try {
             this.dayAbsences = AbsenceRepository.getAbsencesPerDay();
 
@@ -136,7 +136,6 @@ public class AbsenceOverviewContainer extends PaginationContainer {
 
         AbsenceDetailBtn detailBtn = new AbsenceDetailBtn();
         detailBtn.addArgument("absence_id", absence.id().toString());
-        log.info(detailBtn.getFullIdentification());
 
         pageItem.addChild(Section.of(detailBtn.build(), TextDisplay.ofFormat("""
                 > **[%s](https://discord.com/users/%s)**

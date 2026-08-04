@@ -43,7 +43,7 @@ public class SendContainerCmd implements ISlashSubcommand {
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) {
         String containerValue = event.getOption("container").getAsString();
-        List<Container> containers = StaticContainerRegistry.valueOf(containerValue).getContainers();
+        List<Container> containers = StaticContainerRegistry.valueOf(containerValue).getContainer(0);
 
         try {
             event.getChannel()

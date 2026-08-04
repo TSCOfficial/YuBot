@@ -1,5 +1,6 @@
 package ch.frily.yubot.interaction.button.btn;
 
+import ch.frily.yubot.container.StaticContainerRegistry;
 import ch.frily.yubot.feature.DynamicMessageList;
 import ch.frily.yubot.interaction.button.Button;
 import lombok.Setter;
@@ -61,9 +62,12 @@ public class PaginationNavBtn extends Button {
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
         log.info(event.getComponentId());
+        if (hasArgument(event.getComponentId(), "identifier")){
+            String identifier = getArgument(event.getComponentId(), "identifier");
+            // todo find the correct container, apply args and execute edit
+        }
         if (hasArgument(event.getComponentId(), "navigateTo")){
             DynamicMessageList.ABSENCES.update(Integer.valueOf(getArgument(event.getComponentId(), "navigateTo")));
-            event.reply("").setEphemeral(true).queue(); // Empty ephemeral message
         } else {
             throw new IllegalArgumentException("Invalid button interaction for Argument 'navigateTo'");
         }

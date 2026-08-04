@@ -28,6 +28,8 @@ public abstract class PaginationContainer extends Container {
      */
     record Page(int number, List<PaginationItem> items){}
 
+    private StaticContainerRegistry identifier;
+
     /** Zero based index of the page that gets rendered */
     private int currentPage = 0;
 
@@ -64,9 +66,10 @@ public abstract class PaginationContainer extends Container {
         pages.add(new Page(pages.size() + 1, List.copyOf(items)));
     }
 
-    public PaginationContainer(int currentPage){
+    public PaginationContainer(StaticContainerRegistry container, int currentPage){
         this.currentPage = currentPage;
-        log.info("new pagination container with current page {}", currentPage);
+        this.identifier = StaticContainerRegistry.valueOf(container.name());
+        log.info("Created pagination container with identifier {}", identifier);
     }
 
     /**
@@ -78,7 +81,6 @@ public abstract class PaginationContainer extends Container {
      * @return The components left over for the items of one page
      */
     private int getItemComponentBudget(){
-        log.info("control components: {}", (int) ComponentIterator.createStream(getControls().getChildren()).count());
         int reserved = CONTAINER_COMPONENT_COUNT
                 + (int) ComponentIterator.createStream(getControls().getChildren()).count()
                 + (header == null ? 0 : header.getComponentCount())
@@ -103,8 +105,10 @@ public abstract class PaginationContainer extends Container {
             int itemComponents = item.getComponentCount();
 
             if (itemComponents > budget) {
-                log.warn("A single pagination item takes up {} components but only {} fit on a page",
-                        itemComponents, budget);
+                log.warn("A single pagination item (index {}) takes up {} components but only {} fit on a page",
+                        items.indexOf(item), itemComponents, budget);
+                item = new PaginationItem(TextDisplay.ofFormat("-# ⚠️ Item %d, with %d children, was not able to render due to discord limitations.", items.indexOf(item), itemComponents)); // overwrite to fallback message
+                itemComponents = item.getComponentCount(); // overwrite component cound to allow other items to be displayed next to the fallback message
             }
 
             // Start the next page before the current one runs over the budget
@@ -122,14 +126,10 @@ public abstract class PaginationContainer extends Container {
         if (!currentProcessedItems.isEmpty() || pages.isEmpty()) {
             addPage(currentProcessedItems);
         }
-
-        log.debug("Built {} pages out of {} items with a budget of {} components per page",
-                pages.size(), items.size(), budget);
     }
 
     /**
-     * Build the container of the {@link #currentPage current page}, framed by the header, the footer
-     * and the navigation controls
+     * Build the container of the {@link #currentPage current page}, framed by the header, the footer, and the navigation controls
      * @return
      */
     public net.dv8tion.jda.api.components.container.Container buildPagination() {
@@ -163,6 +163,7 @@ public abstract class PaginationContainer extends Container {
 
         PaginationNavBtn homeBtn = new PaginationNavBtn();
         homeBtn.setEmoji(Emoji.fromFormatted("<:home:1526737131282763816>"));
+        homeBtn.addArgument("identifier", identifier.name());
         homeBtn.addArgument("navigateTo", "0");
         if (currentPage == 0) {
             homeBtn.setDisabled(true);
@@ -171,6 +172,7 @@ public abstract class PaginationContainer extends Container {
         PaginationNavBtn prevBtn = new PaginationNavBtn();
         prevBtn.setLabel("<");
         prevBtn.setStyle(ButtonStyle.SECONDARY);
+        prevBtn.addArgument("identifier", identifier.name());
         prevBtn.addArgument("navigateTo", String.valueOf(currentPage - 1));
         if (currentPage <= 0) {
             prevBtn.setDisabled(true);
@@ -184,6 +186,7 @@ public abstract class PaginationContainer extends Container {
         PaginationNavBtn nextBtn = new PaginationNavBtn();
         nextBtn.setLabel(">");
         nextBtn.setStyle(ButtonStyle.SECONDARY);
+        nextBtn.addArgument("identifier", identifier.name());
         nextBtn.addArgument("navigateTo", String.valueOf(currentPage + 1));
         if (currentPage >= pages.size() - 1) {
             nextBtn.setDisabled(true);
@@ -194,12 +197,6 @@ public abstract class PaginationContainer extends Container {
         controls.addChild(TextDisplay.ofFormat("-# Seite %s / %s", currentPage + 1, pages.size()));
         return controls;
     }
-
-//    @Override
-//    public List<net.dv8tion.jda.api.components.container.Container> build() {
-//       throw new IllegalStateException("PaginationContainer can only be built as pagination. Use buildPagination() instead.");
-//    }
-
 
     @Override
     public List<net.dv8tion.jda.api.components.container.Container> build() {
