@@ -2,52 +2,51 @@ package ch.frily.yubot.storage;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.entities.Member;
 
+import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The SessionStorage allows the system to save some data for a limited time.
+ * <p>
+ *     Each storage record has a TTL (Time to live) that defines its lifetime. At latest when the Bot stops, all data are lost.
+ * </p>
+ */
 @Slf4j
 public class SessionStorage {
 
     private static SessionStorage instance;
 
     @Getter
-    private List<StorageRecord<?>> sessionStorage = new ArrayList<>();
+    private List<StorageData<?>> sessionStorage = new ArrayList<>();
 
     public static SessionStorage getInstance() {
         if (instance == null) {
             instance = new SessionStorage();
-            instance.addStorage("something-id18092720108", "Just a test ^^");
         }
         return instance;
     }
 
-    public List<StorageRecord<?>> getSessionStorage() {
+    public List<StorageData<?>> getSessionStorage() {
         return sessionStorage;
     }
 
-    public Optional<StorageRecord<?>> getSessionStorage(String key) {
+    public <T> T getValue(String key, Member member, Class<T> type) {
         return sessionStorage.stream()
-                .filter(storage -> storage.key().equals(key))
-                .findFirst();
+                .filter(data -> data.key().equals(key) && (member == null || data.member().getId().equals(member.getId())))
+                .findFirst()
+                .map(StorageData::storage)
+                .filter(storage -> type.isInstance(storage.getValue()))
+                .map(storage -> type.cast(storage.getValue()))
+                .orElse(null);
     }
 
-    public void addStorage(String key, String value){
-        sessionStorage.add(new StorageRecord<>(key, new StringStorage(value), getTtl(1)));
-    }
-
-    public void addStorage(String key, boolean value){
-        sessionStorage.add(new StorageRecord<>(key, new BooleanStorage(value), getTtl(1)));
-    }
-
-    public void addStorage(String key, Long value){
-        sessionStorage.add(new StorageRecord<>(key, new LongStorage(value), getTtl(1)));
-    }
-
-    public void addStorage(StorageRecord<?> storageRecord){
-        sessionStorage.add(storageRecord);
+    public <T> void addStorage(String key, Member member, T value, int ttl) {
+        sessionStorage.add(new StorageData<>(key, member, new Storage<>(value), resolveTtl(ttl)));
     }
 
     /**
@@ -55,7 +54,7 @@ public class SessionStorage {
      * @param ttl Time to live [in Minutes]
      * @return the current time additioned with the given ttl
      */
-    public LocalDateTime getTtl(int ttl){
+    public LocalDateTime resolveTtl(int ttl){
         return LocalDateTime.now().plusMinutes(ttl);
     }
 

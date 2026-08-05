@@ -10,27 +10,15 @@ import java.util.function.Function;
 /**
  * A key-value store that holds exactly one value type
  *
- * @param <V> the type of the stored values
+ * @param </T> the type of the stored values
  */
-public abstract class Storage<V> {
+public class Storage<T> {
 
     @Getter
     @Setter
-    private V value;
+    private T value;
 
-    public StringStorage asString(){
-        return (StringStorage) this;
-    }
-
-    public LongStorage asLong(){
-        return (LongStorage) this;
-    }
-
-    public StringListStorage asStringList(){
-        return (StringListStorage) this;
-    }
-
-    public BooleanStorage asBoolean(){
-        return (BooleanStorage) this;
+    public Storage(T value) {
+        this.value = value;
     }
 }
