@@ -126,6 +126,24 @@ public enum TicketType {
             TicketTypeGroup.BEWERBUNG,
             List.of(EnvKey.ROLE_MODLEITUNG, EnvKey.ROLE_SERVERLEITUNG)
     ),
+    BEWERBUNG_TWITCHMOD(
+            "betwm",
+            "\uD83C\uDF9E\uFE0F Twitch-Moderation (Team-extern)",
+            "Bewerbung Twitch-Moderation",
+            """
+                    Bitte verfasse deine Bewerbung. Für deine Bewerbung ist uns Folgendes wichtig::
+                    
+                    - Kurze Vorstellung (Name, Alter, Pronomen, ...)
+                    - Warum möchtest du Teil des Twitch-Moderationsteam werden?
+                    - Deine zeitliche Verfügbarkeit
+                    - Bisherige Erfahrungen in dem Bereich
+                    Du kannst gerne mehr schreiben!
+                    
+                    Sobald du deine Bewerbung geschrieben hast, meldet sich die zuständige Person bei dir.
+                    """,
+            TicketTypeGroup.BEWERBUNG,
+            List.of(EnvKey.ROLE_OWNER, EnvKey.ROLE_SERVERLEITUNG)
+    ),
     BEWERBUNG_AWARENESS(
             "beawrn",
             "💚 Fachbereich Awareness",

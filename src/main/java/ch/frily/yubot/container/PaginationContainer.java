@@ -89,7 +89,7 @@ public abstract class PaginationContainer extends Container {
      * from that budget before the items get distributed.
      * @return The components left over for the items of one page
      */
-    private int getItemComponentBudget(){
+    public int getItemComponentBudget(){
         int reserved = CONTAINER_COMPONENT_COUNT
                 + (int) ComponentIterator.createStream(getControls().getChildren()).count()
                 + (header == null ? 0 : header.getComponentCount())

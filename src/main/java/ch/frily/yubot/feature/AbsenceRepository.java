@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class AbsenceRepository {
@@ -96,7 +97,6 @@ public class AbsenceRepository {
      * @throws NoSuchMethodException
      */
     public static Absence getAbsenceById(int id) throws SQLException, ClassNotFoundException, NullPointerException {
-
         DatabaseQuery query = new DatabaseQuery(Table.ABSENCE);
         query.select();
         query.where(Table.AbsenceColumn.ID, DatabaseQuery.Operator.EQUALS, id);
@@ -116,6 +116,34 @@ public class AbsenceRepository {
             return absence;
         }
         throw new NullPointerException("Abwesenheit nicht gefunden");
+    }
+
+    public static List<Absence> getAbsencesByDateSpan(LocalDateTime startDateTimeSearch, LocalDateTime endDateTimeSearch) throws SQLException, ClassNotFoundException {
+        List<Absence> absences = new ArrayList<>();
+
+        DatabaseQuery query = new DatabaseQuery(Table.ABSENCE);
+        query.select();
+        query.where(Table.AbsenceColumn.START_DATETIME, DatabaseQuery.Operator.LESS_OR_EQUAL, endDateTimeSearch);
+        query.where(Table.AbsenceColumn.END_DATETIME, DatabaseQuery.Operator.GREATER_OR_EQUAL, startDateTimeSearch);
+
+        ResultSet rs = query.executeDataQuery();
+        while (rs.next()) {
+            int id = rs.getInt(Table.AbsenceColumn.ID.getColumn());
+            String memberId = rs.getString(Table.AbsenceColumn.MEMBER_ID.getColumn());
+            LocalDateTime startDateTime = rs.getTimestamp(Table.AbsenceColumn.START_DATETIME.getColumn()).toLocalDateTime();
+            LocalDateTime endDateTime = rs.getTimestamp(Table.AbsenceColumn.END_DATETIME.getColumn()).toLocalDateTime();
+            String reason = rs.getString(Table.AbsenceColumn.REASON.getColumn());
+            boolean sendNotice = rs.getBoolean(Table.AbsenceColumn.SEND_NOTICE.getColumn());
+            LocalDateTime createdAt = rs.getTimestamp(Table.AbsenceColumn.CREATED_AT.getColumn()).toLocalDateTime();
+            LocalDateTime updatedAt = rs.getTimestamp(Table.AbsenceColumn.UPDATED_AT.getColumn()).toLocalDateTime();
+
+            Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+            Member member = guild.getMemberById(memberId);
+            Absence absence = new Absence(id, member, startDateTime, endDateTime, reason, sendNotice, createdAt, updatedAt);
+            log.info("Found absence: " + absence);
+            absences.add(absence);
+        }
+        return absences;
     }
 
     /**

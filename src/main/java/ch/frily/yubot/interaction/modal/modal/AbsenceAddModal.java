@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -33,6 +34,7 @@ public class AbsenceAddModal extends Modal {
 
     private static final String DATE_TIME_FORMAT = "dd.MM.yyyy HH:mm";
     private static final int MINIMUM_ABSENCE_DURATION = 1440; // 24 hours in minutes
+    private static final int MAX_ABSENCES_AT_SAME_TIME = 8;
 
     private boolean isEditing = false;
     private Absence absence;
@@ -130,6 +132,9 @@ public class AbsenceAddModal extends Modal {
             LocalDateTime startTime = LocalDateTime.parse(startTimeString, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
             LocalDateTime endTime = LocalDateTime.parse(endTimeString, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
 
+            validateAbsenceDisplayCap(startTime, endTime);
+            absenceTimeIsValid(startTime, endTime);
+
             Absence absence = null;
             String responseText = "Deine Abwesenheit wurde erfolgreich angelegt.";
             if (hasArgument(event.getModalId(), "absence_id")) {
@@ -140,7 +145,6 @@ public class AbsenceAddModal extends Modal {
             } else {
                 absence = new Absence(null, event.getMember(), startTime, endTime, reason, showNotice, LocalDateTime.now(), LocalDateTime.now());
             }
-
 
             AbsenceRepository.upsertAbsence(absence);
             SessionStorage.getInstance().removeStorage("invalid-absence-clipboard", event.getMember()); // remove after successful upsert
@@ -166,5 +170,35 @@ public class AbsenceAddModal extends Modal {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Check if the absence would exceed the maximum number ({@link #MAX_ABSENCES_AT_SAME_TIME}) of items that can be displayed at the same time on the container
+     * @param startTime
+     * @param endTime
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     * @throws InvalidStateException
+     */
+    private void validateAbsenceDisplayCap(LocalDateTime startTime, LocalDateTime endTime) throws SQLException, ClassNotFoundException, InvalidStateException {
+        LocalDate currentDay = startTime.toLocalDate();
+        LocalDate lastDay = endTime.toLocalDate();
+
+        while (!currentDay.isAfter(lastDay)) {
+            LocalDateTime dayStart = currentDay.atStartOfDay();
+            LocalDateTime dayEnd = currentDay.atTime(LocalTime.MAX);
+
+            int existingOnThisDay = AbsenceRepository.getAbsencesByDateSpan(dayStart, dayEnd).size();
+
+            log.info("{}: {} / {}", currentDay, existingOnThisDay, MAX_ABSENCES_AT_SAME_TIME);
+
+            if (existingOnThisDay >= MAX_ABSENCES_AT_SAME_TIME) {
+                throw new InvalidStateException(
+                        "Es können maximal " + MAX_ABSENCES_AT_SAME_TIME + " Abwesenheiten gleichzeitig angelegt werden.",
+                        "Kontaktiere bitte deine Bereichsleitung und informiere sie über deine Abwesenheit.");
+            }
+
+            currentDay = currentDay.plusDays(1);
+        }
     }
 }
