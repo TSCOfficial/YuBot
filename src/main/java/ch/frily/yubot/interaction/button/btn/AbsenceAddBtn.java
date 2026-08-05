@@ -34,6 +34,8 @@ public class AbsenceAddBtn extends Button {
 
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
-        event.replyModal(new AbsenceAddModal().build()).queue();
+        AbsenceAddModal addAbence = new AbsenceAddModal();
+        addAbence.addArgument("member_id", event.getMember().getId());
+        event.replyModal(addAbence.build()).queue();
     }
 }

@@ -2,6 +2,7 @@ package ch.frily.yubot.interaction.command.cmd;
 
 import ch.frily.yubot.feature.DynamicMessageList;
 import ch.frily.yubot.interaction.command.ISlashCommand;
+import ch.frily.yubot.storage.SessionStorage;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class TestCmd implements ISlashCommand {
@@ -33,21 +35,13 @@ public class TestCmd implements ISlashCommand {
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
-        Role everyoneRole = EnvResolver.getRoleById(EnvKey.ROLE_EVERYONE);
-        TextChannel serverClosedChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_SERVERGESCHLOSSEN);
-
-        List<Permission> allowPerms = new ArrayList<>();
-        List<Permission> denyPerms = new ArrayList<>();
-        denyPerms.add(Permission.MESSAGE_SEND);
-
-        if (false) {
-            denyPerms.add(Permission.VIEW_CHANNEL);
-        } else {
-            allowPerms.add(Permission.VIEW_CHANNEL);
+        String localStorage = SessionStorage.getInstance().getSessionStorage().stream().map(storage -> {
+            return String.format("%s: %s [ttl: %s]", storage.key(), storage.storage().getValue(), storage.ttl());
+        }).collect(Collectors.joining("\n"));
+        if (localStorage.length() == 0) {
+            localStorage = "Keine Daten vorhanden.";
         }
-
-        serverClosedChannel.getManager().putRolePermissionOverride(everyoneRole.getIdLong(), allowPerms, denyPerms).queue();
-        event.reply("executed").setEphemeral(true).queue();
+        event.reply(localStorage).setEphemeral(true).queue();
     }
 
     @Override

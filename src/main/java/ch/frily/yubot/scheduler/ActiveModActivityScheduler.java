@@ -3,6 +3,7 @@ package ch.frily.yubot.scheduler;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.feature.*;
+import ch.frily.yubot.storage.SessionStorage;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,6 +33,8 @@ public class ActiveModActivityScheduler implements Scheduler {
                 ExceptionHandler.handle(exception);
             }
         });
+
+        SessionStorage.getInstance().clean(); // cleans expired storage elements
     }
 
     @Override

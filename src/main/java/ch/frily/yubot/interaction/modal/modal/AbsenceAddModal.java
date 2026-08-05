@@ -1,5 +1,6 @@
 package ch.frily.yubot.interaction.modal.modal;
 
+import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.feature.Absence;
 import ch.frily.yubot.feature.AbsenceRepository;
 import ch.frily.yubot.feature.DynamicMessageList;
@@ -21,6 +22,7 @@ import org.jspecify.annotations.NonNull;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 /**
@@ -84,8 +86,6 @@ public class AbsenceAddModal extends Modal {
             absenceMessageChecked = absence.absenceMessage();
         }
 
-        log.info("Is edit getComponents: " + isEditing);
-
         return List.of(
                 Label.of(String.format("Startzeit (%s)", DATE_TIME_FORMAT), startTime.build()),
                 Label.of(String.format("Endzeit (%s)", DATE_TIME_FORMAT), endTime.build()),
@@ -97,29 +97,34 @@ public class AbsenceAddModal extends Modal {
 
     @Override
     public void execute(@NonNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException {
-        String startTimeString = event.getValue("start-time").getAsString();
-        LocalDateTime startTime = LocalDateTime.parse(startTimeString, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
-        String endTimeString = event.getValue("end-time").getAsString();
-        LocalDateTime endTime = LocalDateTime.parse(endTimeString, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
-        String reason = event.getValue("reason").getAsString();
-        boolean showNotice = event.getValue("absence-message").getAsBoolean();
+        try {
+            String startTimeString = event.getValue("start-time").getAsString();
+            LocalDateTime startTime = LocalDateTime.parse(startTimeString, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
+            String endTimeString = event.getValue("end-time").getAsString();
+            LocalDateTime endTime = LocalDateTime.parse(endTimeString, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
+            String reason = event.getValue("reason").getAsString();
+            boolean showNotice = event.getValue("absence-message").getAsBoolean();
 
-        Absence absence = null;
-        String responseText = "Deine Abwesenheit wurde erfolgreich angelegt.";
-        if (hasArgument(event.getModalId(), "absence_id")) {
-            int id = Integer.parseInt(getArgument(event.getModalId(), "absence_id"));
-            Absence existingAbsence = AbsenceRepository.getAbsenceById(id);
-            absence = new Absence(existingAbsence.id(), event.getMember(), startTime, endTime, reason, showNotice, existingAbsence.createdAt(), LocalDateTime.now());
-            responseText = "Deine Abwesenheit wurde erfolgreich aktualisiert.";
-        } else {
-            absence = new Absence(null, event.getMember(), startTime, endTime, reason, showNotice, LocalDateTime.now(), LocalDateTime.now());
+            Absence absence = null;
+            String responseText = "Deine Abwesenheit wurde erfolgreich angelegt.";
+            if (hasArgument(event.getModalId(), "absence_id")) {
+                int id = Integer.parseInt(getArgument(event.getModalId(), "absence_id"));
+                Absence existingAbsence = AbsenceRepository.getAbsenceById(id);
+                absence = new Absence(existingAbsence.id(), event.getMember(), startTime, endTime, reason, showNotice, existingAbsence.createdAt(), LocalDateTime.now());
+                responseText = "Deine Abwesenheit wurde erfolgreich aktualisiert.";
+            } else {
+                absence = new Absence(null, event.getMember(), startTime, endTime, reason, showNotice, LocalDateTime.now(), LocalDateTime.now());
+            }
+
+
+            AbsenceRepository.upsertAbsence(absence);
+
+            event.reply(responseText).setEphemeral(true).queue();
+
+            DynamicMessageList.ABSENCES.update();
+        } catch (DateTimeParseException dateTimeParseException) {
+            throw new InvalidStateException("Ungltiges Zeitformat angegeben.");
         }
 
-
-        AbsenceRepository.upsertAbsence(absence);
-
-        event.reply(responseText).setEphemeral(true).queue();
-
-        DynamicMessageList.ABSENCES.update();
     }
 }

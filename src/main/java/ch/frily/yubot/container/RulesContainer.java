@@ -84,11 +84,8 @@ public class RulesContainer extends Container {
         this.addTextDisplay("**§5 Voicechats**");
         this.addTextDisplay("""
                         ¹ Jede Person hat die Pflicht, sich in Voicechats respektvoll und maßvoll zu verhalten und Andere nicht zu stören. In Voicechats ist es untersagt, jegliche Formen von Drogen (auch Alkohol, Vapes oder Zigaretten) zu konsumieren.
+                        ² Auch Regelverstöße in Sprachchats führen zu Konsequenzen. Moderator\\*innen und Supporter\\*innen können in den Voicechats nach dem Rechten und dem Wohlbefinden schauen.
                         """
-        );
-        this.addTextDisplay("""
-                ² Auch Regelverstöße in Sprachchats führen zu Konsequenzen. Moderator\\*innen und Supporter\\*innen können in den Voicechats nach dem Rechten und dem Wohlbefinden schauen.
-                """
         );
 
         this.addInvisibleSeparator(Separator.Spacing.SMALL);
@@ -131,10 +128,10 @@ public class RulesContainer extends Container {
         this.addTextDisplay("""
                 ² *Von Server-Staff*
                 Ein Mitglied des Server-Staffs ist zu entlassen, wenn die Person
-                - unbegründete Strafen verhängt
-                - gegen §3, §4, §6 oder §9 verstößt
-                - nach eigennützigen Motiven als Server-Staff agiert und damit anderen schadet
-                - Persönliche Bekannte bevorzugt
+                a. unbegründete Strafen verhängt
+                b. gegen §3, §4, §6 oder §9 verstößt
+                c. nach eigennützigen Motiven als Server-Staff agiert und damit anderen schadet
+                d. Persönliche Bekannte bevorzugt
                 """
         );
 
@@ -145,6 +142,7 @@ public class RulesContainer extends Container {
                 Mitglieder des Server-Staff sind verpflichtet, sich den Serverregeln entsprechend zu verhalten und als Vorbild vorrauszugehen. Sie haben im Zweifelsfall immer das letzte Wort, bis ein Mitglied höheren Ranges etwas anderes sagt.
            
                 Jedes der unten genannten Teams verfügt über eine oder mehrere Leitungspersonen, die mittels eigener Rolle besonders gekennzeichnet sind. Diese verteilen die Aufgaben im Team und sind für ihre Teammitglieder verantwortlich.
+                - SocialMedia-Team : Organisiert und Produziert Inhalte für Social Media.
                 - Event-Team : Organisiert die Events auf dem Server.
                 - Awareness-Team : Hilfe bei persönlichen Problemen und Konflikten.
                 - Support\\*innen : Sorgen für Einhaltung der Regeln, beantworten Tickets. Können timeouten.
@@ -160,9 +158,6 @@ public class RulesContainer extends Container {
         this.addTextDisplay("**§9 Vergabe und Entzug erweiterter Rechte**");
         this.addTextDisplay("""
                 ¹ Die Vergabe von erweiterten Rechten erfolgt in der Regel direkt durch den Vorgesetzten und immer in der Annahme, dass mit ihnen verantwortungsvoll und im Sinne des Servers umgegangen wird.
-                """
-        );
-        this.addTextDisplay("""
                 ² Ist die verantwortungsvolle Benutzung der Rechte aus Sicht des Serverowners, der Serverleitung oder der zuständigen Teamleitung nicht gegeben, können diese Rechte jederzeit wieder entzogen werden.
                 """
         );
