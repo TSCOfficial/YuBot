@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.Member;
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +39,8 @@ public class SessionStorage {
     public <T> T getValue(String key, Member member, Class<T> type) {
         return sessionStorage.stream()
                 .filter(data -> data.key().equals(key) && (member == null || data.member().getId().equals(member.getId())))
-                .findFirst()
+                .filter(data -> data.ttl().isAfter(LocalDateTime.now()))
+                .max(Comparator.comparing(StorageData::ttl)) // takes the biggest ttl (most recent)
                 .map(StorageData::storage)
                 .filter(storage -> type.isInstance(storage.getValue()))
                 .map(storage -> type.cast(storage.getValue()))
@@ -49,12 +51,16 @@ public class SessionStorage {
         sessionStorage.add(new StorageData<>(key, member, new Storage<>(value), resolveTtl(ttl)));
     }
 
+    public void removeStorage(String key, Member member) {
+        sessionStorage.removeIf(storage -> storage.key().equals(key) && (member == null || storage.member().getId().equals(member.getId())));
+    }
+
     /**
      * Get the "time to live" [in Minutes] for that storage element
      * @param ttl Time to live [in Minutes]
      * @return the current time additioned with the given ttl
      */
-    public LocalDateTime resolveTtl(int ttl){
+    private LocalDateTime resolveTtl(int ttl){
         return LocalDateTime.now().plusMinutes(ttl);
     }
 
@@ -62,7 +68,6 @@ public class SessionStorage {
      * Remove expired storage elements
      */
     public void clean(){
-        log.info("Cleaning expired storage elements");
         sessionStorage.removeIf(storage -> storage.ttl().isBefore(LocalDateTime.now()));
     }
 

@@ -20,6 +20,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.List;
 public class AbsenceAddModal extends Modal {
 
     private static final String DATE_TIME_FORMAT = "dd.MM.yyyy HH:mm";
+    private static final int MINIMUM_ABSENCE_DURATION = 1440; // 24 hours in minutes
 
     private boolean isEditing = false;
     private Absence absence;
@@ -120,6 +122,9 @@ public class AbsenceAddModal extends Modal {
         String endTimeString = event.getValue("end-time").getAsString();
         String reason = event.getValue("reason").getAsString();
         boolean showNotice = event.getValue("absence-notice").getAsBoolean();
+        // save data to session storage in case anything goes wrong
+        AbsenceModalDataRecord absenceModalDataRecord = new AbsenceModalDataRecord(startTimeString, endTimeString, reason, showNotice);
+        SessionStorage.getInstance().addStorage("invalid-absence-clipboard", event.getMember(), absenceModalDataRecord, 10);
 
         try {
             LocalDateTime startTime = LocalDateTime.parse(startTimeString, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
@@ -138,15 +143,28 @@ public class AbsenceAddModal extends Modal {
 
 
             AbsenceRepository.upsertAbsence(absence);
+            SessionStorage.getInstance().removeStorage("invalid-absence-clipboard", event.getMember()); // remove after successful upsert
 
             event.reply(responseText).setEphemeral(true).queue();
 
             DynamicMessageList.ABSENCES.update();
+
         } catch (DateTimeParseException dateTimeParseException) {
-            AbsenceModalDataRecord absenceModalDataRecord = new AbsenceModalDataRecord(startTimeString, endTimeString, reason, showNotice);
-            SessionStorage.getInstance().addStorage("invalid-absence-clipboard", event.getMember(), absenceModalDataRecord, 10);
-            throw new InvalidStateException("Ungltiges Zeitformat angegeben.", "Überprüfe das Format der Start- und Endzeit.");
+            throw new InvalidStateException("Ungltiges Zeitformat angegeben.", "Versuche es erneut und korrigiere das Format der Start- und Endzeit.");
         }
 
+    }
+
+    private boolean absenceTimeIsValid(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        if (startDateTime.isBefore(LocalDateTime.now()) || endDateTime.isBefore(LocalDateTime.now())) {
+            return false;
+        }
+        if (startDateTime.isAfter(endDateTime)) {
+            return false;
+        }
+        if (startDateTime.plusMinutes(MINIMUM_ABSENCE_DURATION).isAfter(endDateTime)) {
+            return false;
+        }
+        return true;
     }
 }
