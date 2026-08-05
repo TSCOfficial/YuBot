@@ -4,18 +4,17 @@ import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.feature.Absence;
 import ch.frily.yubot.feature.AbsenceRepository;
 import ch.frily.yubot.feature.DynamicMessageList;
-import ch.frily.yubot.interaction.ArgumentComponent;
-import ch.frily.yubot.interaction.modal.IModal;
 import ch.frily.yubot.interaction.modal.Modal;
-import lombok.Setter;
+import ch.frily.yubot.storage.SessionStorage;
+import ch.frily.yubot.storage.StorageData;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.api.components.checkbox.Checkbox;
 import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import org.jspecify.annotations.NonNull;
 
@@ -35,6 +34,7 @@ public class AbsenceAddModal extends Modal {
 
     private boolean isEditing = false;
     private Absence absence;
+    private Member member;
 
     public void setAbsence(Absence absence) {
         this.isEditing = true;
@@ -42,6 +42,10 @@ public class AbsenceAddModal extends Modal {
         this.addArgument("absence_id", absence.id().toString());
 
         log.info("Modal identification: {}", getFullIdentification());
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
     }
 
     @Override
@@ -58,6 +62,8 @@ public class AbsenceAddModal extends Modal {
 
     @Override
     public List<ModalTopLevelComponent> getComponents() {
+        AbsenceModalDataRecord absenceModalDataRecord = SessionStorage.getInstance().getValue("invalid-absence-clipboard", member, AbsenceModalDataRecord.class);
+
         TextInput.Builder startTime = TextInput.create("start-time", TextInputStyle.SHORT);
         startTime.setRequiredRange(16, 16);
         startTime.setValue(LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
@@ -65,6 +71,10 @@ public class AbsenceAddModal extends Modal {
         if (isEditing) {
             startTime.setValue(absence.fromDateTime().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
         }
+        if (absenceModalDataRecord != null) {
+            startTime.setValue(absenceModalDataRecord.startTime());
+        }
+
 
         TextInput.Builder endTime = TextInput.create("end-time", TextInputStyle.SHORT);
         endTime.setRequiredRange(16, 16);
@@ -73,6 +83,9 @@ public class AbsenceAddModal extends Modal {
         if (isEditing) {
             endTime.setValue(absence.toDateTime().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
         }
+        if (absenceModalDataRecord != null) {
+            endTime.setValue(absenceModalDataRecord.endTime());
+        }
 
         TextInput.Builder reason = TextInput.create("reason", TextInputStyle.PARAGRAPH);
         reason.setRequiredRange(5, 100);
@@ -80,30 +93,37 @@ public class AbsenceAddModal extends Modal {
         if (isEditing) {
             reason.setValue(absence.reason());
         }
+        if (absenceModalDataRecord != null) {
+            reason.setValue(absenceModalDataRecord.reason());
+        }
 
         boolean absenceMessageChecked = false;
         if (isEditing) {
             absenceMessageChecked = absence.absenceMessage();
+        }
+        if (absenceModalDataRecord != null) {
+            absenceMessageChecked = absenceModalDataRecord.sendNotice();
         }
 
         return List.of(
                 Label.of(String.format("Startzeit (%s)", DATE_TIME_FORMAT), startTime.build()),
                 Label.of(String.format("Endzeit (%s)", DATE_TIME_FORMAT), endTime.build()),
                 Label.of("Begründung", reason.build()),
-                Label.of("Anwesenheitsmeldung senden", Checkbox.of("absence-message", absenceMessageChecked)),
+                Label.of("Anwesenheitsmeldung senden", Checkbox.of("absence-notice", absenceMessageChecked)),
                 TextDisplay.of("-# Die Abwesenheitsmeldung wird automatisch versendet, wenn dich jemand während deiner Abwesenheit erwähnt.") // todo replace by delete button if edit, else show this message
         );
     }
 
     @Override
     public void execute(@NonNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException {
+        String startTimeString = event.getValue("start-time").getAsString();
+        String endTimeString = event.getValue("end-time").getAsString();
+        String reason = event.getValue("reason").getAsString();
+        boolean showNotice = event.getValue("absence-notice").getAsBoolean();
+
         try {
-            String startTimeString = event.getValue("start-time").getAsString();
             LocalDateTime startTime = LocalDateTime.parse(startTimeString, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
-            String endTimeString = event.getValue("end-time").getAsString();
             LocalDateTime endTime = LocalDateTime.parse(endTimeString, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
-            String reason = event.getValue("reason").getAsString();
-            boolean showNotice = event.getValue("absence-message").getAsBoolean();
 
             Absence absence = null;
             String responseText = "Deine Abwesenheit wurde erfolgreich angelegt.";
@@ -123,7 +143,9 @@ public class AbsenceAddModal extends Modal {
 
             DynamicMessageList.ABSENCES.update();
         } catch (DateTimeParseException dateTimeParseException) {
-            throw new InvalidStateException("Ungltiges Zeitformat angegeben.");
+            AbsenceModalDataRecord absenceModalDataRecord = new AbsenceModalDataRecord(startTimeString, endTimeString, reason, showNotice);
+            SessionStorage.getInstance().addStorage("invalid-absence-clipboard", event.getMember(), absenceModalDataRecord, 10);
+            throw new InvalidStateException("Ungltiges Zeitformat angegeben.", "Überprüfe das Format der Start- und Endzeit.");
         }
 
     }

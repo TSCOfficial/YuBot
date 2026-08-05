@@ -33,6 +33,7 @@ public class AbsenceEditBtn extends Button {
         Absence absence = AbsenceRepository.getAbsenceById(Integer.parseInt(getArgument(event.getComponentId(), "absence_id")));
         AbsenceAddModal editModal = new AbsenceAddModal();
         editModal.setAbsence(absence);
+        editModal.setMember(event.getMember());
         event.replyModal(editModal.build()).queue();
     }
 }
