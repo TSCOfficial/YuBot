@@ -46,7 +46,9 @@ public class ButtonRegistry {
                 new AbsenceDetailBtn(),
                 new AbsenceEditBtn(),
                 new AbsenceEditOwnBtn(),
-                new PaginationNavBtn()
+                new PaginationNavBtn(),
+                new AbsenceApproveDeleteBtn(),
+                new AbsenceCancelDeleteBtn()
         );
         rawButtons.forEach(btn -> {
             String idOrUrl = btn.getId();

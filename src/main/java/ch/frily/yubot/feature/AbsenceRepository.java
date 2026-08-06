@@ -75,14 +75,16 @@ public class AbsenceRepository {
             String memberId = rs.getString(Table.AbsenceColumn.MEMBER_ID.getColumn());
             LocalDateTime startDateTime = rs.getTimestamp(Table.AbsenceColumn.START_DATETIME.getColumn()).toLocalDateTime();
             LocalDateTime endDateTime = rs.getTimestamp(Table.AbsenceColumn.END_DATETIME.getColumn()).toLocalDateTime();
+            String typeString = rs.getString(Table.AbsenceColumn.TYPE.getColumn());
             String reason = rs.getString(Table.AbsenceColumn.REASON.getColumn());
             boolean sendNotice = rs.getBoolean(Table.AbsenceColumn.SEND_NOTICE.getColumn());
             LocalDateTime createdAt = rs.getTimestamp(Table.AbsenceColumn.CREATED_AT.getColumn()).toLocalDateTime();
             LocalDateTime updatedAt = rs.getTimestamp(Table.AbsenceColumn.UPDATED_AT.getColumn()).toLocalDateTime();
+            AbsenceType absenceType = AbsenceType.valueOf(typeString);
 
             Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
             Member member = guild.getMemberById(memberId);
-            Absence absence = new Absence(id, member, startDateTime, endDateTime, reason, sendNotice, createdAt, updatedAt);
+            Absence absence = new Absence(id, member, startDateTime, endDateTime, absenceType, reason, sendNotice, createdAt, updatedAt);
             absences.add(absence);
         }
         return absences;
@@ -105,14 +107,16 @@ public class AbsenceRepository {
             String memberId = rs.getString(Table.AbsenceColumn.MEMBER_ID.getColumn());
             LocalDateTime startDateTime = rs.getTimestamp(Table.AbsenceColumn.START_DATETIME.getColumn()).toLocalDateTime();
             LocalDateTime endDateTime = rs.getTimestamp(Table.AbsenceColumn.END_DATETIME.getColumn()).toLocalDateTime();
+            String typeString = rs.getString(Table.AbsenceColumn.TYPE.getColumn());
             String reason = rs.getString(Table.AbsenceColumn.REASON.getColumn());
             boolean sendNotice = rs.getBoolean(Table.AbsenceColumn.SEND_NOTICE.getColumn());
             LocalDateTime createdAt = rs.getTimestamp(Table.AbsenceColumn.CREATED_AT.getColumn()).toLocalDateTime();
             LocalDateTime updatedAt = rs.getTimestamp(Table.AbsenceColumn.UPDATED_AT.getColumn()).toLocalDateTime();
+            AbsenceType absenceType = AbsenceType.valueOf(typeString);
 
             Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
             Member member = guild.getMemberById(memberId);
-            Absence absence = new Absence(id, member, startDateTime, endDateTime, reason, sendNotice, createdAt, updatedAt);
+            Absence absence = new Absence(id, member, startDateTime, endDateTime, absenceType, reason, sendNotice, createdAt, updatedAt);
             return absence;
         }
         throw new NullPointerException("Abwesenheit nicht gefunden");
@@ -132,15 +136,16 @@ public class AbsenceRepository {
             String memberId = rs.getString(Table.AbsenceColumn.MEMBER_ID.getColumn());
             LocalDateTime startDateTime = rs.getTimestamp(Table.AbsenceColumn.START_DATETIME.getColumn()).toLocalDateTime();
             LocalDateTime endDateTime = rs.getTimestamp(Table.AbsenceColumn.END_DATETIME.getColumn()).toLocalDateTime();
+            String typeString = rs.getString(Table.AbsenceColumn.TYPE.getColumn());
             String reason = rs.getString(Table.AbsenceColumn.REASON.getColumn());
             boolean sendNotice = rs.getBoolean(Table.AbsenceColumn.SEND_NOTICE.getColumn());
             LocalDateTime createdAt = rs.getTimestamp(Table.AbsenceColumn.CREATED_AT.getColumn()).toLocalDateTime();
             LocalDateTime updatedAt = rs.getTimestamp(Table.AbsenceColumn.UPDATED_AT.getColumn()).toLocalDateTime();
+            AbsenceType absenceType = AbsenceType.valueOf(typeString);
 
             Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
             Member member = guild.getMemberById(memberId);
-            Absence absence = new Absence(id, member, startDateTime, endDateTime, reason, sendNotice, createdAt, updatedAt);
-            log.info("Found absence: " + absence);
+            Absence absence = new Absence(id, member, startDateTime, endDateTime, absenceType, reason, sendNotice, createdAt, updatedAt);
             absences.add(absence);
         }
         return absences;
@@ -157,6 +162,7 @@ public class AbsenceRepository {
         query.insert(Table.AbsenceColumn.MEMBER_ID, absence.member().getId());
         query.insert(Table.AbsenceColumn.START_DATETIME, absence.fromDateTime());
         query.insert(Table.AbsenceColumn.END_DATETIME, absence.toDateTime());
+        query.insert(Table.AbsenceColumn.TYPE, absence.type().name());
         query.insert(Table.AbsenceColumn.REASON, absence.reason());
         query.insert(Table.AbsenceColumn.SEND_NOTICE, absence.absenceMessage());
 
@@ -173,11 +179,19 @@ public class AbsenceRepository {
         DatabaseQuery query = new DatabaseQuery(Table.ABSENCE);
         query.update(Table.AbsenceColumn.START_DATETIME, absence.fromDateTime());
         query.update(Table.AbsenceColumn.END_DATETIME, absence.toDateTime());
+        query.update(Table.AbsenceColumn.TYPE, absence.type().name());
         query.update(Table.AbsenceColumn.REASON, absence.reason());
         query.update(Table.AbsenceColumn.SEND_NOTICE, absence.absenceMessage());
         query.update(Table.AbsenceColumn.UPDATED_AT, LocalDateTime.now());
         query.where(Table.AbsenceColumn.ID, DatabaseQuery.Operator.EQUALS, absence.id());
 
+        query.executeQuery();
+    }
+
+    public static void deleteAbsenceById(int absenceId) throws SQLException, ClassNotFoundException {
+        DatabaseQuery query = new DatabaseQuery(Table.ABSENCE);
+        query.delete();
+        query.where(Table.AbsenceColumn.ID, DatabaseQuery.Operator.EQUALS, absenceId);
         query.executeQuery();
     }
 
@@ -238,6 +252,7 @@ public class AbsenceRepository {
                     absence.member(),
                     fromDateTime,
                     toDateTime,
+                    absence.type(),
                     absence.reason(),
                     absence.absenceMessage(),
                     absence.createdAt(),

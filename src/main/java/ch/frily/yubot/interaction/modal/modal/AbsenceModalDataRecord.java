@@ -1,5 +1,6 @@
 package ch.frily.yubot.interaction.modal.modal;
 
+import ch.frily.yubot.feature.AbsenceType;
 import ch.frily.yubot.storage.SessionStorage;
 
 /**
@@ -9,5 +10,5 @@ import ch.frily.yubot.storage.SessionStorage;
  *     The system retrieves the data when the same user opens the {@link AbsenceAddModal} again to display the previously entered data.
  * </p>
  */
-public record AbsenceModalDataRecord(String startTime, String endTime, String reason, boolean sendNotice) {
+public record AbsenceModalDataRecord(String startTime, String endTime, String type, String reason, boolean sendNotice) {
 }

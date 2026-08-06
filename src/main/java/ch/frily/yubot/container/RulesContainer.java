@@ -56,7 +56,7 @@ public class RulesContainer extends Container {
         this.addTextDisplay("**§2 Rechte und Pflichten einer Mitgliedschaft**");
         this.addTextDisplay("¹ Das Beitreten und Verweilen auf dem Servers steht jeder Person frei zur Wahl, welche 16 oder Älter ist.");
         this.addTextDisplay("""
-                ² Benutzername und Nicknames dürfen §3 nicht verletzen. Nicknames dienen der alltäglichen Identifizierung von Anderen und sollten deswegen mögllichst einzigartig sein. Entspricht ein Nickname nicht den genannten Regeln, wird er vom Serverteam geändert.
+                ² Benutzername und Nicknames dürfen §3 nicht verletzen. Nicknames dienen der alltäglichen Identifizierung von Anderen und sollten deswegen möglichst einzigartig sein. Entspricht ein Nickname nicht den genannten Regeln, wird er vom Serverteam geändert.
                 """
         );
 
@@ -67,6 +67,7 @@ public class RulesContainer extends Container {
                 ¹ Auf diesem Server hat jede Person das Recht, würdevoll und respektvoll behandelt zu werden. Belästigung, Sexismus, Rassismus, Volksverhetzung, Queerfeindlichkeit und Diskriminierung werden nicht toleriert.
                 ² Das Immitieren von Personen auf diesem Server verstößt gegen das Recht des Anderen und wird dementsprechend behandelt.
                 ³ Das Verbreiten von Falschaussagen oder gefälschten Nachrichten fällt ebenfalls unter würde- und respektloses Verhalten.
+                ⁴ Das versenden von Inhalten mit Stroboskopischen, oder sich schnell bewegenden, Inhalten wird nicht toleriert.
                 Die Konsequenzen, die durch einen Verstoß dieses Paragraphen in Kraft treten, können unter §7 nachgelesen werden
                         """
         );

@@ -47,6 +47,10 @@ public abstract class ArgumentComponent {
         arguments.put(key, value);
     }
 
+    public void addArgument(String key, int value){
+        arguments.put(key, String.valueOf(value));
+    }
+
     public boolean hasArgument(String componentId, String key){
         return parseArguments(componentId).containsKey(key);
     }

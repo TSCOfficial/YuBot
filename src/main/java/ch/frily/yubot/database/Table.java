@@ -92,6 +92,7 @@ public enum Table {
         MEMBER_ID("member_id"),
         START_DATETIME("start_datetime"),
         END_DATETIME("end_datetime"),
+        TYPE("type"),
         REASON("reason"),
         SEND_NOTICE("send_notice"),
         CREATED_AT("created_at"),

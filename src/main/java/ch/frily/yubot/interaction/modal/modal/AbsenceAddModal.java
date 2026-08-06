@@ -3,18 +3,25 @@ package ch.frily.yubot.interaction.modal.modal;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.feature.Absence;
 import ch.frily.yubot.feature.AbsenceRepository;
+import ch.frily.yubot.feature.AbsenceType;
 import ch.frily.yubot.feature.DynamicMessageList;
+import ch.frily.yubot.interaction.button.btn.AbsenceApproveDeleteBtn;
+import ch.frily.yubot.interaction.button.btn.AbsenceCancelDeleteBtn;
 import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.storage.SessionStorage;
-import ch.frily.yubot.storage.StorageData;
+import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.checkbox.Checkbox;
 import net.dv8tion.jda.api.components.label.Label;
-import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
+import net.dv8tion.jda.api.components.selections.SelectOption;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import org.jspecify.annotations.NonNull;
 
@@ -78,6 +85,7 @@ public class AbsenceAddModal extends Modal {
         if (absenceModalDataRecord != null) {
             startTime.setValue(absenceModalDataRecord.startTime());
         }
+        Label startTimeLabel = Label.of(String.format("Startzeit (%s)", DATE_TIME_FORMAT), startTime.build());
 
 
         TextInput.Builder endTime = TextInput.create("end-time", TextInputStyle.SHORT);
@@ -90,6 +98,7 @@ public class AbsenceAddModal extends Modal {
         if (absenceModalDataRecord != null) {
             endTime.setValue(absenceModalDataRecord.endTime());
         }
+        Label endTimeLabel = Label.of(String.format("Endzeit (%s)", DATE_TIME_FORMAT), endTime.build());
 
         TextInput.Builder reason = TextInput.create("reason", TextInputStyle.PARAGRAPH);
         reason.setRequiredRange(5, 100);
@@ -100,6 +109,20 @@ public class AbsenceAddModal extends Modal {
         if (absenceModalDataRecord != null) {
             reason.setValue(absenceModalDataRecord.reason());
         }
+        Label reasonLabel = Label.of("Begründung", reason.build());
+
+        StringSelectMenu.Builder absenceType = StringSelectMenu.create("absence-type-select");
+        for (AbsenceType type : AbsenceType.values()) {
+            absenceType.addOption(type.getLabel(), type.name(), type.getDescription(), type.getEmoji());
+        }
+        if (isEditing) {
+            absenceType.setDefaultOptions(SelectOption.of(absence.type().getLabel(), absence.type().name()));
+        }
+        if (absenceModalDataRecord != null) {
+            AbsenceType selectedType = AbsenceType.valueOf(absenceModalDataRecord.type());
+            absenceType.setDefaultOptions(SelectOption.of(selectedType.getLabel(), selectedType.name()));
+        }
+        Label absenceTypeLabel = Label.of("Abwesenheitsart auswählen", absenceType.build());
 
         boolean absenceMessageChecked = false;
         if (isEditing) {
@@ -108,42 +131,69 @@ public class AbsenceAddModal extends Modal {
         if (absenceModalDataRecord != null) {
             absenceMessageChecked = absenceModalDataRecord.sendNotice();
         }
+        Label absenceNoticeLabel = Label.of("Anwesenheitsmeldung senden", Checkbox.of("absence-notice", absenceMessageChecked));
 
+        Label absenceDeleteLabel = Label.of("🗑️ Abwesenheit löschen", Checkbox.of("absence-delete", false));
+
+        if (isEditing) {
+            return List.of(
+                    startTimeLabel,
+                    endTimeLabel,
+                    absenceTypeLabel,
+                    absenceNoticeLabel,
+                    absenceDeleteLabel
+            );
+        };
         return List.of(
-                Label.of(String.format("Startzeit (%s)", DATE_TIME_FORMAT), startTime.build()),
-                Label.of(String.format("Endzeit (%s)", DATE_TIME_FORMAT), endTime.build()),
-                Label.of("Begründung", reason.build()),
-                Label.of("Anwesenheitsmeldung senden", Checkbox.of("absence-notice", absenceMessageChecked)),
-                TextDisplay.of("-# Die Abwesenheitsmeldung wird automatisch versendet, wenn dich jemand während deiner Abwesenheit erwähnt.") // todo replace by delete button if edit, else show this message
+                startTimeLabel,
+                endTimeLabel,
+                absenceTypeLabel,
+                reasonLabel,
+                absenceNoticeLabel
         );
     }
 
     @Override
     public void execute(@NonNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException {
+        int id = Integer.parseInt(getArgument(event.getModalId(), "absence_id"));
+        Absence existingAbsence = AbsenceRepository.getAbsenceById(id);
+
         String startTimeString = event.getValue("start-time").getAsString();
         String endTimeString = event.getValue("end-time").getAsString();
-        String reason = event.getValue("reason").getAsString();
+        String absenceTypeString = event.getValue("absence-type-select").getAsStringList().getFirst();
+        String reason = event.getValue("reason") != null ? event.getValue("reason").getAsString() : existingAbsence.reason();
         boolean showNotice = event.getValue("absence-notice").getAsBoolean();
+        boolean deleteAbsence = event.getValue("absence-delete") != null ? event.getValue("absence-delete").getAsBoolean() : false;
+
+        // Delete Absence option
+        if (deleteAbsence && existingAbsence != null) {
+            String confirmationMsg = deleteConfirmationMessage(existingAbsence);
+            AbsenceApproveDeleteBtn approveBtn = new AbsenceApproveDeleteBtn();
+            approveBtn.addArgument("absence_id", existingAbsence.id());
+            AbsenceCancelDeleteBtn cancelBtn = new AbsenceCancelDeleteBtn();
+            cancelBtn.addArgument("absence_id", existingAbsence.id());
+            event.reply(confirmationMsg).addComponents(ActionRow.of(approveBtn.build(), cancelBtn.build())).setEphemeral(true).queue();
+            return;
+        }
+
         // save data to session storage in case anything goes wrong
-        AbsenceModalDataRecord absenceModalDataRecord = new AbsenceModalDataRecord(startTimeString, endTimeString, reason, showNotice);
+        AbsenceModalDataRecord absenceModalDataRecord = new AbsenceModalDataRecord(startTimeString, endTimeString, absenceTypeString, reason, showNotice);
         SessionStorage.getInstance().addStorage("invalid-absence-clipboard", event.getMember(), absenceModalDataRecord, 10);
 
         try {
             LocalDateTime startTime = LocalDateTime.parse(startTimeString, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
             LocalDateTime endTime = LocalDateTime.parse(endTimeString, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
+            AbsenceType absenceType = AbsenceType.valueOf(absenceTypeString);
 
             validateAbsenceDisplayCap(startTime, endTime);
             absenceTimeIsValid(startTime, endTime);
 
-            Absence absence = null;
             String responseText = "Deine Abwesenheit wurde erfolgreich angelegt.";
             if (hasArgument(event.getModalId(), "absence_id")) {
-                int id = Integer.parseInt(getArgument(event.getModalId(), "absence_id"));
-                Absence existingAbsence = AbsenceRepository.getAbsenceById(id);
-                absence = new Absence(existingAbsence.id(), event.getMember(), startTime, endTime, reason, showNotice, existingAbsence.createdAt(), LocalDateTime.now());
+                absence = new Absence(existingAbsence.id(), event.getMember(), startTime, endTime, absenceType, reason, showNotice, existingAbsence.createdAt(), LocalDateTime.now());
                 responseText = "Deine Abwesenheit wurde erfolgreich aktualisiert.";
             } else {
-                absence = new Absence(null, event.getMember(), startTime, endTime, reason, showNotice, LocalDateTime.now(), LocalDateTime.now());
+                absence = new Absence(null, event.getMember(), startTime, endTime, absenceType, reason, showNotice, LocalDateTime.now(), LocalDateTime.now());
             }
 
             AbsenceRepository.upsertAbsence(absence);
@@ -156,18 +206,30 @@ public class AbsenceAddModal extends Modal {
         } catch (DateTimeParseException dateTimeParseException) {
             throw new InvalidStateException("Ungltiges Zeitformat angegeben.", "Versuche es erneut und korrigiere das Format der Start- und Endzeit.");
         }
+    }
 
+    private String deleteConfirmationMessage(Absence absence) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("### Bestätige die Absenzlöschung").append("\n");
+        sb.append(String.format("> -# **Absenzzeitraum**: <t:%d:F> bis <t:%d:F>", Util.toEpochSeconds(absence.fromDateTime()), Util.toEpochSeconds(absence.toDateTime()))).append("\n");
+        sb.append(String.format("> -# **Absenztyp**: %s", absence.type().getLabel())).append("\n");
+        sb.append(String.format("> -# **Begründung**: %s", absence.reason())).append("\n");
+        sb.append("Bist du dir sicher dass du diese Absenz löschen möchtest?").append("\n");
+        return sb.toString();
     }
 
     private boolean absenceTimeIsValid(LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        if (startDateTime.isBefore(LocalDateTime.now()) || endDateTime.isBefore(LocalDateTime.now())) {
-            return false;
+        if (startDateTime.isBefore(LocalDateTime.now())) {
+            throw new InvalidStateException("Ungültige Zeitangabe.", "Die Startzeit müssen in der Zukunft liegen.");
+        }
+        if (endDateTime.isBefore(LocalDateTime.now())){
+            throw new InvalidStateException("Ungültige Zeitangabe.", "Die Endzeit muss in der Zukunft liegen.");
         }
         if (startDateTime.isAfter(endDateTime)) {
-            return false;
+            throw new InvalidStateException("Ungültige Zeitangabe.", "Die Startzeit muss vor der Endzeit liegen.");
         }
-        if (startDateTime.plusMinutes(MINIMUM_ABSENCE_DURATION).isAfter(endDateTime)) {
-            return false;
+        if (startDateTime.plusMinutes(MINIMUM_ABSENCE_DURATION).isEqual(endDateTime) && startDateTime.plusMinutes(MINIMUM_ABSENCE_DURATION).isAfter(endDateTime)) {
+            throw new InvalidStateException("Ungültige Zeitangabe.", "Die Dauer der Abwesenheit muss mindestens " + MINIMUM_ABSENCE_DURATION / 60 + " Stunden betragen.");
         }
         return true;
     }

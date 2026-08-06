@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class AbsenceDetailContainer extends Container{
 
@@ -20,6 +21,7 @@ public class AbsenceDetailContainer extends Container{
         long toTimestamp = Util.toEpochSeconds(absence.toDateTime());
         this.addFormatedText("## Abwesenheit %s - %s", fromDate, toDate);
         this.addFormatedText("-# %s (%s)", absence.member().getAsMention(), absence.member().getEffectiveName());
+        this.addFormatedText("Typ: %s %s", absence.type().getEmoji().getFormatted(), absence.type().getLabel());
         this.addFormatedText("Begründung: %s", absence.reason());
         this.addFormatedText("Abwesend vom <t:%d:F> bis <t:%d:F>", fromTimestamp, toTimestamp);
 

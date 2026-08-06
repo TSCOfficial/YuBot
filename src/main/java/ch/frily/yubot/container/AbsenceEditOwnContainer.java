@@ -66,11 +66,13 @@ public class AbsenceEditOwnContainer extends PaginationContainer {
         section.addChild(Section.of(btn.build(),
                 TextDisplay.ofFormat("## <t:%d:D> - <t:%d:D>", Util.toEpochSeconds(absence.fromDateTime()), Util.toEpochSeconds(absence.toDateTime())),
                 TextDisplay.ofFormat("""
+                                -# %s %s
                                 "%s"
                                 Abwesenheitsmeldung: %s
                                 -# Erstellt am: <t:%d:F>
                                 %s
                                 """,
+                        absence.type().getEmoji().getFormatted(), absence.type().getLabel(),
                         absence.reason(),
                         absence.absenceMessage() ? "🟢 Aktiv" : "🔴 Deaktiviert",
                         Util.toEpochSeconds(absence.createdAt()),
