@@ -155,8 +155,13 @@ public class AbsenceAddModal extends Modal {
 
     @Override
     public void execute(@NonNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException {
-        int id = Integer.parseInt(getArgument(event.getModalId(), "absence_id"));
-        Absence existingAbsence = AbsenceRepository.getAbsenceById(id);
+        Absence existingAbsence = null;
+        if (hasArgument(event.getModalId(), "absence_id")) {
+            int id = Integer.parseInt(getArgument(event.getModalId(), "absence_id"));
+            existingAbsence = AbsenceRepository.getAbsenceById(id);
+        }
+
+
 
         String startTimeString = event.getValue("start-time").getAsString();
         String endTimeString = event.getValue("end-time").getAsString();
@@ -186,7 +191,7 @@ public class AbsenceAddModal extends Modal {
             AbsenceType absenceType = AbsenceType.valueOf(absenceTypeString);
 
             validateAbsenceDisplayCap(startTime, endTime);
-            absenceTimeIsValid(startTime, endTime);
+            absenceTimeIsValid(event.getMember(), existingAbsence, startTime, endTime);
 
             String responseText = "Deine Abwesenheit wurde erfolgreich angelegt.";
             if (hasArgument(event.getModalId(), "absence_id")) {
@@ -218,9 +223,17 @@ public class AbsenceAddModal extends Modal {
         return sb.toString();
     }
 
-    private boolean absenceTimeIsValid(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    private boolean absenceTimeIsValid(Member member, Absence absence, LocalDateTime startDateTime, LocalDateTime endDateTime) throws SQLException, ClassNotFoundException {
+        List<Absence> otherAbsences = AbsenceRepository.getAbsencesByMemberAndDateSpan(member, startDateTime, endDateTime);
+        if (absence != null){
+            otherAbsences.remove(absence);
+        }
+
+        if (!otherAbsences.isEmpty()) {
+            throw new InvalidStateException("Zeitraum bereits vergeben.", "Es existiert bereits eine Absenz im Zeitraum.");
+        }
         if (startDateTime.isBefore(LocalDateTime.now())) {
-            throw new InvalidStateException("Ungültige Zeitangabe.", "Die Startzeit müssen in der Zukunft liegen.");
+            throw new InvalidStateException("Ungültige Zeitangabe.", "Die Startzeit muss in der Zukunft liegen.");
         }
         if (endDateTime.isBefore(LocalDateTime.now())){
             throw new InvalidStateException("Ungültige Zeitangabe.", "Die Endzeit muss in der Zukunft liegen.");
@@ -228,7 +241,7 @@ public class AbsenceAddModal extends Modal {
         if (startDateTime.isAfter(endDateTime)) {
             throw new InvalidStateException("Ungültige Zeitangabe.", "Die Startzeit muss vor der Endzeit liegen.");
         }
-        if (startDateTime.plusMinutes(MINIMUM_ABSENCE_DURATION).isEqual(endDateTime) && startDateTime.plusMinutes(MINIMUM_ABSENCE_DURATION).isAfter(endDateTime)) {
+        if (startDateTime.plusMinutes(MINIMUM_ABSENCE_DURATION).isAfter(endDateTime)) {
             throw new InvalidStateException("Ungültige Zeitangabe.", "Die Dauer der Abwesenheit muss mindestens " + MINIMUM_ABSENCE_DURATION / 60 + " Stunden betragen.");
         }
         return true;

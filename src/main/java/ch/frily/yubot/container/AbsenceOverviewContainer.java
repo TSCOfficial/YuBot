@@ -66,7 +66,6 @@ public class AbsenceOverviewContainer extends PaginationContainer {
 
             if (dayAbsences.isEmpty()) {
                 addItem(TextDisplay.of("Es sind keine Abwesenheiten vorhanden."));
-                return;
             }
 
             for (Map.Entry<LocalDate, List<Absence>> entry : dayAbsences.entrySet()) {
@@ -124,16 +123,6 @@ public class AbsenceOverviewContainer extends PaginationContainer {
 
             }
         }
-
-// prototype / experiment
-//        String originalAbsenceTime = "";
-//        try {
-//            Absence originalAbsence = AbsenceRepository.getAbsenceById(absence.id());
-//            originalAbsenceTime = String.format("Abwesend vom <t:%d:f> bis <t:%d:f> (%s)",
-//                    toEpochSeconds(originalAbsence.fromDateTime()), toEpochSeconds(originalAbsence.toDateTime()), Util.calcDuration(originalAbsence.fromDateTime(), originalAbsence.toDateTime(), true));
-//        } catch (Exception e) {
-//
-//        }
 
         AbsenceDetailBtn detailBtn = new AbsenceDetailBtn();
         detailBtn.addArgument("absence_id", absence.id().toString());
