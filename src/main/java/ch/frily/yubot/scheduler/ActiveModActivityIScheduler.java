@@ -1,19 +1,16 @@
 package ch.frily.yubot.scheduler;
 
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.feature.*;
 import ch.frily.yubot.storage.SessionStorage;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class ActiveModActivityScheduler implements Scheduler {
+public class ActiveModActivityIScheduler implements IScheduler {
 
     @Override
     public void execute() throws SQLException, ClassNotFoundException {
@@ -33,8 +30,6 @@ public class ActiveModActivityScheduler implements Scheduler {
                 ExceptionHandler.handle(exception);
             }
         });
-
-        SessionStorage.getInstance().clean(); // cleans expired storage elements
     }
 
     @Override

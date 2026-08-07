@@ -227,9 +227,16 @@ public class AbsenceRepository {
         absences.stream()
                 .flatMap(absence -> splitIntoDayAbsences(absence).stream())
                 .sorted(Comparator.comparing(Absence::fromDateTime))
-                .forEach(dayAbsence -> groupedAbsences
-                        .computeIfAbsent(dayAbsence.fromDateTime().toLocalDate(), day -> new ArrayList<>())
-                        .add(dayAbsence));
+                .forEach(dayAbsence -> {
+                    if (!dayAbsence.fromDateTime().toLocalDate().isBefore(LocalDate.now())) { // only add the ones that are today or in the future (-> not before today)
+                        log.info("Adding absence {} to groupedAbsences", dayAbsence);
+                        groupedAbsences
+                                .computeIfAbsent(dayAbsence.fromDateTime().toLocalDate(), day -> new ArrayList<>())
+                                .add(dayAbsence);
+                    } else {
+                        log.info("Skipping absence {} because it is in the past", dayAbsence);
+                    }
+                });
         return groupedAbsences;
     }
 

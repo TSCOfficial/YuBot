@@ -2,12 +2,11 @@ package ch.frily.yubot.scheduler;
 
 
 import java.sql.SQLException;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Run a task in an interval of x units
  */
-public interface Scheduler {
+public interface IScheduler {
     void execute() throws SQLException, ClassNotFoundException;
 
     /**

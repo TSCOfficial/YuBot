@@ -28,18 +28,20 @@ public class SchedulerRegistry {
             new CronParser(CronDefinitionBuilder.instanceDefinitionFor(CronType.UNIX));
 
     public static void registerAll() {
-        List<Scheduler> schedulers = List.of(
-                new ActiveModActivityScheduler()
+        List<IScheduler> schedulers = List.of(
+                new ActiveModActivityIScheduler(),
+                new CleanStorageScheduler(),
+                new AbsenceContainerScheduler()
         );
 
-        for (Scheduler scheduler : schedulers) {
+        for (IScheduler scheduler : schedulers) {
             scheduleNext(scheduler);
             log.info("Registered scheduler: {} ({})",
                     scheduler.getClass().getSimpleName(), scheduler.cronExpression());
         }
     }
 
-    private static void scheduleNext(Scheduler scheduler) {
+    private static void scheduleNext(IScheduler scheduler) {
         Cron cron = PARSER.parse(scheduler.cronExpression());
         ExecutionTime executionTime = ExecutionTime.forCron(cron);
 
