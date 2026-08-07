@@ -10,7 +10,13 @@ import java.util.concurrent.TimeUnit;
 public interface Scheduler {
     void execute() throws SQLException, ClassNotFoundException;
 
-    long interval();
-
-    TimeUnit timeUnit();
+    /**
+     * Define when {@link #execute()} should be executed
+     * <p>
+     *     Minute Hour Day Month Weekday<br>
+     *     Example: 0 * * * * -> Each full hour, at minute 0
+     * </p>
+     * @return
+     */
+    String cronExpression();
 }

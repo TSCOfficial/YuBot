@@ -75,7 +75,7 @@ public class AbsenceAddModal extends Modal {
     public List<ModalTopLevelComponent> getComponents() {
         AbsenceModalDataRecord absenceModalDataRecord = SessionStorage.getInstance().getValue("invalid-absence-clipboard", member, AbsenceModalDataRecord.class);
 
-        TextInput.Builder startTime = TextInput.create("start-time", TextInputStyle.SHORT);
+        TextInput.Builder startTime = TextInput.create("start-time", TextInputStyle.SHORT); // wenn bereits in der vergangenheit, ersetzen mit TextDisplay "Start: xy\n-# Kann nicht geändert werden"
         startTime.setRequiredRange(16, 16);
         startTime.setValue(LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
         startTime.setRequired(true);
@@ -88,7 +88,7 @@ public class AbsenceAddModal extends Modal {
         Label startTimeLabel = Label.of(String.format("Startzeit (%s)", DATE_TIME_FORMAT), startTime.build());
 
 
-        TextInput.Builder endTime = TextInput.create("end-time", TextInputStyle.SHORT);
+        TextInput.Builder endTime = TextInput.create("end-time", TextInputStyle.SHORT); // wenn bereits in der vergangenheit, ersetzen mit TextDisplay "Ende: xy\n-# Kann nicht geändert werden"
         endTime.setRequiredRange(16, 16);
         endTime.setValue(LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
         endTime.setRequired(true);

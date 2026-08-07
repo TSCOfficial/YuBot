@@ -38,12 +38,7 @@ public class ActiveModActivityScheduler implements Scheduler {
     }
 
     @Override
-    public long interval() {
-        return 60;
-    }
-
-    @Override
-    public TimeUnit timeUnit() {
-        return TimeUnit.SECONDS;
+    public String cronExpression() {
+        return "* * * * *";
     }
 }
