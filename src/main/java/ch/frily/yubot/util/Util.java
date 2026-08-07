@@ -3,6 +3,11 @@ package ch.frily.yubot.util;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.utils.concurrent.Task;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -12,6 +17,9 @@ import java.time.temporal.Temporal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Util {
 
@@ -136,4 +144,17 @@ public class Util {
         };
     }
 
+    public static Category resolveCategory(GuildChannel channel) {
+        if (channel instanceof ThreadChannel thread) {
+            GuildChannel threadParent = resolveThreadParent(thread);
+            return resolveCategory(threadParent);
+        } else if (channel instanceof ICategorizableChannel categorizable) {
+            return categorizable.getParentCategory();
+        }
+        return null;
+    }
+
+    public static GuildChannel resolveThreadParent(ThreadChannel thread) {
+        return thread.getParentChannel();
+    }
 }

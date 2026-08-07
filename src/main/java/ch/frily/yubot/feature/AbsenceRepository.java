@@ -151,6 +151,10 @@ public class AbsenceRepository {
         return absences;
     }
 
+    public static List<Absence> getAbsencesByMemberAndDateSpan(Member member, LocalDateTime startDateTimeSearch, LocalDateTime endDateTimeSearch) throws SQLException, ClassNotFoundException {
+        return getAbsencesByDateSpan(startDateTimeSearch, endDateTimeSearch).stream().filter(absence -> absence.member().getId().equals(member.getId())).toList();
+    }
+
     /**
      * Create an absence
      * @param absence

@@ -49,8 +49,6 @@ public class WordChainGame {
             message.getChannel().sendMessage(infoMessage).queue(
                     msg -> msg.delete().queueAfter(DELAY, java.util.concurrent.TimeUnit.SECONDS)
             );
-        } else {
-            log.info("Valid word: {}", message.getContentRaw());
         }
     }
     /**
