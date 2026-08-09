@@ -43,7 +43,11 @@ public class AbsenceDetailBtn extends Button {
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
         Absence absence = AbsenceRepository.getAbsenceById(Integer.parseInt(getArgument(event.getComponentId(), "absence_id")));
-        AbsenceDetailContainer detailContainer = new AbsenceDetailContainer(absence);
-        event.replyComponents(detailContainer.build()).useComponentsV2().setEphemeral(true).queue();
+        if (absence.member() == null) {
+            throw new NullPointerException("Abwesenheit eines ehemaligen Teammitglieds kann nicht angezeigt werden.");
+        }
+        boolean isOwner = event.getMember().getId().equals(absence.member().getId());
+        AbsenceDetailContainer detailContainer = new AbsenceDetailContainer(absence, isOwner);
+        event.replyComponents(detailContainer.build()).useComponentsV2().setAllowedMentions(List.of()).setEphemeral(true).queue();
     }
 }

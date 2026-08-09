@@ -1,5 +1,6 @@
 package ch.frily.yubot.interaction.button.btn;
 
+import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.feature.Absence;
 import ch.frily.yubot.feature.AbsenceRepository;
 import ch.frily.yubot.interaction.button.Button;
@@ -31,9 +32,14 @@ public class AbsenceEditBtn extends Button {
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
         Absence absence = AbsenceRepository.getAbsenceById(Integer.parseInt(getArgument(event.getComponentId(), "absence_id")));
-        AbsenceAddModal editModal = new AbsenceAddModal();
-        editModal.setAbsence(absence);
-        editModal.setMember(event.getMember());
-        event.replyModal(editModal.build()).queue();
+        if (absence.member().getId().equals(event.getMember().getId())) {
+            AbsenceAddModal editModal = new AbsenceAddModal();
+            editModal.setAbsence(absence);
+            editModal.setMember(event.getMember());
+            event.replyModal(editModal.build()).queue();
+        } else {
+            throw new PermissionDeniedException("Du kannst nur deine Abwesenheiten bearbeiten.");
+        }
+
     }
 }
