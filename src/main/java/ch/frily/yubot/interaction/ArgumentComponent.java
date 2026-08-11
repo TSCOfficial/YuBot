@@ -1,5 +1,6 @@
 package ch.frily.yubot.interaction;
 
+import ch.frily.yubot.exception.InvalidStateException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -37,8 +38,8 @@ public abstract class ArgumentComponent {
         id.append("#").append(ThreadLocalRandom.current().nextInt(0, 9999));
 
         if (id.length() > MAX_COMPONENT_ID_LENGTH) {
-            log.warn("Component ID '{}' is {} characters long but discord only allows {}. Shorten the argument keys or values.",
-                    id, id.length(), MAX_COMPONENT_ID_LENGTH);
+            throw new InvalidStateException(String.format("Component ID '%s' is %d characters long but discord only allows %d. Shorten the argument keys or values.",
+                    id, id.length(), MAX_COMPONENT_ID_LENGTH));
         }
         return id.toString();
     };
@@ -48,6 +49,10 @@ public abstract class ArgumentComponent {
     }
 
     public void addArgument(String key, int value){
+        arguments.put(key, String.valueOf(value));
+    }
+
+    public void addArgument(String key, boolean value){
         arguments.put(key, String.valueOf(value));
     }
 

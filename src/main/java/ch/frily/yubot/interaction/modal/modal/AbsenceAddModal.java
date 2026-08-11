@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.components.checkbox.Checkbox;
 import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.entities.Member;
@@ -52,7 +53,9 @@ public class AbsenceAddModal extends Modal {
         this.absence = absence;
         this.addArgument("absence_id", absence.id().toString());
 
-        log.info("Modal identification: {}", getFullIdentification());
+        if (isEditing && absence.fromDateTime().isBefore(LocalDateTime.now())) {
+            addArgument("bypass", true);
+        }
     }
 
     public void setMember(Member member) {
@@ -75,17 +78,32 @@ public class AbsenceAddModal extends Modal {
     public List<ModalTopLevelComponent> getComponents() {
         AbsenceModalDataRecord absenceModalDataRecord = SessionStorage.getInstance().getValue("invalid-absence-clipboard", member, AbsenceModalDataRecord.class);
 
-        TextInput.Builder startTime = TextInput.create("start-time", TextInputStyle.SHORT); // wenn bereits in der vergangenheit, ersetzen mit TextDisplay "Start: xy\n-# Kann nicht geändert werden"
-        startTime.setRequiredRange(16, 16);
-        startTime.setValue(LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
-        startTime.setRequired(true);
-        if (isEditing) {
-            startTime.setValue(absence.fromDateTime().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
+        ModalTopLevelComponent startTimeLabel = null;
+
+        if (isEditing && absence.fromDateTime().isBefore(LocalDateTime.now())){
+            startTimeLabel = TextDisplay.of(String.format("""
+                    Startzeit (%s)
+                    > %s
+                    -# *Vergangene Startzeit kann nicht mehr geändert werden.*
+                    """, DATE_TIME_FORMAT,
+                    absence.fromDateTime().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))));
+        } else {
+            TextInput.Builder startTime = TextInput.create("start-time", TextInputStyle.SHORT); // wenn bereits in der vergangenheit, ersetzen mit TextDisplay "Start: xy\n-# Kann nicht geändert werden"
+            startTime.setRequiredRange(16, 16);
+            startTime.setRequired(true);
+
+            if (absenceModalDataRecord != null) {
+                log.info("from clipboard: {}", absenceModalDataRecord);
+                startTime.setValue(absenceModalDataRecord.startTime());
+            } else if (absence != null && absence.fromDateTime() != null){
+                log.info("from absence: {}", absence);
+                startTime.setValue(absence.fromDateTime().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
+            } else {
+                startTime.setValue(LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
+            }
+            log.info("startTime: {}", startTime.getValue());
+            startTimeLabel = Label.of(String.format("Startzeit (%s)", DATE_TIME_FORMAT), startTime.build());
         }
-        if (absenceModalDataRecord != null) {
-            startTime.setValue(absenceModalDataRecord.startTime());
-        }
-        Label startTimeLabel = Label.of(String.format("Startzeit (%s)", DATE_TIME_FORMAT), startTime.build());
 
 
         TextInput.Builder endTime = TextInput.create("end-time", TextInputStyle.SHORT); // wenn bereits in der vergangenheit, ersetzen mit TextDisplay "Ende: xy\n-# Kann nicht geändert werden"
@@ -160,10 +178,17 @@ public class AbsenceAddModal extends Modal {
             int id = Integer.parseInt(getArgument(event.getModalId(), "absence_id"));
             existingAbsence = AbsenceRepository.getAbsenceById(id);
         }
+        boolean bypassStartTimeCheck = false;
+        if (hasArgument(event.getModalId(), "bypass")) {
+            bypassStartTimeCheck = Boolean.parseBoolean(getArgument(event.getModalId(), "bypass"));
+        }
+        log.info("bypass start time check: {}", bypassStartTimeCheck);
 
 
 
-        String startTimeString = event.getValue("start-time").getAsString();
+        log.info("existing absence from time: {}", existingAbsence != null ? existingAbsence.fromDateTime().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)) : "null");
+        log.info("start-time available: {}", event.getValue("start-time") != null);
+        String startTimeString = event.getValue("start-time") != null ? event.getValue("start-time").getAsString() : existingAbsence.fromDateTime().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
         String endTimeString = event.getValue("end-time").getAsString();
         String absenceTypeString = event.getValue("absence-type-select").getAsStringList().getFirst();
         String reason = event.getValue("reason") != null ? event.getValue("reason").getAsString() : existingAbsence.reason();
@@ -190,9 +215,6 @@ public class AbsenceAddModal extends Modal {
             LocalDateTime endTime = LocalDateTime.parse(endTimeString, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
             AbsenceType absenceType = AbsenceType.valueOf(absenceTypeString);
 
-            validateAbsenceDisplayCap(startTime, endTime);
-            absenceTimeIsValid(event.getMember(), existingAbsence, startTime, endTime);
-
             String responseText = "Deine Abwesenheit wurde erfolgreich angelegt.";
             if (hasArgument(event.getModalId(), "absence_id")) {
                 absence = new Absence(existingAbsence.id(), event.getMember(), startTime, endTime, absenceType, reason, showNotice, existingAbsence.createdAt(), LocalDateTime.now());
@@ -200,6 +222,9 @@ public class AbsenceAddModal extends Modal {
             } else {
                 absence = new Absence(null, event.getMember(), startTime, endTime, absenceType, reason, showNotice, LocalDateTime.now(), LocalDateTime.now());
             }
+
+            validateAbsenceDisplayCap(absence, startTime, endTime);
+            absenceTimeIsValid(event.getMember(), absence, startTime, endTime, bypassStartTimeCheck);
 
             AbsenceRepository.upsertAbsence(absence);
             SessionStorage.getInstance().removeStorage("invalid-absence-clipboard", event.getMember()); // remove after successful upsert
@@ -217,22 +242,23 @@ public class AbsenceAddModal extends Modal {
         StringBuilder sb = new StringBuilder();
         sb.append("### Bestätige die Absenzlöschung").append("\n");
         sb.append(String.format("> -# **Absenzzeitraum**: <t:%d:F> bis <t:%d:F>", Util.toEpochSeconds(absence.fromDateTime()), Util.toEpochSeconds(absence.toDateTime()))).append("\n");
-        sb.append(String.format("> -# **Absenztyp**: %s", absence.type().getLabel())).append("\n");
+        sb.append(String.format("> -# **Absenztyp**: %s %s", absence.type().getEmoji().getFormatted(), absence.type().getLabel())).append("\n");
         sb.append(String.format("> -# **Begründung**: %s", absence.reason())).append("\n");
         sb.append("Bist du dir sicher dass du diese Absenz löschen möchtest?").append("\n");
         return sb.toString();
     }
 
-    private boolean absenceTimeIsValid(Member member, Absence absence, LocalDateTime startDateTime, LocalDateTime endDateTime) throws SQLException, ClassNotFoundException {
-        List<Absence> otherAbsences = AbsenceRepository.getAbsencesByMemberAndDateSpan(member, startDateTime, endDateTime);
-        if (absence != null){
-            otherAbsences.remove(absence);
+    private boolean absenceTimeIsValid(Member member, Absence absenceToValidate, LocalDateTime startDateTime, LocalDateTime endDateTime, boolean bypassStartTimeCheck) throws SQLException, ClassNotFoundException {
+        List<Absence> otherAbsences = new java.util.ArrayList<>(AbsenceRepository.getAbsencesByMemberAndDateSpan(member, startDateTime, endDateTime));
+        if (absenceToValidate != null){
+            otherAbsences.removeIf(currentAbsence -> currentAbsence.id().equals(absenceToValidate.id()));
         }
 
         if (!otherAbsences.isEmpty()) {
             throw new InvalidStateException("Zeitraum bereits vergeben.", "Es existiert bereits eine Absenz im Zeitraum.");
         }
-        if (startDateTime.isBefore(LocalDateTime.now())) {
+        log.info("bypass start time check: {}", bypassStartTimeCheck);
+        if (!bypassStartTimeCheck && startDateTime.isBefore(LocalDateTime.now())) {
             throw new InvalidStateException("Ungültige Zeitangabe.", "Die Startzeit muss in der Zukunft liegen.");
         }
         if (endDateTime.isBefore(LocalDateTime.now())){
@@ -255,7 +281,7 @@ public class AbsenceAddModal extends Modal {
      * @throws ClassNotFoundException
      * @throws InvalidStateException
      */
-    private void validateAbsenceDisplayCap(LocalDateTime startTime, LocalDateTime endTime) throws SQLException, ClassNotFoundException, InvalidStateException {
+    private void validateAbsenceDisplayCap(Absence absenceToValidate, LocalDateTime startTime, LocalDateTime endTime) throws SQLException, ClassNotFoundException, InvalidStateException {
         LocalDate currentDay = startTime.toLocalDate();
         LocalDate lastDay = endTime.toLocalDate();
 
@@ -263,7 +289,9 @@ public class AbsenceAddModal extends Modal {
             LocalDateTime dayStart = currentDay.atStartOfDay();
             LocalDateTime dayEnd = currentDay.atTime(LocalTime.MAX);
 
-            int existingOnThisDay = AbsenceRepository.getAbsencesByDateSpan(dayStart, dayEnd).size();
+            List<Absence> existingAbsences = AbsenceRepository.getAbsencesByDateSpan(dayStart, dayEnd);
+            existingAbsences.removeIf(absence -> absence.id().equals(absenceToValidate.id()));
+            int existingOnThisDay = existingAbsences.size();
 
             log.info("{}: {} / {}", currentDay, existingOnThisDay, MAX_ABSENCES_AT_SAME_TIME);
 
