@@ -6,7 +6,7 @@
 
     <groupId>ch.frily</groupId>
     <artifactId>YuBot</artifactId>
-    <version>1.4.1-beta</version>
+    <version>1.4.1</version>
 
     <properties>
         <maven.compiler.source>23</maven.compiler.source>
