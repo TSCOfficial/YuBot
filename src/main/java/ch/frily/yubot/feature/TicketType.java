@@ -134,10 +134,12 @@ public enum TicketType {
                     Bitte verfasse deine Bewerbung. Für deine Bewerbung ist uns Folgendes wichtig::
                     
                     - Kurze Vorstellung (Name, Alter, Pronomen, ...)
+                    - Dein vollständiger Twitch-Name
                     - Warum möchtest du Teil des Twitch-Moderationsteam werden?
                     - Deine zeitliche Verfügbarkeit
                     - Bisherige Erfahrungen in dem Bereich
                     Du kannst gerne mehr schreiben!
+                    
                     
                     Sobald du deine Bewerbung geschrieben hast, meldet sich die zuständige Person bei dir.
                     """,

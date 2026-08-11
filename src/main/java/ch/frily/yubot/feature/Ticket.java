@@ -300,8 +300,8 @@ public class Ticket {
     }
 
     public void delete() throws SQLException, ClassNotFoundException {
-        this.getChannel().delete().queue();
         TicketRepository.deleteTicket(this);
+        this.getChannel().delete().queue();
     }
 
      // https://github.com/omardiaadev/discord-html-transcript-jda

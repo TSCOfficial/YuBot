@@ -36,7 +36,7 @@ public class TicketManager {
     private static TicketManager instance;
 
     /** Permissions for the ticketowner and supportteam */
-    protected static final List<Permission> USER_PERMISSION = List.of(Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND, Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_ATTACH_FILES);
+    protected static final List<Permission> USER_PERMISSION = List.of(Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND, Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_ATTACH_FILES, Permission.USE_APPLICATION_COMMANDS);
 
     /** Maximum ticket count per Person over all categories */
     private static final int MAX_TICKET_COUNT = 5;
