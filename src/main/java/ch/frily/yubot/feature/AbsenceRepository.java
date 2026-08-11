@@ -221,7 +221,7 @@ public class AbsenceRepository {
      * @param absences The absences to convert - may contain absences spanning multiple days
      * @return The day-absences of each day, sorted by day and by start time within a day
      */
-    private static Map<LocalDate, List<Absence>> groupByDay(List<Absence> absences) {
+    public static Map<LocalDate, List<Absence>> groupByDay(List<Absence> absences) {
         Map<LocalDate, List<Absence>> groupedAbsences = new TreeMap<>();
 
         absences.stream()
@@ -229,12 +229,9 @@ public class AbsenceRepository {
                 .sorted(Comparator.comparing(Absence::fromDateTime))
                 .forEach(dayAbsence -> {
                     if (!dayAbsence.fromDateTime().toLocalDate().isBefore(LocalDate.now())) { // only add the ones that are today or in the future (-> not before today)
-                        log.info("Adding absence {} to groupedAbsences", dayAbsence);
                         groupedAbsences
                                 .computeIfAbsent(dayAbsence.fromDateTime().toLocalDate(), day -> new ArrayList<>())
                                 .add(dayAbsence);
-                    } else {
-                        log.info("Skipping absence {} because it is in the past", dayAbsence);
                     }
                 });
         return groupedAbsences;

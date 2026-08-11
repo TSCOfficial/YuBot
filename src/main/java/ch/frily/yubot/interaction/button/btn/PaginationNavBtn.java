@@ -63,7 +63,7 @@ public class PaginationNavBtn extends Button {
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) {
         String componentId = event.getComponentId();
-        log.debug("Pagination navigation for component ID {}", componentId);
+        log.info("Pagination navigation for component ID {}", componentId);
 
         StaticContainerRegistry registry = StaticContainerRegistry.valueOf(
                 getArgument(componentId, ContainerContext.ARG_IDENTIFIER));

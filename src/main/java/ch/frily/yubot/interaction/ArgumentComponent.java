@@ -34,7 +34,7 @@ public abstract class ArgumentComponent {
                     .reduce((a, b) -> a + "&" + b)
                     .orElse(""));
         }
-        id.append("#").append(ThreadLocalRandom.current().nextInt(1, 100));
+        id.append("#").append(ThreadLocalRandom.current().nextInt(0, 9999));
 
         if (id.length() > MAX_COMPONENT_ID_LENGTH) {
             log.warn("Component ID '{}' is {} characters long but discord only allows {}. Shorten the argument keys or values.",
