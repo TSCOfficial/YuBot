@@ -22,7 +22,7 @@ public class RulesContainer extends Container {
         this.addComponent(MediaGallery.of(MediaGalleryItem.fromFile(
                 FileUpload.fromData(getClass().getResourceAsStream("/img/regelwerk-header.png"), "regelwerk-header.png"))));
         this.addTextDisplay(String.format("## Serverregeln von %s", GUILD.getName()));
-        this.addTextDisplay("-# *Vom 15. Juni 2026 (Stand 11. August 2026)*");
+        this.addTextDisplay("-# *Vom 15. Juni 2026 (Stand 12. August 2026)*");
 
         this.addTextDisplay(String.format("Dies sind die allgemein gültigen Regeln des öffentlichen Community-Servers: \"%s\". Sie sind entsprechend des Reglements verbindlich für alle Mitglieder des Discord-Servers.", GUILD.getName()));
         this.addInvisibleSeparator(Separator.Spacing.LARGE);
@@ -39,9 +39,10 @@ public class RulesContainer extends Container {
                 - §6b Gruppierungen und Zugehörigkeitsmerkmale
                 - §7 Umgang mit Regelbrüchen
                 - §8 Server-Staff
+                - §8a Entscheidungsverfahren
                 - §9 Vergabe und Entzug erweiterter Rechte
                 - §10 Datenschutzgrundverordnung (DSGVO)
-                - §11 Zusäzliche Werke
+                - §11 Zusätzliche Werke
                 """);
 
         this.addSection(Button.link("https://doc.einfachyu.de/share/3od59b6uhi/p/serverregeln-hhcK6YDHIr", "Serverregeln"),
