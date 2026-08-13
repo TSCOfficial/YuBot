@@ -80,9 +80,11 @@ public class Ticket {
     private long welcomeMessageId;
 
     @Getter
+    @Setter
     private int closeRequestCount;
 
     @Getter
+    @Setter
     private boolean isRequestPending;
 
     @Getter
@@ -148,12 +150,22 @@ public class Ticket {
     }
 
     /**
-     * Change the status of this ticket
+     * Sets the status of this ticket
      * @param status
      */
-    public void setStatus(TicketStatus status) throws SQLException, ClassNotFoundException {
+    public void setStatus(TicketStatus status){
         this.status = status;
         channel.getManager().setName(status.getIcon() + this.getNameWithoutStatus()).queue();
+    }
+
+    /**
+     * Sets the status of this ticket and automatically updates the database record
+     * @param status
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
+    public void updateStatus(TicketStatus status) throws SQLException, ClassNotFoundException {
+        setStatus(status);
         TicketRepository.updateTicket(this);
     }
 
@@ -209,7 +221,7 @@ public class Ticket {
      */
     public void rejectCloseRequest(IReplyCallback event) throws PermissionDeniedException, SQLException, ClassNotFoundException {
         if (this.isOwner(event.getMember())) {
-            this.setPendingRequest(false);
+            this.updateRequestStatus(false);
         } else {
             throw new PermissionDeniedException(String.format("Nur der/die Ticketinhaber\\*in %s kann dies machen!", owner.getAsMention()));
         }
@@ -233,7 +245,7 @@ public class Ticket {
      * Set the pending request flag
      * @param state
      */
-    public void setPendingRequest(boolean state) throws SQLException, ClassNotFoundException {
+    public void updateRequestStatus(boolean state) throws SQLException, ClassNotFoundException {
         isRequestPending = state;
         TicketRepository.updateTicket(this);
     }
@@ -242,7 +254,7 @@ public class Ticket {
      * Set the close request count
      * @param count
      */
-    public void setCloseRequestCount(int count) throws SQLException, ClassNotFoundException {
+    public void updateCloseRequestCount(int count) throws SQLException, ClassNotFoundException {
         closeRequestCount = count;
         TicketRepository.updateTicket(this);
     }
@@ -282,8 +294,8 @@ public class Ticket {
             throw new PermissionDeniedException("Nur Teammitglieder oder der/die Ticketinhaber\\*in können Tickets schliessen.");
         }
 
-        setPendingRequest(false);
-        setStatus(TicketStatus.CLOSED);
+        updateRequestStatus(false);
+        updateStatus(TicketStatus.CLOSED);
 
         channel.getMemberPermissionOverrides().forEach(memberOverride -> {
             memberOverride.delete().queue();
@@ -342,7 +354,7 @@ public class Ticket {
         if (assignee == null && this.isNewTicket() && !isOwner(member)){
             this.assignee = member;
 
-            this.setStatus(TicketStatus.CLAIMED);
+            this.updateStatus(TicketStatus.CLAIMED);
             this.updateChannelTopic();
 
             TicketRepository.updateTicket(this);
@@ -355,7 +367,7 @@ public class Ticket {
         }
 
         if (Util.isTeamMember(event.getMember())) {
-            setStatus(TicketStatus.CLAIMED);
+            updateStatus(TicketStatus.CLAIMED);
 
             channel.getManager().putPermissionOverride(owner, USER_PERMISSION, null).queue();
 
@@ -463,7 +475,7 @@ public class Ticket {
      */
     public void sendReminder() {
         StringBuilder sb = new StringBuilder();
-        sb.append(owner.getAsMention()).append("\n");
+        //sb.append(owner.getAsMention()).append("\n"); // todo revoke comment. temporarily due to system issue
         sb.append(type.getEmbedDescription());
         channel.sendMessage(sb.toString()).queue();
     }

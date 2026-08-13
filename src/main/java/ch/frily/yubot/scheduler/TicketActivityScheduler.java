@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 /**
@@ -26,16 +27,19 @@ public class TicketActivityScheduler implements IScheduler{
                 return false;
             }
             if (ticket.isReminderSent()) {
+                log.info(String.valueOf(ticket.getChannel().getTimeCreated().atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime()));
+                log.info(String.valueOf(ticket.getLastActivityAt()));
                 log.info("Would have been sen, but reminder already sent for ticket {}", ticket.getId());
                 return false;
             }
             return true;
         }).toList();
+        log.info("Found {} outdated tickets", outdatedTickets.size());
         outdatedTickets.forEach(Ticket::sendReminder);
     }
 
     @Override
     public String cronExpression() {
-        return "41 * * * *";
+        return "23 * * * *";
     }
 }

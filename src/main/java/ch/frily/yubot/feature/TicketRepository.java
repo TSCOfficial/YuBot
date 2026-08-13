@@ -5,6 +5,7 @@ import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
@@ -15,6 +16,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 public class TicketRepository {
 
     /**
@@ -42,6 +44,7 @@ public class TicketRepository {
         String statusName = resultSet.getString(Table.TicketColumn.STATUS.getColumn());
         Timestamp updatedAt = resultSet.getTimestamp(Table.TicketColumn.UPDATED_AT.getColumn());
         boolean isReminderSent = resultSet.getBoolean(Table.TicketColumn.IS_REMINDER_SENT.getColumn());
+        log.info("Ticket reminder status: {}", isReminderSent);
 
         Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
 
@@ -54,7 +57,7 @@ public class TicketRepository {
         ticket.setAssignee(guild.getMemberById(assigneeId));
         ticket.setChannel(guild.getTextChannelById(channelId));
         ticket.setLastActivityAt(lastActivityAt.toLocalDateTime());
-        ticket.setPendingRequest(isRequestPending);
+        ticket.setRequestPending(isRequestPending);
         ticket.setCloseRequestCount(closeRequestCount);
         ticket.setStatus(status);
         ticket.setUpdatedAt(updatedAt.toLocalDateTime());
@@ -101,7 +104,7 @@ public class TicketRepository {
             ticket.setAssignee(guild.getMemberById(assigneeId));
             ticket.setChannel(guild.getTextChannelById(channelId));
             ticket.setLastActivityAt(lastActivityAt.toLocalDateTime());
-            ticket.setPendingRequest(isRequestPending);
+            ticket.setRequestPending(isRequestPending);
             ticket.setCloseRequestCount(closeRequestCount);
             ticket.setStatus(status);
             ticket.setReminderSent(isReminderSent);
@@ -114,7 +117,9 @@ public class TicketRepository {
 
     public static List<Ticket> getTickets() throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET);
+        query.select();
         ResultSet resultSet = query.executeDataQuery();
+        log.info("selected tickets");
 
         List<Ticket> tickets = new java.util.ArrayList<>();
         while (resultSet.next()) {
@@ -138,11 +143,10 @@ public class TicketRepository {
             ticket.setAssignee(guild.getMemberById(assigneeId));
             ticket.setChannel(guild.getTextChannelById(channelId));
             ticket.setLastActivityAt(lastActivityAt.toLocalDateTime());
-            ticket.setPendingRequest(isRequestPending);
+            ticket.setRequestPending(isRequestPending);
             ticket.setCloseRequestCount(closeRequestCount);
             ticket.setStatus(status);
             ticket.setReminderSent(isReminderSent);
-
             ticket.setWelcomeMessageId(welcomeMessageId);
             tickets.add(ticket);
         }
@@ -163,6 +167,7 @@ public class TicketRepository {
 
     public static void updateTicket(Ticket ticket) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET);
+        log.info("Updating ticket with ID: {}, reminder state: {}", ticket.getId(), ticket.isReminderSent());
 
         if (ticket.getAssignee() != null) {
             query.update(Table.TicketColumn.ASSIGNEE_ID, ticket.getAssignee().getIdLong());

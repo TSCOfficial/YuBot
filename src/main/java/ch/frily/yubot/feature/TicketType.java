@@ -131,7 +131,7 @@ public enum TicketType {
             "\uD83C\uDF9E\uFE0F Twitch-Moderation (Team-extern)",
             "Bewerbung Twitch-Moderation",
             """
-                    Bitte verfasse deine Bewerbung. Für deine Bewerbung ist uns Folgendes wichtig::
+                    Bitte verfasse deine Bewerbung. Für deine Bewerbung ist uns Folgendes wichtig:
                     
                     - Kurze Vorstellung (Name, Alter, Pronomen, ...)
                     - Dein vollständiger Twitch-Name
