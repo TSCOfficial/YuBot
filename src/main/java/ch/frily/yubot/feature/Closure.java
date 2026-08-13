@@ -67,12 +67,13 @@ public class Closure {
     public void triggerUpdate() throws SQLException, ClassNotFoundException, IOException {
         List<Member> activeMods = getActiveMods();
 
-        boolean isOpen = !activeMods.isEmpty();
+        // Whether the server is open or not
+        boolean serverIsOpen = !activeMods.isEmpty();
 
         syncDatabaseMods();
 
-        toggleCommunityPermission(isOpen);
-        toggleServerClosedInfoChannelPermissions(isOpen);
+        toggleCommunityPermission(serverIsOpen);
+        toggleServerClosedInfoChannelPermissions(serverIsOpen);
 
         Role everyoneRole = EnvResolver.getRoleById(EnvKey.ROLE_EVERYONE);
         TextChannel logChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_CLOSURELOGS);
@@ -80,7 +81,7 @@ public class Closure {
         TextChannel lobbyChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_LOBBY);
 
         // Opening the server
-        if (isOpen && !everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL)) {
+        if (serverIsOpen && !everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL)) {
             DynamicMessageList.TICKET_PANEL.update();
             Role mentionRole = EnvResolver.getRoleById(EnvKey.ROLE_EROEFFNUNGSPING);
             lobbyChannel.sendMessage(String.format("%s, es ist Zeit zu quatschen ✨", mentionRole.getAsMention())).queue();
@@ -90,7 +91,7 @@ public class Closure {
             guild.getManager().setBanner(Icon.from(getClass().getResourceAsStream("/icon/server-banner.png"))).queue();
         }
         // Closing the server
-        if (!isOpen && everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL)) {
+        if (!serverIsOpen && everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL)) {
             DynamicMessageList.TICKET_PANEL.update();
             logChannel.sendMessageEmbeds(new ClosureLogEmbed(false).build()).queue();
             lobbyChannel.sendMessage(String.format("""
@@ -105,16 +106,17 @@ public class Closure {
 
     /**
      * Toggle the permissions of the "server-geschlossen" channel
-     * @param isOpen True if the channel should be open
+     * @param serverIsOpen True if the server is open, false if it should be closed
      */
-    private void toggleServerClosedInfoChannelPermissions(boolean isOpen) {
+    private void toggleServerClosedInfoChannelPermissions(boolean serverIsOpen) {
         Role everyoneRole = EnvResolver.getRoleById(EnvKey.ROLE_EVERYONE);
         TextChannel serverClosedChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_SERVERGESCHLOSSEN);
 
         List<Permission> allowPerms = new ArrayList<>();
         List<Permission> denyPerms = new ArrayList<>();
 
-        if (isOpen) {
+        denyPerms.add(Permission.MESSAGE_SEND);
+        if (serverIsOpen) {
             denyPerms.add(Permission.VIEW_CHANNEL);
         } else {
             allowPerms.add(Permission.VIEW_CHANNEL);
@@ -125,12 +127,12 @@ public class Closure {
 
     /**
      * Toggle the @everyone-holders category permissions - without progress
-     * @param isOpen True if the categories should be open, false if they should be closed
+     * @param serverIsOpen True if the server should be open, false if they should be closed
      */
-    private void toggleCommunityPermission(boolean isOpen) {
+    private void toggleCommunityPermission(boolean serverIsOpen) {
         Role everyoneRole = EnvResolver.getRoleById(EnvKey.ROLE_EVERYONE);
 
-        if (isOpen) {
+        if (serverIsOpen) {
             everyoneRole.getManager().givePermissions(PERMISSIONS).queue();
         } else {
             everyoneRole.getManager().revokePermissions(PERMISSIONS).queue();
