@@ -14,12 +14,11 @@ import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Member;
 
-import java.awt.*;
-import java.time.Month;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Slf4j
 public class ActiveModStatisticDetailContainer extends Container {
@@ -64,17 +63,17 @@ public class ActiveModStatisticDetailContainer extends Container {
                 int thisMonthsTotalActiveTime = thisMonthsActiveModTrackings.stream().mapToInt(ActiveModTracking::activeTime).sum();
 
                 String differenceLastMonth = "";
-                Month month = activeModTracking.month().getMonth();
-                ActiveModTracking lastMonthTracking = activeModTrackings.stream().filter(tracking -> tracking.month().getMonth().equals(month.minus(1))).findFirst().orElse(null);
+                YearMonth lastMonth = activeModTracking.month().minusMonths(1);
+                ActiveModTracking lastMonthTracking = activeModTrackings.stream()
+                        .filter(tracking -> tracking.month().equals(lastMonth))
+                        .findFirst()
+                        .orElse(null);
                 if (lastMonthTracking != null) {
-                    log.info("last month: {}, active time: {}", month.minus(1), lastMonthTracking.activeTime());
-                    int difference = activeModTracking.activeTime() - lastMonthTracking.activeTime();
-                    log.info("difference: {}", difference);
-                    if (difference > 0) {
-                        differenceLastMonth = String.format("Vergleich zum %s: +%s", Util.translateMonth(month).toLowerCase(), Util.calcDuration(difference));
-                    } else {
-                        differenceLastMonth = String.format("Vergleich zum %s: %s", Util.translateMonth(month).toLowerCase(), Util.calcDuration(difference));
-                    }
+                    String tendency = ActiveModStatisticContainer.calculateTendency(
+                            activeModTracking.activeTime(), lastMonthTracking.activeTime(),
+                            activeModTracking.month(), LocalDate.now());
+                    differenceLastMonth = String.format("Vergleich zum %s: %s",
+                            Util.translateMonth(lastMonthTracking.month().getMonth()).toLowerCase(), tendency);
                 }
 
 
@@ -121,4 +120,5 @@ public class ActiveModStatisticDetailContainer extends Container {
                 )
         );
     }
+
 }

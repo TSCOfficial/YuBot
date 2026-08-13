@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.entities.Member;
 
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.*;
 import java.util.List;
@@ -62,12 +63,8 @@ public class ActiveModStatisticContainer extends Container {
 
         String tendency = "";
         if (currentMonthTracking != null && lastMonthTracking != null) {
-            int difference = currentMonthTracking.activeTime() - lastMonthTracking.activeTime();
-            if (difference > 0) {
-                tendency = "📈";
-            } else if (difference < 0){
-                tendency = "📉";
-            }
+            tendency = calculateTendency(currentMonthTracking.activeTime(), lastMonthTracking.activeTime(),
+                    currentMonthTracking.month(), LocalDate.now());
         }
 
         String youTag = member == initiator ? "*(Du)*" : "";
@@ -86,5 +83,26 @@ public class ActiveModStatisticContainer extends Container {
         );
     }
 
+    static String calculateTendency(int currentMonthMinutes, int lastMonthMinutes, YearMonth currentMonth, LocalDate today) {
+        if (lastMonthMinutes == 0) {
+            return currentMonthMinutes == 0 ? "➡️ 0%" : "📈 Neu";
+        }
+
+        int currentMonthDays = currentMonth.equals(YearMonth.from(today))
+                ? today.getDayOfMonth()
+                : currentMonth.lengthOfMonth();
+        int lastMonthDays = currentMonth.minusMonths(1).lengthOfMonth();
+        double relativeChange = ((double) currentMonthMinutes / currentMonthDays)
+                / ((double) lastMonthMinutes / lastMonthDays) - 1;
+        long percentage = Math.round(relativeChange * 100);
+
+        if (percentage > 0) {
+            return String.format("📈 +%d%%", percentage);
+        }
+        if (percentage < 0) {
+            return String.format("📉 %d%%", percentage);
+        }
+        return "➡️ 0%";
+    }
 
 }
