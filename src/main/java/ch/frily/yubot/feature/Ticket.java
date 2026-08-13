@@ -46,6 +46,10 @@ public class Ticket {
     // minimal inactivity of the ticket-owner till ticket can be force-closed [in days]
     private static final int MIN_INACTIVITY_DURATION = 3;
 
+    // The maximal duration that a ticket-owner can go without sending the first message
+    @Getter
+    private static final int MAX_OWNER_NOREPLY_DURATION = 36;
+
 
     // Person who opened the Ticket
     @Getter
@@ -88,6 +92,11 @@ public class Ticket {
     @Setter
     private LocalDateTime updatedAt = LocalDateTime.now();
 
+    /** True if the reminder was already sent */
+    @Getter
+    @Setter
+    private boolean isReminderSent;
+
     private static final List<Role> ALLOW_DIRECT_FORCECLOSE_ROLES = Stream.of(
             EnvKey.ROLE_SERVERLEITUNG,
             EnvKey.ROLE_MODLEITUNG
@@ -105,6 +114,7 @@ public class Ticket {
         this.type = type;
         this.lastActivityAt = LocalDateTime.now();
         this.status = TicketStatus.NEW;
+        this.isReminderSent = false;
     }
 
     /**
@@ -383,7 +393,7 @@ public class Ticket {
         toggleAdditionalMember(initiator, member, false);
     }
 
-    public void toggleAdditionalMember(Member initiator, Member member, boolean addMember) throws PermissionDeniedException, InvalidStateException {
+    private void toggleAdditionalMember(Member initiator, Member member, boolean addMember) throws PermissionDeniedException, InvalidStateException {
         if (!isOwner(initiator) && Util.isTeamMember(initiator)){
             if (status != TicketStatus.CLOSED) {
 
@@ -446,5 +456,15 @@ public class Ticket {
            topic.append(" | Ansprechperson: ").append(assignee.getEffectiveName());
         }
         channel.getManager().setTopic(topic.toString()).queue();
+    }
+
+    /**
+     * Sends a reminder to the ticket when the owner never sent a message
+     */
+    public void sendReminder() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(owner.getAsMention()).append("\n");
+        sb.append(type.getEmbedDescription());
+        channel.sendMessage(sb.toString()).queue();
     }
 }

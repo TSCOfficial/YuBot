@@ -36,7 +36,8 @@ public enum Table {
         IS_REQUEST_PENDING("is_request_pending"),
         CLOSE_REQUEST_COUNT("close_request_count"),
         STATUS("status"),
-        UPDATED_AT("updated_at");
+        UPDATED_AT("updated_at"),
+        IS_REMINDER_SENT("is_reminder_sent");
         private final String column; // todo define second field: datatype, so that building an object can be automatized over any table
     }
 

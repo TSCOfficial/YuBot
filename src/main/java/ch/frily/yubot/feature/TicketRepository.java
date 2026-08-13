@@ -41,6 +41,7 @@ public class TicketRepository {
         int closeRequestCount = resultSet.getInt(Table.TicketColumn.CLOSE_REQUEST_COUNT.getColumn());
         String statusName = resultSet.getString(Table.TicketColumn.STATUS.getColumn());
         Timestamp updatedAt = resultSet.getTimestamp(Table.TicketColumn.UPDATED_AT.getColumn());
+        boolean isReminderSent = resultSet.getBoolean(Table.TicketColumn.IS_REMINDER_SENT.getColumn());
 
         Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
 
@@ -57,6 +58,7 @@ public class TicketRepository {
         ticket.setCloseRequestCount(closeRequestCount);
         ticket.setStatus(status);
         ticket.setUpdatedAt(updatedAt.toLocalDateTime());
+        ticket.setReminderSent(isReminderSent);
 
         ticket.setWelcomeMessageId(welcomeMessageId);
         return ticket;
@@ -86,19 +88,60 @@ public class TicketRepository {
             long welcomeMessageId = resultSet.getLong(Table.TicketColumn.WELCOME_MESSAGE_ID.getColumn());
             boolean isRequestPending = resultSet.getBoolean(Table.TicketColumn.IS_REQUEST_PENDING.getColumn());
             int closeRequestCount = resultSet.getInt(Table.TicketColumn.CLOSE_REQUEST_COUNT.getColumn());
+            boolean isReminderSent = resultSet.getBoolean(Table.TicketColumn.IS_REMINDER_SENT.getColumn());
 
             TicketType type = TicketType.valueOf(typeName);
             TicketStatus status = TicketStatus.valueOf(resultSet.getString(Table.TicketColumn.STATUS.getColumn()));
 
             Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
 
-            Ticket ticket = new Ticket(null, type);
+            Member owner = guild.getMemberById(user.getIdLong());
+
+            Ticket ticket = new Ticket(owner, type);
             ticket.setAssignee(guild.getMemberById(assigneeId));
             ticket.setChannel(guild.getTextChannelById(channelId));
             ticket.setLastActivityAt(lastActivityAt.toLocalDateTime());
             ticket.setPendingRequest(isRequestPending);
             ticket.setCloseRequestCount(closeRequestCount);
             ticket.setStatus(status);
+            ticket.setReminderSent(isReminderSent);
+
+            ticket.setWelcomeMessageId(welcomeMessageId);
+            tickets.add(ticket);
+        }
+        return tickets;
+    }
+
+    public static List<Ticket> getTickets() throws SQLException, ClassNotFoundException {
+        DatabaseQuery query = new DatabaseQuery(Table.TICKET);
+        ResultSet resultSet = query.executeDataQuery();
+
+        List<Ticket> tickets = new java.util.ArrayList<>();
+        while (resultSet.next()) {
+            long ownerId = resultSet.getLong(Table.TicketColumn.OWNER_ID.getColumn());
+            long assigneeId = resultSet.getLong(Table.TicketColumn.ASSIGNEE_ID.getColumn());
+            long channelId = resultSet.getLong(Table.TicketColumn.CHANNEL_ID.getColumn());
+            String typeName = resultSet.getString(Table.TicketColumn.TYPE.getColumn());
+            Timestamp lastActivityAt = resultSet.getTimestamp(Table.TicketColumn.LAST_ACTIVITY_AT.getColumn());
+            long welcomeMessageId = resultSet.getLong(Table.TicketColumn.WELCOME_MESSAGE_ID.getColumn());
+            boolean isRequestPending = resultSet.getBoolean(Table.TicketColumn.IS_REQUEST_PENDING.getColumn());
+            int closeRequestCount = resultSet.getInt(Table.TicketColumn.CLOSE_REQUEST_COUNT.getColumn());
+            boolean isReminderSent = resultSet.getBoolean(Table.TicketColumn.IS_REMINDER_SENT.getColumn());
+
+            TicketType type = TicketType.valueOf(typeName);
+            TicketStatus status = TicketStatus.valueOf(resultSet.getString(Table.TicketColumn.STATUS.getColumn()));
+
+            Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+            Member owner = guild.getMemberById(ownerId);
+
+            Ticket ticket = new Ticket(owner, type);
+            ticket.setAssignee(guild.getMemberById(assigneeId));
+            ticket.setChannel(guild.getTextChannelById(channelId));
+            ticket.setLastActivityAt(lastActivityAt.toLocalDateTime());
+            ticket.setPendingRequest(isRequestPending);
+            ticket.setCloseRequestCount(closeRequestCount);
+            ticket.setStatus(status);
+            ticket.setReminderSent(isReminderSent);
 
             ticket.setWelcomeMessageId(welcomeMessageId);
             tickets.add(ticket);
@@ -114,6 +157,7 @@ public class TicketRepository {
         query.insert(Table.TicketColumn.WELCOME_MESSAGE_ID, ticket.getWelcomeMessageId());
         query.insert(Table.TicketColumn.LAST_ACTIVITY_AT, ticket.getLastActivityAt());
         query.insert(Table.TicketColumn.UPDATED_AT, ticket.getUpdatedAt());
+        query.insert(Table.TicketColumn.IS_REMINDER_SENT, ticket.isReminderSent());
         query.executeQuery();
     }
 
@@ -128,6 +172,7 @@ public class TicketRepository {
         query.update(Table.TicketColumn.CLOSE_REQUEST_COUNT, ticket.getCloseRequestCount());
         query.update(Table.TicketColumn.STATUS, ticket.getStatus().name());
         query.update(Table.TicketColumn.UPDATED_AT, ticket.getUpdatedAt());
+        query.update(Table.TicketColumn.IS_REMINDER_SENT, ticket.isReminderSent());
         query.where(Table.TicketColumn.CHANNEL_ID, DatabaseQuery.Operator.EQUALS, ticket.getId());
         query.executeQuery();
     }

@@ -31,7 +31,8 @@ public class SchedulerRegistry {
         List<IScheduler> schedulers = List.of(
                 new ActiveModActivityIScheduler(),
                 new CleanStorageScheduler(),
-                new AbsenceContainerScheduler()
+                new AbsenceContainerScheduler(),
+                new TicketActivityScheduler()
         );
 
         for (IScheduler scheduler : schedulers) {
