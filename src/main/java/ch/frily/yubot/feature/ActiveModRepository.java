@@ -96,7 +96,7 @@ public class ActiveModRepository {
         return new ActiveMod(member, lastActivityAt, activityRequestedAtTimestamp == null ? null : activityRequestedAtTimestamp.toLocalDateTime(), activityRequestMessageId, requestedAttentionMessageId);
     }
 
-    public static List<ActiveMod> getModeratorsByRequestedAttentionMessageId() throws SQLException, ClassNotFoundException {
+    public static List<ActiveMod> getModeratorsWithRequestedAttentionMessageId() throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD);
         query.where(Table.ActiveModColumn.REQUESTED_ATTENTION_MESSAGE_ID, DatabaseQuery.Operator.NOT_EQUALS, 0L);
         query.select();

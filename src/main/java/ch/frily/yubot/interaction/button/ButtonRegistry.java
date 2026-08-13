@@ -50,7 +50,9 @@ public class ButtonRegistry {
                 new AbsenceApproveDeleteBtn(),
                 new AbsenceCancelDeleteBtn(),
                 new TicketConfirmOpenBtn(),
-                new TicketCancelOpenBtn()
+                new TicketCancelOpenBtn(),
+                new ActiveModApproveOptOutBtn(),
+                new ActiveModCancelOptOutBtn()
         );
         rawButtons.forEach(btn -> {
             String idOrUrl = btn.getId();

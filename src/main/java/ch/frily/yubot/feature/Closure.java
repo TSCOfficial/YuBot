@@ -82,7 +82,6 @@ public class Closure {
 
         // Opening the server
         if (serverIsOpen && !everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL)) {
-            DynamicMessageList.TICKET_PANEL.update();
             Role mentionRole = EnvResolver.getRoleById(EnvKey.ROLE_EROEFFNUNGSPING);
             lobbyChannel.sendMessage(String.format("%s, es ist Zeit zu quatschen ✨", mentionRole.getAsMention())).queue();
 
@@ -92,7 +91,6 @@ public class Closure {
         }
         // Closing the server
         if (!serverIsOpen && everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL)) {
-            DynamicMessageList.TICKET_PANEL.update();
             logChannel.sendMessageEmbeds(new ClosureLogEmbed(false).build()).queue();
             lobbyChannel.sendMessage(String.format("""
                     ## %s
@@ -102,6 +100,7 @@ public class Closure {
             guild.getManager().setIcon(Icon.from(getClass().getResourceAsStream("/icon/server-icon-closed.png"))).queue();
             guild.getManager().setBanner(Icon.from(getClass().getResourceAsStream("/icon/server-banner-closed.png"))).queue();
         }
+        DynamicMessageList.TICKET_PANEL.update();
     }
 
     /**
@@ -213,6 +212,12 @@ public class Closure {
         return value.get();
     }
 
+    /**
+     * When an activemod proves they're active
+     * @param member
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
     public static void handleModActivity(Member member) throws SQLException, ClassNotFoundException {
         ActiveMod activeMod = ActiveModRepository.getModerator(member);
         if (activeMod.activityRequestMessageId() != 0) { // automatically accept an active activity-prove-request
@@ -238,7 +243,7 @@ public class Closure {
                     .addEmbeds(new ClosureActivityRequestEmbed(moderator).build())
                     .setComponents(actionrow)
                     .queue(ThrowingConsumer.wrap(null, message -> {
-                        ActiveMod updatedActiveMod = new ActiveMod(moderator.member(), moderator.lastActivityAt(), LocalDateTime.now(), message.getIdLong(), moderator.activityRequestMessageId());
+                        ActiveMod updatedActiveMod = new ActiveMod(moderator.member(), moderator.lastActivityAt(), LocalDateTime.now(), message.getIdLong(), moderator.requestedAttentionMessageId());
                         ActiveModRepository.updateModerator(updatedActiveMod);
                     }
                     ));
@@ -283,14 +288,18 @@ public class Closure {
                 ).setComponents(ActionRow.of(new DeleteActivityRequestMsgBtn().build())).setEmbeds().queue();
             });
 
+            log.info("active mod size: {}", getActiveMods().size());
             guild.removeRoleFromMember(moderator.member(), EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD)).queue();
 
+            log.info("active mod size after removing: {}", getActiveMods().size());
             // Send close message in modchat when no other mods are active
             if (getActiveMods().isEmpty()) {
+                log.info("requested attention message: {}", moderator.requestedAttentionMessageId());
                 requestAttentionMessageIgnored(moderator.requestedAttentionMessageId());
             }
 
-            ActiveModTrackingRepository.incrementTotalActivityRequestCount(moderator.member());
+            ActiveModTrackingRepository.incrementMissedActivityRequestCount(moderator.member());
+
         }
     }
 
@@ -298,13 +307,12 @@ public class Closure {
      * If someone gave their attention (opt-in, accepted activity-prove-request, sent message) delete the message
      */
     public static void deleteRequestedAttentionMessages() throws SQLException, ClassNotFoundException {
-        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
-        List<ActiveMod> activeMods = ActiveModRepository.getModeratorsByRequestedAttentionMessageId();
+        List<ActiveMod> activeMods = ActiveModRepository.getModeratorsWithRequestedAttentionMessageId();
+        log.info("active mods at request attention: {}", activeMods);
         activeMods.forEach(activeMod -> {
-            TextChannel channel = guild.getTextChannelById(1516042711273046087L);
-            channel.retrieveMessageById(activeMod.requestedAttentionMessageId()).queue(message -> {
-                message.delete().queue();
-            });
+            TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
+            log.info("deleting message: requested attention message: {}", activeMod.requestedAttentionMessageId());
+            channel.deleteMessageById(activeMod.requestedAttentionMessageId()).queue();
         });
     }
 
@@ -312,9 +320,11 @@ public class Closure {
      * If no one gave their attention (opt-in, accepted activity-prove-request, sent message) delete the message and close the server
      */
     public static void requestAttentionMessageIgnored(long messageId) {
+        log.info("ignoring message: requested attention message: {}", messageId);
         Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
         TextChannel channel = guild.getTextChannelById(1516042711273046087L);
         channel.retrieveMessageById(messageId).queue(message -> {
+            log.info("editing message: requested attention message: {}", messageId);
             message.editMessage(String.format("""
                     Es hat sich niemand gemeldet. Der Server wird nun geschlossen.
                     """)).queue();
