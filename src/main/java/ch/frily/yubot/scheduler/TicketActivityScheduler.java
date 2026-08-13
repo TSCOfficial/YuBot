@@ -40,6 +40,6 @@ public class TicketActivityScheduler implements IScheduler{
 
     @Override
     public String cronExpression() {
-        return "23 * * * *";
+        return "0 * * * *";
     }
 }
