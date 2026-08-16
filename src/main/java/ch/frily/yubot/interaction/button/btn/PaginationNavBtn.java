@@ -69,6 +69,14 @@ public class PaginationNavBtn extends Button {
                 getArgument(componentId, ContainerContext.ARG_IDENTIFIER));
         ContainerContext context = ContainerContext.fromComponentId(event);
 
+        if (!event.getMessage().isEphemeral()) {
+            event.replyComponents(registry.getContainer(context))
+                    .useComponentsV2()
+                    .setAllowedMentions(List.of())
+                    .setEphemeral(true)
+                    .queue();
+        }
+
         event.editComponents(registry.getContainer(context))
                 .useComponentsV2()
                 .setAllowedMentions(List.of())
