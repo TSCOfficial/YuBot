@@ -42,7 +42,7 @@ public class AbsenceAddModal extends Modal {
 
     private static final String DATE_TIME_FORMAT = "dd.MM.yyyy HH:mm";
     private static final int MINIMUM_ABSENCE_DURATION = 1440; // 24 hours in minutes
-    private static final int MAX_ABSENCES_AT_SAME_TIME = 8;
+    private static final int MAX_ABSENCES_AT_SAME_TIME = 1000;
 
     private boolean isEditing = false;
     private Absence absence;

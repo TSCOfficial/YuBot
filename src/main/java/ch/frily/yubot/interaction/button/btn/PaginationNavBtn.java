@@ -75,6 +75,7 @@ public class PaginationNavBtn extends Button {
                     .setAllowedMentions(List.of())
                     .setEphemeral(true)
                     .queue();
+            return;
         }
 
         event.editComponents(registry.getContainer(context))

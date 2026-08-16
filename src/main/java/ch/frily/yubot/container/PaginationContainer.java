@@ -100,8 +100,9 @@ public abstract class PaginationContainer extends Container {
     /**
      * Build the pages from the items
      * <p>
-     * An item is never split up, so a new page is started as soon as the next item would exceed the
-     * {@link #getItemComponentBudget() component budget} of the current one.
+     * Items that exceed the {@link #getItemComponentBudget() component budget} of a page get
+     * {@link PaginationItem#split(int) split} into several chunks that each keep the item's title.
+     * A new page is started as soon as the next chunk would exceed the budget of the current one.
      */
     private void buildPages(){
         pages.clear();
@@ -111,24 +112,19 @@ public abstract class PaginationContainer extends Container {
         int usedComponents = 0;
 
         for (PaginationItem item : items) {
-            int itemComponents = item.getComponentCount();
+            for (PaginationItem chunk : item.split(budget - usedComponents)) {
+                int chunkComponents = chunk.getComponentCount();
 
-            if (itemComponents > budget) {
-                log.warn("A single pagination item (index {}) takes up {} components but only {} fit on a page",
-                        items.indexOf(item), itemComponents, budget);
-                item = new PaginationItem(TextDisplay.ofFormat("-# ⚠️ Item %d, with %d children, was not able to render due to discord limitations.", items.indexOf(item), itemComponents)); // overwrite to fallback message
-                itemComponents = item.getComponentCount(); // overwrite component cound to allow other items to be displayed next to the fallback message
+                // Start the next page before the current one runs over the budget
+                if (!currentProcessedItems.isEmpty() && usedComponents + chunkComponents > budget) {
+                    addPage(currentProcessedItems);
+                    currentProcessedItems.clear();
+                    usedComponents = 0;
+                }
+
+                currentProcessedItems.add(chunk);
+                usedComponents += chunkComponents;
             }
-
-            // Start the next page before the current one runs over the budget
-            if (!currentProcessedItems.isEmpty() && usedComponents + itemComponents > budget) {
-                addPage(currentProcessedItems);
-                currentProcessedItems.clear();
-                usedComponents = 0;
-            }
-
-            currentProcessedItems.add(item);
-            usedComponents += itemComponents;
         }
 
         // Keep at least one (possibly empty) page so there is always something to render
@@ -151,7 +147,7 @@ public abstract class PaginationContainer extends Container {
         if (header != null) {
             components.addAll(header.getChildren());
         }
-        pages.get(currentPage).items().forEach(item -> components.addAll(item.getChildren()));
+        pages.get(currentPage).items().forEach(item -> components.addAll(item.getRenderComponents()));
         if (footer != null) {
             components.addAll(footer.getChildren());
         }
