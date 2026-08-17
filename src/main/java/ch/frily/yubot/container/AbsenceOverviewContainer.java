@@ -95,8 +95,12 @@ public class AbsenceOverviewContainer extends PaginationContainer {
 
         String todayTag = day.equals(LocalDate.now(EnvResolver.getZoneId())) ? "*(Heute)*" : "";
 
-        daySection.addChild(TextDisplay.ofFormat("### %d. %s %d %s",
-                day.getDayOfMonth(), Util.translateMonth(day.getMonth()), day.getYear(), todayTag));
+        daySection.setTitle(String.format("""
+                        ### %d. %s %d %s
+                        -# *%s Abwesenheit%s insgesamt*
+                        """,
+                day.getDayOfMonth(), Util.translateMonth(day.getMonth()), day.getYear(), todayTag,
+                absences.size(), absences.size() == 1 ? "" : "en"));
 
         absences.forEach(absence -> addAbsenceText(daySection, day, absence));
 

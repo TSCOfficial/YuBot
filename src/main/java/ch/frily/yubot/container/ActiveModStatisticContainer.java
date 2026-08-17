@@ -74,7 +74,7 @@ public class ActiveModStatisticContainer extends Container {
         addTextDisplay(String.format("""
                         ### [%s](https://discord.com/users/%s) %s %s
                         Total: %s
-                        %s %s
+                        %s (%s)
                         -# ** **
                         """,
                 member.getEffectiveName(), member.getId(), activeTag, youTag,
@@ -87,6 +87,7 @@ public class ActiveModStatisticContainer extends Container {
         if (lastMonthMinutes == 0) {
             return currentMonthMinutes == 0 ? "➡️ 0%" : "📈 Neu";
         }
+        log.info("Current month: {}, last month: {}", currentMonth, lastMonthMinutes);
 
         int currentMonthDays = currentMonth.equals(YearMonth.from(today))
                 ? today.getDayOfMonth()

@@ -80,7 +80,11 @@ public class ActiveModStatisticDetailContainer extends Container {
 
                 StringBuilder monthDetail = new StringBuilder();
                 monthDetail.append(String.format("### %s %d", Util.translateMonth(activeModTracking.month().getMonth()), activeModTracking.month().getYear())).append("\n");
-                monthDetail.append(String.format("Aktive Zeit: %s", Util.calcDuration(activeModTracking.activeTime()))).append("\n");
+                int activeTimePerDay = Math.round(activeModTracking.activeTime() / activeModTracking.month().lengthOfMonth());
+                if (activeModTracking.month().equals(YearMonth.now())) {
+                    activeTimePerDay = Math.round(activeModTracking.activeTime() / LocalDate.now().getDayOfMonth());
+                }
+                monthDetail.append(String.format("Aktive Zeit: %s (∅ %s/Tag)", Util.calcDuration(activeModTracking.activeTime()), Util.calcDuration(activeTimePerDay))).append("\n");
                 if (!differenceLastMonth.isEmpty()) {
                     monthDetail.append(String.format("-# *%s*", differenceLastMonth)).append("\n");
                 }
