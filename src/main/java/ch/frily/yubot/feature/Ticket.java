@@ -473,10 +473,12 @@ public class Ticket {
     /**
      * Sends a reminder to the ticket when the owner never sent a message
      */
-    public void sendReminder() {
+    public void sendReminder() throws SQLException, ClassNotFoundException {
         StringBuilder sb = new StringBuilder();
-        //sb.append(owner.getAsMention()).append("\n"); // todo revoke comment. temporarily due to system issue
+        sb.append(owner.getAsMention()).append("\n");
         sb.append(type.getEmbedDescription());
         channel.sendMessage(sb.toString()).queue();
+        setReminderSent(true);
+        TicketRepository.updateTicket(this);
     }
 }

@@ -1,5 +1,6 @@
 package ch.frily.yubot.scheduler;
 
+import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.Ticket;
 import ch.frily.yubot.feature.TicketRepository;
 import ch.frily.yubot.feature.TicketStatus;
@@ -27,15 +28,17 @@ public class TicketActivityScheduler implements IScheduler{
                 return false;
             }
             if (ticket.isReminderSent()) {
-                log.info(String.valueOf(ticket.getChannel().getTimeCreated().atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime()));
-                log.info(String.valueOf(ticket.getLastActivityAt()));
-                log.info("Would have been sen, but reminder already sent for ticket {}", ticket.getId());
                 return false;
             }
             return true;
         }).toList();
-        log.info("Found {} outdated tickets", outdatedTickets.size());
-        outdatedTickets.forEach(Ticket::sendReminder);
+        outdatedTickets.forEach(ticket -> {
+            try {
+                ticket.sendReminder();
+            } catch (Exception e) {
+                ExceptionHandler.handle(e);
+            }
+        });
     }
 
     @Override
