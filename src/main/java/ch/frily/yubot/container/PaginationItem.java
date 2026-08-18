@@ -2,6 +2,7 @@ package ch.frily.yubot.container;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.components.utils.ComponentIterator;
@@ -12,6 +13,7 @@ import java.util.List;
 /**
  * Holds a list of children components that are bound contextually, to prevent unfortunate splits when builder the pages
  */
+@Slf4j
 public class PaginationItem {
 
     @Getter
@@ -71,10 +73,11 @@ public class PaginationItem {
 
     /**
      * Split this item into chunks that each fit into the given component budget. Each split item carries the tite (of present)
-     * @param budget Maximum component count a single chunk may occupy
      * @return The chunks in order, each carrying the same title
      */
-    public List<PaginationItem> split(int budget){
+    public List<PaginationItem> split(PaginationContainer container){
+        int budget = container.getItemComponentBudget() - container.getCurrentPageComponentCount();
+        log.info("new split with budget: {}", budget);
         if (getComponentCount() <= budget) {
             return List.of(this);
         }
@@ -82,26 +85,22 @@ public class PaginationItem {
         int titleCost = title == null ? 0 : 1;
         List<PaginationItem> chunks = new ArrayList<>();
         PaginationItem current = newChunk();
-        int used = titleCost;
 
         for (ContainerChildComponent child : children) {
             int childCost = childComponentCount(child);
-
-            // Even alone next to the title this child cannot fit, so it can never be rendered
-            if (titleCost + childCost > budget) {
-                child = TextDisplay.of("-# ⚠️ Ein Eintrag konnte aufgrund von Discord-Limitierungen nicht dargestellt werden.");
-                childCost = childComponentCount(child);
-            }
+            int childrenBudget = container.getItemComponentBudget() - container.getCurrentPageComponentCount();
 
             // Start the next chunk before the current one runs over the budget
-            if (!current.children.isEmpty() && used + childCost > budget) {
+            log.info("Splitting item with {} components into {} chunks: used: {}, childcost: {}, budget: {}, equation: {}", getComponentCount(), chunks.size() + 1, container.getCurrentPageComponentCount(), childCost, childrenBudget, container.getItemComponentBudget() - container.getCurrentPageComponentCount() - childCost - titleCost <= 0);
+            if (!current.children.isEmpty() && container.getItemComponentBudget() - container.getCurrentPageComponentCount() - childCost - titleCost <= 0) {
+                log.info("added chunk");
                 chunks.add(current);
                 current = newChunk();
-                used = titleCost;
+                container.setCurrentPageComponentCount(titleCost);
             }
 
             current.addChild(child);
-            used += childCost;
+            container.setCurrentPageComponentCount(container.getCurrentPageComponentCount() + childCost+ titleCost);
         }
 
         if (!current.children.isEmpty()) {

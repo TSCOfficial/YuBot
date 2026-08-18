@@ -39,6 +39,11 @@ public abstract class PaginationContainer extends Container {
     /** The container wrapping a page counts as a component itself */
     private static final int CONTAINER_COMPONENT_COUNT = 1;
 
+    @Getter
+    @Setter
+    /** The amount of components that have been rendered on the current page */
+    private int currentPageComponentCount = 0;
+
     /** List of the items */
     private List<PaginationItem> items = new ArrayList<>();
 
@@ -101,7 +106,7 @@ public abstract class PaginationContainer extends Container {
      * Build the pages from the items
      * <p>
      * Items that exceed the {@link #getItemComponentBudget() component budget} of a page get
-     * {@link PaginationItem#split(int) split} into several chunks that each keep the item's title.
+     * {@link PaginationItem#split(PaginationContainer) split} into several chunks that each keep the item's title.
      * A new page is started as soon as the next chunk would exceed the budget of the current one.
      */
     private void buildPages(){
@@ -109,22 +114,23 @@ public abstract class PaginationContainer extends Container {
 
         int budget = getItemComponentBudget();
         List<PaginationItem> currentProcessedItems = new ArrayList<>();
-        int usedComponents = 0;
 
+        // todo das splitten funktioniert zwar, aber splittet nur seine eigenen items auf. alle absenzen müssen demnach in eine liste verpackt werden und dann werden sie erst gesplittet
+        //List<ContainerChildComponent> splittedItem = items.stream().flatMap(item -> item.getChildren().stream()).toList();
         for (PaginationItem item : items) {
-            for (PaginationItem chunk : item.split(budget - usedComponents)) {
-                int chunkComponents = chunk.getComponentCount();
+            log.info("used components: {}, budget: {}, item components: {}", currentPageComponentCount, budget, item.getComponentCount());
 
-                // Start the next page before the current one runs over the budget
-                if (!currentProcessedItems.isEmpty() && usedComponents + chunkComponents > budget) {
-                    addPage(currentProcessedItems);
-                    currentProcessedItems.clear();
-                    usedComponents = 0;
-                }
-
-                currentProcessedItems.add(chunk);
-                usedComponents += chunkComponents;
+            // Start the next page before the current one runs over the budget
+            if (!currentProcessedItems.isEmpty() && budget - currentPageComponentCount - item.getComponentCount() <= 0) {
+                log.info("added page");
+                addPage(currentProcessedItems);
+                currentProcessedItems.clear();
+                currentPageComponentCount = 0;
+                //currentProcessedItems.add(item.getTitleDisplay());
             }
+
+            currentProcessedItems.add(item);
+            currentPageComponentCount += item.getComponentCount();
         }
 
         // Keep at least one (possibly empty) page so there is always something to render
