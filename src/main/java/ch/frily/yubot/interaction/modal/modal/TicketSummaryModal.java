@@ -4,9 +4,12 @@ import ch.frily.yubot.container.TicketTranscriptContainer;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.feature.Ticket;
 import ch.frily.yubot.feature.TicketRepository;
+import ch.frily.yubot.feature.TicketType;
 import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.api.components.container.Container;
@@ -24,6 +27,14 @@ import java.util.List;
 
 @Slf4j
 public class TicketSummaryModal extends Modal {
+
+    private Ticket ticket;
+
+    public void setTicket(Ticket ticket) {
+        this.ticket = ticket;
+        addArgument("ticket_id", ticket.getChannel().getId());
+    }
+
     @Override
     public String getId() {
         return "ticket-summary-modal";
@@ -39,7 +50,8 @@ public class TicketSummaryModal extends Modal {
         TextInput.Builder summaryInput = TextInput.create("summary", TextInputStyle.PARAGRAPH);
         summaryInput.setRequiredRange(10, 200);
         summaryInput.setPlaceholder("User1 hat User2 wegen xy gemeldet...");
-        summaryInput.setRequired(false);
+        summaryInput.setRequired(ticket.getType() == TicketType.MODTICKET);
+
         return List.of(
                 TextDisplay.of("""
                         Verfasse in ein paar Worten oder Sätzen, um was das Ticket ging.
