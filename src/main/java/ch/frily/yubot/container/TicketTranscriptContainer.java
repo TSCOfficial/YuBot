@@ -16,7 +16,7 @@ import java.time.OffsetDateTime;
 @Slf4j
 public class TicketTranscriptContainer extends Container {
 
-    public TicketTranscriptContainer(Member initiator, Ticket ticket, FileUpload transkript) {
+    public TicketTranscriptContainer(Member initiator, Ticket ticket, FileUpload transkript, String summary) {
         this.addComponent(TextDisplay.of(String.format("### Ticket %s wurde geschlossen", ticket.getNameWithoutStatus())));
         this.addComponent(Separator.createInvisible(Separator.Spacing.SMALL));
 
@@ -48,6 +48,10 @@ public class TicketTranscriptContainer extends Container {
         long epochTimeCreated = ticket.getChannel().getTimeCreated().toEpochSecond();
         String opendTimeSinceCreation = Util.calcDuration(ticket.getChannel().getTimeCreated(), OffsetDateTime.now());
         addFormatedText("**Geöffnet am**: <t:%d:F> (%s)", epochTimeCreated, opendTimeSinceCreation);
+
+        if (summary != null) {
+            addFormatedText("**Zusammenfassung**\n> %s", summary);
+        }
         this.addComponent(Separator.createDivider(Separator.Spacing.LARGE));
         this.addComponent(FileDisplay.fromFile(transkript));
     }

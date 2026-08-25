@@ -51,6 +51,9 @@ public abstract class ArgumentComponent {
     public void addArgument(String key, int value){
         arguments.put(key, String.valueOf(value));
     }
+    public void addArgument(String key, long value){
+        arguments.put(key, String.valueOf(value));
+    }
 
     public void addArgument(String key, boolean value){
         arguments.put(key, String.valueOf(value));

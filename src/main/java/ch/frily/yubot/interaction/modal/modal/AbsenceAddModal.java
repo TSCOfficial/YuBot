@@ -245,7 +245,7 @@ public class AbsenceAddModal extends Modal {
         if (!otherAbsences.isEmpty()) {
             throw new InvalidStateException("Zeitraum bereits vergeben.", "Es existiert bereits eine Absenz im Zeitraum.");
         }
-        if (!bypassStartTimeCheck && LocalDateTime.now().isBefore(startDateTime)) {
+        if (!bypassStartTimeCheck && startDateTime.isBefore(LocalDateTime.now())) {
             throw new InvalidStateException("Ungültige Zeitangabe.", "Die Startzeit muss in der Zukunft liegen.");
         }
         if (endDateTime.isBefore(LocalDateTime.now())){

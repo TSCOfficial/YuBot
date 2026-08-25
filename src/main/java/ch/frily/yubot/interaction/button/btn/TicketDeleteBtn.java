@@ -8,6 +8,8 @@ import ch.frily.yubot.feature.Ticket;
 import ch.frily.yubot.feature.TicketRepository;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.button.IButton;
+import ch.frily.yubot.interaction.modal.Modal;
+import ch.frily.yubot.interaction.modal.modal.TicketSummaryModal;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import javassist.NotFoundException;
@@ -49,16 +51,9 @@ public class TicketDeleteBtn extends Button {
 
     @Override
     public void execute(@NotNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
-
-        Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
-        ticket.generateTranscript().thenAccept(ThrowingConsumer.wrap(event, fileUpload -> {
-            fileUpload.setName("transkript-" + ticket.getNameWithoutStatus() + ".html");
-            TextChannel logChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_TICKETLOGS);
-            List<Container> containers = new TicketTranscriptContainer(event.getMember(), ticket, fileUpload).build();
-            logChannel.sendMessageComponents(containers).useComponentsV2().addFiles(fileUpload).setAllowedMentions(List.of()).queue(ThrowingConsumer.wrap(event, message -> {
-                ticket.delete();
-            }));
-        }));
+        Modal summaryModal = new TicketSummaryModal();
+        summaryModal.addArgument("ticket_id", event.getChannelIdLong());
+        event.replyModal(summaryModal.build()).queue();
     }
 
     @Override
