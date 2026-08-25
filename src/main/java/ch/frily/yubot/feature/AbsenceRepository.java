@@ -146,6 +146,12 @@ public class AbsenceRepository {
             Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
             Member member = guild.getMemberById(memberId);
             Absence absence = new Absence(id, member, startDateTime, endDateTime, absenceType, reason, sendNotice, createdAt, updatedAt);
+
+            if (member == null) {
+                log.warn("Member with id {} not found. Deleteing record: {}", memberId, absence);
+                deleteAbsenceById(id);
+                continue;
+            }
             absences.add(absence);
         }
         return absences;
