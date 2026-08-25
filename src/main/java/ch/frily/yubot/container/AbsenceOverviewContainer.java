@@ -114,6 +114,9 @@ public class AbsenceOverviewContainer extends PaginationContainer {
      * @param absence The day-absence to display
      */
     private void addAbsenceText(PaginationItem pageItem, LocalDate day, Absence absence) {
+        if (absence == null || absence.member() == null) {
+            return;
+        }
         String timeRange = "Ganzer Tag";
         if (!isWholeDay(day, absence)) {
             if (absence.toDateTime().toLocalTime() == LocalTime.MAX) {
