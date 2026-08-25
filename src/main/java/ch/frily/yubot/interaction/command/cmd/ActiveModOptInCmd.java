@@ -44,7 +44,7 @@ public class ActiveModOptInCmd implements ISlashSubcommand {
 
             String countInfo = "Es sind nun **" + activeModCount + "** aktive Moderator\\*innen.";
             if (activeModCount == 1) {
-                countInfo = "Es ist nun nurnoch **" + activeModCount + "** aktive\\*r Moderator\\*in";
+                countInfo = "Es ist nun nur **" + activeModCount + "** aktive\\*r Moderator\\*in";
             }
 
             event.reply("✅ Du wurdest als aktive\\*r moderator\\*in markiert.\n-# " + countInfo).setEphemeral(true).queue();

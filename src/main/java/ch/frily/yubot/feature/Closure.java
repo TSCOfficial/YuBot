@@ -4,7 +4,7 @@ import ch.frily.yubot.embed.ClosureActivityRequestEmbed;
 import ch.frily.yubot.embed.ClosureLogEmbed;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.interaction.button.btn.ActiveModActivityProveBtn;
-import ch.frily.yubot.interaction.button.btn.ActiveModActivityRejectBtn;
+import ch.frily.yubot.interaction.button.btn.ActiveModOptOutBtn;
 import ch.frily.yubot.interaction.button.btn.DeleteActivityRequestMsgBtn;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
@@ -237,7 +237,7 @@ public class Closure {
         TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
         if (moderator.activityRequestedAt() == null) {
 
-            ActionRow actionrow = ActionRow.of(new ActiveModActivityProveBtn().build(), new ActiveModActivityRejectBtn().build());
+            ActionRow actionrow = ActionRow.of(new ActiveModActivityProveBtn().build(), new ActiveModOptOutBtn().build());
 
             channel.sendMessage(moderator.member().getAsMention())
                     .addEmbeds(new ClosureActivityRequestEmbed(moderator).build())

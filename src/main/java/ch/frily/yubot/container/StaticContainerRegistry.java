@@ -36,6 +36,9 @@ public enum StaticContainerRegistry {
     /** Renders the absences of the interacting member, so it only works with an interaction present */
     ABSENCE_EDITOWN(false, ctx -> {
         return new AbsenceEditOwnContainer(ctx).build();
+    }),
+    ACTIVE_MOD_CONTROL(true, ctx -> {
+        return new ActiveModControlContainer(ctx).build();
     });
 
     /** Whether the container may be sent as a standalone message via the send container command */

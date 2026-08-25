@@ -52,7 +52,9 @@ public class ButtonRegistry {
                 new TicketConfirmOpenBtn(),
                 new TicketCancelOpenBtn(),
                 new ActiveModApproveOptOutBtn(),
-                new ActiveModCancelOptOutBtn()
+                new ActiveModCancelOptOutBtn(),
+                new ActiveModOptInBtn(),
+                new ActiveModOptOutBtn()
         );
         rawButtons.forEach(btn -> {
             String idOrUrl = btn.getId();
