@@ -23,8 +23,6 @@ import java.util.Map;
 @Slf4j
 public class ActiveModStatisticDetailContainer extends Container {
 
-    // TODO display all members, even when they have no active mod tracking
-
     /**
      *
      * @param member The member to show the details for

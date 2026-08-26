@@ -13,7 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.exceptions.ContextException;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -22,7 +24,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
+
+import static org.reflections.Reflections.log;
 
 @Slf4j
 public class Closure {
@@ -220,12 +225,33 @@ public class Closure {
      */
     public static void handleModActivity(Member member) throws SQLException, ClassNotFoundException {
         ActiveMod activeMod = ActiveModRepository.getModerator(member);
+        deleteRequestedAttentionMessages();
+
+        Consumer<Void> deletingInPrivateChannel = failure -> {
+            log.info("deleting in private channel");
+            member.getUser().openPrivateChannel().submit().thenAccept(privateChannel ->
+                    privateChannel.deleteMessageById(activeMod.activityRequestMessageId()).queue()
+            );
+        };
+
         if (activeMod.activityRequestMessageId() != 0) { // automatically accept an active activity-prove-request
             TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
-            channel.deleteMessageById(activeMod.activityRequestMessageId()).queue();
+            channel.deleteMessageById(activeMod.activityRequestMessageId()).queue(
+                    success -> log.info("deleted message: {}", activeMod.activityRequestMessageId()),
+                    failure -> {
+                        log.error(String.valueOf(failure));
+                        log.info("deleting in private channel");
+                        member.getUser().openPrivateChannel().submit().thenAccept(privateChannel ->
+                                privateChannel.deleteMessageById(activeMod.activityRequestMessageId()).queue(
+                                        s -> log.info("deleted message"),
+                                        f -> log.error("failed to delete in private channel", f)
+                                )
+                        );
+                    });
+
         }
         ActiveModRepository.updateModeratorActivity(member);
-        deleteRequestedAttentionMessages();
+
 
     }
 
@@ -235,6 +261,7 @@ public class Closure {
      */
     public static void requestActivityProve(ActiveMod moderator) throws SQLException, ClassNotFoundException {
         TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
+
         if (moderator.activityRequestedAt() == null) {
 
             ActionRow actionrow = ActionRow.of(new ActiveModActivityProveBtn().build(), new ActiveModOptOutBtn().build());
@@ -248,6 +275,31 @@ public class Closure {
                     }
                     ));
             ActiveModTrackingRepository.incrementTotalActivityRequestCount(moderator.member());
+        } else {
+            handleActivityProveTimeout(moderator);
+        }
+    }
+
+    /**
+     * When the active-mod is inactive for an amount of time, send a request to prove they're active
+     */
+    public static void requestActivityProveV2(ActiveMod moderator) throws SQLException, ClassNotFoundException {
+        if (moderator.activityRequestedAt() == null) {
+
+            ActionRow actionrow = ActionRow.of(new ActiveModActivityProveBtn().build(), new ActiveModOptOutBtn().build());
+
+            moderator.member().getUser().openPrivateChannel().submit().thenAccept(ThrowingConsumer.wrap(null, privateChannel -> {
+                privateChannel.sendMessage(moderator.member().getAsMention())
+                        .addEmbeds(new ClosureActivityRequestEmbed(moderator).build())
+                        .setComponents(actionrow)
+                        .queue(ThrowingConsumer.wrap(null, message -> {
+                                    ActiveMod updatedActiveMod = new ActiveMod(moderator.member(), moderator.lastActivityAt(), LocalDateTime.now(), message.getIdLong(), moderator.requestedAttentionMessageId());
+                                    ActiveModRepository.updateModerator(updatedActiveMod);
+                                }
+                        ));
+                ActiveModTrackingRepository.incrementTotalActivityRequestCount(moderator.member());
+            }));
+
         } else {
             handleActivityProveTimeout(moderator);
         }
@@ -289,14 +341,15 @@ public class Closure {
             });
 
             log.info("active mod size: {}", getActiveMods().size());
-            guild.removeRoleFromMember(moderator.member(), EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD)).queue();
-
-            log.info("active mod size after removing: {}", getActiveMods().size());
-            // Send close message in modchat when no other mods are active
-            if (getActiveMods().isEmpty()) {
-                log.info("requested attention message: {}", moderator.requestedAttentionMessageId());
-                requestAttentionMessageIgnored(moderator.requestedAttentionMessageId());
-            }
+            long requestMessageId = moderator.activityRequestMessageId();
+            guild.removeRoleFromMember(moderator.member(), EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD)).queue(_ -> {
+                log.info("active mod size after removing: {}", getActiveMods().size());
+                // Send close message in modchat when no other mods are active
+                if (getActiveMods().isEmpty()) {
+                    log.info("requested attention message: {}", requestMessageId);
+                    requestAttentionMessageIgnored(requestMessageId);
+                }
+            });
 
             ActiveModTrackingRepository.incrementMissedActivityRequestCount(moderator.member());
 
@@ -308,12 +361,17 @@ public class Closure {
      */
     public static void deleteRequestedAttentionMessages() throws SQLException, ClassNotFoundException {
         List<ActiveMod> activeMods = ActiveModRepository.getModeratorsWithRequestedAttentionMessageId();
-        log.info("active mods at request attention: {}", activeMods);
+
         activeMods.forEach(activeMod -> {
-            TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
             log.info("deleting message: requested attention message: {}", activeMod.requestedAttentionMessageId());
-            channel.deleteMessageById(activeMod.requestedAttentionMessageId()).queue();
+            deleteRequestedAttentionMessageById(activeMod.requestedAttentionMessageId());
         });
+    }
+
+    public static void deleteRequestedAttentionMessageById(long messageId) {
+
+        TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
+        channel.deleteMessageById(messageId).queue();
     }
 
     /**

@@ -1,8 +1,10 @@
 package ch.frily.yubot.util;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
@@ -36,6 +38,28 @@ public class Util {
     public static boolean isActiveMod(Member member) {
         Role activeModRole = EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD);
         return member.getRoles().contains(activeModRole);
+    }
+
+    /**
+     * Find members that have a given role<br>
+     * @param role
+     * @return true | false : Returns true when the list is completed
+     */
+    public static List<Member> getUsersByRole(Role role) {
+        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+        if (guild == null || role == null) {
+            return List.of();
+        }
+        return guild.getMembersWithRoles(role);
+    }
+
+    public static Member getMemberByUser(User user) {
+        return getMemberByUser(user.getIdLong());
+    }
+
+    public static Member getMemberByUser(long userId) {
+        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+        return guild.getMemberById(userId);
     }
 
     /**

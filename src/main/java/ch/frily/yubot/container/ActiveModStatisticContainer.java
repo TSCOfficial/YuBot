@@ -61,10 +61,12 @@ public class ActiveModStatisticContainer extends Container {
             thisMonth = String.format("Diesen Monat: %s", Util.calcDuration(currentMonthTracking.activeTime()));
         }
 
-        String tendency = "";
+        StringBuilder tendencySB = new StringBuilder();
         if (currentMonthTracking != null && lastMonthTracking != null) {
-            tendency = calculateTendency(currentMonthTracking.activeTime(), lastMonthTracking.activeTime(),
-                    currentMonthTracking.month(), LocalDate.now());
+            tendencySB.append("(");
+            tendencySB.append(calculateTendency(currentMonthTracking.activeTime(), lastMonthTracking.activeTime(),
+                    currentMonthTracking.month(), LocalDate.now()));
+            tendencySB.append(")");
         }
 
         String youTag = member == initiator ? "*(Du)*" : "";
@@ -74,20 +76,19 @@ public class ActiveModStatisticContainer extends Container {
         addTextDisplay(String.format("""
                         ### [%s](https://discord.com/users/%s) %s %s
                         Total: %s
-                        %s (%s)
+                        %s %s
                         -# ** **
                         """,
                 member.getEffectiveName(), member.getId(), activeTag, youTag,
                 Util.calcDuration(totalActiveMinutes),
-                thisMonth, tendency)
+                thisMonth, tendencySB.toString())
         );
     }
 
     static String calculateTendency(int currentMonthMinutes, int lastMonthMinutes, YearMonth currentMonth, LocalDate today) {
         if (lastMonthMinutes == 0) {
-            return currentMonthMinutes == 0 ? "➡️ 0%" : "📈 Neu";
+            return "📈 Neu";
         }
-        log.info("Current month: {}, last month: {}", currentMonth, lastMonthMinutes);
 
         int currentMonthDays = currentMonth.equals(YearMonth.from(today))
                 ? today.getDayOfMonth()

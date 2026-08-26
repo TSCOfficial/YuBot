@@ -22,6 +22,8 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static ch.frily.yubot.util.Util.getUsersByRole;
+
 @Slf4j
 public class TeamlistEmbed implements IEmbed {
 
@@ -141,19 +143,6 @@ public class TeamlistEmbed implements IEmbed {
             }
         }
         return currentFields;
-    }
-
-    /**
-     * Find members that have a given role<br>
-     * @param role
-     * @return true | false : Returns true when the list is completed
-     */
-    private List<Member> getUsersByRole(Role role) {
-        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
-        if (guild == null || role == null) {
-            return List.of();
-        }
-        return guild.getMembersWithRoles(role);
     }
 
     private String getRoleName(EnvKey roleKey, Role role) {

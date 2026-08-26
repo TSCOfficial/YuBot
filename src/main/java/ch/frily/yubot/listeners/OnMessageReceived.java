@@ -36,6 +36,8 @@ public class OnMessageReceived extends ListenerAdapter {
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         try {
+
+            if (!event.isFromGuild()) return;
             if (event.getAuthor().isBot()) return;
 
             // Ticket funtions

@@ -11,7 +11,8 @@ public enum Table {
     ACTIVE_MOD("active_mod", ActiveModColumn.class),
     ACTIVE_MOD_TRACKING("active_mod_tracking", ActiveModTrackingColumn.class),
     DYNAMIC_MESSAGE("dynamic_message", DynamicMessageColumn.class),
-    ABSENCE("absence", AbsenceColumn.class);
+    ABSENCE("absence", AbsenceColumn.class),
+    PROFILE("profile", ProfileColumn.class);
 
     private final String table;
     private final Class<? extends Column> columnClass;
@@ -98,6 +99,15 @@ public enum Table {
         SEND_NOTICE("send_notice"),
         CREATED_AT("created_at"),
         UPDATED_AT("updated_at");
+        private final String column;
+    }
+
+    // USER-PROFILE
+    @Getter
+    @RequiredArgsConstructor
+    public enum ProfileColumn implements Column {
+        MEMBER_ID("member_id"),
+        ACTIVEMOD_SEND_IN_DM("activemod_send__in_dm"),;
         private final String column;
     }
 }

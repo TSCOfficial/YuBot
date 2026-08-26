@@ -54,7 +54,8 @@ public class ButtonRegistry {
                 new ActiveModApproveOptOutBtn(),
                 new ActiveModCancelOptOutBtn(),
                 new ActiveModOptInBtn(),
-                new ActiveModOptOutBtn()
+                new ActiveModOptOutBtn(),
+                new ShowStatisticBtn()
         );
         rawButtons.forEach(btn -> {
             String idOrUrl = btn.getId();
@@ -76,10 +77,13 @@ public class ButtonRegistry {
             throw new IllegalStateException(String.format("Der Button '%s' konnte nicht gefunden werden.", idOrUrl));
         }
 
-        // Check if user is allowed to execute command
-        if (!Util.isAdministrator(event.getMember()) && !button.getAllowedRoles().isEmpty() && button.getAllowedRoles().stream().noneMatch(role -> event.getMember().getRoles().contains(role))) {
-            throw new PermissionDeniedException(String.format("Nur Mitglieder\\*innen mit einer der folgenden Rollen können diesen Button verwenden: %s", String.join(", ", button.getAllowedRoles().stream().map(role -> role.getAsMention()).toList())));
+        // Check if user is allowed to execute command, aslong as its on the guild. if its via DM, the message was already verified for permissions
+        if (event.getChannelType().isGuild()) {
+            if (!Util.isAdministrator(event.getMember()) && !button.getAllowedRoles().isEmpty() && button.getAllowedRoles().stream().noneMatch(role -> event.getMember().getRoles().contains(role))) {
+                throw new PermissionDeniedException(String.format("Nur Mitglieder\\*innen mit einer der folgenden Rollen können diesen Button verwenden: %s", String.join(", ", button.getAllowedRoles().stream().map(role -> role.getAsMention()).toList())));
+            }
         }
+
 
         button.execute(event);
     }

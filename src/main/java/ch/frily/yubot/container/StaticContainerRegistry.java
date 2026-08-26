@@ -38,7 +38,7 @@ public enum StaticContainerRegistry {
         return new AbsenceEditOwnContainer(ctx).build();
     }),
     ACTIVE_MOD_CONTROL(true, ctx -> {
-        return new ActiveModControlContainer(ctx).build();
+        return new ActiveModDashboardContainer(ctx).build();
     });
 
     /** Whether the container may be sent as a standalone message via the send container command */

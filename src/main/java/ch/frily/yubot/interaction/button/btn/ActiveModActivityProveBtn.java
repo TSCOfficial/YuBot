@@ -6,7 +6,12 @@ import ch.frily.yubot.feature.Closure;
 import ch.frily.yubot.feature.ActiveModRepository;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.button.IButton;
+import ch.frily.yubot.util.EnvKey;
+import ch.frily.yubot.util.EnvResolver;
+import ch.frily.yubot.util.Util;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,8 +39,10 @@ public class ActiveModActivityProveBtn extends Button {
     @Override
     public void execute(@NotNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
         ActiveMod forActiveMod = ActiveModRepository.getModeratorByActivityRequestMessageId(event.getMessageIdLong());
-        if (event.getMember().equals(forActiveMod.member())) {
-            Closure.handleModActivity(event.getMember());
+        Member member = event.getMember() == null ? Util.getMemberByUser(event.getUser()) : event.getMember();
+
+        if (member.equals(forActiveMod.member())) {
+            Closure.handleModActivity(member);
             event.reply("✅ Vielen dank, deine Aktivität wurde erfolgreich bestätigt.").setEphemeral(true).queue();
         } else {
             throw new PermissionDeniedException(String.format("Nur %s kann seine/ihre Anfrage bestätigen.", forActiveMod.member().getAsMention()));

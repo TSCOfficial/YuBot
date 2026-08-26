@@ -38,9 +38,9 @@ public class ActiveModOptOutBtn extends Button {
         if (!event.getMember().getRoles().contains(activeMod)) {
             throw new InvalidStateException("Du bist nicht als aktiver moderator\\*in markiert.", null);
         }
+        Closure.deleteRequestedAttentionMessages();
         event.getGuild().removeRoleFromMember(event.getMember(), activeMod).submit().thenAccept(ThrowingConsumer.wrap(null, _ -> {
             int activeModCount = Closure.getActiveMods().size();
-            Closure.deleteRequestedAttentionMessages();
 
             String countInfo = "Es sind nun noch **" + activeModCount + "** aktive Moderator\\*innen.";
             if (activeModCount == 1) {
