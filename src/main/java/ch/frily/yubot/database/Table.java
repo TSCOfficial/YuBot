@@ -107,7 +107,7 @@ public enum Table {
     @RequiredArgsConstructor
     public enum ProfileColumn implements Column {
         MEMBER_ID("member_id"),
-        ACTIVEMOD_SEND_IN_DM("activemod_send__in_dm"),;
+        ACTIVEMOD_SEND_IN_DM("activemod_send_in_dm"),;
         private final String column;
     }
 }

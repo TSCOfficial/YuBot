@@ -4,8 +4,12 @@ import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.feature.Closure;
 import ch.frily.yubot.interaction.button.Button;
+import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
+import ch.frily.yubot.util.Util;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jspecify.annotations.NonNull;
@@ -34,12 +38,14 @@ public class ActiveModOptOutBtn extends Button {
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
         Role activeMod = EnvResolver.getRoleById(1513639704870912130L);
-
-        if (!event.getMember().getRoles().contains(activeMod)) {
+        Member member = event.getMember() == null ? Util.getMemberByUser(event.getUser()) : event.getMember();
+        if (!member.getRoles().contains(activeMod)) {
             throw new InvalidStateException("Du bist nicht als aktiver moderator\\*in markiert.", null);
         }
+
         Closure.deleteRequestedAttentionMessages();
-        event.getGuild().removeRoleFromMember(event.getMember(), activeMod).submit().thenAccept(ThrowingConsumer.wrap(null, _ -> {
+        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+        guild.removeRoleFromMember(member, activeMod).submit().thenAccept(ThrowingConsumer.wrap(null, _ -> {
             int activeModCount = Closure.getActiveMods().size();
 
             String countInfo = "Es sind nun noch **" + activeModCount + "** aktive Moderator\\*innen.";
@@ -48,6 +54,7 @@ public class ActiveModOptOutBtn extends Button {
             }
 
             event.reply("✅ Du wurdest als aktive\\*r moderator\\*in entfernt.\n-# " + countInfo).setEphemeral(true).queue();
+            event.getMessage().delete().queue();
         }));
     }
 }

@@ -11,7 +11,7 @@ public class ProfileRepository {
 
     public static Profile getProfile(Member member) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
-        query.where(Table.ProfileColumn.MEMBER_ID, DatabaseQuery.Operator.EQUALS, member.getIdLong());
+        query.where(Table.ProfileColumn.MEMBER_ID, DatabaseQuery.Operator.EQUALS, member.getId());
         ResultSet rs = query.executeDataQuery();
 
         rs.next();

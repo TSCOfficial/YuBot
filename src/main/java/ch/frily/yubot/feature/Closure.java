@@ -13,9 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.exceptions.ContextException;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -26,8 +24,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-
-import static org.reflections.Reflections.log;
 
 @Slf4j
 public class Closure {
@@ -283,7 +279,7 @@ public class Closure {
     /**
      * When the active-mod is inactive for an amount of time, send a request to prove they're active
      */
-    public static void requestActivityProveV2(ActiveMod moderator) throws SQLException, ClassNotFoundException {
+    public static void requestActivityProveViaDM(ActiveMod moderator) throws SQLException, ClassNotFoundException {
         if (moderator.activityRequestedAt() == null) {
 
             ActionRow actionrow = ActionRow.of(new ActiveModActivityProveBtn().build(), new ActiveModOptOutBtn().build());
