@@ -9,6 +9,7 @@ import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -21,10 +22,12 @@ import java.sql.SQLException;
 /**
  * When the last active mod wants to opt-out via command, the bot askes to approve the opt-out before closing the server
  */
+@Slf4j
 public class ActiveModOptOutBtn extends Button {
 
-    @Setter
-    private boolean deleteMsgOnOptOut = false;
+    public void setDeleteMsgOnOptOut(boolean deleteMsgOnOptOut) {
+        addArgument("delete", deleteMsgOnOptOut);
+    }
 
     @Override
     public String getId() {
@@ -60,7 +63,7 @@ public class ActiveModOptOutBtn extends Button {
             }
 
             event.reply("✅ Du wurdest als aktive\\*r moderator\\*in entfernt.\n-# " + countInfo).setEphemeral(true).queue();
-            if (deleteMsgOnOptOut) {
+            if (hasArgument(event.getComponentId(),"delete") && getArgument(event.getComponentId(),"delete").equals("true")) {
                 event.getMessage().delete().queue();
             }
         }));
