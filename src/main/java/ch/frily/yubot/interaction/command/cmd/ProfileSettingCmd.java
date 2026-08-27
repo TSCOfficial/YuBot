@@ -48,6 +48,7 @@ public class ProfileSettingCmd implements ISlashSubcommand {
             return event.getOption(setting.getLabel());
         }).filter(Objects::nonNull).toList();
 
+        StringBuilder modifiedSettingsSB = new StringBuilder();
         options.forEach(option -> {
             log.info(option.getName());
             log.info(option.getAsString());
@@ -58,11 +59,17 @@ public class ProfileSettingCmd implements ISlashSubcommand {
                 } else {
                     ProfileRepository.setSetting(event.getMember(), setting, option.getAsString());
                 }
-
+                modifiedSettingsSB.append(String.format("**%s** geändert auf **%s**\n", setting.getLabel(), option.getAsString()));
             } catch (Exception e) {
-                ExceptionHandler.handle(e);
+                ExceptionHandler.handle(e, event);
             }
         });
+
+        if (modifiedSettingsSB.length() > 0) {
+            event.reply("Einstellungen erfolgreich gespeichert:\n" + modifiedSettingsSB.toString()).setEphemeral(true).queue();
+        } else {
+            event.reply("Es wurden keine Einstellungen geändert.\n-# Du hast keine Optionen angewählt oder die angegebenen Werte sind ungültig.").setEphemeral(true).queue();
+        }
     }
 
     @Override
