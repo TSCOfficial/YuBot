@@ -41,15 +41,15 @@ public class SlashCommandRegistry {
      */
     public void loadCommands() {
         List<ISlashCommand> slashCommands = List.of(
-                new TestCmd(), // tests only
-                new ProfileCmd()
+                new TestCmd() // tests only
         );
 
         List<ISlashCommandGroup> slashCommandGroups = List.of(
                 new TicketCmdGroup(),
                 new ActiveModCmdGroup(),
                 new SendCmdGroup(),
-                new MentionCmdGroup()
+                new MentionCmdGroup(),
+                new ProfileCmdGroup()
         );
 
         slashCommands.forEach(cmd -> {

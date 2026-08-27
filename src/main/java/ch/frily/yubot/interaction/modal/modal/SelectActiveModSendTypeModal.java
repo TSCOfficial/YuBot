@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.radiogroup.RadioGroup;
-import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import org.jspecify.annotations.NonNull;
@@ -48,7 +47,7 @@ public class SelectActiveModSendTypeModal extends Modal {
     public void execute(@NonNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException {
         String sendInDM = event.getValue("type-selector").getAsString();
         log.info("ActiveMod send type selection for {} set to {}", event.getMember().getEffectiveName(), sendInDM);
-        ProfileRepository.setActiveModSendInDm(event.getMember(), sendInDM.equals("dm"));
+        ProfileRepository.setSetting(event.getMember(), ProfileRepository.Setting.ACTIVEMOD_SEND_IN_DM, sendInDM.equals("dm"));
         ActiveMod.registerModerator(event.getMember()).thenAccept(response -> {
             event.reply(response).setEphemeral(true).queue();
         });

@@ -1,7 +1,7 @@
 package ch.frily.yubot.interaction.command.cmd;
 
 import ch.frily.yubot.container.ProfilContainer;
-import ch.frily.yubot.interaction.command.ISlashCommand;
+import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import lombok.extern.slf4j.Slf4j;
@@ -19,10 +19,10 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Slf4j
-public class ProfileCmd implements ISlashCommand {
+public class ProfileShowCmd implements ISlashSubcommand {
     @Override
     public String getName() {
-        return "profile";
+        return "show";
     }
 
     @Override
@@ -50,7 +50,6 @@ public class ProfileCmd implements ISlashCommand {
         if (event.getOption("user") != null) {
             member = event.getOption("user").getAsMember();
         }
-        log.info("Opening profile for {}", member.getEffectiveName());
         ProfilContainer container = new ProfilContainer(member);
 
         container.buildAsync().thenAccept(builtContainer -> {
