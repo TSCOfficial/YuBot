@@ -3,6 +3,7 @@ package ch.frily.yubot.feature;
 import ch.frily.yubot.embed.ClosureActivityRequestEmbed;
 import ch.frily.yubot.embed.ClosureLogEmbed;
 import ch.frily.yubot.exception.ThrowingConsumer;
+import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.button.btn.ActiveModActivityProveBtn;
 import ch.frily.yubot.interaction.button.btn.ActiveModOptOutBtn;
 import ch.frily.yubot.interaction.button.btn.DeleteActivityRequestMsgBtn;
@@ -96,12 +97,13 @@ public class Closure {
             lobbyChannel.sendMessage(String.format("""
                     ## %s
                     Der server ist nun geschlossen.
-                    -# Es gibt keine aktiven Moderatoren mehr.
+                    -# Es gibt keine aktiven Moderator*innen mehr.
                     """, EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_SERVERGESCHLOSSEN).getAsMention())).queue();
             guild.getManager().setIcon(Icon.from(getClass().getResourceAsStream("/icon/server-icon-closed.png"))).queue();
             guild.getManager().setBanner(Icon.from(getClass().getResourceAsStream("/icon/server-banner-closed.png"))).queue();
         }
         DynamicMessageList.TICKET_PANEL.update();
+        DynamicMessageList.ACTIVE_MOD_CONTROL.update();
     }
 
     /**
@@ -223,24 +225,15 @@ public class Closure {
         ActiveMod activeMod = ActiveModRepository.getModerator(member);
         deleteRequestedAttentionMessages();
 
-        Consumer<Void> deletingInPrivateChannel = failure -> {
-            log.info("deleting in private channel");
-            member.getUser().openPrivateChannel().submit().thenAccept(privateChannel ->
-                    privateChannel.deleteMessageById(activeMod.activityRequestMessageId()).queue()
-            );
-        };
-
         if (activeMod.activityRequestMessageId() != 0) { // automatically accept an active activity-prove-request
             TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
             channel.deleteMessageById(activeMod.activityRequestMessageId()).queue(
-                    success -> log.info("deleted message: {}", activeMod.activityRequestMessageId()),
+                    success -> {},
                     failure -> {
-                        log.error(String.valueOf(failure));
-                        log.info("deleting in private channel");
                         member.getUser().openPrivateChannel().submit().thenAccept(privateChannel ->
                                 privateChannel.deleteMessageById(activeMod.activityRequestMessageId()).queue(
-                                        s -> log.info("deleted message"),
-                                        f -> log.error("failed to delete in private channel", f)
+                                        s -> {},
+                                        f -> log.error("failed to delete activity requestr message in public & private channel", f)
                                 )
                         );
                     });
@@ -257,10 +250,15 @@ public class Closure {
      */
     public static void requestActivityProve(ActiveMod moderator) throws SQLException, ClassNotFoundException {
         TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
+        if (moderator.member().getIdLong() == 618876411905835018L) {
+            channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_ACTIVEMODERATION);
+        }
 
         if (moderator.activityRequestedAt() == null) {
 
-            ActionRow actionrow = ActionRow.of(new ActiveModActivityProveBtn().build(), new ActiveModOptOutBtn().build());
+            ActiveModOptOutBtn optOutBtn = new ActiveModOptOutBtn();
+            optOutBtn.setDeleteMsgOnOptOut(true);
+            ActionRow actionrow = ActionRow.of(new ActiveModActivityProveBtn().build(), optOutBtn.build());
 
             channel.sendMessage(moderator.member().getAsMention())
                     .addEmbeds(new ClosureActivityRequestEmbed(moderator).build())
@@ -282,7 +280,9 @@ public class Closure {
     public static void requestActivityProveViaDM(ActiveMod moderator) throws SQLException, ClassNotFoundException {
         if (moderator.activityRequestedAt() == null) {
 
-            ActionRow actionrow = ActionRow.of(new ActiveModActivityProveBtn().build(), new ActiveModOptOutBtn().build());
+            ActiveModOptOutBtn optOutBtn = new ActiveModOptOutBtn();
+            optOutBtn.setDeleteMsgOnOptOut(true);
+            ActionRow actionrow = ActionRow.of(new ActiveModActivityProveBtn().build(), optOutBtn.build());
 
             moderator.member().getUser().openPrivateChannel().submit().thenAccept(ThrowingConsumer.wrap(null, privateChannel -> {
                 privateChannel.sendMessage(moderator.member().getAsMention())
@@ -309,6 +309,9 @@ public class Closure {
         if (getActiveMods().size() == 1) {
             if (moderator.activityRequestedAt().isBefore(LocalDateTime.now().minusMinutes(Closure.PING_MODS_AFTER_ACTIVITY_REQUEST_IF_ALONE)) && moderator.requestedAttentionMessageId() == 0) {
                 TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
+                if (moderator.member().getIdLong() == 618876411905835018L) {
+                    channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_ACTIVEMODERATION);
+                }
                 channel.sendMessage(String.format("""
                                 %s
                                 ⚠️ %s hat bislang noch nicht auf die Aktivitätsbestätigungsanfrage geantwortet.
@@ -327,6 +330,10 @@ public class Closure {
         if (moderator.activityRequestedAt().isBefore(LocalDateTime.now().minusMinutes(Closure.MAX_NORMAL_ACTIVITY_REQUEST_RESPONSE_TIME))) {
             Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
             TextChannel channel = guild.getTextChannelById(1516042711273046087L);
+
+            if (moderator.member().getIdLong() == 618876411905835018L) {
+                channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_ACTIVEMODERATION);
+            }
 
             long epochTime = moderator.lastActivityAt().atZone(EnvResolver.getZoneId()).toEpochSecond();
 

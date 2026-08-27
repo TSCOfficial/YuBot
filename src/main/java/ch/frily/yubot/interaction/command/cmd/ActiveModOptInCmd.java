@@ -2,14 +2,18 @@ package ch.frily.yubot.interaction.command.cmd;
 
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.ThrowingConsumer;
+import ch.frily.yubot.feature.ActiveMod;
 import ch.frily.yubot.feature.Closure;
+import ch.frily.yubot.feature.ProfileRepository;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
+import ch.frily.yubot.interaction.modal.modal.SelectActiveModSendTypeModal;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -32,22 +36,15 @@ public class ActiveModOptInCmd implements ISlashSubcommand {
     }
 
     @Override
-    public void execute(@NotNull SlashCommandInteractionEvent event) {
-        Role activeMod = EnvResolver.getRoleById(1513639704870912130L);
-
-        if (event.getMember().getRoles().contains(activeMod)) {
-            throw new InvalidStateException("Du bist bereits als aktiver moderator\\*in markiert.", null);
+    public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
+        if (ProfileRepository.getProfile(event.getMember()) == null || ProfileRepository.getProfile(event.getMember()).activeModSendInDm() == null) {
+            // If the user does not have set the activeModSendInDm
+            event.replyModal(new SelectActiveModSendTypeModal().build()).queue();
+            return;
         }
-        event.getGuild().addRoleToMember(event.getMember(), activeMod).submit().thenAccept(ThrowingConsumer.wrap(null, _ -> {
-            int activeModCount = Closure.getActiveMods().size();
-            Closure.deleteRequestedAttentionMessages();
 
-            String countInfo = "Es sind nun **" + activeModCount + "** aktive Moderator\\*innen.";
-            if (activeModCount == 1) {
-                countInfo = "Es ist nun nur **" + activeModCount + "** aktive\\*r Moderator\\*in";
-            }
-
-            event.reply("✅ Du wurdest als aktive\\*r moderator\\*in markiert.\n-# " + countInfo).setEphemeral(true).queue();
-        }));
+        ActiveMod.registerModerator(event.getMember()).thenAccept(response -> {
+            event.reply(response).setEphemeral(true).queue();
+        });
     }
 }

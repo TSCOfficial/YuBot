@@ -7,6 +7,8 @@ import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
+import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -20,6 +22,10 @@ import java.sql.SQLException;
  * When the last active mod wants to opt-out via command, the bot askes to approve the opt-out before closing the server
  */
 public class ActiveModOptOutBtn extends Button {
+
+    @Setter
+    private boolean deleteMsgOnOptOut = false;
+
     @Override
     public String getId() {
         return "activemod-optout";
@@ -54,7 +60,9 @@ public class ActiveModOptOutBtn extends Button {
             }
 
             event.reply("✅ Du wurdest als aktive\\*r moderator\\*in entfernt.\n-# " + countInfo).setEphemeral(true).queue();
-            event.getMessage().delete().queue();
+            if (deleteMsgOnOptOut) {
+                event.getMessage().delete().queue();
+            }
         }));
     }
 }

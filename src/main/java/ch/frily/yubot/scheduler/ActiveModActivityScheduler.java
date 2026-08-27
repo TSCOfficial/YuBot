@@ -2,17 +2,14 @@ package ch.frily.yubot.scheduler;
 
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.*;
-import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.entities.Member;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
-public class ActiveModActivityIScheduler implements IScheduler {
+public class ActiveModActivityScheduler implements IScheduler {
 
     @Override
     public void execute() throws SQLException, ClassNotFoundException {
@@ -27,7 +24,10 @@ public class ActiveModActivityIScheduler implements IScheduler {
 
         outdatedActiveMods.forEach(activeMod -> {
             try {
-                boolean sendInDM = ProfileRepository.getProfile(activeMod.member()).activeModSendInDm();
+                boolean sendInDM = false;
+                if (ProfileRepository.getProfile(activeMod.member()) != null) {
+                    sendInDM = ProfileRepository.getProfile(activeMod.member()).activeModSendInDm();
+                }
                 if (sendInDM) {
                     Closure.requestActivityProveViaDM(activeMod);
                 } else {

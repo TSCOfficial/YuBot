@@ -38,7 +38,7 @@ public class ActiveModOptOutCmd implements ISlashSubcommand {
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) {
         Role activeMod = EnvResolver.getRoleById(1513639704870912130L);
-        int activeModCount = Closure.getActiveMods().size();
+        int activeModCount = Closure.getActiveMods().size() - 1;
         if (activeModCount == 0) {
             event.reply("**Bestätige dein Opt-out**\nDu bist der/die letzte aktive Moderator*in. Bitte bestätige dein Opt-out.\n-# Falls du bestätigst wird der Server sofort geschlossen.")
                     .addComponents(ActionRow.of(new ActiveModApproveOptOutBtn().build(), new ActiveModCancelOptOutBtn().build())).setEphemeral(true).queue();

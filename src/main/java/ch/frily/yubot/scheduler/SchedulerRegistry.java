@@ -29,7 +29,7 @@ public class SchedulerRegistry {
 
     public static void registerAll() {
         List<IScheduler> schedulers = List.of(
-                new ActiveModActivityIScheduler(),
+                new ActiveModActivityScheduler(),
                 new CleanStorageScheduler(),
                 new AbsenceContainerScheduler(),
                 new TicketActivityScheduler()

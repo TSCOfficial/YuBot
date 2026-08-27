@@ -23,8 +23,8 @@ public class ImageFetcher {
         return CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofByteArray())
                 .thenApply(response -> {
                     try {
-                        log.info("Received image from {}", url);
-                        return ImageIO.read(new ByteArrayInputStream(response.body()));
+                        BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.body()));
+                        return image;
                     } catch (IOException e) {
                         throw new CompletionException(new ImagingOpException("Konnte Bild nicht laden: " + url));
                     }

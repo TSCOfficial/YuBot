@@ -2,9 +2,12 @@ package ch.frily.yubot.interaction.button.btn;
 
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.ThrowingConsumer;
+import ch.frily.yubot.feature.ActiveMod;
 import ch.frily.yubot.feature.ActiveModRepository;
 import ch.frily.yubot.feature.Closure;
+import ch.frily.yubot.feature.ProfileRepository;
 import ch.frily.yubot.interaction.button.Button;
+import ch.frily.yubot.interaction.modal.modal.SelectActiveModSendTypeModal;
 import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Role;
@@ -34,22 +37,14 @@ public class ActiveModOptInBtn extends Button {
 
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
-        Role activeMod = EnvResolver.getRoleById(1513639704870912130L);
-
-        if (event.getMember().getRoles().contains(activeMod)) {
-            ActiveModRepository.updateModeratorActivity(event.getMember());
+        if (ProfileRepository.getProfile(event.getMember()) == null || ProfileRepository.getProfile(event.getMember()).activeModSendInDm() == null) {
+            // If the user does not have set the activeModSendInDm
+            event.replyModal(new SelectActiveModSendTypeModal().build()).queue();
             return;
         }
-        event.getGuild().addRoleToMember(event.getMember(), activeMod).submit().thenAccept(ThrowingConsumer.wrap(null, _ -> {
-            int activeModCount = Closure.getActiveMods().size();
-            Closure.deleteRequestedAttentionMessages();
 
-            String countInfo = "Es sind nun **" + activeModCount + "** aktive Moderator\\*innen.";
-            if (activeModCount == 1) {
-                countInfo = "Du moderierst den server momentan alleine.";
-            }
-
-            event.reply("✅ Du wurdest als aktive\\*r moderator\\*in markiert.\n-# " + countInfo).setEphemeral(true).queue();
-        }));
+        ActiveMod.registerModerator(event.getMember()).thenAccept(response -> {
+            event.reply(response).setEphemeral(true).queue();
+        });
     }
 }

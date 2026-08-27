@@ -19,11 +19,40 @@ public class BannerResolver {
         return member.getUser().retrieveProfile().submit()
                 .thenCompose(userProfile -> {
                     String globalBanner = userProfile.getBannerUrl();
+                    log.info("Global banner URL: {}", globalBanner);
                     if (globalBanner != null) {
-                        return ImageFetcher.fetch(globalBanner);
+                        return ImageFetcher.fetch(globalBanner + "?size=1024").thenApply(image -> scaleToFixedSizeCover(image, DEFAULT_WIDTH, DEFAULT_HEIGHT));
                     }
                     return CompletableFuture.completedFuture(generateColorBanner(userProfile));
                 });
+    }
+
+    private static BufferedImage scaleToFixedSizeCover(BufferedImage source, int targetWidth, int targetHeight) {
+        double scale = Math.max(
+                (double) targetWidth / source.getWidth(),
+                (double) targetHeight / source.getHeight()
+        );
+
+        int scaledWidth = (int) Math.ceil(source.getWidth() * scale);
+        int scaledHeight = (int) Math.ceil(source.getHeight() * scale);
+
+        BufferedImage scaled = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = scaled.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+
+        // zentrieren und beschneiden
+        int x = (targetWidth - scaledWidth) / 2;
+        int y = (targetHeight - scaledHeight) / 2;
+
+        g2d.drawImage(source, x, y, scaledWidth, scaledHeight, null);
+        g2d.dispose();
+
+        return scaled;
     }
 
     private static BufferedImage generateColorBanner(User.Profile profile) {
