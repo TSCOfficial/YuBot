@@ -63,7 +63,6 @@ public class ProfileRepository {
     }
 
     public static void setSetting(Member member, Setting setting, Object value) throws SQLException, ClassNotFoundException {
-        log.info("Setting {} for {} to {}", setting, member.getEffectiveName(), value);
         createProfileIfMissing(member);
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
         query.where(Table.ProfileColumn.MEMBER_ID, DatabaseQuery.Operator.EQUALS, member.getId());

@@ -49,17 +49,22 @@ public class ProfileSettingCmd implements ISlashSubcommand {
         }).filter(Objects::nonNull).toList();
 
         StringBuilder modifiedSettingsSB = new StringBuilder();
+        StringBuilder failedSettingsSB = new StringBuilder();
         options.forEach(option -> {
             log.info(option.getName());
             log.info(option.getAsString());
             try {
                 ProfileRepository.Setting setting = ProfileRepository.getSettingByLabel(option.getName());
-                if (setting.getDataType() == Boolean.class) {
-                    ProfileRepository.setSetting(event.getMember(), setting, option.getAsBoolean());
+                if (validateInput(option, setting)) {
+                    if (setting.getDataType() == Boolean.class) {
+                        ProfileRepository.setSetting(event.getMember(), setting, option.getAsBoolean());
+                    } else {
+                        ProfileRepository.setSetting(event.getMember(), setting, option.getAsString());
+                    }
+                    modifiedSettingsSB.append(String.format("**%s** geändert auf **%s**\n", setting.getLabel(), option.getAsString()));
                 } else {
-                    ProfileRepository.setSetting(event.getMember(), setting, option.getAsString());
+                    failedSettingsSB.append(String.format("**%s** ungültiger Wert: %s\n", setting.getLabel(), option.getAsString()));
                 }
-                modifiedSettingsSB.append(String.format("**%s** geändert auf **%s**\n", setting.getLabel(), option.getAsString()));
             } catch (Exception e) {
                 ExceptionHandler.handle(e, event);
             }
@@ -70,6 +75,26 @@ public class ProfileSettingCmd implements ISlashSubcommand {
         } else {
             event.reply("Es wurden keine Einstellungen geändert.\n-# Du hast keine Optionen angewählt oder die angegebenen Werte sind ungültig.").setEphemeral(true).queue();
         }
+    }
+
+    /**
+     * Checks if the input is a valid value for the given setting, to prevent false input due to the autocomplete feature
+     * <p>
+     *     Autocomplete options are only allowed for non-boolean settings, so the method can handle any input as a string
+     * </p>
+     * @param inputOption
+     * @param setting
+     * @return
+     */
+    private boolean validateInput(OptionMapping inputOption, ProfileRepository.Setting setting){
+        if (setting.getDataType() == Boolean.class){
+            return true;
+        }
+        List<String> autocompleteOptions = setting.getAutocompleteOptions();
+        if(autocompleteOptions == null){
+            return true;
+        }
+        return autocompleteOptions.contains(inputOption.getAsString());
     }
 
     @Override
