@@ -1,6 +1,7 @@
 package ch.frily.yubot.interaction;
 
 import ch.frily.yubot.exception.InvalidStateException;
+import ch.frily.yubot.util.Randomizer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -35,7 +36,7 @@ public abstract class ArgumentComponent {
                     .reduce((a, b) -> a + "&" + b)
                     .orElse(""));
         }
-        id.append("#").append(ThreadLocalRandom.current().nextInt(0, 9999));
+        id.append("#").append(Randomizer.alphaNumeric(6));
 
         if (id.length() > MAX_COMPONENT_ID_LENGTH) {
             throw new InvalidStateException(String.format("Component ID '%s' is %d characters long but discord only allows %d. Shorten the argument keys or values.",
