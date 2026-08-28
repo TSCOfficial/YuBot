@@ -118,11 +118,9 @@ public abstract class PaginationContainer extends Container {
         // todo das splitten funktioniert zwar, aber splittet nur seine eigenen items auf. alle absenzen müssen demnach in eine liste verpackt werden und dann werden sie erst gesplittet
         //List<ContainerChildComponent> splittedItem = items.stream().flatMap(item -> item.getChildren().stream()).toList();
         for (PaginationItem item : items) {
-            log.info("used components: {}, budget: {}, item components: {}", currentPageComponentCount, budget, item.getComponentCount());
 
             // Start the next page before the current one runs over the budget
             if (!currentProcessedItems.isEmpty() && budget - currentPageComponentCount - item.getComponentCount() <= 0) {
-                log.info("added page");
                 addPage(currentProcessedItems);
                 currentProcessedItems.clear();
                 currentPageComponentCount = 0;

@@ -63,6 +63,7 @@ public final class ExceptionHandler {
             log(clientException);
 
             if (callback != null) {
+                log.info("Exception reported to user: {}", cause.getMessage());
                 replyToUser(callback, clientException.toUserMessage());
             }
             return;
@@ -75,6 +76,7 @@ public final class ExceptionHandler {
             if (cause.getMessage() != null) {
                 errorMessage = "```\n" + cause.getMessage() + "\n```";
             }
+            log.info("Exception reported to user: {}", cause.getMessage());
             replyToUser(callback, String.format("%s\n%s\n-# %s", GENERIC_USER_MESSAGE, errorMessage, GENERIC_USER_HINT));
         }
     }

@@ -18,11 +18,13 @@ public class ProfileRepository {
      * Maps the settings to all required generic utilities
      */
     public enum Setting {
-        ACTIVEMOD_SEND_IN_DM("aktivitätsbestätigungsanfrage", Table.ProfileColumn.ACTIVEMOD_SEND_IN_DM, Boolean.class),
-        TESTTTTT("test_1_2", Table.ProfileColumn.ACTIVEMOD_SEND_IN_DM, String.class, List.of("test", "test2"));
+        ACTIVEMOD_SEND_IN_DM("aktivitätsbestätigungsanfrage", "Entscheide wo deine ActiveMod-Nachrichten gesendet werden.", Table.ProfileColumn.ACTIVEMOD_SEND_IN_DM, Boolean.class),
+        ;
 
         @Getter
         String label;
+        @Getter
+        String description;
         @Getter
         Table.Column getColumn;
         @Getter
@@ -30,13 +32,36 @@ public class ProfileRepository {
         @Getter
         List<String> autocompleteOptions;
 
-        <T> Setting(String label, Table.Column dbColumn, Class<T> dataType){
+        /**
+         * Define a Setting without autocomplete options
+         * <p>
+         *     This is primarly used for boolean-settings, because boolean inputs automaticly show true/false.
+         * </p>
+         * @param label
+         * @param description
+         * @param dbColumn database column to be able to resolve for generic actions
+         * @param dataType The type of the setting
+         * @param <T>
+         */
+        <T> Setting(String label, String description, Table.Column dbColumn, Class<T> dataType){
             this.label = label;
+            this.description = description;
             this.getColumn = dbColumn;
             this.dataType = dataType;
         }
-        <T> Setting(String label, Table.Column dbColumn, Class<T> dataType, List<T> options){
+
+        /**
+         * Define a Setting with autocomplete options
+         * @param label
+         * @param description
+         * @param dbColumn database column to be able to resolve for generic actions
+         * @param dataType The type of the setting
+         * @param options Selectable types for that setting in the given dataType
+         * @param <T>
+         */
+        <T> Setting(String label, String description, Table.Column dbColumn, Class<T> dataType, List<T> options){
             this.label = label;
+            this.description = description;
             this.getColumn = dbColumn;
             this.dataType = dataType;
             this.autocompleteOptions = options.stream().map(Object::toString).toList();

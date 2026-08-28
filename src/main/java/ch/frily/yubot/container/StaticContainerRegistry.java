@@ -33,7 +33,7 @@ public enum StaticContainerRegistry {
     ABSENCE_OVERVIEW(true, ctx -> {
         return new AbsenceOverviewContainer(ctx).build();
     }),
-    /** Renders the absences of the interacting member, so it only works with an interaction present */
+    /** Renders the absences of the interacting member, so it only works with an interaction present (therefore not sendable) */
     ABSENCE_EDITOWN(false, ctx -> {
         return new AbsenceEditOwnContainer(ctx).build();
     }),
