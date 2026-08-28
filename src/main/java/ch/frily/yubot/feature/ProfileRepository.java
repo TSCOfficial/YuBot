@@ -2,6 +2,7 @@ package ch.frily.yubot.feature;
 
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
+import ch.frily.yubot.exception.InvalidStateException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
@@ -83,8 +84,15 @@ public class ProfileRepository {
             boolean activeModSendInDm = rs.getBoolean(Table.ProfileColumn.ACTIVEMOD_SEND_IN_DM.getColumn());
             return new Profile(member, activeModSendInDm);
         }
-
         return null;
+    }
+
+    public static Profile getProfileOrThrow(Member member) throws InvalidStateException, SQLException, ClassNotFoundException {
+        Profile profile = getProfile(member);
+        if (profile == null) {
+            throw new InvalidStateException("No profile found");
+        }
+        return profile;
     }
 
     public static void setSetting(Member member, Setting setting, Object value) throws SQLException, ClassNotFoundException {

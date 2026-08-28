@@ -1,8 +1,10 @@
 package ch.frily.yubot.embed;
 
 
+import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.feature.ActiveMod;
 import ch.frily.yubot.feature.Closure;
+import ch.frily.yubot.feature.ProfileRepository;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.entities.Role;
@@ -26,6 +28,12 @@ public class ClosureActivityRequestEmbed implements IEmbed {
 
     @Override
     public String getDescription() {
+        boolean activeModSendInDm = false;
+        try {
+            activeModSendInDm = ProfileRepository.getProfileOrThrow(activeMod.member()).activeModSendInDm();
+        } catch (Exception e) {
+            // already false if no profile exist
+        }
         StringBuilder builder = new StringBuilder();
         builder.append(String.format("## %s, bestätige deine Anwesenheit\n", activeMod.member().getEffectiveName()));
         builder.append(String.format("Deine letzte Aktivität war um <t:%d:T> (<t:%d:R>). Bitte bestätige deine Anwesenheit.\n", epochTime, epochTime));
@@ -42,8 +50,8 @@ public class ClosureActivityRequestEmbed implements IEmbed {
         }
 
         builder.append(
-                String.format("-# Du hast %d Minuten Zeit um deine Anwesenheit zu bestätigen. Falls du nicht bestätigst, wird dir die %s Rolle automatisch entfernt.",
-                        Closure.getMAX_NORMAL_ACTIVITY_REQUEST_RESPONSE_TIME(), activeModRole
+                String.format("-# Du hast %d Minuten Zeit um deine Anwesenheit zu bestätigen. Falls du nicht bestätigst, wird dir die %s-Rolle automatisch entfernt.",
+                        Closure.getMAX_NORMAL_ACTIVITY_REQUEST_RESPONSE_TIME(), activeModSendInDm ? activeModRole : "ActiveMod"
                 )
         );
 

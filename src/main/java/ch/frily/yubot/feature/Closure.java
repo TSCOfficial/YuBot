@@ -14,7 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -329,19 +331,16 @@ public class Closure {
         }
         if (moderator.activityRequestedAt().isBefore(LocalDateTime.now().minusMinutes(Closure.MAX_NORMAL_ACTIVITY_REQUEST_RESPONSE_TIME))) {
             Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
-            TextChannel channel = guild.getTextChannelById(1516042711273046087L);
 
-            if (moderator.member().getIdLong() == 618876411905835018L) {
-                channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_ACTIVEMODERATION);
+            if (ProfileRepository.getProfile(moderator.member()).activeModSendInDm()) {
+                moderator.member().getUser().openPrivateChannel().queue(privateChannel -> {
+                    editIgnoredRequestActivityMsg(privateChannel, moderator);
+                });
+            } else {
+                TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
+
+                editIgnoredRequestActivityMsg(channel, moderator);
             }
-
-            long epochTime = moderator.lastActivityAt().atZone(EnvResolver.getZoneId()).toEpochSecond();
-
-            channel.retrieveMessageById(moderator.activityRequestMessageId()).queue(message -> {
-                message.editMessage(
-                        String.format("❌ %s hat die Aktivitätsbestätigungsanfrage ignoriert.\n-# Zuletzt erkannte Aktivität war um <t:%d:T> (<t:%d:R>).", moderator.member().getAsMention(), epochTime, epochTime)
-                ).setComponents(ActionRow.of(new DeleteActivityRequestMsgBtn().build())).setEmbeds().queue();
-            });
 
             log.info("active mod size: {}", getActiveMods().size());
             long requestMessageId = moderator.activityRequestMessageId();
@@ -357,6 +356,16 @@ public class Closure {
             ActiveModTrackingRepository.incrementMissedActivityRequestCount(moderator.member());
 
         }
+    }
+
+    private static void editIgnoredRequestActivityMsg(MessageChannel channel, ActiveMod moderator) {
+        long epochTime = moderator.lastActivityAt().atZone(EnvResolver.getZoneId()).toEpochSecond();
+
+        channel.retrieveMessageById(moderator.activityRequestMessageId()).queue(message -> {
+            message.editMessage(
+                    String.format("❌ %s hat die Aktivitätsbestätigungsanfrage ignoriert.\n-# Zuletzt erkannte Aktivität war um <t:%d:T> (<t:%d:R>).", moderator.member().getAsMention(), epochTime, epochTime)
+            ).setComponents(ActionRow.of(new DeleteActivityRequestMsgBtn().build())).setEmbeds().queue();
+        });
     }
 
     /**
