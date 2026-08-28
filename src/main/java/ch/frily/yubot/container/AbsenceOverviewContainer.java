@@ -136,11 +136,11 @@ public class AbsenceOverviewContainer extends PaginationContainer {
         detailBtn.addArgument("absence_id", absence.id().toString());
 
         pageItem.addChild(Section.of(detailBtn.build(), TextDisplay.ofFormat("""
-                > **[%s](https://discord.com/users/%s)**
+                > **%s**
                 > -# %s
                 > %s %s
                 """,
-                absence.member().getEffectiveName(), absence.member().getId(),
+                absence.member().getEffectiveName(),
                 getTeamRoles(absence.member()).stream().map(Role::getAsMention).collect(Collectors.joining(", ")),
                 absence.type().getEmoji().getFormatted(), timeRange)
         ));

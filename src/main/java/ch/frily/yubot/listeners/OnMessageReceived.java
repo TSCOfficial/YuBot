@@ -85,8 +85,13 @@ public class OnMessageReceived extends ListenerAdapter {
                         if (Util.resolveCategory(event.getGuildChannel()) != null && Util.resolveCategory(event.getGuildChannel()).getId().equals(EnvResolver.getCategoryById(EnvKey.CATEGORY_TEAMBEREICH).getId())) {
                             sb.append(String.format("> Begründung: %s", todaysAbsence.reason())).append("\n");
                         }
-                        sb.append(String.format("-# *<:timer:1522290651742339122> Nachricht wird <t:%d:R> gelöscht.*", Util.toEpochSeconds(LocalDateTime.now().plusSeconds(deleteNoticeDelay)))).append("\n");
 
+
+                        String customAbsenceNotice = ProfileRepository.getSetting(member, Setting.ABSENCE_NOTICE, String.class);
+                        if (customAbsenceNotice != null) {
+                            sb.append(String.format("> -# %s\n", customAbsenceNotice));
+                        }
+                        sb.append(String.format("-# *<:timer:1522290651742339122> Nachricht wird <t:%d:R> gelöscht.*", Util.toEpochSeconds(LocalDateTime.now().plusSeconds(deleteNoticeDelay)))).append("\n");
                         event.getMessage().reply(sb.toString()).setAllowedMentions(List.of()).queue(message -> {
                             message.delete().queueAfter(60, TimeUnit.SECONDS);
                         });
