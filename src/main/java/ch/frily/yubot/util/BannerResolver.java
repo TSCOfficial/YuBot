@@ -19,7 +19,6 @@ public class BannerResolver {
         return member.getUser().retrieveProfile().submit()
                 .thenCompose(userProfile -> {
                     String globalBanner = userProfile.getBannerUrl();
-                    log.info("Global banner URL: {}", globalBanner);
                     if (globalBanner != null) {
                         return ImageFetcher.fetch(globalBanner + "?size=1024").thenApply(image -> scaleToFixedSizeCover(image, DEFAULT_WIDTH, DEFAULT_HEIGHT));
                     }

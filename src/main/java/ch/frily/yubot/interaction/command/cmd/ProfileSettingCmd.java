@@ -165,7 +165,7 @@ public class ProfileSettingCmd implements ISlashSubcommand {
                 setting.getLabel(),
                 setting.getDescription(),
                 false,
-                setting.getDataType() == Boolean.class ? false : true
+                setting.getAutocompleteOptions() == null ? false : true
         )).toList();
     }
 

@@ -332,7 +332,7 @@ public class Closure {
         if (moderator.activityRequestedAt().isBefore(LocalDateTime.now().minusMinutes(Closure.MAX_NORMAL_ACTIVITY_REQUEST_RESPONSE_TIME))) {
             Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
 
-            if (ProfileRepository.getProfile(moderator.member()).activeModSendInDm()) {
+            if (ProfileRepository.getProfile(moderator.member()).activeModSendInDm().equals("Via DM")) {
                 moderator.member().getUser().openPrivateChannel().queue(privateChannel -> {
                     editIgnoredRequestActivityMsg(privateChannel, moderator);
                 });

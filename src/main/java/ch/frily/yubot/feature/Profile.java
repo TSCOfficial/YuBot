@@ -2,5 +2,5 @@ package ch.frily.yubot.feature;
 
 import net.dv8tion.jda.api.entities.Member;
 
-public record Profile(Member member, Boolean activeModSendInDm) {
+public record Profile(Member member, String activeModSendInDm, String absenceNotice) {
 }

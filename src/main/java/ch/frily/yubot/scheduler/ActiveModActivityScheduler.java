@@ -26,7 +26,7 @@ public class ActiveModActivityScheduler implements IScheduler {
             try {
                 boolean sendInDM = false;
                 if (ProfileRepository.getProfile(activeMod.member()) != null) {
-                    sendInDM = ProfileRepository.getProfile(activeMod.member()).activeModSendInDm();
+                    sendInDM = ProfileRepository.getProfile(activeMod.member()).activeModSendInDm().equals("Via DM");
                 }
                 if (sendInDM) {
                     Closure.requestActivityProveViaDM(activeMod);

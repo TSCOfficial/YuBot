@@ -18,8 +18,9 @@ public class ProfileRepository {
         ResultSet rs = query.executeDataQuery();
 
         if (rs.next()) {
-            boolean activeModSendInDm = rs.getBoolean(Table.ProfileColumn.ACTIVEMOD_SEND_IN_DM.getColumn());
-            return new Profile(member, activeModSendInDm);
+            String activeModSendInDm = rs.getString(Table.ProfileColumn.ACTIVEMOD_SEND_IN_DM.getColumn());
+            String absenceNotice = rs.getString(Table.ProfileColumn.ABSENCE_NOTICE.getColumn());
+            return new Profile(member, activeModSendInDm, absenceNotice);
         }
         return null;
     }
@@ -32,11 +33,31 @@ public class ProfileRepository {
         return profile;
     }
 
+    /**
+     * Get the value of a given setting from a user
+     * @param member
+     * @param setting
+     * @return the string value or null if the setting is not found
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
+    public static <T> T getSetting(Member member, Setting setting, Class<T> dataType) throws SQLException, ClassNotFoundException {
+        DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
+        query.select(setting.getDbColumn());
+        query.where(Table.ProfileColumn.MEMBER_ID, DatabaseQuery.Operator.EQUALS, member.getId());
+        ResultSet rs = query.executeDataQuery();
+
+        if (rs.next()) {
+            return rs.getObject(setting.getDbColumn().getColumn(), dataType);
+        }
+        return null;
+    }
+
     public static void upsertSetting(Member member, Setting setting, Object value) throws SQLException, ClassNotFoundException {
         createProfileIfMissing(member);
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
         query.where(Table.ProfileColumn.MEMBER_ID, DatabaseQuery.Operator.EQUALS, member.getId());
-        query.update(setting.getColumn, value);
+        query.update(setting.dbColumn, value);
         query.executeQuery();
     }
 

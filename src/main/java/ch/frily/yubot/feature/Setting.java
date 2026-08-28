@@ -17,25 +17,24 @@ public enum Setting {
             "aktivitätsbestätigungsanfrage",
             "Entscheide wo deine ActiveMod-Nachrichten gesendet werden.",
             Table.ProfileColumn.ACTIVEMOD_SEND_IN_DM,
-            Boolean.class,
-            List.of(EnvKey.ROLE_MODERATOR)
-    ),
-    TESTTTT(
-            "test123",
-            "nur ein test",
-            Table.AbsenceColumn.REASON,
             String.class,
             List.of(EnvKey.ROLE_MODERATOR),
-            List.of("Hiiii", "hellloooo")
-    )
-    ;
+            List.of("Via DM", "Via Server")
+    ),
+    ABSENCE_NOTICE(
+            "abwesenheitsmeldung",
+            "Nachricht welche bei @Erwähnungen während deiner Absenz gesendet wird.",
+            Table.ProfileColumn.ABSENCE_NOTICE,
+            String.class,
+            List.of(EnvKey.ROLE_YUTEAM, EnvKey.ROLE_TWITCHMOD)
+    );
 
     @Getter
     String label;
     @Getter
     String description;
     @Getter
-    Table.Column getColumn;
+    Table.Column dbColumn;
     @Getter
     Class<?> dataType;
     @Getter
@@ -46,7 +45,7 @@ public enum Setting {
     /**
      * Define a Setting without autocomplete options
      * <p>
-     *     This is primarly used for boolean-settings, because boolean inputs automaticly show true/false.
+     *     This is primarily used for boolean-settings, because boolean inputs automatically show true/false.
      * </p>
      * @param label
      * @param description
@@ -57,7 +56,7 @@ public enum Setting {
     <T> Setting(String label, String description, Table.Column dbColumn, Class<T> dataType, List<EnvKey> allowedRoles){
         this.label = label;
         this.description = description;
-        this.getColumn = dbColumn;
+        this.dbColumn = dbColumn;
         this.dataType = dataType;
         this.allowedRoles = allowedRoles.stream().map(EnvResolver::getRoleById).toList();
     }
@@ -74,7 +73,7 @@ public enum Setting {
     <T> Setting(String label, String description, Table.Column dbColumn, Class<T> dataType, List<EnvKey> allowedRoles, List<T> options){
         this.label = label;
         this.description = description;
-        this.getColumn = dbColumn;
+        this.dbColumn = dbColumn;
         this.dataType = dataType;
         this.allowedRoles = allowedRoles.stream().map(EnvResolver::getRoleById).toList();
         this.autocompleteOptions = options.stream().map(Object::toString).toList();
@@ -83,17 +82,6 @@ public enum Setting {
     public static Setting getSettingByLabel(String label){
         return Arrays.stream(Setting.values()).filter(setting -> setting.getLabel().equals(label)).findFirst().orElse(null);
     }
-
-//    private void validateEnumEntries() {
-//        Arrays.stream(Setting.values()).forEach(setting -> {
-//            if(setting.autocompleteOptions != null && setting.dataType != String.class){
-//                throw new IllegalArgumentException("Autocomplete options are only allowed for String settings");
-//            }
-//            if (setting.autocompleteOptions == null && setting.dataType == String.class){
-//                throw new IllegalArgumentException("Autocomplete options are required for String settings");
-//            }
-//        });
-//    }
 }
 
 

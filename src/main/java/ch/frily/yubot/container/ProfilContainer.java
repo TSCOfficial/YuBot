@@ -3,6 +3,7 @@ package ch.frily.yubot.container;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.Profile;
 import ch.frily.yubot.feature.ProfileRepository;
+import ch.frily.yubot.feature.Setting;
 import ch.frily.yubot.util.BannerResolver;
 import ch.frily.yubot.util.ImageFetcher;
 import ch.frily.yubot.util.ProfileImageComposer;
@@ -19,6 +20,8 @@ import java.awt.image.ImagingOpException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -56,7 +59,7 @@ public class ProfilContainer extends Container {
                         } else {
                             StringBuilder settingsSB = new StringBuilder();
                             settings.entrySet().forEach(entry -> {
-                                settingsSB.append(entry.getKey() + ": " + entry.getValue());
+                                settingsSB.append(String.format("`%s`: %s", entry.getKey(), entry.getValue()));
                                 settingsSB.append("\n");
                             });
                             addTextDisplay(settingsSB.toString());
@@ -74,14 +77,31 @@ public class ProfilContainer extends Container {
 
     private Map<String, String> mapSettings() throws SQLException, ClassNotFoundException {
         Profile profile = ProfileRepository.getProfile(member);
-
+        log.info("Profile: {}", profile);
         if (profile == null) {
             return null;
         }
 
-        Map<String, String> settings = Map.of(
-                "Aktivitätsbestätigungsanfrage", profile.activeModSendInDm() ? "Via DM" : "Via Server"
-        );
+        Map<String, String> settings = new HashMap<>();
+        Arrays.stream(Setting.values()).forEach(setting -> {
+            log.info("Setting: {}", setting.getLabel());
+
+            try {
+                String settingValue = String.valueOf(ProfileRepository.getSetting(member, setting, setting.getDataType()));
+                // show "custom text" for custom text that is not a predefined option from autocomplete
+                if (setting.getAutocompleteOptions() == null) {
+                    settingValue = String.format("\"%s\"", settingValue);
+                }
+                if (settingValue != "null") {
+                    settings.put(setting.getLabel(), settingValue);
+                }
+
+            } catch (Exception e) {
+                log.info("Failed to retrieve setting value for {}: {}", setting.getLabel(), e.getMessage());
+                ExceptionHandler.fail(e);
+            }
+        });
+
         return settings;
     }
 

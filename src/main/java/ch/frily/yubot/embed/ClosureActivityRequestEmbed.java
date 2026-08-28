@@ -7,11 +7,13 @@ import ch.frily.yubot.feature.Closure;
 import ch.frily.yubot.feature.ProfileRepository;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Role;
 
 import java.awt.*;
 import java.time.Instant;
 
+@Slf4j
 public class ClosureActivityRequestEmbed implements IEmbed {
 
     private final ActiveMod activeMod;
@@ -30,7 +32,7 @@ public class ClosureActivityRequestEmbed implements IEmbed {
     public String getDescription() {
         boolean activeModSendInDm = false;
         try {
-            activeModSendInDm = ProfileRepository.getProfileOrThrow(activeMod.member()).activeModSendInDm();
+            activeModSendInDm = ProfileRepository.getProfileOrThrow(activeMod.member()).activeModSendInDm().equals("Via DM");
         } catch (Exception e) {
             // already false if no profile exist
         }
@@ -51,7 +53,7 @@ public class ClosureActivityRequestEmbed implements IEmbed {
 
         builder.append(
                 String.format("-# Du hast %d Minuten Zeit um deine Anwesenheit zu bestätigen. Falls du nicht bestätigst, wird dir die %s-Rolle automatisch entfernt.",
-                        Closure.getMAX_NORMAL_ACTIVITY_REQUEST_RESPONSE_TIME(), activeModSendInDm ? activeModRole : "ActiveMod"
+                        Closure.getMAX_NORMAL_ACTIVITY_REQUEST_RESPONSE_TIME(), activeModSendInDm ? "ActiveMod" : activeModRole
                 )
         );
 
