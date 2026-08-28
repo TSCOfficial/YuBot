@@ -3,6 +3,7 @@ package ch.frily.yubot.interaction.command;
 import ch.frily.yubot.util.EnvKey;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
@@ -47,7 +48,7 @@ public interface ISlashCommand {
      * Get the autocompletion of a slashcommand.
      * @return a {@link Map} of a {@link String} & a {@link List}.
      */
-    default Map<String, List<?>> getAutocomplete() {
+    default Map<String, List<?>> getAutocomplete(CommandAutoCompleteInteractionEvent event) {
         return Map.of();
     };
 

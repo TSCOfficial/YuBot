@@ -4,15 +4,14 @@ import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.feature.ActiveMod;
 import ch.frily.yubot.feature.ProfileRepository;
+import ch.frily.yubot.feature.Setting;
 import ch.frily.yubot.interaction.modal.Modal;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.radiogroup.RadioGroup;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
-import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jspecify.annotations.NonNull;
@@ -66,7 +65,7 @@ public class SelectActiveModSendTypeModal extends Modal {
             privateChannel.sendMessage("ℹ️ Du erhälst absofort die ActiveMod-Nachrichten via DM.").queue(
                     success -> {
                         try {
-                            ProfileRepository.setSetting(event.getMember(), ProfileRepository.Setting.ACTIVEMOD_SEND_IN_DM, sendInDM.equals("dm"));
+                            ProfileRepository.upsertSetting(event.getMember(), Setting.ACTIVEMOD_SEND_IN_DM, sendInDM.equals("dm"));
                             ActiveMod.registerModerator(event.getMember()).thenAccept(response -> {
                                 event.reply(response).setEphemeral(true).queue();
                             });
@@ -79,7 +78,7 @@ public class SelectActiveModSendTypeModal extends Modal {
                             if (failure instanceof ErrorResponseException ere
                                     && (ere.getErrorResponse() == ErrorResponse.CANNOT_SEND_TO_USER || ere.getErrorCode() == NO_MUTUAL_GUILD_EXCEPTION)) {
                                 log.warn("DMs of {} are disabled or blocked.", event.getMember().getEffectiveName());
-                                throw new InvalidStateException(String.format("`%s` kann nicht auf Direct Message umgestellt werden.", ProfileRepository.Setting.ACTIVEMOD_SEND_IN_DM.getLabel()), "Es scheint als hättest du deine DMs deaktiviert oder den Bot blockiert.");
+                                throw new InvalidStateException(String.format("`%s` kann nicht auf Direct Message umgestellt werden.", Setting.ACTIVEMOD_SEND_IN_DM.getLabel()), "Es scheint als hättest du deine DMs deaktiviert oder den Bot blockiert.");
                             } else {
                                 ExceptionHandler.handle(failure, event);
                             }

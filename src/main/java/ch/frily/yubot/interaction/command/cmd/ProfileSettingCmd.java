@@ -1,13 +1,15 @@
 package ch.frily.yubot.interaction.command.cmd;
 
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.feature.ProfileRepository;
+import ch.frily.yubot.feature.Setting;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
+import ch.frily.yubot.util.Util;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -18,8 +20,6 @@ import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,7 +28,7 @@ import static org.reflections.Reflections.log;
 /**
  * Command to control the profile settings.
  * <p>
- *     It uses the enum of {@link ProfileRepository.Setting} to get the options, the possible arguments (as autocomplete) and such.
+ *     It uses the enum of {@link Setting} to get the options, the possible arguments (as autocomplete) and such.
  * </p>
  * @author Aliz frily
  */
@@ -45,7 +45,7 @@ public class ProfileSettingCmd implements ISlashSubcommand {
 
     @Override
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
-        List<OptionMapping> options = Arrays.stream(ProfileRepository.Setting.values()).map(setting -> {
+        List<OptionMapping> options = Arrays.stream(Setting.values()).map(setting -> {
             return event.getOption(setting.getLabel());
         }).filter(Objects::nonNull).toList();
 
@@ -55,7 +55,10 @@ public class ProfileSettingCmd implements ISlashSubcommand {
             log.info(option.getName());
             log.info(option.getAsString());
             try {
-                ProfileRepository.Setting setting = ProfileRepository.getSettingByLabel(option.getName());
+                Setting setting = Setting.getSettingByLabel(option.getName());
+                if (!Util.isPermitted(event.getMember(), setting.getAllowedRoles())) {
+                    failedSettingsSB.append(String.format("- `%s`: Du bist nicht berechtigt diese Einstellung zu ändern.\n", setting.getLabel()));
+                }
                 if (validateInput(option, setting)) {
                     if (setting.getDataType() == Boolean.class) {
                         // Validate specific setting
@@ -64,13 +67,13 @@ public class ProfileSettingCmd implements ISlashSubcommand {
                             failedSettingsSB.append(specificFailure.get());
                             continue;
                         }
-                        ProfileRepository.setSetting(event.getMember(), setting, option.getAsBoolean());
+                        ProfileRepository.upsertSetting(event.getMember(), setting, option.getAsBoolean());
                     } else {
-                        ProfileRepository.setSetting(event.getMember(), setting, option.getAsString());
+                        ProfileRepository.upsertSetting(event.getMember(), setting, option.getAsString());
                     }
-                    modifiedSettingsSB.append(String.format("- `%s` geändert auf __%s__.\n", setting.getLabel(), option.getAsString()));
+                    modifiedSettingsSB.append(String.format("- `%s`: geändert auf __%s__.\n", setting.getLabel(), option.getAsString()));
                 } else {
-                    failedSettingsSB.append(String.format("- Die Option __%s__ ist für `%s` ungültig.\n", option.getAsString(), setting.getLabel()));
+                    failedSettingsSB.append(String.format("- `%s`: __%s__ ist keine gültige Option.\n", setting.getLabel(), option.getAsString()));
                 }
             } catch (Exception e) {
                 ExceptionHandler.handle(e, event);
@@ -109,7 +112,7 @@ public class ProfileSettingCmd implements ISlashSubcommand {
      * @param setting
      * @return
      */
-    private boolean validateInput(OptionMapping inputOption, ProfileRepository.Setting setting){
+    private boolean validateInput(OptionMapping inputOption, Setting setting){
         if (setting.getDataType() == Boolean.class){
             return true;
         }
@@ -126,7 +129,7 @@ public class ProfileSettingCmd implements ISlashSubcommand {
      *
      * @return leeres Optional wenn gültig/erfolgreich, sonst die fertige Fehlermeldung für die Ausgabe
      */
-    private Optional<String> runSettingSpecificValidation(ProfileRepository.Setting setting, OptionMapping option, SlashCommandInteractionEvent event) {
+    private Optional<String> runSettingSpecificValidation(Setting setting, OptionMapping option, SlashCommandInteractionEvent event) {
         return switch (setting) {
             case ACTIVEMOD_SEND_IN_DM -> validateActiveModSendIn(event)
                     ? Optional.empty()
@@ -157,19 +160,20 @@ public class ProfileSettingCmd implements ISlashSubcommand {
 
     @Override
     public List<OptionData> getOptions() {
-        return Arrays.stream(ProfileRepository.Setting.values()).map(setting -> new OptionData( // todo filter out the ones that normal user shouln't see!
+        return Arrays.stream(Setting.values()).map(setting -> new OptionData( // todo filter out the ones that normal user shouln't see!
                 setting.getDataType() == Boolean.class ? OptionType.BOOLEAN : OptionType.STRING,
                 setting.getLabel(),
-                "keine Beschreibung vorhanden",
+                setting.getDescription(),
                 false,
                 setting.getDataType() == Boolean.class ? false : true
         )).toList();
     }
 
     @Override
-    public Map<String, List<?>> getAutocomplete() {
-        return Arrays.stream(ProfileRepository.Setting.values())
+    public Map<String, List<?>> getAutocomplete(CommandAutoCompleteInteractionEvent event) {
+        return Arrays.stream(Setting.values())
                 .filter(setting -> setting.getAutocompleteOptions() != null)
+                .filter(setting -> Util.isPermitted(event.getMember(), setting.getAllowedRoles()))
                 .collect(Collectors.toMap(setting -> setting.getLabel(), setting -> setting.getAutocompleteOptions()));
     }
 

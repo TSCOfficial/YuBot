@@ -142,7 +142,7 @@ public class SlashCommandRegistry {
         }
 
         String focusedOptionName = event.getFocusedOption().getName();
-        List<?> choices = command.getAutocomplete().getOrDefault(focusedOptionName, List.of());
+        List<?> choices = command.getAutocomplete(event).getOrDefault(focusedOptionName, List.of());
 
         List<Command.Choice> options = choices.stream()
                 .filter(

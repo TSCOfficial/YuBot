@@ -74,6 +74,16 @@ public class Util {
         return !adminRoles.isEmpty();
     }
 
+    /**
+     * Check if a member has the required roles or is an administrator
+     * @param member The member to check
+     * @param roles The roles to check for
+     * @return True if they have the required roles or if they are an administrator, false if not
+     */
+    public static boolean isPermitted(Member member, List<Role> roles) {
+        return member.getRoles().stream().anyMatch(roles::contains) || isAdministrator(member);
+    }
+
     public static String calcDuration(Temporal startInclusive, Temporal endExclusive){
         Duration duration = Duration.between(startInclusive, endExclusive);
 
