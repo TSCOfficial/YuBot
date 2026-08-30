@@ -161,11 +161,16 @@ public class ProfileSettingCmd implements ISlashSubcommand {
      */
     private Optional<String> runSettingSpecificValidation(Setting setting, OptionMapping option, SlashCommandInteractionEvent event) {
         return switch (setting) {
-            case ACTIVEMOD_SEND_IN_DM -> validateActiveModSendIn(event)
-                    ? Optional.empty()
-                    : Optional.of(String.format(
-                    "- `%s` konnte nicht auf __%s__ gesetzt werden.\n> -# Deine Datenschutz Einstellungen erlauben keine DMs oder du hast den Bot blockiert.\n",
-                    setting.getLabel(), option.getAsString()));
+            case ACTIVEMOD_SEND_IN_DM -> {
+                if (setting.getOptionValueByLabel(option.getAsString(), Boolean.class).value() == true) {
+                    if (!validateActiveModSendIn(event)) {
+                        yield Optional.of(String.format(
+                                "- `%s` konnte nicht auf __%s__ gesetzt werden.\n> -# Deine Datenschutz Einstellungen erlauben keine DMs oder du hast den Bot blockiert.\n",
+                                setting.getLabel(), option.getAsString()));
+                    }
+                }
+                yield Optional.empty();
+            }
             default -> Optional.empty();
         };
     }
