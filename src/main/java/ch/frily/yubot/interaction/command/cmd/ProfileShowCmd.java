@@ -31,25 +31,9 @@ public class ProfileShowCmd implements ISlashSubcommand {
     }
 
     @Override
-    public List<OptionData> getOptions() {
-        return List.of(
-                new OptionData(OptionType.USER, "user", "Der User, dessen Profil geöffnet werden soll")
-        );
-    }
-
-    @Override
-    public List<Role> getAllowedRoles() {
-        return Stream.of(
-                EnvKey.ROLE_SERVERLEITUNG
-        ).map(EnvResolver::getRoleById).toList();
-    }
-
-    @Override
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
+        event.deferReply(true).queue();
         Member member = event.getMember();
-        if (event.getOption("user") != null) {
-            member = event.getOption("user").getAsMember();
-        }
         ProfilContainer container = new ProfilContainer(member);
 
         container.buildAsync().thenAccept(builtContainer -> {
@@ -58,7 +42,7 @@ public class ProfileShowCmd implements ISlashSubcommand {
                     .setComponents(builtContainer.build())
                     .addFiles(builtContainer.getProfileBanner())
                     .build();
-            event.reply(message).setEphemeral(true).queue();
+            event.getHook().sendMessage(message).queue();
         });
     }
 }

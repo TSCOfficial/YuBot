@@ -16,6 +16,8 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Accept/Prove the activity of an active-mod when the moderator was inactive for a while
@@ -41,6 +43,16 @@ public class ActiveModActivityProveBtn extends Button {
         ActiveMod forActiveMod = ActiveModRepository.getModeratorByActivityRequestMessageId(event.getMessageIdLong());
         Member member = event.getMember() == null ? Util.getMemberByUser(event.getUser()) : event.getMember();
 
+        if (forActiveMod == null) {
+            int delay = 30;
+            event.editMessage(String.format("""
+                   Diese Anfrage ist ungültig und hat keine Auswirkungen mehr.
+                   -# Du kannst sie ruhig ignorieren
+                   -# *<:timer:1522290651742339122> Nachricht wird <t:%d:R> gelöscht.*
+                   """, Util.toEpochSeconds(LocalDateTime.now().plusSeconds(delay)))).setReplace(true).queue();
+            event.getMessage().delete().queueAfter(delay, TimeUnit.SECONDS);
+            return;
+        }
         if (member.equals(forActiveMod.member())) {
             Closure.handleModActivity(member);
             event.reply("✅ Vielen dank, deine Aktivität wurde erfolgreich bestätigt.").setEphemeral(true).queue();

@@ -9,24 +9,28 @@ import net.dv8tion.jda.api.entities.Role;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Maps the settings to all required generic utilities
- */
+;
+
 public enum Setting {
     ACTIVEMOD_SEND_IN_DM(
             "aktivitätsbestätigungsanfrage",
             "Entscheide wo deine ActiveMod-Nachrichten gesendet werden.",
             Table.ProfileColumn.ACTIVEMOD_SEND_IN_DM,
-            String.class,
             List.of(EnvKey.ROLE_MODERATOR),
-            List.of("Via DM", "Via Server")
+            Boolean.class,
+            List.of(
+                    new SettingOption<>("Via DM", true),
+                    new SettingOption<>("Via Server", false)
+            )
     ),
     ABSENCE_NOTICE(
             "abwesenheitsmeldung",
             "Nachricht welche bei @Erwähnungen während deiner Absenz gesendet wird.",
             Table.ProfileColumn.ABSENCE_NOTICE,
+            List.of(EnvKey.ROLE_YUTEAM, EnvKey.ROLE_TWITCHMOD),
             String.class,
-            List.of(EnvKey.ROLE_YUTEAM, EnvKey.ROLE_TWITCHMOD)
+            10,
+            100
     );
 
     @Getter
@@ -40,7 +44,13 @@ public enum Setting {
     @Getter
     List<Role> allowedRoles;
     @Getter
-    List<String> autocompleteOptions;
+    List<SettingOption<?>> autocompleteOptions;
+    /** Minimal allowed characters for a string*/
+    @Getter
+    int min;
+    /** Maximal allowed characters for a string*/
+    @Getter
+    int max;
 
     /**
      * Define a Setting without autocomplete options
@@ -53,12 +63,14 @@ public enum Setting {
      * @param dataType The type of the setting
      * @param <T>
      */
-    <T> Setting(String label, String description, Table.Column dbColumn, Class<T> dataType, List<EnvKey> allowedRoles){
+    <T> Setting(String label, String description, Table.Column dbColumn, List<EnvKey> allowedRoles, Class<T> dataType, int min, int max){
         this.label = label;
         this.description = description;
         this.dbColumn = dbColumn;
         this.dataType = dataType;
         this.allowedRoles = allowedRoles.stream().map(EnvResolver::getRoleById).toList();
+        this.min = min;
+        this.max = max;
     }
 
     /**
@@ -70,17 +82,42 @@ public enum Setting {
      * @param options Selectable types for that setting in the given dataType
      * @param <T>
      */
-    <T> Setting(String label, String description, Table.Column dbColumn, Class<T> dataType, List<EnvKey> allowedRoles, List<T> options){
+    <T> Setting(String label, String description, Table.Column dbColumn, List<EnvKey> allowedRoles, Class<T> dataType, List<SettingOption<?>> options){
         this.label = label;
         this.description = description;
         this.dbColumn = dbColumn;
         this.dataType = dataType;
         this.allowedRoles = allowedRoles.stream().map(EnvResolver::getRoleById).toList();
-        this.autocompleteOptions = options.stream().map(Object::toString).toList();
+        this.autocompleteOptions = options;
     }
 
     public static Setting getSettingByLabel(String label){
         return Arrays.stream(Setting.values()).filter(setting -> setting.getLabel().equals(label)).findFirst().orElse(null);
+    }
+
+    /**
+     * Get the option by it's option-label
+     * <p>
+     *     This use primarily used for the discord autocomplete feature.
+     *     The autocomplete shows the label and needs to be converted to its corresponding value for the database.
+     * </p>
+     * @param label
+     * @param dataType
+     * @return
+     * @param <T>
+     */
+    public <T> SettingOption<T> getOptionValueByLabel(String label, Class<T> dataType) {
+        SettingOption<?> option = this.autocompleteOptions.stream()
+                .filter(o -> o.label().equals(label))
+                .findFirst()
+                .orElse(null);
+
+        if (option == null) {
+            throw new IllegalArgumentException("No option found for label: " + label);
+        }
+
+        T value = dataType.cast(option.value());
+        return new SettingOption<>(option.label(), value);
     }
 }
 

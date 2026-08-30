@@ -9,6 +9,7 @@ import ch.frily.yubot.interaction.button.btn.ActiveModOptOutBtn;
 import ch.frily.yubot.interaction.button.btn.DeleteActivityRequestMsgBtn;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
+import ch.frily.yubot.util.Util;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
@@ -24,6 +25,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -332,7 +334,7 @@ public class Closure {
         if (moderator.activityRequestedAt().isBefore(LocalDateTime.now().minusMinutes(Closure.MAX_NORMAL_ACTIVITY_REQUEST_RESPONSE_TIME))) {
             Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
 
-            if (ProfileRepository.getProfile(moderator.member()).activeModSendInDm().equals("Via DM")) {
+            if (ProfileRepository.getProfile(moderator.member()).activeModSendInDm()) {
                 moderator.member().getUser().openPrivateChannel().queue(privateChannel -> {
                     editIgnoredRequestActivityMsg(privateChannel, moderator);
                 });
@@ -375,14 +377,12 @@ public class Closure {
         List<ActiveMod> activeMods = ActiveModRepository.getModeratorsWithRequestedAttentionMessageId();
 
         activeMods.forEach(activeMod -> {
-            log.info("deleting message: requested attention message: {}", activeMod.requestedAttentionMessageId());
             deleteRequestedAttentionMessageById(activeMod.requestedAttentionMessageId());
         });
     }
 
     public static void deleteRequestedAttentionMessageById(long messageId) {
-
-        TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
+        TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_ACTIVEMODERATION);
         channel.deleteMessageById(messageId).queue();
     }
 
@@ -390,14 +390,14 @@ public class Closure {
      * If no one gave their attention (opt-in, accepted activity-prove-request, sent message) delete the message and close the server
      */
     public static void requestAttentionMessageIgnored(long messageId) {
-        log.info("ignoring message: requested attention message: {}", messageId);
-        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
-        TextChannel channel = guild.getTextChannelById(1516042711273046087L);
+        int delay = 900; // 15min
+        TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_ACTIVEMODERATION);
         channel.retrieveMessageById(messageId).queue(message -> {
-            log.info("editing message: requested attention message: {}", messageId);
             message.editMessage(String.format("""
                     Es hat sich niemand gemeldet. Der Server wird nun geschlossen.
-                    """)).queue();
+                    -# *<:timer:1522290651742339122> Nachricht wird <t:%d:R> gelöscht.*
+                    """, Util.toEpochSeconds(LocalDateTime.now().plusSeconds(delay)))).queue();
+            message.delete().queueAfter(delay, TimeUnit.SECONDS);
         });
     }
 }

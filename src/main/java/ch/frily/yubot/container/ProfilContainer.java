@@ -55,7 +55,7 @@ public class ProfilContainer extends Container {
                         addTextDisplay("**Einstellungen**");
                         Map<String, String> settings = mapSettings();
                         if (settings == null) {
-                            addTextDisplay("-# Keine Einstellungen gefunden. Stelle sie mit /settings ein");
+                            addTextDisplay("-# Keine Einstellungen gefunden. Stelle sie mit </profile setting:1542519831729934447> ein");
                         } else {
                             StringBuilder settingsSB = new StringBuilder();
                             settings.entrySet().forEach(entry -> {

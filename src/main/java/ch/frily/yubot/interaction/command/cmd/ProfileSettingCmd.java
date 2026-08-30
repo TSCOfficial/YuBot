@@ -3,6 +3,7 @@ package ch.frily.yubot.interaction.command.cmd;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.ProfileRepository;
 import ch.frily.yubot.feature.Setting;
+import ch.frily.yubot.feature.SettingOption;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
@@ -33,6 +34,10 @@ import static org.reflections.Reflections.log;
  * @author Aliz frily
  */
 public class ProfileSettingCmd implements ISlashSubcommand {
+
+    // JDA seems to be missing this exception - gets thrown when the bot can't send a message to the user
+    private static final int NO_MUTUAL_GUILD_EXCEPTION = 50278;
+
     @Override
     public String getName() {
         return "setting";
@@ -44,6 +49,25 @@ public class ProfileSettingCmd implements ISlashSubcommand {
     }
 
     @Override
+    public List<OptionData> getOptions() {
+        return Arrays.stream(Setting.values()).map(setting -> new OptionData(
+                OptionType.STRING,
+                setting.getLabel(),
+                setting.getDescription(),
+                false,
+                setting.getAutocompleteOptions() == null ? false : true
+        )).toList();
+    }
+
+    @Override
+    public Map<String, List<?>> getAutocomplete(CommandAutoCompleteInteractionEvent event) {
+        return Arrays.stream(Setting.values())
+                .filter(setting -> setting.getAutocompleteOptions() != null)
+                .filter(setting -> Util.isPermitted(event.getMember(), setting.getAllowedRoles()))
+                .collect(Collectors.toMap(setting -> setting.getLabel(), setting -> setting.getAutocompleteOptions().stream().map(SettingOption::label).toList()));
+    }
+
+    @Override
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
         List<OptionMapping> options = Arrays.stream(Setting.values()).map(setting -> {
             return event.getOption(setting.getLabel());
@@ -52,26 +76,32 @@ public class ProfileSettingCmd implements ISlashSubcommand {
         StringBuilder modifiedSettingsSB = new StringBuilder();
         StringBuilder failedSettingsSB = new StringBuilder();
         for (OptionMapping option : options) {
-            log.info(option.getName());
-            log.info(option.getAsString());
             try {
                 Setting setting = Setting.getSettingByLabel(option.getName());
                 if (!Util.isPermitted(event.getMember(), setting.getAllowedRoles())) {
                     failedSettingsSB.append(String.format("- `%s`: Du bist nicht berechtigt diese Einstellung zu ändern.\n", setting.getLabel()));
                 }
                 if (validateInput(option, setting)) {
-                    if (setting.getDataType() == Boolean.class) {
-                        // Validate specific setting
-                        Optional<String> specificFailure = runSettingSpecificValidation(setting, option, event);
-                        if (specificFailure.isPresent()) {
-                            failedSettingsSB.append(specificFailure.get());
-                            continue;
-                        }
-                        ProfileRepository.upsertSetting(event.getMember(), setting, option.getAsBoolean());
+                    Optional<String> specificFailure = runSettingSpecificValidation(setting, option, event);
+                    if (specificFailure.isPresent()) {
+                        failedSettingsSB.append(specificFailure.get());
                     } else {
-                        ProfileRepository.upsertSetting(event.getMember(), setting, option.getAsString());
+                        if (setting.getAutocompleteOptions() != null) {
+                            SettingOption<?> resolvedOption = setting.getOptionValueByLabel(option.getAsString(), setting.getDataType());
+                            ProfileRepository.upsertSetting(event.getMember(), setting, resolvedOption.value());
+                        } else {
+                            if (setting.getMin() > option.getAsString().length()) {
+                                failedSettingsSB.append(String.format("- `%s`: __%s__ ist zu kurz (%d) und muss mindestens %d Zeichen lang sein.\n", setting.getLabel(), option.getAsString(), option.getAsString().length(), setting.getMin()));
+                                continue;
+                            }
+                            if (setting.getMax() < option.getAsString().length()) {
+                                failedSettingsSB.append(String.format("- `%s`: __%s__ ist zu lang (%d) und darf maximal %d Zeichen lang sein.\n", setting.getLabel(), option.getAsString(), option.getAsString().length(), setting.getMax()));
+                                continue;
+                            }
+                            ProfileRepository.upsertSetting(event.getMember(), setting, option.getAsString());
+                        }
+                        modifiedSettingsSB.append(String.format("- `%s`: geändert auf __%s__.\n", setting.getLabel(), option.getAsString()));
                     }
-                    modifiedSettingsSB.append(String.format("- `%s`: geändert auf __%s__.\n", setting.getLabel(), option.getAsString()));
                 } else {
                     failedSettingsSB.append(String.format("- `%s`: __%s__ ist keine gültige Option.\n", setting.getLabel(), option.getAsString()));
                 }
@@ -116,11 +146,11 @@ public class ProfileSettingCmd implements ISlashSubcommand {
         if (setting.getDataType() == Boolean.class){
             return true;
         }
-        List<String> autocompleteOptions = setting.getAutocompleteOptions();
+        List<SettingOption<?>> autocompleteOptions = setting.getAutocompleteOptions();
         if(autocompleteOptions == null){
             return true;
         }
-        return autocompleteOptions.contains(inputOption.getAsString());
+        return autocompleteOptions.stream().anyMatch(option -> option.label().equals(inputOption.getAsString()));
     }
 
     /**
@@ -135,7 +165,7 @@ public class ProfileSettingCmd implements ISlashSubcommand {
                     ? Optional.empty()
                     : Optional.of(String.format(
                     "- `%s` konnte nicht auf __%s__ gesetzt werden.\n> -# Deine Datenschutz Einstellungen erlauben keine DMs oder du hast den Bot blockiert.\n",
-                    setting.getLabel(), option.getAsBoolean()));
+                    setting.getLabel(), option.getAsString()));
             default -> Optional.empty();
         };
     }
@@ -150,37 +180,12 @@ public class ProfileSettingCmd implements ISlashSubcommand {
             privateChannel.sendMessage("ℹ️ Du erhälst absofort die ActiveMod-Nachrichten via DM.").complete();
             return true;
         } catch (ErrorResponseException ere) {
-            if (ere.getErrorResponse() == ErrorResponse.CANNOT_SEND_TO_USER) {
+
+            if (ere.getErrorResponse() == ErrorResponse.CANNOT_SEND_TO_USER || ere.getErrorCode() == NO_MUTUAL_GUILD_EXCEPTION) {
                 return false;
             }
             ExceptionHandler.handle(ere, event);
             return false;
         }
-    }
-
-    @Override
-    public List<OptionData> getOptions() {
-        return Arrays.stream(Setting.values()).map(setting -> new OptionData( // todo filter out the ones that normal user shouln't see!
-                setting.getDataType() == Boolean.class ? OptionType.BOOLEAN : OptionType.STRING,
-                setting.getLabel(),
-                setting.getDescription(),
-                false,
-                setting.getAutocompleteOptions() == null ? false : true
-        )).toList();
-    }
-
-    @Override
-    public Map<String, List<?>> getAutocomplete(CommandAutoCompleteInteractionEvent event) {
-        return Arrays.stream(Setting.values())
-                .filter(setting -> setting.getAutocompleteOptions() != null)
-                .filter(setting -> Util.isPermitted(event.getMember(), setting.getAllowedRoles()))
-                .collect(Collectors.toMap(setting -> setting.getLabel(), setting -> setting.getAutocompleteOptions()));
-    }
-
-    @Override
-    public List<Role> getAllowedRoles() {
-        return Stream.of(
-                EnvKey.ROLE_ACTIVEMOD
-        ).map(EnvResolver::getRoleById).toList();
     }
 }

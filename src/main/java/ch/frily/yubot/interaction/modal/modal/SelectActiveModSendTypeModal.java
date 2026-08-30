@@ -25,13 +25,6 @@ import java.util.List;
 @Slf4j
 public class SelectActiveModSendTypeModal extends Modal {
 
-    /**
-     * When discord can't send a message to the user because they don't share a mutual guild or they blocked DMs from the server.
-     * <p>
-     *     This is the error code for discord's exception, that is not listed in the ErrorResponse enum.
-     * </p>
-     */
-    private static final int NO_MUTUAL_GUILD_EXCEPTION = 50278;
 
     @Override
     public String getId() {
@@ -61,32 +54,6 @@ public class SelectActiveModSendTypeModal extends Modal {
     public void execute(@NonNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException {
         String sendInDM = event.getValue("type-selector").getAsString();
         log.info("ActiveMod send type selection for {} set to {}", event.getMember().getEffectiveName(), sendInDM);
-        event.getMember().getUser().openPrivateChannel().queue(privateChannel -> {
-            privateChannel.sendMessage("ℹ️ Du erhälst absofort die ActiveMod-Nachrichten via DM.").queue(
-                    success -> {
-                        try {
-                            ProfileRepository.upsertSetting(event.getMember(), Setting.ACTIVEMOD_SEND_IN_DM, sendInDM.equals("dm"));
-                            ActiveMod.registerModerator(event.getMember()).thenAccept(response -> {
-                                event.reply(response).setEphemeral(true).queue();
-                            });
-                        } catch (Exception e) {
-                            ExceptionHandler.handle(e, event);
-                        }
-                    },
-                    failure -> {
-                        try {
-                            if (failure instanceof ErrorResponseException ere
-                                    && (ere.getErrorResponse() == ErrorResponse.CANNOT_SEND_TO_USER || ere.getErrorCode() == NO_MUTUAL_GUILD_EXCEPTION)) {
-                                log.warn("DMs of {} are disabled or blocked.", event.getMember().getEffectiveName());
-                                throw new InvalidStateException(String.format("`%s` kann nicht auf Direct Message umgestellt werden.", Setting.ACTIVEMOD_SEND_IN_DM.getLabel()), "Es scheint als hättest du deine DMs deaktiviert oder den Bot blockiert.");
-                            } else {
-                                ExceptionHandler.handle(failure, event);
-                            }
-                        } catch (InvalidStateException ise) {
-                            ExceptionHandler.handle(ise, event);
-                        }
-                    }
-            );
-        });
+
     }
 }

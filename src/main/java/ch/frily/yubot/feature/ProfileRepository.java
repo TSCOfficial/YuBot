@@ -18,7 +18,7 @@ public class ProfileRepository {
         ResultSet rs = query.executeDataQuery();
 
         if (rs.next()) {
-            String activeModSendInDm = rs.getString(Table.ProfileColumn.ACTIVEMOD_SEND_IN_DM.getColumn());
+            Boolean activeModSendInDm = rs.getBoolean(Table.ProfileColumn.ACTIVEMOD_SEND_IN_DM.getColumn());
             String absenceNotice = rs.getString(Table.ProfileColumn.ABSENCE_NOTICE.getColumn());
             return new Profile(member, activeModSendInDm, absenceNotice);
         }
