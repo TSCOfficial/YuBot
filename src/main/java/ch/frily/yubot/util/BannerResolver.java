@@ -3,6 +3,7 @@ package ch.frily.yubot.util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.utils.ImageFormat;
 
 import java.awt.*;
 import java.awt.Color;
@@ -18,7 +19,7 @@ public class BannerResolver {
     public static CompletableFuture<BufferedImage> resolveGlobalBanner(Member member) {
         return member.getUser().retrieveProfile().submit()
                 .thenCompose(userProfile -> {
-                    String globalBanner = userProfile.getBannerUrl();
+                    String globalBanner = userProfile.getBannerUrl(ImageFormat.PNG);
                     if (globalBanner != null) {
                         return ImageFetcher.fetch(globalBanner + "?size=1024").thenApply(image -> scaleToFixedSizeCover(image, DEFAULT_WIDTH, DEFAULT_HEIGHT));
                     }

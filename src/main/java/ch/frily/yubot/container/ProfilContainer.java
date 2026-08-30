@@ -13,6 +13,8 @@ import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.ImageFormat;
+import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -107,7 +109,8 @@ public class ProfilContainer extends Container {
 
     private CompletableFuture<FileUpload> buildProfileBanner() {
         CompletableFuture<BufferedImage> bannerFuture = BannerResolver.resolveGlobalBanner(member);
-        CompletableFuture<BufferedImage> avatarFuture = ImageFetcher.fetch(member.getEffectiveAvatarUrl()+ "?size=1024");
+        String avatarUrl = member.getEffectiveAvatar(ImageFormat.PNG).getUrl(1024);
+        CompletableFuture<BufferedImage> avatarFuture = ImageFetcher.fetch(avatarUrl);
 
         return bannerFuture.thenCombine(avatarFuture, ProfileImageComposer::compose)
                 .thenApply(composed -> {
