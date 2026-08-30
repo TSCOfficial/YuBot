@@ -230,7 +230,7 @@ public class Closure {
         deleteRequestedAttentionMessages();
 
         if (activeMod.activityRequestMessageId() != 0) { // automatically accept an active activity-prove-request
-            TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
+            TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_ACTIVEMODERATION);
             channel.deleteMessageById(activeMod.activityRequestMessageId()).queue(
                     success -> {},
                     failure -> {
@@ -253,10 +253,7 @@ public class Closure {
      * @param moderator mod-record {@link ActiveMod}
      */
     public static void requestActivityProve(ActiveMod moderator) throws SQLException, ClassNotFoundException {
-        TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
-        if (moderator.member().getIdLong() == 618876411905835018L) {
-            channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_ACTIVEMODERATION);
-        }
+        TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_ACTIVEMODERATION);
 
         if (moderator.activityRequestedAt() == null) {
 
@@ -312,10 +309,7 @@ public class Closure {
     private static void handleActivityProveTimeout(ActiveMod moderator) throws SQLException, ClassNotFoundException {
         if (getActiveMods().size() == 1) {
             if (moderator.activityRequestedAt().isBefore(LocalDateTime.now().minusMinutes(Closure.PING_MODS_AFTER_ACTIVITY_REQUEST_IF_ALONE)) && moderator.requestedAttentionMessageId() == 0) {
-                TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
-                if (moderator.member().getIdLong() == 618876411905835018L) {
-                    channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_ACTIVEMODERATION);
-                }
+                TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_ACTIVEMODERATION);
                 channel.sendMessage(String.format("""
                                 %s
                                 ⚠️ %s hat bislang noch nicht auf die Aktivitätsbestätigungsanfrage geantwortet.
@@ -339,7 +333,7 @@ public class Closure {
                     editIgnoredRequestActivityMsg(privateChannel, moderator);
                 });
             } else {
-                TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
+                TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_ACTIVEMODERATION);
 
                 editIgnoredRequestActivityMsg(channel, moderator);
             }
