@@ -35,6 +35,9 @@ import java.util.List;
 @Slf4j
 public class Client {
 
+    // JDA seems to be missing this exception - gets thrown when the bot can't send a message to the user
+    public static final int NO_MUTUAL_GUILD_EXCEPTION = 50278;
+
     private static Client instance;
 
     @Getter

@@ -1,14 +1,12 @@
 package ch.frily.yubot.interaction.command.cmd;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.ProfileRepository;
 import ch.frily.yubot.feature.Setting;
 import ch.frily.yubot.feature.SettingOption;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
-import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
-import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -22,7 +20,6 @@ import org.jspecify.annotations.NonNull;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.reflections.Reflections.log;
 
@@ -34,9 +31,6 @@ import static org.reflections.Reflections.log;
  * @author Aliz frily
  */
 public class ProfileSettingCmd implements ISlashSubcommand {
-
-    // JDA seems to be missing this exception - gets thrown when the bot can't send a message to the user
-    private static final int NO_MUTUAL_GUILD_EXCEPTION = 50278;
 
     @Override
     public String getName() {
@@ -87,7 +81,7 @@ public class ProfileSettingCmd implements ISlashSubcommand {
                         failedSettingsSB.append(specificFailure.get());
                     } else {
                         if (setting.getAutocompleteOptions() != null) {
-                            SettingOption<?> resolvedOption = setting.getOptionValueByLabel(option.getAsString(), setting.getDataType());
+                            SettingOption<?> resolvedOption = setting.getOptionByLabel(option.getAsString(), setting.getDataType());
                             ProfileRepository.upsertSetting(event.getMember(), setting, resolvedOption.value());
                         } else {
                             if (setting.getMin() > option.getAsString().length()) {
@@ -159,13 +153,13 @@ public class ProfileSettingCmd implements ISlashSubcommand {
      *
      * @return leeres Optional wenn gültig/erfolgreich, sonst die fertige Fehlermeldung für die Ausgabe
      */
-    private Optional<String> runSettingSpecificValidation(Setting setting, OptionMapping option, SlashCommandInteractionEvent event) {
+    public Optional<String> runSettingSpecificValidation(Setting setting, OptionMapping option, SlashCommandInteractionEvent event) {
         return switch (setting) {
             case ACTIVEMOD_SEND_IN_DM -> {
-                if (setting.getOptionValueByLabel(option.getAsString(), Boolean.class).value() == true) {
+                if (setting.getOptionByLabel(option.getAsString(), Boolean.class).value() == true) {
                     if (!validateActiveModSendIn(event)) {
                         yield Optional.of(String.format(
-                                "- `%s` konnte nicht auf __%s__ gesetzt werden.\n> -# Deine Datenschutz Einstellungen erlauben keine DMs oder du hast den Bot blockiert.\n",
+                                "- `%s` konnte nicht auf __%s__ gesetzt werden.\n> -# Deine Datenschutzeinstellungen erlauben keine DMs oder du hast den Bot blockiert.\n",
                                 setting.getLabel(), option.getAsString()));
                     }
                 }
@@ -186,7 +180,7 @@ public class ProfileSettingCmd implements ISlashSubcommand {
             return true;
         } catch (ErrorResponseException ere) {
 
-            if (ere.getErrorResponse() == ErrorResponse.CANNOT_SEND_TO_USER || ere.getErrorCode() == NO_MUTUAL_GUILD_EXCEPTION) {
+            if (ere.getErrorResponse() == ErrorResponse.CANNOT_SEND_TO_USER || ere.getErrorCode() == Client.NO_MUTUAL_GUILD_EXCEPTION) {
                 return false;
             }
             ExceptionHandler.handle(ere, event);

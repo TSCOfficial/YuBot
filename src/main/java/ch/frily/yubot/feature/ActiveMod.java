@@ -16,6 +16,8 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.concurrent.CompletableFuture;
 
+import static org.reflections.Reflections.log;
+
 public record ActiveMod(
         Member member,
         LocalDateTime lastActivityAt,
@@ -24,8 +26,9 @@ public record ActiveMod(
         @Nullable Long requestedAttentionMessageId) {
 
     public static CompletableFuture<String> registerModerator(Member member) throws SQLException, ClassNotFoundException {
+        log.info("ActiveMod registerModerator onlinestatus for {}: {}", member.getEffectiveName(), member.getOnlineStatus());
         if (member.getOnlineStatus() != OnlineStatus.ONLINE && member.getOnlineStatus() != OnlineStatus.UNKNOWN) {
-            CompletableFuture.failedFuture(
+            return CompletableFuture.failedFuture(
                     new InvalidStateException("Du musst als <:status_online:1543868572609159239> Online, <:status_idle:1543868571443265557> Idle oder <:status_dnd:1543868569513623683> Do not disturb markiert sein, um deine Aktivität zu bestätigen.", "Wenn du <:statusoffline:1543871842186567750> offline bist, sehen dich die Leute nicht.")
             );
         }

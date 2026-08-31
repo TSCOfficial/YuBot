@@ -1,5 +1,6 @@
 package ch.frily.yubot.interaction.command.cmd;
 
+import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.feature.ActiveMod;
@@ -45,6 +46,8 @@ public class ActiveModOptInCmd implements ISlashSubcommand {
 
         ActiveMod.registerModerator(event.getMember()).thenAccept(response -> {
             event.reply(response).setEphemeral(true).queue();
+        }).exceptionally(throwable -> {
+            return ExceptionHandler.fail(throwable);
         });
     }
 }

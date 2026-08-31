@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Role;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 ;
 
@@ -19,8 +20,8 @@ public enum Setting {
             List.of(EnvKey.ROLE_MODERATOR),
             Boolean.class,
             List.of(
-                    new SettingOption<>("Via DM", true),
-                    new SettingOption<>("Via Server", false)
+                    new SettingOption<>("Via Server", false, "Sendet dir Nachricht in #active-moderation (standard)"),
+                    new SettingOption<>("Via DM", true, "Sendet die Nachrichten per DM")
             )
     ),
     ABSENCE_NOTICE(
@@ -106,18 +107,29 @@ public enum Setting {
      * @return
      * @param <T>
      */
-    public <T> SettingOption<T> getOptionValueByLabel(String label, Class<T> dataType) {
-        SettingOption<?> option = this.autocompleteOptions.stream()
+    public <T> SettingOption<T> getOptionByLabel(String label, Class<T> dataType) {
+        Optional<SettingOption<?>> option = this.autocompleteOptions.stream()
                 .filter(o -> o.label().equals(label))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
 
-        if (option == null) {
+        if (option.isEmpty()) {
             throw new IllegalArgumentException("No option found for label: " + label);
         }
 
-        T value = dataType.cast(option.value());
-        return new SettingOption<>(option.label(), value);
+        T value = dataType.cast(option.get().value());
+        return new SettingOption<>(option.get().label(), value, option.get().description());
+    }
+
+    public <T> SettingOption<T> getOptionByValue(T value) {
+        Optional<SettingOption<?>> option = this.autocompleteOptions.stream()
+                .filter(o -> o.value().equals(value))
+                .findFirst();
+
+        if (option.isEmpty()) {
+            throw new IllegalArgumentException("No option found for label: " + label);
+        }
+
+        return new SettingOption<>(option.get().label(), value, option.get().description());
     }
 }
 
