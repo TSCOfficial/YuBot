@@ -38,7 +38,7 @@ public class ActiveModOptInBtn extends Button {
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
         if (ProfileRepository.getProfile(event.getMember()) == null || ProfileRepository.getProfile(event.getMember()).activeModSendInDm() == null) {
-            // If the user does not have set the activeModSendInDm
+            // If the user does not have set the activeModSendInDm in Profile, request to set it
             event.replyModal(new SelectActiveModSendTypeModal().build()).queue();
             return;
         }

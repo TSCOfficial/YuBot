@@ -1,5 +1,6 @@
 package ch.frily.yubot.interaction.command.cmd;
 
+import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.feature.DynamicMessageList;
 import ch.frily.yubot.interaction.command.ISlashCommand;
 import ch.frily.yubot.storage.SessionStorage;
@@ -35,13 +36,7 @@ public class TestCmd implements ISlashCommand {
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
-        String localStorage = SessionStorage.getInstance().getSessionStorage().stream().map(storage -> {
-            return String.format("%s: %s [ttl: %s]", storage.key(), storage.storage().getValue(), storage.ttl());
-        }).collect(Collectors.joining("\n"));
-        if (localStorage.length() == 0) {
-            localStorage = "Keine Daten vorhanden.";
-        }
-        event.reply(localStorage).setEphemeral(true).queue();
+        throw new InvalidStateException("Du musst als <:status_online:1543868572609159239> online, <:status_idle:1543868571443265557> idle oder <:status_dnd:1543868569513623683> nicht stören markiert sein, um deine Aktivität zu bestätigen.", "Wenn du <:statusoffline:1543871842186567750> offline bist, sehen dich die Leute nicht.");
     }
 
     @Override

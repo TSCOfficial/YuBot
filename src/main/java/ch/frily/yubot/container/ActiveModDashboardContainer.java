@@ -27,7 +27,11 @@ public class ActiveModDashboardContainer extends Container {
             Role activeModRole = EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD);
             List<Member> activeMods = Util.getUsersByRole(activeModRole);
             addFormatedText("## Aktive Moderator*innen (%d)", activeMods.size());
-            addFormatedText("%s\n%s", activeModRole.getAsMention(), activeMods.stream().map(Member::getEffectiveName).collect(Collectors.joining(", ")));
+            if (activeMods.size() > 0) {
+                addFormatedText("%s\n%s", activeModRole.getAsMention(), activeMods.stream().map(Member::getEffectiveName).collect(Collectors.joining(", ")));
+            } else {
+                addFormatedText("%s\n*Keine aktiven Moderator*innen*", activeModRole.getAsMention());
+            }
 
             // Add statistic
             Map<Member, List<ActiveModTracking>> activeModTrackingMap = ActiveModTrackingRepository.getActiveModTrackingsAsMap();

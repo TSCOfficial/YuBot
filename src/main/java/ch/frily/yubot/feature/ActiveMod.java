@@ -1,9 +1,11 @@
 package ch.frily.yubot.feature;
 
 import ch.frily.yubot.exception.ExceptionHandler;
+import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
+import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -22,8 +24,13 @@ public record ActiveMod(
         @Nullable Long requestedAttentionMessageId) {
 
     public static CompletableFuture<String> registerModerator(Member member) throws SQLException, ClassNotFoundException {
-        Role activeMod = EnvResolver.getRoleById(1513639704870912130L);
+        if (member.getOnlineStatus() != OnlineStatus.ONLINE && member.getOnlineStatus() != OnlineStatus.UNKNOWN) {
+            CompletableFuture.failedFuture(
+                    new InvalidStateException("Du musst als <:status_online:1543868572609159239> Online, <:status_idle:1543868571443265557> Idle oder <:status_dnd:1543868569513623683> Do not disturb markiert sein, um deine Aktivität zu bestätigen.", "Wenn du <:statusoffline:1543871842186567750> offline bist, sehen dich die Leute nicht.")
+            );
+        }
 
+        Role activeMod = EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD);
         if (member.getRoles().contains(activeMod)) {
             ActiveModRepository.updateModeratorActivity(member);
             return CompletableFuture.completedFuture("✅ Du hast deine Aktivität erfolgreich bestätigt.");
