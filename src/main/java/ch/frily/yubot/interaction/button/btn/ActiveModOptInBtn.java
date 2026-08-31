@@ -44,8 +44,10 @@ public class ActiveModOptInBtn extends Button {
             return;
         }
 
+        event.deferReply(true).queue();
+
         ActiveMod.registerModerator(event.getMember()).thenAccept(response -> {
-            event.reply(response).setEphemeral(true).queue();
+            event.getHook().sendMessage(response).setEphemeral(true).queue();
         }).exceptionally(throwable -> {
             return ExceptionHandler.fail(throwable);
         });
