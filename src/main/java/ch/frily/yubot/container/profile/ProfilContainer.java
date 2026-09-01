@@ -60,9 +60,11 @@ public class ProfilContainer extends Container {
                             addTextDisplay("-# Keine Einstellungen gefunden. Stelle sie mit </profile setting:1542519831729934447> ein");
                         } else {
                             StringBuilder settingsSB = new StringBuilder();
-                            settings.entrySet().forEach(entry -> {
-                                settingsSB.append(String.format("`%s`: %s", entry.getKey(), entry.getValue()));
-                                settingsSB.append("\n");
+                            settings.forEach((key, value) -> {
+                                if (!value.equals("null")) {
+                                    settingsSB.append(String.format("`%s`: %s", key, value)).append("\n");
+                                }
+
                             });
                             addTextDisplay(settingsSB.toString());
                         }
@@ -79,14 +81,12 @@ public class ProfilContainer extends Container {
 
     private Map<String, String> mapSettings() throws SQLException, ClassNotFoundException {
         Profile profile = ProfileRepository.getProfile(member);
-        log.info("Profile: {}", profile);
         if (profile == null) {
             return null;
         }
 
         Map<String, String> settings = new HashMap<>();
         Arrays.stream(Setting.values()).forEach(setting -> {
-            log.info("Setting: {}", setting.getLabel());
 
             try {
                 String settingValue = String.valueOf(ProfileRepository.getSetting(member, setting, setting.getDataType()));
@@ -95,11 +95,16 @@ public class ProfilContainer extends Container {
                     settingValue = String.format("\"%s\"", settingValue);
                 }
                 if (settingValue != "null") {
+
+                    switch (setting) {
+                        case Setting.ACTIVEMOD_SEND_IN_DM:
+                            settingValue = setting.getOptionByValue(Boolean.valueOf(settingValue)).label();
+                            break;
+                    }
                     settings.put(setting.getLabel(), settingValue);
                 }
 
             } catch (Exception e) {
-                log.info("Failed to retrieve setting value for {}: {}", setting.getLabel(), e.getMessage());
                 ExceptionHandler.fail(e);
             }
         });
