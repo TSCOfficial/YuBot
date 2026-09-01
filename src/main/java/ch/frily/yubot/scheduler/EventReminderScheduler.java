@@ -30,11 +30,9 @@ public class EventReminderScheduler implements IScheduler{
 
     @Override
     public void execute() throws SQLException, ClassNotFoundException {
-        log.info("Executing event reminder scheduler");
         Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
         List<ScheduledEvent> upcomingEvents = guild.getScheduledEvents().stream().filter(event -> {
             try {
-                log.info("Checking event: {}", event.getName());
                 if (event.getStatus() != ScheduledEvent.Status.SCHEDULED) {
                     EventReminderRepository.delete(event.getId());
                     return false;
@@ -57,7 +55,7 @@ public class EventReminderScheduler implements IScheduler{
     }
 
     private void sendReminder(ScheduledEvent event) {
-        TextChannel channel = EnvResolver.getChannelById(TextChannel.class, 1045025807065698314L, 1516079055693287545L);
+        TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_ANKUENDIGUNGEN);
         StringBuilder reminderSB = new StringBuilder();
         reminderSB.append(EnvResolver.getRoleById(EnvKey.ROLE_EVENTPING).getAsMention()).append("\n");
         reminderSB.append(String.format("# __%s__ startet in <t:%d:R>", event.getName(), Util.toEpochSeconds(event.getStartTime().atZoneSameInstant(ZoneId.of("Europe/Zurich")).toLocalDateTime()))).append("\n");
