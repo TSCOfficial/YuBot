@@ -32,7 +32,8 @@ public class SchedulerRegistry {
                 new ActiveModActivityScheduler(),
                 new CleanStorageScheduler(),
                 new AbsenceContainerScheduler(),
-                new TicketActivityScheduler()
+                new TicketActivityScheduler(),
+                new EventReminderScheduler()
         );
 
         for (IScheduler scheduler : schedulers) {

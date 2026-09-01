@@ -59,7 +59,7 @@ public class ProfileRepository {
         createProfileIfMissing(member);
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
         query.where(Table.ProfileColumn.MEMBER_ID, DatabaseQuery.Operator.EQUALS, member.getId());
-        query.update(setting.dbColumn, value);
+        query.update(setting.getDbColumn(), value);
         query.executeQuery();
     }
 

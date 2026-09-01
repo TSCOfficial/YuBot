@@ -7,8 +7,6 @@ import java.sql.SQLException;
  * Run a task in an interval of x units
  */
 public interface IScheduler {
-    void execute() throws SQLException, ClassNotFoundException;
-
     /**
      * Define when {@link #execute()} should be executed
      * <p>
@@ -18,4 +16,6 @@ public interface IScheduler {
      * @return
      */
     String cronExpression();
+
+    void execute() throws SQLException, ClassNotFoundException;
 }

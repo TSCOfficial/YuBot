@@ -13,7 +13,7 @@ public enum Table {
     DYNAMIC_MESSAGE("dynamic_message", DynamicMessageColumn.class),
     ABSENCE("absence", AbsenceColumn.class),
     PROFILE("profile", ProfileColumn.class),
-    EVENT_REMINDER("event_reminder", eventReminderColumn.class);
+    EVENT_REMINDER("event_reminder", EventReminderColumn.class);
 
     private final String table;
     private final Class<? extends Column> columnClass;
@@ -21,7 +21,7 @@ public enum Table {
     /**
      * Common interface
      */
-    public interface Column {
+    public interface Column { // todo check if replaceable by @Getter?
         String getColumn();
     }
 
@@ -116,7 +116,7 @@ public enum Table {
     // EVENT REMINDER
     @Getter
     @RequiredArgsConstructor
-    public enum eventReminderColumn implements Column {
+    public enum EventReminderColumn implements Column {
         ID("id"),
         IS_REMINDER_SENT("is_reminder_sent");
         private final String column;
