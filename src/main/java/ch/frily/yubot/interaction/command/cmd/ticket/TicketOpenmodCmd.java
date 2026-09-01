@@ -3,7 +3,7 @@ package ch.frily.yubot.interaction.command.cmd.ticket;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.feature.ticket.Ticket;
 import ch.frily.yubot.feature.ticket.TicketManager;
-import ch.frily.yubot.feature.ticket.TicketRepository;
+import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.feature.ticket.TicketType;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.util.EnvKey;

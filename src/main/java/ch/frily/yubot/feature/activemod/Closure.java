@@ -1,9 +1,11 @@
 package ch.frily.yubot.feature.activemod;
 
+import ch.frily.yubot.database.repository.ActiveModRepository;
+import ch.frily.yubot.database.repository.ActiveModTrackingRepository;
 import ch.frily.yubot.embed.closure.ClosureActivityRequestEmbed;
 import ch.frily.yubot.embed.closure.ClosureLogEmbed;
 import ch.frily.yubot.exception.ThrowingConsumer;
-import ch.frily.yubot.feature.profile.ProfileRepository;
+import ch.frily.yubot.database.repository.ProfileRepository;
 import ch.frily.yubot.feature.dynamicmsg.DynamicMessageList;
 import ch.frily.yubot.interaction.button.btn.activemod.ActiveModActivityProveBtn;
 import ch.frily.yubot.interaction.button.btn.activemod.ActiveModOptOutBtn;

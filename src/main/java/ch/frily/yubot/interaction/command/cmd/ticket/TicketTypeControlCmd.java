@@ -2,7 +2,7 @@ package ch.frily.yubot.interaction.command.cmd.ticket;
 
 import ch.frily.yubot.feature.dynamicmsg.DynamicMessageList;
 import ch.frily.yubot.feature.ticket.TicketType;
-import ch.frily.yubot.feature.ticket.TicketTypeControlRepository;
+import ch.frily.yubot.database.repository.TicketTypeControlRepository;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;

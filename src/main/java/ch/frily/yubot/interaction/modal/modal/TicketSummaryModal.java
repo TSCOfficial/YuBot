@@ -3,7 +3,7 @@ package ch.frily.yubot.interaction.modal.modal;
 import ch.frily.yubot.container.ticket.TicketTranscriptContainer;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.feature.ticket.Ticket;
-import ch.frily.yubot.feature.ticket.TicketRepository;
+import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.feature.ticket.TicketType;
 import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.util.EnvKey;

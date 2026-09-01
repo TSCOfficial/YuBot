@@ -3,7 +3,7 @@ package ch.frily.yubot.listeners;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.activemod.Closure;
 import ch.frily.yubot.feature.dynamicmsg.DynamicMessageList;
-import ch.frily.yubot.feature.ticket.TicketRepository;
+import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;

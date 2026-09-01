@@ -2,14 +2,14 @@ package ch.frily.yubot.listeners;
 
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.absence.Absence;
-import ch.frily.yubot.feature.absence.AbsenceRepository;
+import ch.frily.yubot.database.repository.AbsenceRepository;
 import ch.frily.yubot.feature.activemod.Closure;
 import ch.frily.yubot.feature.game.WordChainGame;
-import ch.frily.yubot.feature.profile.ProfileRepository;
+import ch.frily.yubot.database.repository.ProfileRepository;
 import ch.frily.yubot.feature.profile.Setting;
 import ch.frily.yubot.feature.ticket.Ticket;
 import ch.frily.yubot.feature.ticket.TicketManager;
-import ch.frily.yubot.feature.ticket.TicketRepository;
+import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;

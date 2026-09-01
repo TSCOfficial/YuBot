@@ -1,7 +1,8 @@
-package ch.frily.yubot.feature.ticket;
+package ch.frily.yubot.database.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
+import ch.frily.yubot.feature.ticket.TicketType;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

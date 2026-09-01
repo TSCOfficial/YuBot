@@ -1,5 +1,7 @@
 package ch.frily.yubot.feature.ticket;
 
+import ch.frily.yubot.database.repository.TicketRepository;
+import ch.frily.yubot.database.repository.TicketTypeControlRepository;
 import ch.frily.yubot.embed.ticket.TicketOpenEmbed;
 import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.exception.ThrowingConsumer;

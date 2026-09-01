@@ -3,7 +3,7 @@ package ch.frily.yubot.interaction.button.btn.ticket;
 import ch.frily.yubot.container.ticket.TicketTranscriptContainer;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.feature.ticket.Ticket;
-import ch.frily.yubot.feature.ticket.TicketRepository;
+import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.feature.ticket.TicketTypeGroup;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.modal.modal.TicketSummaryModal;

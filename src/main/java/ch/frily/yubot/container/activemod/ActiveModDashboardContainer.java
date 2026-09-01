@@ -5,7 +5,7 @@ import ch.frily.yubot.container.ContainerContext;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.activemod.ActiveModStatisticChart;
 import ch.frily.yubot.feature.activemod.ActiveModTracking;
-import ch.frily.yubot.feature.activemod.ActiveModTrackingRepository;
+import ch.frily.yubot.database.repository.ActiveModTrackingRepository;
 import ch.frily.yubot.interaction.button.btn.activemod.ActiveModOptInBtn;
 import ch.frily.yubot.interaction.button.btn.activemod.ActiveModOptOutBtn;
 import ch.frily.yubot.interaction.button.btn.activemod.ActiveModShowStatisticBtn;

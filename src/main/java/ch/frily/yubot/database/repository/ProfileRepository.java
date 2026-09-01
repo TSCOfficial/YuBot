@@ -1,8 +1,10 @@
-package ch.frily.yubot.feature.profile;
+package ch.frily.yubot.database.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.InvalidStateException;
+import ch.frily.yubot.feature.profile.Profile;
+import ch.frily.yubot.feature.profile.Setting;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
 

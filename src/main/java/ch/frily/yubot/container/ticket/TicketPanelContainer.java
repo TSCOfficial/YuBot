@@ -1,10 +1,10 @@
 package ch.frily.yubot.container.ticket;
 
 import ch.frily.yubot.container.Container;
-import ch.frily.yubot.feature.activemod.ActiveModRepository;
+import ch.frily.yubot.database.repository.ActiveModRepository;
 import ch.frily.yubot.feature.ticket.TicketManager;
 import ch.frily.yubot.feature.ticket.TicketType;
-import ch.frily.yubot.feature.ticket.TicketTypeControlRepository;
+import ch.frily.yubot.database.repository.TicketTypeControlRepository;
 import ch.frily.yubot.feature.ticket.TicketTypeGroup;
 import ch.frily.yubot.util.Color;
 import ch.frily.yubot.util.EnvKey;

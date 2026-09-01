@@ -1,6 +1,7 @@
 package ch.frily.yubot.feature.ticket;
 
 import ch.frily.yubot.Client;
+import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.embed.ticket.TicketCloseRequestEmbed;
 import ch.frily.yubot.embed.ticket.TicketClosedOptionsEmbed;
 import ch.frily.yubot.embed.ticket.TicketReopenedEmbed;

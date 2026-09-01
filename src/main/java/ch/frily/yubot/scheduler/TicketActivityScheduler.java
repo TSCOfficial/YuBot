@@ -2,7 +2,7 @@ package ch.frily.yubot.scheduler;
 
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.ticket.Ticket;
-import ch.frily.yubot.feature.ticket.TicketRepository;
+import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.feature.ticket.TicketStatus;
 import lombok.extern.slf4j.Slf4j;
 

@@ -3,7 +3,7 @@ package ch.frily.yubot.container.profile;
 import ch.frily.yubot.container.Container;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.profile.Profile;
-import ch.frily.yubot.feature.profile.ProfileRepository;
+import ch.frily.yubot.database.repository.ProfileRepository;
 import ch.frily.yubot.feature.profile.Setting;
 import ch.frily.yubot.util.BannerResolver;
 import ch.frily.yubot.util.ImageFetcher;

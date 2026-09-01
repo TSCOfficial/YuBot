@@ -1,7 +1,8 @@
-package ch.frily.yubot.feature.activemod;
+package ch.frily.yubot.database.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
+import ch.frily.yubot.feature.activemod.ActiveModTracking;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.entities.Guild;

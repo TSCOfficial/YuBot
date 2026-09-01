@@ -2,7 +2,7 @@ package ch.frily.yubot.interaction.modal.modal;
 
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.feature.absence.Absence;
-import ch.frily.yubot.feature.absence.AbsenceRepository;
+import ch.frily.yubot.database.repository.AbsenceRepository;
 import ch.frily.yubot.feature.absence.AbsenceType;
 import ch.frily.yubot.feature.dynamicmsg.DynamicMessageList;
 import ch.frily.yubot.interaction.button.btn.absence.AbsenceApproveDeleteBtn;

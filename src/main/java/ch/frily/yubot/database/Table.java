@@ -12,7 +12,8 @@ public enum Table {
     ACTIVE_MOD_TRACKING("active_mod_tracking", ActiveModTrackingColumn.class),
     DYNAMIC_MESSAGE("dynamic_message", DynamicMessageColumn.class),
     ABSENCE("absence", AbsenceColumn.class),
-    PROFILE("profile", ProfileColumn.class);
+    PROFILE("profile", ProfileColumn.class),
+    EVENT_REMINDER("event_reminder", eventReminderColumn.class);
 
     private final String table;
     private final Class<? extends Column> columnClass;
@@ -109,6 +110,15 @@ public enum Table {
         MEMBER_ID("member_id"),
         ACTIVEMOD_SEND_IN_DM("activemod_send_in_dm"),
         ABSENCE_NOTICE("absence_notice");
+        private final String column;
+    }
+
+    // EVENT REMINDER
+    @Getter
+    @RequiredArgsConstructor
+    public enum eventReminderColumn implements Column {
+        ID("id"),
+        IS_REMINDER_SENT("is_reminder_sent");
         private final String column;
     }
 }

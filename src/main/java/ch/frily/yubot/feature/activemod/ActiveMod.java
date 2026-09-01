@@ -1,5 +1,6 @@
 package ch.frily.yubot.feature.activemod;
 
+import ch.frily.yubot.database.repository.ActiveModRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.util.EnvKey;

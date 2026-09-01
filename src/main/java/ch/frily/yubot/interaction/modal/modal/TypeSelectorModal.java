@@ -1,5 +1,6 @@
 package ch.frily.yubot.interaction.modal.modal;
 
+import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.feature.ticket.*;
 import ch.frily.yubot.interaction.button.btn.ticket.TicketCancelOpenBtn;
 import ch.frily.yubot.interaction.button.btn.ticket.TicketConfirmOpenBtn;

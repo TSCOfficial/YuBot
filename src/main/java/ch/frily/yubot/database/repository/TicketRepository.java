@@ -1,8 +1,11 @@
-package ch.frily.yubot.feature.ticket;
+package ch.frily.yubot.database.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.InvalidStateException;
+import ch.frily.yubot.feature.ticket.Ticket;
+import ch.frily.yubot.feature.ticket.TicketStatus;
+import ch.frily.yubot.feature.ticket.TicketType;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import lombok.extern.slf4j.Slf4j;

@@ -2,7 +2,7 @@ package ch.frily.yubot.interaction.command.cmd.activemod;
 
 import ch.frily.yubot.container.activemod.ActiveModStatisticContainer;
 import ch.frily.yubot.feature.activemod.ActiveModTracking;
-import ch.frily.yubot.feature.activemod.ActiveModTrackingRepository;
+import ch.frily.yubot.database.repository.ActiveModTrackingRepository;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;

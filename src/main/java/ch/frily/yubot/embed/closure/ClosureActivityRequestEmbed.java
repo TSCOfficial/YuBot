@@ -4,7 +4,7 @@ package ch.frily.yubot.embed.closure;
 import ch.frily.yubot.embed.IEmbed;
 import ch.frily.yubot.feature.activemod.ActiveMod;
 import ch.frily.yubot.feature.activemod.Closure;
-import ch.frily.yubot.feature.profile.ProfileRepository;
+import ch.frily.yubot.database.repository.ProfileRepository;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import lombok.extern.slf4j.Slf4j;

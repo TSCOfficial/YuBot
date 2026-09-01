@@ -2,7 +2,7 @@ package ch.frily.yubot.interaction.button.btn.absence;
 
 import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.feature.absence.Absence;
-import ch.frily.yubot.feature.absence.AbsenceRepository;
+import ch.frily.yubot.database.repository.AbsenceRepository;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.modal.modal.AbsenceAddModal;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;

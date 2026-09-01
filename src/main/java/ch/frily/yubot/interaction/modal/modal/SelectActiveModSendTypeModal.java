@@ -3,7 +3,7 @@ package ch.frily.yubot.interaction.modal.modal;
 import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.activemod.ActiveMod;
-import ch.frily.yubot.feature.profile.ProfileRepository;
+import ch.frily.yubot.database.repository.ProfileRepository;
 import ch.frily.yubot.feature.profile.Setting;
 import ch.frily.yubot.feature.profile.SettingOption;
 import ch.frily.yubot.interaction.modal.Modal;

@@ -2,10 +2,10 @@ package ch.frily.yubot.scheduler;
 
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.activemod.ActiveMod;
-import ch.frily.yubot.feature.activemod.ActiveModRepository;
-import ch.frily.yubot.feature.activemod.ActiveModTrackingRepository;
+import ch.frily.yubot.database.repository.ActiveModRepository;
+import ch.frily.yubot.database.repository.ActiveModTrackingRepository;
 import ch.frily.yubot.feature.activemod.Closure;
-import ch.frily.yubot.feature.profile.ProfileRepository;
+import ch.frily.yubot.database.repository.ProfileRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;

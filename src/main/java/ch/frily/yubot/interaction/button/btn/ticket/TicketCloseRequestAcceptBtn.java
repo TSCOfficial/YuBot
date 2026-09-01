@@ -2,7 +2,7 @@ package ch.frily.yubot.interaction.button.btn.ticket;
 
 import ch.frily.yubot.embed.ticket.TicketCloseAcceptedEmbed;
 import ch.frily.yubot.feature.ticket.Ticket;
-import ch.frily.yubot.feature.ticket.TicketRepository;
+import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.interaction.button.Button;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
