@@ -13,6 +13,7 @@ public enum Table {
     DYNAMIC_MESSAGE("dynamic_message", DynamicMessageColumn.class),
     ABSENCE("absence", AbsenceColumn.class),
     SETTING("setting", SettingColumn.class),
+    PROFILE("profile", ProfileColumn.class),
     EVENT_REMINDER("event_reminder", EventReminderColumn.class);
 
     private final String table;
@@ -110,6 +111,16 @@ public enum Table {
         MEMBER_ID("member_id"),
         ACTIVEMOD_SEND_IN_DM("activemod_send_in_dm"),
         ABSENCE_NOTICE("absence_notice");
+        private final String column;
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    public enum ProfileColumn implements Column {
+        PROFILE_ID("profile_id"),
+        ACCOUNT_ID("account_id"),
+        NAME("name"),
+        IS_CURRENTLY_USED("is_currently_used");
         private final String column;
     }
 
