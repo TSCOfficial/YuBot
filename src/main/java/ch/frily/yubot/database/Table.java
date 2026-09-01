@@ -120,7 +120,8 @@ public enum Table {
         PROFILE_ID("profile_id"),
         ACCOUNT_ID("account_id"),
         NAME("name"),
-        IS_CURRENTLY_USED("is_currently_used");
+        IS_CURRENTLY_USED("is_currently_used"),
+        IS_DEFAULT("is_default");
         private final String column;
     }
 
