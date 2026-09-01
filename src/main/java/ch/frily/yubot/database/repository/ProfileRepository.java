@@ -15,13 +15,13 @@ import java.sql.SQLException;
 public class ProfileRepository {
 
     public static Profile getProfile(Member member) throws SQLException, ClassNotFoundException {
-        DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
-        query.where(Table.ProfileColumn.MEMBER_ID, DatabaseQuery.Operator.EQUALS, member.getId());
+        DatabaseQuery query = new DatabaseQuery(Table.SETTING);
+        query.where(Table.SettingColumn.MEMBER_ID, DatabaseQuery.Operator.EQUALS, member.getId());
         ResultSet rs = query.executeDataQuery();
 
         if (rs.next()) {
-            Boolean activeModSendInDm = rs.getBoolean(Table.ProfileColumn.ACTIVEMOD_SEND_IN_DM.getColumn());
-            String absenceNotice = rs.getString(Table.ProfileColumn.ABSENCE_NOTICE.getColumn());
+            Boolean activeModSendInDm = rs.getBoolean(Table.SettingColumn.ACTIVEMOD_SEND_IN_DM.getColumn());
+            String absenceNotice = rs.getString(Table.SettingColumn.ABSENCE_NOTICE.getColumn());
             return new Profile(member, activeModSendInDm, absenceNotice);
         }
         return null;
@@ -44,9 +44,9 @@ public class ProfileRepository {
      * @throws ClassNotFoundException
      */
     public static <T> T getSetting(Member member, Setting setting, Class<T> dataType) throws SQLException, ClassNotFoundException {
-        DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
+        DatabaseQuery query = new DatabaseQuery(Table.SETTING);
         query.select(setting.getDbColumn());
-        query.where(Table.ProfileColumn.MEMBER_ID, DatabaseQuery.Operator.EQUALS, member.getId());
+        query.where(Table.SettingColumn.MEMBER_ID, DatabaseQuery.Operator.EQUALS, member.getId());
         ResultSet rs = query.executeDataQuery();
 
         if (rs.next()) {
@@ -57,15 +57,15 @@ public class ProfileRepository {
 
     public static void upsertSetting(Member member, Setting setting, Object value) throws SQLException, ClassNotFoundException {
         createProfileIfMissing(member);
-        DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
-        query.where(Table.ProfileColumn.MEMBER_ID, DatabaseQuery.Operator.EQUALS, member.getId());
+        DatabaseQuery query = new DatabaseQuery(Table.SETTING);
+        query.where(Table.SettingColumn.MEMBER_ID, DatabaseQuery.Operator.EQUALS, member.getId());
         query.update(setting.getDbColumn(), value);
         query.executeQuery();
     }
 
     public static void createProfile(Member member) throws SQLException, ClassNotFoundException {
-        DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
-        query.insert(Table.ProfileColumn.MEMBER_ID, member.getId());
+        DatabaseQuery query = new DatabaseQuery(Table.SETTING);
+        query.insert(Table.SettingColumn.MEMBER_ID, member.getId());
         query.executeQuery();
     }
 

@@ -12,7 +12,7 @@ public enum Table {
     ACTIVE_MOD_TRACKING("active_mod_tracking", ActiveModTrackingColumn.class),
     DYNAMIC_MESSAGE("dynamic_message", DynamicMessageColumn.class),
     ABSENCE("absence", AbsenceColumn.class),
-    PROFILE("profile", ProfileColumn.class),
+    SETTING("setting", SettingColumn.class),
     EVENT_REMINDER("event_reminder", EventReminderColumn.class);
 
     private final String table;
@@ -103,10 +103,10 @@ public enum Table {
         private final String column;
     }
 
-    // USER-PROFILE
+    // USER-SETTING
     @Getter
     @RequiredArgsConstructor
-    public enum ProfileColumn implements Column {
+    public enum SettingColumn implements Column {
         MEMBER_ID("member_id"),
         ACTIVEMOD_SEND_IN_DM("activemod_send_in_dm"),
         ABSENCE_NOTICE("absence_notice");

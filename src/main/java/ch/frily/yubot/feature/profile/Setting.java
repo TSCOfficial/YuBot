@@ -16,7 +16,7 @@ public enum Setting {
     ACTIVEMOD_SEND_IN_DM(
             "aktivitätsbestätigungsanfrage",
             "Entscheide wo deine ActiveMod-Nachrichten gesendet werden.",
-            Table.ProfileColumn.ACTIVEMOD_SEND_IN_DM,
+            Table.SettingColumn.ACTIVEMOD_SEND_IN_DM,
             List.of(EnvKey.ROLE_MODERATOR),
             Boolean.class,
             List.of(
@@ -27,7 +27,7 @@ public enum Setting {
     ABSENCE_NOTICE(
             "abwesenheitsmeldung",
             "Nachricht welche bei @Erwähnungen während deiner Absenz gesendet wird.",
-            Table.ProfileColumn.ABSENCE_NOTICE,
+            Table.SettingColumn.ABSENCE_NOTICE,
             List.of(EnvKey.ROLE_YUTEAM, EnvKey.ROLE_TWITCHMOD),
             String.class,
             10,
