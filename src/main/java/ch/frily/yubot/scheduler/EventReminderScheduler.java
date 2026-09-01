@@ -11,6 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ScheduledEvent;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.ImageFormat;
+import net.dv8tion.jda.api.utils.ImageProxy;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -22,7 +25,7 @@ import java.util.Map;
 public class EventReminderScheduler implements IScheduler{
     @Override
     public String cronExpression() {
-        return "* * * * *"; // 0/15
+        return "0/15 * * * *"; // 0/15
     }
 
     @Override
@@ -36,7 +39,9 @@ public class EventReminderScheduler implements IScheduler{
                     EventReminderRepository.delete(event.getId());
                     return false;
                 }
-                if (event.getStatus().equals(ScheduledEvent.Status.SCHEDULED) && event.getStartTime().toLocalDateTime().isBefore(LocalDateTime.now().plusHours(2))) {
+                LocalDateTime startTime = event.getStartTime().atZoneSameInstant(ZoneId.of("Europe/Zurich")).toLocalDateTime();
+                LocalDateTime now = LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MINUTES);
+                if (event.getStatus().equals(ScheduledEvent.Status.SCHEDULED) && (!startTime.isBefore(now) && !startTime.isAfter(now.plusHours(2)))) {
                         Map<String, Boolean> reminderEntry = EventReminderRepository.getEvent(event.getId());
                         return reminderEntry != null ? !reminderEntry.get(event.getId()) : true;
                 }
@@ -54,11 +59,15 @@ public class EventReminderScheduler implements IScheduler{
     private void sendReminder(ScheduledEvent event) {
         TextChannel channel = EnvResolver.getChannelById(TextChannel.class, 1045025807065698314L, 1516079055693287545L);
         StringBuilder reminderSB = new StringBuilder();
-        reminderSB.append(EnvResolver.getRoleById(EnvKey.ROLE_EVENTPING));
-        reminderSB.append(String.format("# __[%s](%s)__ startet in <t:%d:R>", event.getName(), event.getJumpUrl(), Util.toEpochSeconds(event.getStartTime().atZoneSameInstant(ZoneId.of("Europe/Zurich")).toLocalDateTime()))).append("\n");
+        reminderSB.append(EnvResolver.getRoleById(EnvKey.ROLE_EVENTPING).getAsMention()).append("\n");
+        reminderSB.append(String.format("# __%s__ startet in <t:%d:R>", event.getName(), Util.toEpochSeconds(event.getStartTime().atZoneSameInstant(ZoneId.of("Europe/Zurich")).toLocalDateTime()))).append("\n");
         reminderSB.append(event.getDescription()).append("\n");
         if (event.getType() == ScheduledEvent.Type.STAGE_INSTANCE || event.getType() == ScheduledEvent.Type.VOICE) {
-            reminderSB.append(event.getChannel().getJumpUrl());
+            reminderSB.append(String.format("-# %s | %s", event.getChannel().getJumpUrl(), event.getJumpUrl()));
+        } else if (event.getType() == ScheduledEvent.Type.EXTERNAL) {
+            reminderSB.append(String.format("-# %s | %s", event.getLocation(), event.getJumpUrl()));
+        } else {
+            reminderSB.append(String.format("-# %s", event.getJumpUrl()));
         }
         channel.sendMessage(reminderSB.toString()).queue(ThrowingConsumer.wrap(null, _ -> {
             EventReminderRepository.setStatus(event.getId(), true);
