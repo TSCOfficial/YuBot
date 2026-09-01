@@ -3,6 +3,9 @@ package ch.frily.yubot.interaction.button;
 import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.interaction.ArgumentComponent;
 import ch.frily.yubot.interaction.button.btn.*;
+import ch.frily.yubot.interaction.button.btn.absence.*;
+import ch.frily.yubot.interaction.button.btn.activemod.*;
+import ch.frily.yubot.interaction.button.btn.ticket.*;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
@@ -41,7 +44,7 @@ public class ButtonRegistry {
                 new ActiveModActivityRejectBtn(),
                 new AddServeropenRoleBtn(),
                 new ActiveModStatisticGoToHomeBtn(),
-                new DeleteActivityRequestMsgBtn(),
+                new DeleteMessageBtn(),
                 new AbsenceAddBtn(),
                 new AbsenceDetailBtn(),
                 new AbsenceEditBtn(),
@@ -55,7 +58,7 @@ public class ButtonRegistry {
                 new ActiveModCancelOptOutBtn(),
                 new ActiveModOptInBtn(),
                 new ActiveModOptOutBtn(),
-                new ShowStatisticBtn()
+                new ActiveModShowStatisticBtn()
         );
         rawButtons.forEach(btn -> {
             String idOrUrl = btn.getId();

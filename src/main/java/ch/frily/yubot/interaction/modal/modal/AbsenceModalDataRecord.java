@@ -1,6 +1,5 @@
 package ch.frily.yubot.interaction.modal.modal;
 
-import ch.frily.yubot.feature.AbsenceType;
 import ch.frily.yubot.storage.SessionStorage;
 
 /**

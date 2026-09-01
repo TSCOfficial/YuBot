@@ -1,20 +1,16 @@
 package ch.frily.yubot.interaction.modal.modal;
 
-import ch.frily.yubot.feature.*;
-import ch.frily.yubot.interaction.button.btn.TicketCancelOpenBtn;
-import ch.frily.yubot.interaction.button.btn.TicketConfirmOpenBtn;
-import ch.frily.yubot.interaction.modal.IModal;
+import ch.frily.yubot.feature.ticket.*;
+import ch.frily.yubot.interaction.button.btn.ticket.TicketCancelOpenBtn;
+import ch.frily.yubot.interaction.button.btn.ticket.TicketConfirmOpenBtn;
 import ch.frily.yubot.interaction.modal.Modal;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.label.Label;
-import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
-import net.dv8tion.jda.api.exceptions.PermissionException;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;

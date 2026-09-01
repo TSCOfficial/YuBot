@@ -1,5 +1,6 @@
 package ch.frily.yubot.embed;
 
+import ch.frily.yubot.embed.teamlist.TeamlistEmbed;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 

@@ -1,6 +1,6 @@
 package ch.frily.yubot.scheduler;
 
-import ch.frily.yubot.feature.DynamicMessageList;
+import ch.frily.yubot.feature.dynamicmsg.DynamicMessageList;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;

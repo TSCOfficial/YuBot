@@ -1,11 +1,10 @@
 package ch.frily.yubot.interaction.contextmenu.ctxmenu;
 
 import ch.frily.yubot.exception.ThrowingConsumer;
-import ch.frily.yubot.feature.Ticket;
-import ch.frily.yubot.feature.TicketManager;
-import ch.frily.yubot.feature.TicketRepository;
-import ch.frily.yubot.feature.TicketType;
-import ch.frily.yubot.interaction.contextmenu.IMessageContextMenu;
+import ch.frily.yubot.feature.ticket.Ticket;
+import ch.frily.yubot.feature.ticket.TicketManager;
+import ch.frily.yubot.feature.ticket.TicketRepository;
+import ch.frily.yubot.feature.ticket.TicketType;
 import ch.frily.yubot.interaction.contextmenu.IUserContextMenu;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;

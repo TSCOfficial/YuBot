@@ -1,22 +1,19 @@
 package ch.frily.yubot.listeners;
 
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.feature.Closure;
-import ch.frily.yubot.feature.DynamicMessageList;
-import ch.frily.yubot.feature.TicketRepository;
+import ch.frily.yubot.feature.activemod.Closure;
+import ch.frily.yubot.feature.dynamicmsg.DynamicMessageList;
+import ch.frily.yubot.feature.ticket.TicketRepository;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
-
-import java.sql.SQLException;
 
 @Slf4j
 public class GuildMemberUpdateListener extends ListenerAdapter {

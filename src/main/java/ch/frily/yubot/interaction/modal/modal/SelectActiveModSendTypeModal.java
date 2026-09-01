@@ -2,11 +2,10 @@ package ch.frily.yubot.interaction.modal.modal;
 
 import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.exception.InvalidStateException;
-import ch.frily.yubot.feature.ActiveMod;
-import ch.frily.yubot.feature.ProfileRepository;
-import ch.frily.yubot.feature.Setting;
-import ch.frily.yubot.feature.SettingOption;
+import ch.frily.yubot.feature.activemod.ActiveMod;
+import ch.frily.yubot.feature.profile.ProfileRepository;
+import ch.frily.yubot.feature.profile.Setting;
+import ch.frily.yubot.feature.profile.SettingOption;
 import ch.frily.yubot.interaction.modal.Modal;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;

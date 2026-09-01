@@ -1,15 +1,13 @@
 package ch.frily.yubot.interaction.modal.modal;
 
-import ch.frily.yubot.container.TicketTranscriptContainer;
+import ch.frily.yubot.container.ticket.TicketTranscriptContainer;
 import ch.frily.yubot.exception.ThrowingConsumer;
-import ch.frily.yubot.feature.Ticket;
-import ch.frily.yubot.feature.TicketRepository;
-import ch.frily.yubot.feature.TicketType;
+import ch.frily.yubot.feature.ticket.Ticket;
+import ch.frily.yubot.feature.ticket.TicketRepository;
+import ch.frily.yubot.feature.ticket.TicketType;
 import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.api.components.container.Container;
