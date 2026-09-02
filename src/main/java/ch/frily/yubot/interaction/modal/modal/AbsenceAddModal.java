@@ -38,7 +38,7 @@ import java.util.List;
 public class AbsenceAddModal extends Modal {
 
     private static final String DATE_TIME_FORMAT = "dd.MM.yyyy HH:mm";
-    private static final int MINIMUM_ABSENCE_DURATION = 1440; // 24 hours in minutes
+    private static final int MINIMUM_ABSENCE_DURATION = 720; // 12 hours in minutes
     private static final int MAX_ABSENCES_AT_SAME_TIME = 1000;
 
     private boolean isEditing = false;
@@ -77,7 +77,7 @@ public class AbsenceAddModal extends Modal {
 
         ModalTopLevelComponent startTimeLabel = null;
 
-        TextInput.Builder startTime = TextInput.create("start-time", TextInputStyle.SHORT); // wenn bereits in der vergangenheit, ersetzen mit TextDisplay "Start: xy\n-# Kann nicht geändert werden"
+        TextInput.Builder startTime = TextInput.create("start-time", TextInputStyle.SHORT);
         startTime.setRequiredRange(16, 16);
         startTime.setRequired(true);
 
@@ -86,14 +86,14 @@ public class AbsenceAddModal extends Modal {
         } else if (absence != null && absence.fromDateTime() != null){
             startTime.setValue(absence.fromDateTime().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
         } else {
-            startTime.setValue(LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
+            startTime.setValue(LocalDateTime.now().plusMinutes(1).format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
         }
         startTimeLabel = Label.of(String.format("Startzeit (%s)", DATE_TIME_FORMAT), startTime.build());
 
 
-        TextInput.Builder endTime = TextInput.create("end-time", TextInputStyle.SHORT); // wenn bereits in der vergangenheit, ersetzen mit TextDisplay "Ende: xy\n-# Kann nicht geändert werden"
+        TextInput.Builder endTime = TextInput.create("end-time", TextInputStyle.SHORT);
         endTime.setRequiredRange(16, 16);
-        endTime.setValue(LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
+        endTime.setValue(LocalDateTime.now().plusMinutes(MINIMUM_ABSENCE_DURATION + 1).format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
         endTime.setRequired(true);
         if (isEditing) {
             endTime.setValue(absence.toDateTime().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
