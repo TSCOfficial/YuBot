@@ -129,7 +129,7 @@ public enum TicketType {
     BEWERBUNG_TWITCHMOD(
             "betwm",
             "\uD83C\uDF9E\uFE0F Twitch-Moderation (Team-extern)",
-            "Bewerbung Twitch-Moderation",
+            "Bewerbung Twitch-Moderation (16+)",
             """
                     Bitte verfasse deine Bewerbung. Für deine Bewerbung ist uns Folgendes wichtig:
                     
