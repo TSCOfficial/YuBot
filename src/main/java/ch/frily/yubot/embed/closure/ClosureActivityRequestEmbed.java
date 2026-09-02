@@ -4,7 +4,7 @@ package ch.frily.yubot.embed.closure;
 import ch.frily.yubot.embed.IEmbed;
 import ch.frily.yubot.feature.activemod.ActiveMod;
 import ch.frily.yubot.feature.activemod.Closure;
-import ch.frily.yubot.database.repository.ProfileRepository;
+import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,7 @@ public class ClosureActivityRequestEmbed implements IEmbed {
     public String getDescription() {
         boolean activeModSendInDm = false;
         try {
-            activeModSendInDm = ProfileRepository.getProfileOrThrow(activeMod.member()).activeModSendInDm().equals("Via DM");
+            activeModSendInDm = SettingRepository.getSettingsOrThrow(activeMod.member()).activeModSendInDm().equals("Via DM");
         } catch (Exception e) {
             // already false if no profile exist
         }

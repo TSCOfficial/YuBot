@@ -2,7 +2,7 @@ package ch.frily.yubot.interaction.button.btn.activemod;
 
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.activemod.ActiveMod;
-import ch.frily.yubot.database.repository.ProfileRepository;
+import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.modal.modal.SelectActiveModSendTypeModal;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
@@ -32,7 +32,7 @@ public class ActiveModOptInBtn extends Button {
 
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
-        if (ProfileRepository.getProfile(event.getMember()) == null || ProfileRepository.getProfile(event.getMember()).activeModSendInDm() == null) {
+        if (SettingRepository.getSettings(event.getMember()) == null || SettingRepository.getSettings(event.getMember()).activeModSendInDm() == null) {
             // If the user does not have set the activeModSendInDm in Profile, request to set it
             event.replyModal(new SelectActiveModSendTypeModal().build()).queue();
             return;

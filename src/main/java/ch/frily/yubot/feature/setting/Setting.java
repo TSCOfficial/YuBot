@@ -1,4 +1,4 @@
-package ch.frily.yubot.feature.profile;
+package ch.frily.yubot.feature.setting;
 
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.util.EnvKey;

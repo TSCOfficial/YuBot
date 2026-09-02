@@ -118,7 +118,7 @@ public enum Table {
     @RequiredArgsConstructor
     public enum ProfileColumn implements Column {
         PROFILE_ID("profile_id"),
-        ACCOUNT_ID("account_id"),
+        ACCOUNT_ID("parent_id"),
         NAME("name"),
         IS_CURRENTLY_USED("is_currently_used"),
         IS_DEFAULT("is_default");

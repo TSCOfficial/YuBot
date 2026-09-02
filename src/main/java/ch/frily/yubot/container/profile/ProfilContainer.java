@@ -2,9 +2,9 @@ package ch.frily.yubot.container.profile;
 
 import ch.frily.yubot.container.Container;
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.feature.profile.Profile;
-import ch.frily.yubot.database.repository.ProfileRepository;
-import ch.frily.yubot.feature.profile.Setting;
+import ch.frily.yubot.feature.setting.Settings;
+import ch.frily.yubot.database.repository.SettingRepository;
+import ch.frily.yubot.feature.setting.Setting;
 import ch.frily.yubot.util.BannerResolver;
 import ch.frily.yubot.util.ImageFetcher;
 import ch.frily.yubot.util.ProfileImageComposer;
@@ -80,16 +80,16 @@ public class ProfilContainer extends Container {
     }
 
     private Map<String, String> mapSettings() throws SQLException, ClassNotFoundException {
-        Profile profile = ProfileRepository.getProfile(member);
-        if (profile == null) {
+        Settings settings = SettingRepository.getSettings(member);
+        if (settings == null) {
             return null;
         }
 
-        Map<String, String> settings = new HashMap<>();
+        Map<String, String> mappedSettings = new HashMap<>();
         Arrays.stream(Setting.values()).forEach(setting -> {
 
             try {
-                String settingValue = String.valueOf(ProfileRepository.getSetting(member, setting, setting.getDataType()));
+                String settingValue = String.valueOf(SettingRepository.getSetting(member, setting, setting.getDataType()));
                 // show "custom text" for custom text that is not a predefined option from autocomplete
                 if (setting.getAutocompleteOptions() == null) {
                     settingValue = String.format("\"%s\"", settingValue);
@@ -101,7 +101,7 @@ public class ProfilContainer extends Container {
                             settingValue = setting.getOptionByValue(Boolean.valueOf(settingValue)).label();
                             break;
                     }
-                    settings.put(setting.getLabel(), settingValue);
+                    mappedSettings.put(setting.getLabel(), settingValue);
                 }
 
             } catch (Exception e) {
@@ -109,7 +109,7 @@ public class ProfilContainer extends Container {
             }
         });
 
-        return settings;
+        return mappedSettings;
     }
 
     private CompletableFuture<FileUpload> buildProfileBanner() {

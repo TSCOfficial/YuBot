@@ -3,9 +3,9 @@ package ch.frily.yubot.interaction.modal.modal;
 import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.activemod.ActiveMod;
-import ch.frily.yubot.database.repository.ProfileRepository;
-import ch.frily.yubot.feature.profile.Setting;
-import ch.frily.yubot.feature.profile.SettingOption;
+import ch.frily.yubot.database.repository.SettingRepository;
+import ch.frily.yubot.feature.setting.Setting;
+import ch.frily.yubot.feature.setting.SettingOption;
 import ch.frily.yubot.interaction.modal.Modal;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
@@ -61,10 +61,10 @@ public class SelectActiveModSendTypeModal extends Modal {
             try {
                 PrivateChannel privateChannel = event.getMember().getUser().openPrivateChannel().complete();
                 privateChannel.sendMessage("ℹ️ Du erhälst absofort die ActiveMod-Nachrichten via DM.").complete();
-                ProfileRepository.upsertSetting(event.getMember(), Setting.ACTIVEMOD_SEND_IN_DM, true);
+                SettingRepository.upsertSetting(event.getMember(), Setting.ACTIVEMOD_SEND_IN_DM, true);
             } catch (ErrorResponseException ere) {
                 if (ere.getErrorResponse() == ErrorResponse.CANNOT_SEND_TO_USER || ere.getErrorCode() == Client.NO_MUTUAL_GUILD_EXCEPTION) {
-                    ProfileRepository.upsertSetting(event.getMember(), Setting.ACTIVEMOD_SEND_IN_DM, false);
+                    SettingRepository.upsertSetting(event.getMember(), Setting.ACTIVEMOD_SEND_IN_DM, false);
                     couldntSetToDMs.set(true);
                 } else {
                     ExceptionHandler.handle(ere, event);
@@ -72,7 +72,7 @@ public class SelectActiveModSendTypeModal extends Modal {
 
             }
         } else {
-            ProfileRepository.upsertSetting(event.getMember(), Setting.ACTIVEMOD_SEND_IN_DM, false);
+            SettingRepository.upsertSetting(event.getMember(), Setting.ACTIVEMOD_SEND_IN_DM, false);
         }
         SettingOption<Boolean> selectedSetting = Setting.ACTIVEMOD_SEND_IN_DM.getOptionByValue(couldntSetToDMs.get() ? false : sendInDM); // get the option if it could be sent, else get overwrite (via Server)
         ActiveMod.registerModerator(event.getMember()).thenAccept(responseText -> {

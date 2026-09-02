@@ -5,7 +5,7 @@ import ch.frily.yubot.database.repository.ActiveModTrackingRepository;
 import ch.frily.yubot.embed.closure.ClosureActivityRequestEmbed;
 import ch.frily.yubot.embed.closure.ClosureLogEmbed;
 import ch.frily.yubot.exception.ThrowingConsumer;
-import ch.frily.yubot.database.repository.ProfileRepository;
+import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.feature.dynamicmsg.DynamicMessageList;
 import ch.frily.yubot.interaction.button.btn.activemod.ActiveModActivityProveBtn;
 import ch.frily.yubot.interaction.button.btn.activemod.ActiveModOptOutBtn;
@@ -329,7 +329,7 @@ public class Closure {
         if (moderator.activityRequestedAt().isBefore(LocalDateTime.now().minusMinutes(Closure.MAX_NORMAL_ACTIVITY_REQUEST_RESPONSE_TIME))) {
             Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
 
-            if (ProfileRepository.getProfile(moderator.member()).activeModSendInDm()) {
+            if (SettingRepository.getSettings(moderator.member()).activeModSendInDm()) {
                 moderator.member().getUser().openPrivateChannel().queue(privateChannel -> {
                     editIgnoredRequestActivityMsg(privateChannel, moderator);
                 });

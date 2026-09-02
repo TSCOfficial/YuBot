@@ -2,9 +2,9 @@ package ch.frily.yubot.interaction.command.cmd.profile;
 
 import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.database.repository.ProfileRepository;
-import ch.frily.yubot.feature.profile.Setting;
-import ch.frily.yubot.feature.profile.SettingOption;
+import ch.frily.yubot.database.repository.SettingRepository;
+import ch.frily.yubot.feature.setting.Setting;
+import ch.frily.yubot.feature.setting.SettingOption;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.util.Util;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
@@ -82,7 +82,7 @@ public class ProfileSettingCmd implements ISlashSubcommand {
                     } else {
                         if (setting.getAutocompleteOptions() != null) {
                             SettingOption<?> resolvedOption = setting.getOptionByLabel(option.getAsString(), setting.getDataType());
-                            ProfileRepository.upsertSetting(event.getMember(), setting, resolvedOption.value());
+                            SettingRepository.upsertSetting(event.getMember(), setting, resolvedOption.value());
                         } else {
                             if (setting.getMin() > option.getAsString().length()) {
                                 failedSettingsSB.append(String.format("- `%s`: __%s__ ist zu kurz (%d) und muss mindestens %d Zeichen lang sein.\n", setting.getLabel(), option.getAsString(), option.getAsString().length(), setting.getMin()));
@@ -92,7 +92,7 @@ public class ProfileSettingCmd implements ISlashSubcommand {
                                 failedSettingsSB.append(String.format("- `%s`: __%s__ ist zu lang (%d) und darf maximal %d Zeichen lang sein.\n", setting.getLabel(), option.getAsString(), option.getAsString().length(), setting.getMax()));
                                 continue;
                             }
-                            ProfileRepository.upsertSetting(event.getMember(), setting, option.getAsString());
+                            SettingRepository.upsertSetting(event.getMember(), setting, option.getAsString());
                         }
                         modifiedSettingsSB.append(String.format("- `%s`: geändert auf __%s__.\n", setting.getLabel(), option.getAsString()));
                     }

@@ -2,76 +2,40 @@ package ch.frily.yubot.database.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
-import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.feature.profile.Profile;
-import ch.frily.yubot.feature.profile.Setting;
-import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
-@Slf4j
 public class ProfileRepository {
 
-    public static Profile getProfile(Member member) throws SQLException, ClassNotFoundException {
-        DatabaseQuery query = new DatabaseQuery(Table.SETTING);
-        query.where(Table.SettingColumn.MEMBER_ID, DatabaseQuery.Operator.EQUALS, member.getId());
+    public static List<Profile> getProfilesFromAccount(Member member) throws SQLException, ClassNotFoundException {
+        DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
+        query.where(Table.ProfileColumn.ACCOUNT_ID, DatabaseQuery.Operator.EQUALS, member.getId());
         ResultSet rs = query.executeDataQuery();
 
-        if (rs.next()) {
-            Boolean activeModSendInDm = rs.getBoolean(Table.SettingColumn.ACTIVEMOD_SEND_IN_DM.getColumn());
-            String absenceNotice = rs.getString(Table.SettingColumn.ABSENCE_NOTICE.getColumn());
-            return new Profile(member, activeModSendInDm, absenceNotice);
+        List<Profile> profiles = new ArrayList<>();
+        while (rs.next()) {
+            String profileId = rs.getString(Table.ProfileColumn.PROFILE_ID.getColumn());
+            String name = rs.getString(Table.ProfileColumn.NAME.getColumn());
+            boolean isCurrentlyUsed = rs.getBoolean(Table.ProfileColumn.IS_CURRENTLY_USED.getColumn());
+            boolean isDefault = rs.getBoolean(Table.ProfileColumn.IS_DEFAULT.getColumn());
+
+            profiles.add(new Profile(profileId, member, name, isCurrentlyUsed, isDefault));
         }
-        return null;
+
+        return profiles;
     }
 
-    public static Profile getProfileOrThrow(Member member) throws InvalidStateException, SQLException, ClassNotFoundException {
-        Profile profile = getProfile(member);
-        if (profile == null) {
-            throw new InvalidStateException("No profile found");
-        }
-        return profile;
-    }
-
-    /**
-     * Get the value of a given setting from a user
-     * @param member
-     * @param setting
-     * @return the string value or null if the setting is not found
-     * @throws SQLException
-     * @throws ClassNotFoundException
-     */
-    public static <T> T getSetting(Member member, Setting setting, Class<T> dataType) throws SQLException, ClassNotFoundException {
-        DatabaseQuery query = new DatabaseQuery(Table.SETTING);
-        query.select(setting.getDbColumn());
-        query.where(Table.SettingColumn.MEMBER_ID, DatabaseQuery.Operator.EQUALS, member.getId());
-        ResultSet rs = query.executeDataQuery();
-
-        if (rs.next()) {
-            return rs.getObject(setting.getDbColumn().getColumn(), dataType);
-        }
-        return null;
-    }
-
-    public static void upsertSetting(Member member, Setting setting, Object value) throws SQLException, ClassNotFoundException {
-        createProfileIfMissing(member);
-        DatabaseQuery query = new DatabaseQuery(Table.SETTING);
-        query.where(Table.SettingColumn.MEMBER_ID, DatabaseQuery.Operator.EQUALS, member.getId());
-        query.update(setting.getDbColumn(), value);
+    public static void createProfile(Profile profile) throws SQLException, ClassNotFoundException {
+        DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
+        query.insert(Table.ProfileColumn.ACCOUNT_ID, profile.parentAccount().getId());
+        query.insert(Table.ProfileColumn.NAME, profile.name());
+        query.insert(Table.ProfileColumn.IS_CURRENTLY_USED, profile.isCurrentlyUsed());
+        query.insert(Table.ProfileColumn.IS_DEFAULT, profile.isDefault());
         query.executeQuery();
-    }
-
-    public static void createProfile(Member member) throws SQLException, ClassNotFoundException {
-        DatabaseQuery query = new DatabaseQuery(Table.SETTING);
-        query.insert(Table.SettingColumn.MEMBER_ID, member.getId());
-        query.executeQuery();
-    }
-
-    private static void createProfileIfMissing(Member member) throws SQLException, ClassNotFoundException {
-        if (getProfile(member) == null) {
-            createProfile(member);
-        }
     }
 }
