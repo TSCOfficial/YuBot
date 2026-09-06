@@ -407,7 +407,7 @@ public class Ticket {
     }
 
     private void toggleAdditionalMember(Member initiator, Member member, boolean addMember) throws PermissionDeniedException, InvalidStateException {
-        if (!isOwner(initiator) && Util.isTeamMember(initiator)){
+        if (Util.isTeamMember(initiator)){
             if (status != TicketStatus.CLOSED) {
 
                 if (addMember) {
