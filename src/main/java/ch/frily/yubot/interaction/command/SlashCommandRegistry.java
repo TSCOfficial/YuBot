@@ -45,7 +45,8 @@ public class SlashCommandRegistry {
      */
     public void loadCommands() {
         List<ISlashCommand> slashCommands = List.of(
-                new TestCmd() // tests only
+                new TestCmd(), // tests only
+                new VoiceCheck()
         );
 
         List<ISlashCommandGroup> slashCommandGroups = List.of(
