@@ -4,7 +4,10 @@ import ch.frily.yubot.feature.ticket.Ticket;
 import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.IMentionable;
+import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -21,18 +24,20 @@ public class TicketAddCmd implements ISlashSubcommand {
 
     @Override
     public String getDescription() {
-        return "Füge eine Person zum Ticket hinzu";
+        return "Füge eine Person oder eine Rolle zum Ticket hinzu";
     }
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
-        Member member = event.getOption("user").getAsMember();
+        IMentionable mentionable = event.getOption("user-role").getAsMentionable();
+        IPermissionHolder permissionHolder = (IPermissionHolder) mentionable;
 
         Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
-        ticket.addMember(event.getMember(), member);
+
+        ticket.addMember(event.getMember(), permissionHolder);
 
         StringBuilder reply = new StringBuilder();
-        reply.append(String.format("✅ %s wurde erfolgreich hinzugefügt.", event.getOption("user").getAsMember().getAsMention()));
+        reply.append(String.format("✅ %s wurde erfolgreich hinzugefügt.", event.getOption("user-role").getAsMentionable().getAsMention()));
         if (event.getOption("reason") != null) {
             reply.append(String.format("\n-# Begründung: %s", event.getOption("reason").getAsString()));
         }
@@ -43,8 +48,8 @@ public class TicketAddCmd implements ISlashSubcommand {
     @Override
     public List<OptionData> getOptions() {
         return List.of(
-                new OptionData(OptionType.USER, "user", "Person welche zum Ticket hinzugefügt werden soll.", true),
-                new OptionData(OptionType.STRING, "reason", "Weshalb wird die Person hinzugefügt?")
+                new OptionData(OptionType.MENTIONABLE, "user-role", "Person oder Rolle welche zum Ticket hinzugefügt werden soll.", true),
+                new OptionData(OptionType.STRING, "reason", "Weshalb wird die Person/Rolle hinzugefügt?")
         );
     }
 

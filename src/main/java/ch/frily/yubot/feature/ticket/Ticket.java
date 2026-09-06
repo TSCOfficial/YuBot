@@ -22,9 +22,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.PermissionOverride;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
@@ -387,42 +385,42 @@ public class Ticket {
     /**
      * Add a member to this ticket
      * @param initiator
-     * @param member
+     * @param permissionHolder
      * @throws PermissionDeniedException
      * @throws InvalidStateException
      */
-    public void addMember(Member initiator, Member member) throws PermissionDeniedException, InvalidStateException {
-        toggleAdditionalMember(initiator, member, true);
+    public void addMember(Member initiator, IPermissionHolder permissionHolder) throws PermissionDeniedException, InvalidStateException {
+        toggleAdditionalMember(initiator, permissionHolder, true);
     }
 
     /**
      * Remove member from this ticket
      * @param initiator
-     * @param member
+     * @param permissionHolder
      * @throws PermissionDeniedException
      * @throws InvalidStateException
      */
-    public void removeMember(Member initiator, Member member) throws PermissionDeniedException, InvalidStateException {
-        toggleAdditionalMember(initiator, member, false);
+    public void removeMember(Member initiator, IPermissionHolder permissionHolder) throws PermissionDeniedException, InvalidStateException {
+        toggleAdditionalMember(initiator, permissionHolder, false);
     }
 
-    private void toggleAdditionalMember(Member initiator, Member member, boolean addMember) throws PermissionDeniedException, InvalidStateException {
+    private void toggleAdditionalMember(Member initiator, IPermissionHolder permissionHolder, boolean addMember) throws PermissionDeniedException, InvalidStateException {
         if (Util.isTeamMember(initiator)){
             if (status != TicketStatus.CLOSED) {
 
                 if (addMember) {
-                    if (getMemberPermissionOverrides().contains(member)) {
+                    if (getPermissionOverrides().contains(permissionHolder)) {
                         throw new InvalidStateException("Diese Person kann nicht hinzugefügt werden.", "Diese befindet sich bereits in diesem Ticket.");
                     }
-                    channel.getManager().putPermissionOverride(member, USER_PERMISSION, List.of()).queue();
+                    channel.getManager().putPermissionOverride(permissionHolder, USER_PERMISSION, List.of()).queue();
                 } else {
-                    if (!getMemberPermissionOverrides().contains(member)) {
+                    if (!getPermissionOverrides().contains(permissionHolder)) {
                         throw new InvalidStateException("Diese Person kann nicht entfernt werden.", "Diese befindet sich nicht im Ticket.");
                     }
-                    if (member == owner) {
+                    if (permissionHolder == owner) {
                         throw new InvalidStateException("Diese Person kann nicht entfernt werden.", "Der/Die Ticketinhaber\\*in kann nicht entfernt werden.");
                     }
-                    channel.getManager().removePermissionOverride(member).queue();
+                    channel.getManager().removePermissionOverride(permissionHolder).queue();
                 }
                 return;
             }
@@ -431,8 +429,8 @@ public class Ticket {
         throw new PermissionDeniedException("Nur ein Teammitglied kann diese Aktion ausführen");
     }
 
-    private List<Member> getMemberPermissionOverrides() {
-        return channel.getMemberPermissionOverrides().stream().map(PermissionOverride::getMember).toList();
+    private List<IPermissionHolder> getPermissionOverrides() {
+        return channel.getPermissionOverrides().stream().map(PermissionOverride::getPermissionHolder).toList();
     }
 
     /**

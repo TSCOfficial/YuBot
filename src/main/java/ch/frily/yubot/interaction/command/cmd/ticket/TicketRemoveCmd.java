@@ -4,6 +4,8 @@ import ch.frily.yubot.feature.ticket.Ticket;
 import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.IMentionable;
+import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -20,21 +22,23 @@ public class TicketRemoveCmd implements ISlashSubcommand {
 
     @Override
     public String getDescription() {
-        return "Entferne eine Person aus dem Ticket";
+        return "Entferne eine Person oder Rolle aus dem Ticket";
     }
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
         Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
-        ticket.removeMember(event.getMember(), event.getOption("user").getAsMember());
+        IMentionable mentionable = event.getOption("user-role").getAsMentionable();
+        IPermissionHolder permissionHolder = (IPermissionHolder) mentionable;
+        ticket.removeMember(event.getMember(), permissionHolder);
 
-        event.reply(String.format("✅ %s wurde erfolgreich entfernt.", event.getOption("user").getAsMember().getAsMention())).queue();
+        event.reply(String.format("✅ %s wurde erfolgreich entfernt.", event.getOption("user-role").getAsMentionable().getAsMention())).queue();
     }
 
     @Override
     public List<OptionData> getOptions() {
         return List.of(
-                new OptionData(OptionType.USER, "user", "Person welche vom Ticket entfernt werden soll.", true)
+                new OptionData(OptionType.MENTIONABLE, "user-role", "Person oder Rolle welche vom Ticket entfernt werden soll.", true)
         );
     }
 
