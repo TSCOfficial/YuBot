@@ -110,6 +110,14 @@ public class Util {
         return calcDuration(startInclusive, end);
     }
 
+    public static String calcDurationSeconds(int seconds) {
+        if (seconds < 60) {
+            return String.format("%ds", seconds);
+        } else {
+            return calcDuration(seconds / 60);
+        }
+    }
+
     public static String calcDuration(int minutes) {
         boolean isNegative = minutes < 0;
         if (isNegative) {
