@@ -145,24 +145,24 @@ public class SlashCommandRegistry {
         }
 
         String focusedOptionName = event.getFocusedOption().getName();
-        List<?> choices = command.getAutocomplete(event).getOrDefault(focusedOptionName, List.of());
+        List<Command.Choice> choices = command.getAutocomplete(event).getOrDefault(focusedOptionName, List.of());
 
-        List<Command.Choice> options = choices.stream()
-                .filter(
-                        choice -> choice.toString().startsWith(event.getFocusedOption().getValue()))
-                .map(choice -> {
-                    if (choice instanceof String) {
-                        return new Command.Choice((String) choice, (String) choice);
-                    } else if (choice instanceof Integer) {
-                        return new Command.Choice(choice.toString(), (Integer) choice);
-                    } else if (choice instanceof Double) {
-                        return new Command.Choice(choice.toString(), (Double) choice);
-                    }
-                    return null;
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+//        List<Command.Choice> options = choices.stream()
+//                .filter(
+//                        choice -> choice.toString().startsWith(event.getFocusedOption().getValue()))
+//                .map(choice -> {
+//                    if (choice instanceof String) {
+//                        return new Command.Choice((String) choice, (String) choice);
+//                    } else if (choice instanceof Integer) {
+//                        return new Command.Choice(choice.toString(), (Integer) choice);
+//                    } else if (choice instanceof Double) {
+//                        return new Command.Choice(choice.toString(), (Double) choice);
+//                    }
+//                    return null;
+//                })
+//                .filter(Objects::nonNull)
+//                .collect(Collectors.toList());
 
-        event.replyChoices(options).queue();
+        event.replyChoices(choices).queue();
     }
 }

@@ -10,6 +10,7 @@ public enum Table {
     TICKET_TYPE_CONTROL("ticket_type_control", TicketTypeControlColumn.class),
     ACTIVE_MOD("active_mod", ActiveModColumn.class),
     ACTIVE_MOD_TRACKING("active_mod_tracking", ActiveModTrackingColumn.class),
+    ACTIVE_MOD_CONTROL("active_mod_control", ActiveModControlColumn.class),
     DYNAMIC_MESSAGE("dynamic_message", DynamicMessageColumn.class),
     ABSENCE("absence", AbsenceColumn.class),
     SETTING("setting", SettingColumn.class),
@@ -85,6 +86,14 @@ public enum Table {
         MONTH("month"),
         MISSED_ACTIVITY_REQUEST_COUNT("missed_activity_request_count"),
         TOTAL_ACTIVITY_REQUEST_COUNT("total_activity_request_count");
+        private final String column;
+    }
+
+    // ACTIVEMOD CONTROL
+    @Getter
+    @RequiredArgsConstructor
+    public enum ActiveModControlColumn implements Column {
+        ALLOW_OPTIN("allow_optin");
         private final String column;
     }
 

@@ -1,16 +1,20 @@
 package ch.frily.yubot.interaction.command.cmd.profile;
 
 import ch.frily.yubot.Client;
-import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.database.repository.SettingRepository;
+import ch.frily.yubot.exception.ExceptionHandler;
+import ch.frily.yubot.database.repository.ProfileRepository;
+import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.feature.setting.Setting;
 import ch.frily.yubot.feature.setting.SettingOption;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.util.Util;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -30,6 +34,7 @@ import static org.reflections.Reflections.log;
  * </p>
  * @author Aliz frily
  */
+@Slf4j
 public class ProfileSettingCmd implements ISlashSubcommand {
 
     @Override
@@ -54,11 +59,20 @@ public class ProfileSettingCmd implements ISlashSubcommand {
     }
 
     @Override
-    public Map<String, List<?>> getAutocomplete(CommandAutoCompleteInteractionEvent event) {
+    public Map<String, List<Command.Choice>> getAutocomplete(CommandAutoCompleteInteractionEvent event) {
         return Arrays.stream(Setting.values())
                 .filter(setting -> setting.getAutocompleteOptions() != null)
                 .filter(setting -> Util.isPermitted(event.getMember(), setting.getAllowedRoles()))
-                .collect(Collectors.toMap(setting -> setting.getLabel(), setting -> setting.getAutocompleteOptions().stream().map(SettingOption::label).toList()));
+                .collect(Collectors.toMap(Setting::getLabel, setting -> setting.getAutocompleteOptions().stream().map(autocompleteOption -> {
+                    log.info("autocomplete option {}", autocompleteOption.label());
+                    if (autocompleteOption.value() instanceof String || autocompleteOption.value() instanceof Boolean) {
+                        return new Command.Choice(autocompleteOption.label(), String.valueOf(autocompleteOption.value()));
+                    } else if (autocompleteOption.value() instanceof Integer) {
+                        return new Command.Choice(autocompleteOption.label(), Integer.parseInt(autocompleteOption.value().toString()));
+                    }  else {
+                        throw new InvalidStateException(String.format("The autocomplete option %s does not have a compatible type: %s. Should be String, Int or Long", autocompleteOption.label(), autocompleteOption.value().getClass()));
+                    }
+                }).toList()));
     }
 
     @Override
@@ -140,11 +154,20 @@ public class ProfileSettingCmd implements ISlashSubcommand {
         if (setting.getDataType() == Boolean.class){
             return true;
         }
-        List<SettingOption<?>> autocompleteOptions = setting.getAutocompleteOptions();
+        List<SettingOption> autocompleteOptions = setting.getAutocompleteOptions();
         if(autocompleteOptions == null){
             return true;
         }
-        return autocompleteOptions.stream().anyMatch(option -> option.label().equals(inputOption.getAsString()));
+        if (inputOption.getType() == OptionType.STRING) {
+            return autocompleteOptions.stream().anyMatch(option -> option.value().equals(inputOption.getAsString()));
+        } else if (inputOption.getType() == OptionType.INTEGER) { // integer
+            return autocompleteOptions.stream().anyMatch(option -> option.value().equals(inputOption.getAsInt()));
+        } else if (inputOption.getType() == OptionType.BOOLEAN) {
+            return autocompleteOptions.stream().anyMatch(option -> option.value().equals(inputOption.getAsBoolean()));
+        } else {
+
+        }
+        return false;
     }
 
     /**

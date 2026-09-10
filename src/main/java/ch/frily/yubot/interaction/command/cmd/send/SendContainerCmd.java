@@ -29,7 +29,7 @@ public class SendContainerCmd implements ISlashSubcommand {
     public List<OptionData> getOptions() {
         return List.of(
                 new OptionData(OptionType.STRING, "container", "Wähle ein container aus", true)
-                        .addChoices(StaticContainerRegistry.sendable().stream().map(container -> {
+                        .addChoices(StaticContainerRegistry.sendable().stream().map(container -> { // replace by autocomplete
                             return new Command.Choice(humanizeEnumName(container.name()), container.name());
                         }).toList()
                         )

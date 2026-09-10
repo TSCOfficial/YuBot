@@ -45,7 +45,7 @@ public enum Setting {
     @Getter
     List<Role> allowedRoles;
     @Getter
-    List<SettingOption<?>> autocompleteOptions;
+    List<SettingOption> autocompleteOptions;
     /** Minimal allowed characters for a string*/
     @Getter
     int min;
@@ -83,7 +83,7 @@ public enum Setting {
      * @param options Selectable types for that setting in the given dataType
      * @param <T>
      */
-    <T> Setting(String label, String description, Table.Column dbColumn, List<EnvKey> allowedRoles, Class<T> dataType, List<SettingOption<?>> options){
+    <T> Setting(String label, String description, Table.Column dbColumn, List<EnvKey> allowedRoles, Class<T> dataType, List<SettingOption> options){
         this.label = label;
         this.description = description;
         this.dbColumn = dbColumn;
@@ -108,7 +108,7 @@ public enum Setting {
      * @param <T>
      */
     public <T> SettingOption<T> getOptionByLabel(String label, Class<T> dataType) {
-        Optional<SettingOption<?>> option = this.autocompleteOptions.stream()
+        Optional<SettingOption> option = this.autocompleteOptions.stream()
                 .filter(o -> o.label().equals(label))
                 .findFirst();
 
@@ -121,7 +121,7 @@ public enum Setting {
     }
 
     public <T> SettingOption<T> getOptionByValue(T value) {
-        Optional<SettingOption<?>> option = this.autocompleteOptions.stream()
+        Optional<SettingOption> option = this.autocompleteOptions.stream()
                 .filter(o -> o.value().equals(value))
                 .findFirst();
 

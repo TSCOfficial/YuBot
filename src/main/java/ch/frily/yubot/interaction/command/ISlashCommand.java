@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 
@@ -48,7 +49,7 @@ public interface ISlashCommand {
      * Get the autocompletion of a slashcommand.
      * @return a {@link Map} of a {@link String} & a {@link List}.
      */
-    default Map<String, List<?>> getAutocomplete(CommandAutoCompleteInteractionEvent event) {
+    default Map<String, List<Command.Choice>> getAutocomplete(CommandAutoCompleteInteractionEvent event) {
         return Map.of();
     };
 
