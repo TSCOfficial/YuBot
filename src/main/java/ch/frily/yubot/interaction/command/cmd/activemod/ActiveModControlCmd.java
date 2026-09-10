@@ -57,7 +57,7 @@ public class ActiveModControlCmd implements ISlashSubcommand {
         ActiveModControlRepository.updateControl(state);
         TextChannel modIntern = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
         if (state) {
-            modIntern.sendMessage("🟢 **Opt-in-Funktion retabliert**\n-# Die Opt-in-Funktion ist wieder verfügbar und kann wieder wie gewohnt verwendet werden.");
+            modIntern.sendMessage("🟢 **Opt-in-Funktion retabliert**\n-# Die Opt-in-Funktion ist wieder verfügbar und kann wieder wie gewohnt verwendet werden.").queue();
             event.reply("Die Opt-in Funktion wurde aktiviert und kann von den Moderator*innen wieder verwendet werden.").setEphemeral(true).queue();
         } else {
             modIntern.sendMessage("⚠️ **Opt-in-Funktion deaktiviert**\n-# Die Opt-in-Funktion wurde temporär deaktiviert und kann bis zur Reaktivierung nicht mehr verwendet werden.").queue();
