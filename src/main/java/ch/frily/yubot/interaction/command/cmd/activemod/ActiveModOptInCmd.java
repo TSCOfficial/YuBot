@@ -45,7 +45,7 @@ public class ActiveModOptInCmd implements ISlashSubcommand {
         ActiveMod.registerModerator(event.getMember()).thenAccept(response -> {
             event.getHook().sendMessage(response).setEphemeral(true).queue();
         }).exceptionally(throwable -> {
-            return ExceptionHandler.fail(throwable);
+            return ExceptionHandler.fail(throwable, event);
         });
     }
 }

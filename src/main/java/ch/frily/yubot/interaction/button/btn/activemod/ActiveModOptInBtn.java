@@ -5,15 +5,18 @@ import ch.frily.yubot.feature.activemod.ActiveMod;
 import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.modal.modal.SelectActiveModSendTypeModal;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.ILoggerFactory;
 
 import java.sql.SQLException;
 
 /**
  * When the last active mod wants to opt-out via command, the bot askes to approve the opt-out before closing the server
  */
+@Slf4j
 public class ActiveModOptInBtn extends Button {
     @Override
     public String getId() {
@@ -41,9 +44,11 @@ public class ActiveModOptInBtn extends Button {
         event.deferReply(true).queue();
 
         ActiveMod.registerModerator(event.getMember()).thenAccept(response -> {
+            log.info("completed successfully");
             event.getHook().sendMessage(response).setEphemeral(true).queue();
         }).exceptionally(throwable -> {
-            return ExceptionHandler.fail(throwable);
+            log.info("failed to complete successfully", throwable);
+            return ExceptionHandler.fail(throwable, event);
         });
     }
 }

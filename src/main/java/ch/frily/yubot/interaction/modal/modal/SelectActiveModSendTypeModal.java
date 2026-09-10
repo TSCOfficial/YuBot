@@ -84,7 +84,7 @@ public class SelectActiveModSendTypeModal extends Modal {
             replySB.append(responseText);
             event.reply(replySB.toString()).setEphemeral(true).queue();
         }).exceptionally(throwable -> {
-            return ExceptionHandler.fail(throwable);
+            return ExceptionHandler.fail(throwable, event);
         });
     }
 }
