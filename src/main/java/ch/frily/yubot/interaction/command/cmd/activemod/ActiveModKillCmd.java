@@ -7,6 +7,7 @@ import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,12 +40,15 @@ public class ActiveModKillCmd implements ISlashSubcommand {
         }
         Role activeMod = EnvResolver.getRoleById(1513639704870912130L);
 
+        int activeModCount = Closure.getActiveMods().size();
         List<CompletableFuture<Void>> removeRoleFutures = event.getGuild().getMembersWithRoles(activeMod).stream().map(member -> {
             return event.getGuild().removeRoleFromMember(member, activeMod).submit();
         }).toList();
         CompletableFuture<Void> allRoleFutures = CompletableFuture.allOf(removeRoleFutures.toArray(new CompletableFuture[0]));
 
         allRoleFutures.thenAccept(_ -> {
+            EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_ACTIVEMODERATION)
+                    .sendMessage(String.format("⚠️ Der Server wurde von %s gekillt.\n-# Allen ActiveMods (%d) wurde die Rolle entfernt und der Server geschlossen.", event.getMember().getAsMention(), activeModCount));
             event.reply("✅ Alle aktiven Moderator*innen wurden entfernt und der Server wird nun geschlossen.").setEphemeral(true).queue();
         }).exceptionally(_ -> {
             throw new InvalidStateException("Fehler beim Entfernen der aktiven Moderator*innen.");
