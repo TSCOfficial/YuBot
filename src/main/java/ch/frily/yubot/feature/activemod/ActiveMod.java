@@ -1,8 +1,10 @@
 package ch.frily.yubot.feature.activemod;
 
+import ch.frily.yubot.database.repository.ActiveModControlRepository;
 import ch.frily.yubot.database.repository.ActiveModRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.InvalidStateException;
+import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +29,11 @@ public record ActiveMod(
         @Nullable Long requestedAttentionMessageId) {
 
     public static CompletableFuture<String> registerModerator(Member member) throws SQLException, ClassNotFoundException {
-        log.info("ActiveMod registerModerator onlinestatus for {}: {}", member.getEffectiveName(), member.getOnlineStatus());
+        if (!ActiveModControlRepository.getActiveModControl()) {
+            return CompletableFuture.failedFuture(
+                    new PermissionDeniedException("Die Opt-in-Funktion wurde deaktiviert", "Du kannst dich momentan nicht Opt-in stellen.")
+            );
+        }
         if (member.getOnlineStatus() == OnlineStatus.OFFLINE) {
             log.info("is offline");
             return CompletableFuture.failedFuture(

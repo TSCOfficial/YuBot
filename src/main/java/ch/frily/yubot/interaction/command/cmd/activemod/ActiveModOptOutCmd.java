@@ -1,5 +1,6 @@
 package ch.frily.yubot.interaction.command.cmd.activemod;
 
+import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.feature.activemod.Closure;
 import ch.frily.yubot.interaction.button.btn.activemod.ActiveModApproveOptOutBtn;
 import ch.frily.yubot.interaction.button.btn.activemod.ActiveModCancelOptOutBtn;
@@ -43,13 +44,18 @@ public class ActiveModOptOutCmd implements ISlashSubcommand {
                     .addComponents(ActionRow.of(new ActiveModApproveOptOutBtn().build(), new ActiveModCancelOptOutBtn().build())).setEphemeral(true).queue();
             return;
         }
-        event.getGuild().removeRoleFromMember(event.getMember(), activeMod).submit().thenAccept(_ -> {
-            String countInfo = "Es sind nun **" + activeModCount + "** aktive Moderator\\*innen";
-            if (activeModCount == 1) {
-                countInfo = "Es ist nun nurnoch **" + activeModCount + "** aktive\\*r Modderator\\*in";
-            }
+        if (event.getMember().getRoles().stream().anyMatch(role -> role.getIdLong() == EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD).getIdLong())) {
+            event.getGuild().removeRoleFromMember(event.getMember(), activeMod).submit().thenAccept(_ -> {
+                String countInfo = "Es sind nun **" + activeModCount + "** aktive Moderator\\*innen";
+                if (activeModCount == 1) {
+                    countInfo = "Es ist nun nurnoch **" + activeModCount + "** aktive\\*r Modderator\\*in";
+                }
 
-            event.reply("Opt-out erfolgreich." + countInfo).setEphemeral(true).queue();
-        });
+                event.reply("Opt-out erfolgreich." + countInfo).setEphemeral(true).queue();
+            });
+        } else {
+            throw new InvalidStateException("Du bist nicht als ActiveMod markiert.");
+        }
+
     }
 }
