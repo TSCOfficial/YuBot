@@ -58,7 +58,8 @@ public class ButtonRegistry {
                 new ActiveModCancelOptOutBtn(),
                 new ActiveModOptInBtn(),
                 new ActiveModOptOutBtn(),
-                new ActiveModShowStatisticBtn()
+                new ActiveModShowStatisticBtn(),
+                new AddProfileBtn()
         );
         rawButtons.forEach(btn -> {
             String idOrUrl = btn.getId();

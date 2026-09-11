@@ -1,10 +1,7 @@
 package ch.frily.yubot.interaction.modal;
 
 import ch.frily.yubot.interaction.ArgumentComponent;
-import ch.frily.yubot.interaction.modal.modal.AbsenceAddModal;
-import ch.frily.yubot.interaction.modal.modal.SelectActiveModSendTypeModal;
-import ch.frily.yubot.interaction.modal.modal.TicketSummaryModal;
-import ch.frily.yubot.interaction.modal.modal.TypeSelectorModal;
+import ch.frily.yubot.interaction.modal.modal.*;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 
@@ -32,7 +29,8 @@ public class ModalRegistry {
                 new TypeSelectorModal(),
                 new AbsenceAddModal(),
                 new TicketSummaryModal(),
-                new SelectActiveModSendTypeModal()
+                new SelectActiveModSendTypeModal(),
+                new AddProfileModal()
         );
 
         rawModals.forEach(modal -> {

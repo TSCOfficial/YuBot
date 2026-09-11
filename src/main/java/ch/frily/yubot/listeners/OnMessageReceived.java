@@ -6,6 +6,7 @@ import ch.frily.yubot.database.repository.AbsenceRepository;
 import ch.frily.yubot.feature.activemod.Closure;
 import ch.frily.yubot.feature.game.WordChainGame;
 import ch.frily.yubot.database.repository.SettingRepository;
+import ch.frily.yubot.feature.profile.MessageHandling;
 import ch.frily.yubot.feature.setting.Setting;
 import ch.frily.yubot.feature.ticket.Ticket;
 import ch.frily.yubot.feature.ticket.TicketManager;
@@ -69,6 +70,9 @@ public class OnMessageReceived extends ListenerAdapter {
             if (event.getChannel().getId().equals(EnvResolver.getString(EnvKey.CHANNEL_KETTENBRIEF))) {
                 WordChainGame.handleWord(event);
             }
+
+            // Handle profile webhok messages
+            MessageHandling.handleIncomingMessage(event.getMessage());
 
             // Handle absence notice
             int deleteNoticeDelay = 60; // in seconds

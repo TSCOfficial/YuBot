@@ -5,11 +5,13 @@ import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.setting.Settings;
 import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.feature.setting.Setting;
+import ch.frily.yubot.interaction.button.btn.AddProfileBtn;
 import ch.frily.yubot.util.BannerResolver;
 import ch.frily.yubot.util.ImageFetcher;
 import ch.frily.yubot.util.ProfileImageComposer;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
 import net.dv8tion.jda.api.entities.Member;
@@ -69,7 +71,9 @@ public class ProfilContainer extends Container {
                             addTextDisplay(settingsSB.toString());
                         }
 
-
+                        addComponent(
+                                ActionRow.of(new AddProfileBtn().build())
+                        );
 
                         return this;
                     } catch (Exception e) {

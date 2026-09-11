@@ -22,9 +22,8 @@ public class ProfileRepository {
             String profileId = rs.getString(Table.ProfileColumn.PROFILE_ID.getColumn());
             String name = rs.getString(Table.ProfileColumn.NAME.getColumn());
             boolean isCurrentlyUsed = rs.getBoolean(Table.ProfileColumn.IS_CURRENTLY_USED.getColumn());
-            boolean isDefault = rs.getBoolean(Table.ProfileColumn.IS_DEFAULT.getColumn());
 
-            profiles.add(new Profile(profileId, member, name, isCurrentlyUsed, isDefault));
+            profiles.add(new Profile(profileId, member, name, isCurrentlyUsed));
         }
 
         return profiles;
@@ -32,10 +31,10 @@ public class ProfileRepository {
 
     public static void createProfile(Profile profile) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
+        query.insert(Table.ProfileColumn.PROFILE_ID, profile.profileId());
         query.insert(Table.ProfileColumn.ACCOUNT_ID, profile.parentAccount().getId());
         query.insert(Table.ProfileColumn.NAME, profile.name());
         query.insert(Table.ProfileColumn.IS_CURRENTLY_USED, profile.isCurrentlyUsed());
-        query.insert(Table.ProfileColumn.IS_DEFAULT, profile.isDefault());
         query.executeQuery();
     }
 }
