@@ -1,4 +1,4 @@
-package ch.frily.yubot.interaction.button.btn;
+package ch.frily.yubot.interaction.button.btn.profile;
 
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.modal.modal.AddProfileModal;
@@ -22,7 +22,7 @@ public class AddProfileBtn extends Button {
 
     @Override
     public ButtonStyle getStyle() {
-        return ButtonStyle.PRIMARY;
+        return ButtonStyle.SECONDARY;
     }
 
     @Override

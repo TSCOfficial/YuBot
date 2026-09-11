@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ProfileRepository {
 
@@ -49,6 +50,16 @@ public class ProfileRepository {
         return profiles;
     }
 
+    public static Optional<Profile> getCurrentUserProfile(Member member) throws SQLException, ClassNotFoundException {
+        List<Profile> profiles = getProfilesFromAccount(member);
+
+        if  (profiles.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return profiles.stream().filter(Profile::isCurrentlyUsed).findFirst();
+        }
+    }
+
     public static void createProfile(Profile profile) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
         query.insert(Table.ProfileColumn.PROFILE_ID, profile.profileId());
@@ -58,11 +69,33 @@ public class ProfileRepository {
         query.executeQuery();
     }
 
+    public static void selectProfile(Profile selectedProfile) throws SQLException, ClassNotFoundException {
+        Member member = selectedProfile.parentAccount();
+        // clear profile usage
+        getProfilesFromAccount(member).forEach(profile -> {
+                        try {
+                updateProfileUsage(profile, false);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        // mark selected profile as in use
+        updateProfileUsage(selectedProfile, true);
+    }
+
     public static void updateProfile(Profile profile)  throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
         query.where(Table.ProfileColumn.PROFILE_ID, DatabaseQuery.Operator.EQUALS, profile.profileId());
         query.update(Table.ProfileColumn.NAME, profile.name());
         query.update(Table.ProfileColumn.IS_CURRENTLY_USED, profile.isCurrentlyUsed());
+        query.executeQuery();
+    }
+
+    public static void updateProfileUsage(Profile profile, boolean isInUse)  throws SQLException, ClassNotFoundException {
+        DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
+        query.where(Table.ProfileColumn.PROFILE_ID, DatabaseQuery.Operator.EQUALS, profile.profileId());
+        query.update(Table.ProfileColumn.NAME, profile.name());
+        query.update(Table.ProfileColumn.IS_CURRENTLY_USED, isInUse);
         query.executeQuery();
     }
 }

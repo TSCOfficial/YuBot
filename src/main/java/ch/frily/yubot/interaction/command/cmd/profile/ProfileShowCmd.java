@@ -1,6 +1,7 @@
 package ch.frily.yubot.interaction.command.cmd.profile;
 
 import ch.frily.yubot.container.profile.ProfilContainer;
+import ch.frily.yubot.database.repository.ProfileRepository;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
@@ -28,6 +29,10 @@ public class ProfileShowCmd implements ISlashSubcommand {
         event.deferReply(true).queue();
         Member member = event.getMember();
         ProfilContainer container = new ProfilContainer(member);
+
+        ProfileRepository.getCurrentUserProfile(member).ifPresent(profile -> {
+            container.setProfile(profile);
+        });
 
         container.buildAsync().thenAccept(builtContainer -> {
             MessageCreateData message = new MessageCreateBuilder()

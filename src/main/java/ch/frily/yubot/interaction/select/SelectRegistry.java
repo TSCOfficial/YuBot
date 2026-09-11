@@ -1,6 +1,7 @@
 package ch.frily.yubot.interaction.select;
 
 import ch.frily.yubot.interaction.select.select.ActiveModTrackingDetailSelect;
+import ch.frily.yubot.interaction.select.select.ProfileUseSelect;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
@@ -26,7 +27,8 @@ public class SelectRegistry {
 
     public void loadSelects(){
         List<ISelect> rawModals = List.of(
-                new ActiveModTrackingDetailSelect()
+                new ActiveModTrackingDetailSelect(),
+                new ProfileUseSelect()
         );
 
         rawModals.forEach(select -> {

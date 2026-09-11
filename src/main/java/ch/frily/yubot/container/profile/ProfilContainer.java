@@ -2,10 +2,13 @@ package ch.frily.yubot.container.profile;
 
 import ch.frily.yubot.container.Container;
 import ch.frily.yubot.exception.ExceptionHandler;
+import ch.frily.yubot.feature.profile.Profile;
 import ch.frily.yubot.feature.setting.Settings;
 import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.feature.setting.Setting;
-import ch.frily.yubot.interaction.button.btn.AddProfileBtn;
+import ch.frily.yubot.interaction.button.btn.profile.AddProfileBtn;
+import ch.frily.yubot.interaction.button.btn.profile.UseProfileBtn;
+import ch.frily.yubot.interaction.select.select.ProfileUseSelect;
 import ch.frily.yubot.util.BannerResolver;
 import ch.frily.yubot.util.ImageFetcher;
 import ch.frily.yubot.util.ProfileImageComposer;
@@ -14,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.ImageFormat;
@@ -37,10 +42,17 @@ public class ProfilContainer extends Container {
     private final Member member;
 
     @Getter
+    private Profile profile;
+
+    @Getter
     private FileUpload profileBanner;
 
     public ProfilContainer(Member member) {
         this.member = member;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
     }
 
     public CompletableFuture<ProfilContainer> buildAsync() {
@@ -54,9 +66,17 @@ public class ProfilContainer extends Container {
                                 MediaGalleryItem.fromFile(fileUpload)
                         );
                         addComponent(gallery);
-                        addFormatedText("# %s's Profil", member.getEffectiveName());
+                        if (profile != null) {
+                            addFormatedText("# %s's Profil", profile.name());
+                        } else {
+                            addFormatedText("# %s's Profil", member.getEffectiveName());
+                        }
+
 
                         addTextDisplay("**Einstellungen**");
+                        if (profile != null) {
+                            addTextDisplay("-# Einstellungen sind Konto-, nicht Profilspezifisch.");
+                        }
                         Map<String, String> settings = mapSettings();
                         if (settings == null) {
                             addTextDisplay("-# Keine Einstellungen gefunden. Stelle sie mit </profile setting:1542519831729934447> ein");
@@ -71,8 +91,22 @@ public class ProfilContainer extends Container {
                             addTextDisplay(settingsSB.toString());
                         }
 
+                        addLineSeparator(Separator.Spacing.SMALL);
+
                         addComponent(
-                                ActionRow.of(new AddProfileBtn().build())
+                                ActionRow.of(
+                                        new UseProfileBtn().build(),
+                                        new AddProfileBtn().build()
+                                )
+                        );
+
+                        ProfileUseSelect profileUseSelect = new ProfileUseSelect();
+                        profileUseSelect.setMember(member);
+
+                        addComponent(
+                                ActionRow.of(
+                                        profileUseSelect.build()
+                                )
                         );
 
                         return this;
