@@ -108,7 +108,7 @@ public class Closure {
             guild.getManager().setBanner(Icon.from(getClass().getResourceAsStream("/icon/server-banner-closed.png"))).queue();
         }
         DynamicMessageList.TICKET_PANEL.update();
-        DynamicMessageList.ACTIVE_MOD_CONTROL.update();
+        DynamicMessageList.ACTIVE_MOD_DASHBOARD.update();
     }
 
     /**

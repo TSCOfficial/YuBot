@@ -18,8 +18,6 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.concurrent.CompletableFuture;
 
-import static org.reflections.Reflections.log;
-
 @Slf4j
 public record ActiveMod(
         Member member,
@@ -29,7 +27,7 @@ public record ActiveMod(
         @Nullable Long requestedAttentionMessageId) {
 
     public static CompletableFuture<String> registerModerator(Member member) throws SQLException, ClassNotFoundException {
-        if (!ActiveModControlRepository.getActiveModControl()) {
+        if (!ActiveModControlRepository.isOptInAllowed()) {
             return CompletableFuture.failedFuture(
                     new PermissionDeniedException("Die Opt-in-Funktion wurde deaktiviert", "Du kannst dich momentan nicht Opt-in stellen.")
             );

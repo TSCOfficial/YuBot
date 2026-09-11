@@ -19,7 +19,7 @@ public class ActiveModControlRepository {
      * @throws SQLException
      * @throws ClassNotFoundException
      */
-    public static boolean getActiveModControl() throws SQLException, ClassNotFoundException {
+    public static boolean isOptInAllowed() throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD_CONTROL);
         query.select(Table.ActiveModControlColumn.ALLOW_OPTIN);
         ResultSet rs = query.executeDataQuery();

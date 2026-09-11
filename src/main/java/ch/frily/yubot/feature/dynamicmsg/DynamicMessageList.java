@@ -55,11 +55,11 @@ public enum DynamicMessageList {
             null,
             StaticContainerRegistry.ABSENCE_OVERVIEW::getContainer
     ),
-    ACTIVE_MOD_CONTROL(
-            StaticContainerRegistry.ACTIVE_MOD_CONTROL.name(),
+    ACTIVE_MOD_DASHBOARD(
+            StaticContainerRegistry.ACTIVE_MOD_DASHBOARD.name(),
             DynamicMessageType.CONTAINER,
             null,
-            StaticContainerRegistry.ACTIVE_MOD_CONTROL::getContainer
+            StaticContainerRegistry.ACTIVE_MOD_DASHBOARD::getContainer
     );
 
     @Getter

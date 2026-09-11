@@ -2,6 +2,7 @@ package ch.frily.yubot.container.activemod;
 
 import ch.frily.yubot.container.Container;
 import ch.frily.yubot.container.ContainerContext;
+import ch.frily.yubot.database.repository.ActiveModControlRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.activemod.ActiveModStatisticChart;
 import ch.frily.yubot.feature.activemod.ActiveModTracking;
@@ -36,7 +37,12 @@ public class ActiveModDashboardContainer extends Container {
             if (activeMods.size() > 0) {
                 addFormatedText("%s\n%s", activeModRole.getAsMention(), activeMods.stream().map(Member::getEffectiveName).collect(Collectors.joining(", ")));
             } else {
-                addFormatedText("%s\n*Keine aktiven Moderator*innen*", activeModRole.getAsMention());
+                addFormatedText("%s\n*Keine aktiven Moderator\\*innen*", activeModRole.getAsMention());
+            }
+
+            boolean isOptInDisabled = !ActiveModControlRepository.isOptInAllowed();
+            if (isOptInDisabled) {
+                addTextDisplay("⚠️ Die Opt-in-Funktion ist temporär deaktiviert.");
             }
 
             // Add statistic
@@ -51,7 +57,7 @@ public class ActiveModDashboardContainer extends Container {
             addTextDisplay("-# Drückst du während deines Opt-in's auf Opt-in, wird der 30min Timer zurückgesetzt.");
             this.addComponent(
                     ActionRow.of(
-                            new ActiveModOptInBtn().build(),
+                            isOptInDisabled ? new ActiveModOptInBtn().build().asDisabled() : new ActiveModOptInBtn().build(),
                             new ActiveModOptOutBtn().build(),
                             new ActiveModShowStatisticBtn().build()
                     )

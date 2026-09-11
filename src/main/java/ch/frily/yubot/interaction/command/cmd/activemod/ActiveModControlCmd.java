@@ -1,6 +1,7 @@
 package ch.frily.yubot.interaction.command.cmd.activemod;
 
 import ch.frily.yubot.database.repository.ActiveModControlRepository;
+import ch.frily.yubot.feature.dynamicmsg.DynamicMessageList;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
@@ -14,7 +15,9 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public class ActiveModControlCmd implements ISlashSubcommand {
@@ -55,13 +58,28 @@ public class ActiveModControlCmd implements ISlashSubcommand {
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
         boolean state = event.getOption("opt-in").getAsString().equals("allow");
         ActiveModControlRepository.updateControl(state);
-        TextChannel modIntern = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MODINTERN);
+        TextChannel modIntern = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_ACTIVEMODERATION);
+        int delay = 600; // 10min
+        long timestamp = Instant.now().plusSeconds(delay).toEpochMilli() / 1000;
         if (state) {
-            modIntern.sendMessage("🟢 **Opt-in-Funktion retabliert**\n-# Die Opt-in-Funktion ist wieder verfügbar und kann wieder wie gewohnt verwendet werden.").queue();
+            modIntern.sendMessage(String.format("""
+                🟢 **Opt-in-Funktion retabliert**
+                -# Die Opt-in-Funktion ist wieder verfügbar und kann wieder wie gewohnt verwendet werden.
+                -# *<:timer:1522290651742339122> Nachricht wird <t:%d:R> gelöscht.*
+                """, timestamp)).queue(message -> {
+                message.delete().queueAfter(delay, TimeUnit.SECONDS);
+            });
             event.reply("Die Opt-in Funktion wurde aktiviert und kann von den Moderator*innen wieder verwendet werden.").setEphemeral(true).queue();
         } else {
-            modIntern.sendMessage("⚠️ **Opt-in-Funktion deaktiviert**\n-# Die Opt-in-Funktion wurde temporär deaktiviert und kann bis zur Reaktivierung nicht mehr verwendet werden.").queue();
+            modIntern.sendMessage(String.format("""
+                ⚠️ **Opt-in-Funktion deaktiviert**
+                -# Die Opt-in-Funktion wurde temporär deaktiviert und kann bis zur Reaktivierung nicht mehr verwendet werden.
+                -# *<:timer:1522290651742339122> Nachricht wird <t:%d:R> gelöscht.*
+                """, timestamp)).queue(message -> {
+                message.delete().queueAfter(delay, TimeUnit.SECONDS);
+            });
             event.reply("Die Opt-in Funktion wurde deaktiviert.").setEphemeral(true).queue();
         }
+        DynamicMessageList.ACTIVE_MOD_DASHBOARD.update();
     }
 }
