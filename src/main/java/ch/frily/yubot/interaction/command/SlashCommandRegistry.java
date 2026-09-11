@@ -135,7 +135,7 @@ public class SlashCommandRegistry {
         command.execute(event);
     }
 
-    public void dispatchAutocompleteEvent(CommandAutoCompleteInteractionEvent event) {
+    public void dispatchAutocompleteEvent(CommandAutoCompleteInteractionEvent event) throws SQLException, ClassNotFoundException {
         Map<String, ISlashCommand> allSlashCommands = new HashMap<>();
         allSlashCommands.putAll(commands);
         allSlashCommands.putAll(subcommands);

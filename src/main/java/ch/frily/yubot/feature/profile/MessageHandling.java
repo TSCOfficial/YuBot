@@ -3,8 +3,6 @@ package ch.frily.yubot.feature.profile;
 import ch.frily.yubot.database.repository.ProfileRepository;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.channel.Channel;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -23,12 +21,13 @@ public class MessageHandling {
                     StringBuilder messageContentSB = new StringBuilder();
                     MessageReference originalMsgRef = originalMessage.getMessageReference();
                     if (originalMsgRef != null &&originalMsgRef.getType() == MessageReference.MessageReferenceType.DEFAULT) {
-                        String shortenedReplyMsg = shortenReplyMessage(originalMsgRef.getMessage().getContentRaw());
-                        messageContentSB.append(String.format("> %s [[anzeigen]](%s)\n", shortenedReplyMsg, originalMsgRef.getMessage().getJumpUrl()));
+                        String shortenedReplyMsg = sanitizeMessage(originalMsgRef.getMessage().getContentRaw());
+                        messageContentSB.append(String.format("> -# %s [[anzeigen]](%s)\n", shortenedReplyMsg, originalMsgRef.getMessage().getJumpUrl()));
                     }
                     messageContentSB.append(originalMessage.getContentRaw());
                     webhook.sendMessage(messageContentSB.toString()).setAllowedMentions(List.of()).queue( _ -> {
                         originalMessage.delete().queue();
+                        webhook.delete().queue();
                     });
                 });
 
@@ -36,12 +35,32 @@ public class MessageHandling {
         }
     }
 
-    private static String shortenReplyMessage(String message) {
-        log.info(message);
-        message = message.replaceAll("\n", " ");
-        if (message.length() > 100) {
-            return message.substring(0, 100) + "...";
+    /**
+     * Clear message from some of the markdown format, so that it fits with the reply-syntaxt
+     * <p>
+     *     This replaces code-blocks by inline-code, replaces header-markdown (#, ##, ###) by bold text, removes quote-markdown (> ), replaces linebreaks with spaces
+     * </p>
+     * @param message
+     * @return
+     */
+    private static String sanitizeMessage(String message) {
+        if (message.length() > 70) {
+            return message.substring(0, 70) + "...";
         }
+        log.info(message);
+        message = message.replaceAll("(?s)```(?:[a-zA-Z0-9_+-]*\\n)?(.*?)```", "`$1`");
+        log.info(message);
+
+        message = message.replaceAll("(?m)^>+\\h*", "");
+        log.info(message);
+        message = message.replaceAll("(?m)^-#+\\h*", "");
+        log.info(message);
+        message = message.replaceAll("(?m)^#{1,3}(?!#)\\h+(.*)$", "**$1**");
+        log.info(message);
+
+        message = message.replaceAll("\\s*\\n\\s*", "").trim();
+        log.info(message);
+
         return message;
     }
 }

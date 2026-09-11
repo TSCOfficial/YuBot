@@ -49,7 +49,11 @@ public class InteractionListener extends ListenerAdapter {
      */
     @Override
     public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent event) {
-        SlashCommandRegistry.getInstance().dispatchAutocompleteEvent(event);
+        try {
+            SlashCommandRegistry.getInstance().dispatchAutocompleteEvent(event);
+        } catch (Exception exception) {
+            ExceptionHandler.handle(exception, null);
+        }
     }
 
     @Override

@@ -49,7 +49,7 @@ public interface ISlashCommand {
      * Get the autocompletion of a slashcommand.
      * @return a {@link Map} of a {@link String} & a {@link List}.
      */
-    default Map<String, List<Command.Choice>> getAutocomplete(CommandAutoCompleteInteractionEvent event) {
+    default Map<String, List<Command.Choice>> getAutocomplete(CommandAutoCompleteInteractionEvent event) throws SQLException, ClassNotFoundException {
         return Map.of();
     };
 
