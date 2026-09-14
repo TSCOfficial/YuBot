@@ -63,7 +63,8 @@ public enum EnvKey {
     CATEGORY_VOICE,
     CATEGORY_TEAMBEREICH,
 
-    TIMEZONE;
+    TIMEZONE,
+    IMAGESERVER_PATH;
 
     String get(){
         return EnvResolver.getString(this);
