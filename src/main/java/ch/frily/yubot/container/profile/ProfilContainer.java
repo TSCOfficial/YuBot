@@ -1,6 +1,7 @@
 package ch.frily.yubot.container.profile;
 
 import ch.frily.yubot.container.Container;
+import ch.frily.yubot.database.repository.ProfileRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.profile.Profile;
 import ch.frily.yubot.feature.setting.Settings;
@@ -12,6 +13,7 @@ import ch.frily.yubot.interaction.select.select.ProfileUseSelect;
 import ch.frily.yubot.util.BannerResolver;
 import ch.frily.yubot.util.ImageFetcher;
 import ch.frily.yubot.util.ProfileImageComposer;
+import ch.frily.yubot.util.Util;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
@@ -29,9 +31,7 @@ import java.awt.image.ImagingOpException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
@@ -66,8 +66,12 @@ public class ProfilContainer extends Container {
                                 MediaGalleryItem.fromFile(fileUpload)
                         );
                         addComponent(gallery);
+
+                        Optional<Profile> currentProfile = ProfileRepository.getCurrentUserProfile(profile.parentAccount());
+                        boolean profileIsAlreadyInUse = currentProfile.isPresent() && Objects.equals(currentProfile.get().profileId(), profile.profileId());
+                        String activeTag = profileIsAlreadyInUse ? "<:active1:1527044015927721984><:active2:1527044016942616748><:active3:1527044018276536403>" : "";
                         if (profile != null) {
-                            addFormatedText("# %s's Profil", profile.name());
+                            addFormatedText("# %s's Profil %s", profile.name(), activeTag);
                         } else {
                             addFormatedText("# %s's Profil", member.getEffectiveName());
                         }
@@ -93,15 +97,23 @@ public class ProfilContainer extends Container {
 
                         addLineSeparator(Separator.Spacing.SMALL);
 
+                        UseProfileBtn useProfileBtn = new UseProfileBtn();
+                        if (profileIsAlreadyInUse) {
+                            useProfileBtn.disable(true);
+                        } else {
+                            useProfileBtn.addArgument("p", profile.profileId()); // transfer profile ID
+                        }
+
+
                         addComponent(
                                 ActionRow.of(
-                                        new UseProfileBtn().build(),
+                                        useProfileBtn.build(),
                                         new AddProfileBtn().build()
                                 )
                         );
 
                         ProfileUseSelect profileUseSelect = new ProfileUseSelect();
-                        profileUseSelect.setMember(member);
+                        profileUseSelect.setProfile(profile);
 
                         addComponent(
                                 ActionRow.of(

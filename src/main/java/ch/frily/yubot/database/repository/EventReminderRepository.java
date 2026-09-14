@@ -76,7 +76,6 @@ public class EventReminderRepository {
      * @throws ClassNotFoundException
      */
     public static void delete(String eventId) throws SQLException, ClassNotFoundException {
-        log.info("Deleting event reminder entry for event: {}", eventId);
         DatabaseQuery query = new DatabaseQuery(Table.EVENT_REMINDER);
         query.where(Table.EventReminderColumn.ID, DatabaseQuery.Operator.EQUALS, eventId);
         query.delete();

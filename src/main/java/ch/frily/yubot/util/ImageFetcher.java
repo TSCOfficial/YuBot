@@ -19,7 +19,6 @@ public class ImageFetcher {
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
 
     public static CompletableFuture<BufferedImage> fetch(String url) {
-        log.info("Fetching image from {}", url);
         HttpRequest request = HttpRequest.newBuilder(URI.create(url)).GET().build();
         return CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofByteArray())
                 .thenApply(response -> {

@@ -6,6 +6,7 @@ import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.profile.Profile;
 import ch.frily.yubot.interaction.select.IStringSelect;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
@@ -15,10 +16,11 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 public class ProfileUseSelect implements IStringSelect {
 
     @Setter
-    private Member member;
+    private Profile profile;
 
     @Override
     public String getId() {
@@ -33,7 +35,7 @@ public class ProfileUseSelect implements IStringSelect {
     @Override
     public List<SelectOption> getOptions() {
         try {
-            List<Profile> profiles = ProfileRepository.getProfilesFromAccount(member);
+            List<Profile> profiles = ProfileRepository.getProfilesFromAccount(profile.parentAccount());
             return profiles.stream().map(profile -> {
                 return SelectOption.of(profile.name(), profile.profileId());
             }).toList();
@@ -44,17 +46,10 @@ public class ProfileUseSelect implements IStringSelect {
 
     @Override
     public List<SelectOption> getDefaultOptions() {
-        try {
-            Optional<Profile> currentProfile = ProfileRepository.getCurrentUserProfile(member);
-            if  (currentProfile.isPresent()) {
-                return List.of(SelectOption.of(currentProfile.get().name(), currentProfile.get().profileId()));
-            } else {
-                return List.of();
-            }
-        } catch (Exception e) {
-            ExceptionHandler.handle(e);
-            return List.of();
+        if (profile != null) {
+            return List.of(SelectOption.of(profile.name(), profile.profileId()));
         }
+        return List.of();
     }
 
     @Override
@@ -64,7 +59,11 @@ public class ProfileUseSelect implements IStringSelect {
         ProfilContainer profileContainer = new ProfilContainer(event.getMember());
         profileContainer.setProfile(selectedProfile);
 
-        event.editSelectMenu(profileContainer.build()).queue(); // failes due to components v2 not being able to resolve itself somehow? reference to dynamic msg .update()
+        profileContainer.buildAsync().thenAccept(container -> {
+            event.editComponents(container.build()).useComponentsV2().queue();
+        }).exceptionally(e -> {
+            return ExceptionHandler.fail(e);
+        });
 
     }
 }

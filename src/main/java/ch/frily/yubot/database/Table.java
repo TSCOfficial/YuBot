@@ -123,13 +123,15 @@ public enum Table {
         private final String column;
     }
 
+    // PROFILE
     @Getter
     @RequiredArgsConstructor
     public enum ProfileColumn implements Column {
         PROFILE_ID("profile_id"),
         ACCOUNT_ID("parent_id"),
         NAME("name"),
-        IS_CURRENTLY_USED("is_currently_used");
+        IS_CURRENTLY_USED("is_currently_used"),
+        PROFILEPICTURE("profilepicture");
         private final String column;
     }
 

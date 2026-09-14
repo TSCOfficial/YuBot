@@ -10,7 +10,6 @@ public class AbsenceContainerScheduler implements IScheduler{
     @Override
     public void execute() throws SQLException, ClassNotFoundException {
         DynamicMessageList.ABSENCES.update();
-        log.info("Updated absences container");
     }
 
     @Override
