@@ -44,7 +44,8 @@ public class AddProfileModal extends Modal {
                 Label.of(
                         "Profilname", profilename.build()
                 ),
-                Label.of("Profilbild", AttachmentUpload.create("profilepicture").build())
+//                Label.of("Profilbild", AttachmentUpload.create("profilepicture").build())
+                Label.of("Profilbild",TextInput.create("profilepicture-url", TextInputStyle.SHORT).build() )
         );
     }
 
@@ -54,12 +55,12 @@ public class AddProfileModal extends Modal {
         UUID id = UUID.randomUUID();
         String profilename = event.getValue("profilename").getAsString().trim();
 
+        String imageUrl = null;
         if (event.getValue("profilepicture") != null) {
-            Message.Attachment file = event.getValue("profilepicture").getAsAttachmentList().getFirst();
-            log.info("{} {}", file, file.getUrl());
+            imageUrl = event.getValue("profilepicture").getAsString().trim();
         }
 
-        Profile profile = new Profile(id.toString(), event.getMember(), profilename, false, null);
+        Profile profile = new Profile(id.toString(), event.getMember(), profilename, false, imageUrl);
         ProfileRepository.createProfile(profile);
         event.reply(String.format("✅ Das Profil \"%s\" wurde erfolgreich erstellt.-# Verwende das Profil mit /profile use.",  profilename)).queue();
     }

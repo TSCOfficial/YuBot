@@ -1,10 +1,13 @@
 package ch.frily.yubot.util;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.awt.*;
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 
+@Slf4j
 public class ProfileImageComposer {
 
     private static final int AVATAR_SIZE = 150;      // Ziel-Durchmesser des Avatars
@@ -21,6 +24,7 @@ public class ProfileImageComposer {
 
         g.drawImage(banner, 0, 0, null);
 
+        log.info("avatar: {}", avatar);
         BufferedImage roundedAvatar = makeCircular(avatar, AVATAR_SIZE);
 
         // Position

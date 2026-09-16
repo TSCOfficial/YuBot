@@ -13,27 +13,28 @@ import ch.frily.yubot.interaction.select.select.ProfileUseSelect;
 import ch.frily.yubot.util.BannerResolver;
 import ch.frily.yubot.util.ImageFetcher;
 import ch.frily.yubot.util.ProfileImageComposer;
-import ch.frily.yubot.util.Util;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
 import net.dv8tion.jda.api.components.separator.Separator;
-import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.ImageFormat;
+import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImagingOpException;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 public class ProfilContainer extends Container {
@@ -41,6 +42,7 @@ public class ProfilContainer extends Container {
     @Getter
     private final Member member;
 
+    @Setter
     @Getter
     private Profile profile;
 
@@ -49,10 +51,6 @@ public class ProfilContainer extends Container {
 
     public ProfilContainer(Member member) {
         this.member = member;
-    }
-
-    public void setProfile(Profile profile) {
-        this.profile = profile;
     }
 
     public CompletableFuture<ProfilContainer> buildAsync() {
@@ -163,18 +161,39 @@ public class ProfilContainer extends Container {
     }
 
     private CompletableFuture<FileUpload> buildProfileBanner() {
-        CompletableFuture<BufferedImage> bannerFuture = BannerResolver.resolveGlobalBanner(member);
-        String avatarUrl = member.getEffectiveAvatar(ImageFormat.PNG).getUrl(1024);
-        CompletableFuture<BufferedImage> avatarFuture = ImageFetcher.fetch(avatarUrl);
+        CompletableFuture<BufferedImage> bufferedBanner = BannerResolver.resolveGlobalBanner(member);
+        AtomicReference<String> profileUrl = new AtomicReference<>(getProfilePicture(false));
+        CompletableFuture<BufferedImage> bufferedProfilePicture = ImageFetcher.fetch(profileUrl.get());
 
-        return bannerFuture.thenCombine(avatarFuture, ProfileImageComposer::compose)
-                .thenApply(composed -> {
-                    try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                        ImageIO.write(composed, "png", baos);
-                        return FileUpload.fromData(baos.toByteArray(), "profile-banner.png");
-                    } catch (IOException e) {
-                        throw new CompletionException(new ImagingOpException("Failed to draw image"));
-                    }
-                });
+        return bufferedBanner.thenCombine(bufferedProfilePicture, (banner, profilePicture) -> {
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                BufferedImage composed = ProfileImageComposer.compose(banner, profilePicture);
+                ImageIO.write(composed, "png", baos);
+                return FileUpload.fromData(baos.toByteArray(), "profile-banner.png");
+            } catch (Exception e) {
+                log.info(e.getMessage());
+                throw new CompletionException(new ImagingOpException("Failed to draw image"));
+            }
+        });
+    }
+
+    private String getProfilePicture(boolean forceMemberProfile){
+        try {
+            Optional<Profile> profile = ProfileRepository.getCurrentUserProfile(member);
+            log.info(String.valueOf(profile.get()));
+            if (!forceMemberProfile && profile.isPresent() && profile.get().profilePicture() != null) {
+                String url = new ImageProxy(profile.get().profilePicture()).getUrl(1024);
+                log.info(url);
+                return url;
+            } else {
+                String url = member.getEffectiveAvatar(ImageFormat.PNG).getUrl(1024);
+                log.info(url);
+                return url;
+            }
+        } catch (Exception e) {
+            log.info("failed: %s", e);
+            return ExceptionHandler.fail(e);
+        }
     }
 }
