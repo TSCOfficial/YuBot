@@ -22,6 +22,9 @@ public class ProfileUseSelect implements IStringSelect {
     @Setter
     private Profile profile;
 
+    @Setter
+    private Member member;
+
     @Override
     public String getId() {
         return "show-profile-select";
@@ -35,7 +38,7 @@ public class ProfileUseSelect implements IStringSelect {
     @Override
     public List<SelectOption> getOptions() {
         try {
-            List<Profile> profiles = ProfileRepository.getProfilesFromAccount(profile.parentAccount());
+            List<Profile> profiles = ProfileRepository.getProfilesFromAccount(member);
             return profiles.stream().map(profile -> {
                 return SelectOption.of(profile.name(), profile.profileId());
             }).toList();

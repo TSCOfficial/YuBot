@@ -24,7 +24,6 @@ public class ProfileImageComposer {
 
         g.drawImage(banner, 0, 0, null);
 
-        log.info("avatar: {}", avatar);
         BufferedImage roundedAvatar = makeCircular(avatar, AVATAR_SIZE);
 
         // Position

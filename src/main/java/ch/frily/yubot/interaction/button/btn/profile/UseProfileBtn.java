@@ -1,5 +1,6 @@
 package ch.frily.yubot.interaction.button.btn.profile;
 
+import ch.frily.yubot.container.profile.ProfilContainer;
 import ch.frily.yubot.database.repository.ProfileRepository;
 import ch.frily.yubot.feature.profile.Profile;
 import ch.frily.yubot.interaction.button.Button;
@@ -40,6 +41,13 @@ public class UseProfileBtn extends Button {
         String profileId = getArgument(event.getComponentId(),"p");
         Profile profile = ProfileRepository.getProfileById(profileId);
         ProfileRepository.selectProfile(profile);
-        event.reply(String.format("✅ Profil **%s** wird nun angewendet.\n-# Du sendest absofort deine Nachrichten als %s", profile.name(), profile.name()));
+
+        ProfilContainer newProfileView = new ProfilContainer(event.getMember());
+        newProfileView.setProfile(profile);
+        newProfileView.buildAsync().thenAccept(profileContainer -> {
+            event.getMessage().editMessageComponents(profileContainer.build()).useComponentsV2().queue();
+        });
+
+        event.reply(String.format("✅ Profil **%s** wird nun angewendet.\n-# Du sendest absofort deine Nachrichten als %s", profile.name(), profile.name())).setEphemeral(true).queue();
     }
 }

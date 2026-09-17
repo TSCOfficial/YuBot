@@ -6,6 +6,7 @@ import ch.frily.yubot.util.EnvResolver;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Role;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +46,7 @@ public enum Setting {
     @Getter
     List<Role> allowedRoles;
     @Getter
-    List<SettingOption> autocompleteOptions;
+    List<SettingOption> autocompleteOptions = new ArrayList<>();
     /** Minimal allowed characters for a string*/
     @Getter
     int min;

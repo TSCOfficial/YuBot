@@ -17,6 +17,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
 import net.dv8tion.jda.api.components.separator.Separator;
@@ -33,11 +34,12 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 public class ProfilContainer extends Container {
+
+    private static final String ACTIVE_TAG =
+            "<:active1:1527044015927721984><:active2:1527044016942616748><:active3:1527044018276536403>";
 
     @Getter
     private final Member member;
@@ -54,77 +56,94 @@ public class ProfilContainer extends Container {
     }
 
     public CompletableFuture<ProfilContainer> buildAsync() {
-        return this.buildProfileBanner()
+        return buildProfileBanner()
                 .thenApply(fileUpload -> {
-                    try {
-                        this.profileBanner = fileUpload;
-
-                        // container content
-                        MediaGallery gallery = MediaGallery.of(
-                                MediaGalleryItem.fromFile(fileUpload)
-                        );
-                        addComponent(gallery);
-
-                        Optional<Profile> currentProfile = ProfileRepository.getCurrentUserProfile(profile.parentAccount());
-                        boolean profileIsAlreadyInUse = currentProfile.isPresent() && Objects.equals(currentProfile.get().profileId(), profile.profileId());
-                        String activeTag = profileIsAlreadyInUse ? "<:active1:1527044015927721984><:active2:1527044016942616748><:active3:1527044018276536403>" : "";
-                        if (profile != null) {
-                            addFormatedText("# %s's Profil %s", profile.name(), activeTag);
-                        } else {
-                            addFormatedText("# %s's Profil", member.getEffectiveName());
-                        }
-
-
-                        addTextDisplay("**Einstellungen**");
-                        if (profile != null) {
-                            addTextDisplay("-# Einstellungen sind Konto-, nicht Profilspezifisch.");
-                        }
-                        Map<String, String> settings = mapSettings();
-                        if (settings == null) {
-                            addTextDisplay("-# Keine Einstellungen gefunden. Stelle sie mit </profile setting:1542519831729934447> ein");
-                        } else {
-                            StringBuilder settingsSB = new StringBuilder();
-                            settings.forEach((key, value) -> {
-                                if (!value.equals("null")) {
-                                    settingsSB.append(String.format("`%s`: %s", key, value)).append("\n");
-                                }
-
-                            });
-                            addTextDisplay(settingsSB.toString());
-                        }
-
-                        addLineSeparator(Separator.Spacing.SMALL);
-
-                        UseProfileBtn useProfileBtn = new UseProfileBtn();
-                        if (profileIsAlreadyInUse) {
-                            useProfileBtn.disable(true);
-                        } else {
-                            useProfileBtn.addArgument("p", profile.profileId()); // transfer profile ID
-                        }
-
-
-                        addComponent(
-                                ActionRow.of(
-                                        useProfileBtn.build(),
-                                        new AddProfileBtn().build()
-                                )
-                        );
-
-                        ProfileUseSelect profileUseSelect = new ProfileUseSelect();
-                        profileUseSelect.setProfile(profile);
-
-                        addComponent(
-                                ActionRow.of(
-                                        profileUseSelect.build()
-                                )
-                        );
-
-                        return this;
-                    } catch (Exception e) {
-                        return ExceptionHandler.fail(e);
-                    }
+                    this.profileBanner = fileUpload;
+                    return this;
                 })
-                .exceptionally(ExceptionHandler::fail);
+                .exceptionally(ExceptionHandler::fail)
+                .thenApply(container -> {
+                    container.assembleContent();
+                    return container;
+                });
+    }
+
+    private void assembleContent() {
+        addComponent(MediaGallery.of(MediaGalleryItem.fromFile(profileBanner)));
+        try {
+            Optional<Profile> currentProfile = ProfileRepository.getCurrentUserProfile(member);
+            boolean profileIsAlreadyInUse = profile == null || (profile != null && currentProfile.isPresent() && Objects.equals(currentProfile.get().profileId(), profile.profileId()));
+
+            if (profile != null) {
+                addFormatedText("# %s's Profil %s", profile.name(), profileIsAlreadyInUse ? ACTIVE_TAG : "");
+            } else {
+                addFormatedText("# %s's Profil", member.getEffectiveName());
+            }
+
+
+            if (profile != null) {
+                addTextDisplay("**Kontoeinstellungen**");
+            } else {
+                addTextDisplay("**Einstellungen**");
+            }
+            addTextDisplay(buildSettingsText());
+
+            addLineSeparator(Separator.Spacing.SMALL);
+
+            UseProfileBtn useProfileBtn = new UseProfileBtn();
+            if (profileIsAlreadyInUse) {
+                useProfileBtn.disable(true);
+            } else if (profile != null) {
+                useProfileBtn.addArgument("p", profile.profileId());
+            }
+
+            List<Button> profileControl = new ArrayList<>();
+            if (!ProfileRepository.getProfilesFromAccount(member).isEmpty()) {
+                profileControl.add(useProfileBtn.build());
+            }
+            profileControl.add(new AddProfileBtn().build());
+
+            addComponent(
+                    ActionRow.of(profileControl)
+            );
+
+            if (!ProfileRepository.getProfilesFromAccount(member).isEmpty()) {
+                ProfileUseSelect profileUseSelect = new ProfileUseSelect();
+                profileUseSelect.setMember(member);
+                profileUseSelect.setProfile(profile);
+
+                addComponent(
+                        ActionRow.of(
+                                profileUseSelect.build()
+                        )
+                );
+            }
+
+
+        } catch (Exception e) {
+            ExceptionHandler.handle(e);
+        }
+    }
+
+    private String buildSettingsText() {
+        Map<String, String> settings;
+        try {
+            settings = mapSettings();
+        } catch (SQLException | ClassNotFoundException e) {
+            settings = ExceptionHandler.fail(e);
+        }
+
+        if (settings == null) {
+            return "-# Keine Einstellungen gefunden. Stelle sie mit </profile setting:1542519831729934447> ein";
+        }
+
+        StringBuilder settingsSB = new StringBuilder();
+        settings.forEach((key, value) -> {
+            if (!"null".equals(value)) {
+                settingsSB.append(String.format("`%s`: %s", key, value)).append("\n");
+            }
+        });
+        return settingsSB.toString();
     }
 
     private Map<String, String> mapSettings() throws SQLException, ClassNotFoundException {
@@ -134,36 +153,34 @@ public class ProfilContainer extends Container {
         }
 
         Map<String, String> mappedSettings = new HashMap<>();
-        Arrays.stream(Setting.values()).forEach(setting -> {
-
+        for (Setting setting : Setting.values()) {
             try {
-                String settingValue = String.valueOf(SettingRepository.getSetting(member, setting, setting.getDataType()));
-                // show "custom text" for custom text that is not a predefined option from autocomplete
-                if (setting.getAutocompleteOptions() == null) {
-                    settingValue = String.format("\"%s\"", settingValue);
-                }
-                if (settingValue != "null") {
-
-                    switch (setting) {
-                        case Setting.ACTIVEMOD_SEND_IN_DM:
-                            settingValue = setting.getOptionByValue(Boolean.valueOf(settingValue)).label();
-                            break;
-                    }
-                    mappedSettings.put(setting.getLabel(), settingValue);
+                Object rawValue = SettingRepository.getSetting(member, setting, setting.getDataType());
+                if (rawValue == null) {
+                    continue; // skip setting
                 }
 
+                String settingValue;
+                if (!setting.getAutocompleteOptions().isEmpty()) {
+                    settingValue = setting.getOptionByValue(rawValue).label();
+                } else {
+                    // custom text gets concat with " "
+                    String rawText = String.valueOf(rawValue);
+                    settingValue = rawText.isBlank() ? rawText : String.format("\"%s\"", rawText);
+                }
+
+                mappedSettings.put(setting.getLabel(), settingValue);
             } catch (Exception e) {
                 ExceptionHandler.fail(e);
             }
-        });
+        }
 
         return mappedSettings;
     }
 
     private CompletableFuture<FileUpload> buildProfileBanner() {
         CompletableFuture<BufferedImage> bufferedBanner = BannerResolver.resolveGlobalBanner(member);
-        AtomicReference<String> profileUrl = new AtomicReference<>(getProfilePicture(false));
-        CompletableFuture<BufferedImage> bufferedProfilePicture = ImageFetcher.fetch(profileUrl.get());
+        CompletableFuture<BufferedImage> bufferedProfilePicture = fetchProfilePicture();
 
         return bufferedBanner.thenCombine(bufferedProfilePicture, (banner, profilePicture) -> {
             try {
@@ -178,21 +195,28 @@ public class ProfilContainer extends Container {
         });
     }
 
-    private String getProfilePicture(boolean forceMemberProfile){
+
+    /**
+     * fecthes the profilepicture of the current profile. If no profile is defined or the picture is invalid (null), the member-avatar is taken as fallback
+     * @return Profile's-/Member's Avatar
+     */
+    private CompletableFuture<BufferedImage> fetchProfilePicture() {
+        return ImageFetcher.fetch(getProfilePicture(false))
+                .thenCompose(picture -> picture != null
+                        ? CompletableFuture.completedFuture(picture)
+                        : ImageFetcher.fetch(getProfilePicture(true)))
+                .exceptionallyCompose(e -> {
+                    return ImageFetcher.fetch(getProfilePicture(true));
+                });
+    }
+
+    private String getProfilePicture(boolean forceMemberProfile) {
         try {
-            Optional<Profile> profile = ProfileRepository.getCurrentUserProfile(member);
-            log.info(String.valueOf(profile.get()));
-            if (!forceMemberProfile && profile.isPresent() && profile.get().profilePicture() != null) {
-                String url = new ImageProxy(profile.get().profilePicture()).getUrl(1024);
-                log.info(url);
-                return url;
-            } else {
-                String url = member.getEffectiveAvatar(ImageFormat.PNG).getUrl(1024);
-                log.info(url);
-                return url;
+            if (!forceMemberProfile && profile != null && profile.profilePicture() != null) {
+                return new ImageProxy(profile.profilePicture()).getUrl(1024);
             }
+            return member.getEffectiveAvatar(ImageFormat.PNG).getUrl(1024);
         } catch (Exception e) {
-            log.info("failed: %s", e);
             return ExceptionHandler.fail(e);
         }
     }
