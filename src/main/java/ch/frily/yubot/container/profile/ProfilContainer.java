@@ -9,6 +9,7 @@ import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.feature.setting.Setting;
 import ch.frily.yubot.interaction.button.btn.profile.AddProfileBtn;
 import ch.frily.yubot.interaction.button.btn.profile.UseProfileBtn;
+import ch.frily.yubot.interaction.select.ISelect;
 import ch.frily.yubot.interaction.select.select.ProfileUseSelect;
 import ch.frily.yubot.util.BannerResolver;
 import ch.frily.yubot.util.ImageFetcher;
@@ -72,10 +73,11 @@ public class ProfilContainer extends Container {
         addComponent(MediaGallery.of(MediaGalleryItem.fromFile(profileBanner)));
         try {
             Optional<Profile> currentProfile = ProfileRepository.getCurrentUserProfile(member);
+            List<Profile> linkedProfiles = ProfileRepository.getProfilesFromAccount(member);
             boolean profileIsAlreadyInUse = profile == null || (profile != null && currentProfile.isPresent() && Objects.equals(currentProfile.get().profileId(), profile.profileId()));
 
             if (profile != null) {
-                addFormatedText("# %s's Profil %s", profile.name(), profileIsAlreadyInUse ? ACTIVE_TAG : "");
+                addFormatedText("# %s's Profil %s%s", profile.name(), profile.proxy() != null ? "(`" + profile.proxy() + "`) " : "", profileIsAlreadyInUse ? ACTIVE_TAG : "");
             } else {
                 addFormatedText("# %s's Profil", member.getEffectiveName());
             }
@@ -98,25 +100,33 @@ public class ProfilContainer extends Container {
             }
 
             List<Button> profileControl = new ArrayList<>();
-            if (!ProfileRepository.getProfilesFromAccount(member).isEmpty()) {
+            if (!linkedProfiles.isEmpty()) {
                 profileControl.add(useProfileBtn.build());
             }
-            profileControl.add(new AddProfileBtn().build());
+            profileControl.add(new AddProfileBtn().build()); // only show when "DIS"-role?
 
-            addComponent(
-                    ActionRow.of(profileControl)
-            );
-
-            if (!ProfileRepository.getProfilesFromAccount(member).isEmpty()) {
-                ProfileUseSelect profileUseSelect = new ProfileUseSelect();
-                profileUseSelect.setMember(member);
-                profileUseSelect.setProfile(profile);
-
+            if (!profileControl.isEmpty()) {
                 addComponent(
-                        ActionRow.of(
-                                profileUseSelect.build()
-                        )
+                        ActionRow.of(profileControl)
                 );
+            }
+
+
+            if (!linkedProfiles.isEmpty()) {
+                if (linkedProfiles.size() <= ISelect.MAX_SELECT_OPTIONS) {
+                    ProfileUseSelect profileUseSelect = new ProfileUseSelect();
+                    profileUseSelect.setMember(member);
+                    profileUseSelect.setProfile(profile);
+
+                    addComponent(
+                            ActionRow.of(
+                                    profileUseSelect.build()
+                            )
+                    );
+                } else {
+                    addFormatedText("-# Du hast zu viele Profile (%d). Discord limitiert die Select-Auswahl auf %d Optionen. Verwende </profile show:1542519831729934447>.");
+                }
+
             }
 
 
@@ -130,7 +140,7 @@ public class ProfilContainer extends Container {
         try {
             settings = mapSettings();
         } catch (SQLException | ClassNotFoundException e) {
-            settings = ExceptionHandler.fail(e);
+            return ExceptionHandler.fail(e);
         }
 
         if (settings == null) {

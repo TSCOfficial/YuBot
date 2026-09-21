@@ -13,12 +13,14 @@ import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionE
 import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 public class ProfileUseSelect implements IStringSelect {
 
+    private static final String DEFAULT_ACCOUNT_KEY = "default-profile";
     @Setter
     private Profile profile;
 
@@ -39,9 +41,12 @@ public class ProfileUseSelect implements IStringSelect {
     public List<SelectOption> getOptions() {
         try {
             List<Profile> profiles = ProfileRepository.getProfilesFromAccount(member);
-            return profiles.stream().map(profile -> {
-                return SelectOption.of(profile.name(), profile.profileId());
-            }).toList();
+            List<SelectOption> options = new ArrayList<>();
+            profiles.stream().forEach(profile -> {
+                options.add(SelectOption.of(profile.name(), profile.profileId()));
+            });
+            options.addFirst(SelectOption.of(String.format("Standardprofil (%s)", member.getEffectiveName()), DEFAULT_ACCOUNT_KEY));
+            return options;
         } catch (Exception e) {
             return List.of();
         }
@@ -52,15 +57,22 @@ public class ProfileUseSelect implements IStringSelect {
         if (profile != null) {
             return List.of(SelectOption.of(profile.name(), profile.profileId()));
         }
-        return List.of();
+        return List.of(SelectOption.of(String.format("Standardprofil (%s)", member.getEffectiveName()), DEFAULT_ACCOUNT_KEY));
     }
 
     @Override
     public void execute(@NonNull StringSelectInteractionEvent event) throws SQLException, ClassNotFoundException {
         String selectedValue = event.getSelectedOptions().getFirst().getValue();
-        Profile selectedProfile = ProfileRepository.getProfileById(selectedValue);
+
         ProfilContainer profileContainer = new ProfilContainer(event.getMember());
-        profileContainer.setProfile(selectedProfile);
+
+        if (selectedValue.equals(DEFAULT_ACCOUNT_KEY)) {
+            ProfileRepository.unselectProfiles(event.getMember());
+        } else {
+            Profile selectedProfile = ProfileRepository.getProfileById(selectedValue);
+            profileContainer.setProfile(selectedProfile);
+        }
+
 
         profileContainer.buildAsync().thenAccept(container -> {
             event.editComponents(container.build()).useComponentsV2().queue();

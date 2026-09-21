@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.components.selections.SelectOption;
 import java.util.List;
 
 public interface ISelect {
+    int MAX_SELECT_OPTIONS = 25;
 
     SelectMenu build();
 

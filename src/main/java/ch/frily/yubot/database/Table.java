@@ -131,7 +131,8 @@ public enum Table {
         ACCOUNT_ID("parent_id"),
         NAME("name"),
         IS_CURRENTLY_USED("is_currently_used"),
-        PROFILEPICTURE("profilepicture");
+        PROFILEPICTURE("profilepicture"),
+        PROXY("proxy");
         private final String column;
     }
 
