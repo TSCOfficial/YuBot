@@ -80,6 +80,6 @@ public class AddProfileModal extends Modal {
 
         Profile profile = new Profile(id.toString(), event.getMember(), profilename, false, imageUrl, proxy);
         ProfileRepository.createProfile(profile);
-        event.reply(String.format("✅ Das Profil \"%s\" wurde erfolgreich erstellt.\n-# Wende es mit /profile use an.",  profilename)).setEphemeral(true).queue();
+        event.reply(String.format("✅ Das Profil \"%s\" wurde erfolgreich erstellt.\n-# Wende es mit </profile show:1542519831729934447> an.",  profilename)).setEphemeral(true).queue();
     }
 }
