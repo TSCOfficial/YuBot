@@ -43,7 +43,9 @@ public class ProfileUseSelect implements IStringSelect {
             List<Profile> profiles = ProfileRepository.getProfilesFromAccount(member);
             List<SelectOption> options = new ArrayList<>();
             profiles.stream().forEach(profile -> {
-                options.add(SelectOption.of(profile.name(), profile.profileId()));
+                String proxy = !profile.proxy().isBlank() ? " (" + profile.proxy() + ")" : "";
+                String isInUse = profile.isCurrentlyUsed() ? "🟢 " : "";
+                options.add(SelectOption.of(isInUse + profile.name() + proxy, profile.profileId()));
             });
             options.addFirst(SelectOption.of(String.format("Standardprofil (%s)", member.getEffectiveName()), DEFAULT_ACCOUNT_KEY));
             return options;
@@ -55,9 +57,9 @@ public class ProfileUseSelect implements IStringSelect {
     @Override
     public List<SelectOption> getDefaultOptions() {
         if (profile != null) {
-            return List.of(SelectOption.of(profile.name(), profile.profileId()));
+            return getOptions().stream().filter(option -> option.getValue().equals(profile.profileId())).toList();
         }
-        return List.of(SelectOption.of(String.format("Standardprofil (%s)", member.getEffectiveName()), DEFAULT_ACCOUNT_KEY));
+        return getOptions().stream().filter(option -> option.getValue().equals(DEFAULT_ACCOUNT_KEY)).toList();
     }
 
     @Override
@@ -66,9 +68,7 @@ public class ProfileUseSelect implements IStringSelect {
 
         ProfilContainer profileContainer = new ProfilContainer(event.getMember());
 
-        if (selectedValue.equals(DEFAULT_ACCOUNT_KEY)) {
-            ProfileRepository.unselectProfiles(event.getMember());
-        } else {
+        if (!selectedValue.equals(DEFAULT_ACCOUNT_KEY)) {
             Profile selectedProfile = ProfileRepository.getProfileById(selectedValue);
             profileContainer.setProfile(selectedProfile);
         }

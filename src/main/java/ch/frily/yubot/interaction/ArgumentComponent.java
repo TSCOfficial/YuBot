@@ -74,7 +74,7 @@ public abstract class ArgumentComponent {
     public String getArgument(String componentId, String key){
         String value = parseArguments(componentId).get(key);
         if (value == null) {
-            throw new IllegalStateException(String.format("Argument '%s' konnte nicht gefunden werden.", key));
+            throw new InvalidStateException(String.format("Argument '%s' konnte nicht gefunden werden.", key));
         }
         return value;
     }

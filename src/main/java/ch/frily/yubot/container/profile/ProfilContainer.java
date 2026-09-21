@@ -74,10 +74,11 @@ public class ProfilContainer extends Container {
         try {
             Optional<Profile> currentProfile = ProfileRepository.getCurrentUserProfile(member);
             List<Profile> linkedProfiles = ProfileRepository.getProfilesFromAccount(member);
-            boolean profileIsAlreadyInUse = profile == null || (profile != null && currentProfile.isPresent() && Objects.equals(currentProfile.get().profileId(), profile.profileId()));
+            boolean profileIsAlreadyInUse = profile != null && currentProfile.isPresent() && Objects.equals(currentProfile.get().profileId(), profile.profileId());
 
             if (profile != null) {
-                addFormatedText("# %s's Profil %s%s", profile.name(), profile.proxy() != null ? "(`" + profile.proxy() + "`) " : "", profileIsAlreadyInUse ? ACTIVE_TAG : "");
+                String proxy = !profile.proxy().isBlank() ? " (" + profile.proxy() + ")" : "";
+                addFormatedText("# %s's Profil %s%s", profile.name(), proxy, profileIsAlreadyInUse ? ACTIVE_TAG : "");
             } else {
                 addFormatedText("# %s's Profil", member.getEffectiveName());
             }
@@ -113,7 +114,7 @@ public class ProfilContainer extends Container {
 
 
             if (!linkedProfiles.isEmpty()) {
-                if (linkedProfiles.size() <= ISelect.MAX_SELECT_OPTIONS) {
+                if (linkedProfiles.size() + 1 <= ISelect.MAX_SELECT_OPTIONS) { // +1 because of the default account-"profile"
                     ProfileUseSelect profileUseSelect = new ProfileUseSelect();
                     profileUseSelect.setMember(member);
                     profileUseSelect.setProfile(profile);
@@ -124,7 +125,10 @@ public class ProfilContainer extends Container {
                             )
                     );
                 } else {
-                    addFormatedText("-# Du hast zu viele Profile (%d). Discord limitiert die Select-Auswahl auf %d Optionen. Verwende </profile show:1542519831729934447>.");
+                    addFormatedText("""
+                            Du hast zu viele Profile (%d). Discord limitiert die Select-Auswahl auf %d Optionen.
+                            -# Verwende </profile show:1542519831729934447>.
+                            """, linkedProfiles.size() + 1, ISelect.MAX_SELECT_OPTIONS);
                 }
 
             }

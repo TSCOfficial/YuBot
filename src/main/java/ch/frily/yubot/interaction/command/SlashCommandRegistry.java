@@ -11,6 +11,7 @@ import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -145,25 +146,10 @@ public class SlashCommandRegistry {
             return;
         }
 
-        String focusedOptionName = event.getFocusedOption().getName();
-        List<Command.Choice> choices = command.getAutocomplete(event).getOrDefault(focusedOptionName, List.of());
+        AutoCompleteQuery focusedOptionName = event.getFocusedOption();
+        List<Command.Choice> choices = command.getAutocomplete(event).getOrDefault(focusedOptionName.getName(), List.of())
+                .stream().filter(choice -> choice.getName().toLowerCase().startsWith(focusedOptionName.getValue().toLowerCase())).toList();
 
-//        List<Command.Choice> options = choices.stream()
-//                .filter(
-//                        choice -> choice.toString().startsWith(event.getFocusedOption().getValue()))
-//                .map(choice -> {
-//                    if (choice instanceof String) {
-//                        return new Command.Choice((String) choice, (String) choice);
-//                    } else if (choice instanceof Integer) {
-//                        return new Command.Choice(choice.toString(), (Integer) choice);
-//                    } else if (choice instanceof Double) {
-//                        return new Command.Choice(choice.toString(), (Double) choice);
-//                    }
-//                    return null;
-//                })
-//                .filter(Objects::nonNull)
-//                .collect(Collectors.toList());
-
-        event.replyChoices(choices).queue();
+        event.replyChoices(choices.stream().limit(25).toList()).queue();
     }
 }
