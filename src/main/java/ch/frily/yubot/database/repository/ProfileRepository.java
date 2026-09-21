@@ -3,6 +3,7 @@ package ch.frily.yubot.database.repository;
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.InvalidStateException;
+import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.feature.profile.Profile;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
@@ -33,7 +34,7 @@ public class ProfileRepository {
 
             return new Profile(profileId, member, name, isCurrentlyUsed, profilePicture, proxy);
         }
-        throw new InvalidStateException("Profile not found");
+        throw new NotFoundException(String.format("Profil '%s' nicht gefunden.", id));
     }
     public static List<Profile> getProfilesFromAccount(Member member) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE);

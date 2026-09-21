@@ -64,7 +64,6 @@ public class ProfileSettingCmd implements ISlashSubcommand {
                 .filter(setting -> setting.getAutocompleteOptions() != null)
                 .filter(setting -> Util.isPermitted(event.getMember(), setting.getAllowedRoles()))
                 .collect(Collectors.toMap(Setting::getLabel, setting -> setting.getAutocompleteOptions().stream().map(autocompleteOption -> {
-                    log.info("autocomplete option {}", autocompleteOption.label());
                     if (autocompleteOption.value() instanceof String || autocompleteOption.value() instanceof Boolean) {
                         return new Command.Choice(autocompleteOption.label(), String.valueOf(autocompleteOption.value()));
                     } else if (autocompleteOption.value() instanceof Integer) {

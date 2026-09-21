@@ -222,7 +222,7 @@ public class ProfilContainer extends Container {
 
     private String getProfilePicture(boolean forceMemberProfile) {
         try {
-            if (!forceMemberProfile && profile != null && profile.profilePicture() != null) {
+            if (!forceMemberProfile && profile != null && profile.profilePicture() != null && !profile.profilePicture().isBlank()) {
                 return new ImageProxy(profile.profilePicture()).getUrl(1024);
             }
             return member.getEffectiveAvatar(ImageFormat.PNG).getUrl(1024);
