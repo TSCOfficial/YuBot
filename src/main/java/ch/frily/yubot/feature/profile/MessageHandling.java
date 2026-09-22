@@ -22,8 +22,12 @@ public class MessageHandling {
         if (existingProfiles.size() > 0) {
             Optional<Profile> useProfile = existingProfiles.stream().filter(profile -> profile.isCurrentlyUsed()).findFirst();
             Optional<Profile> proxyProfile = handleProxy(originalMessage);
+            boolean usesProxy;
             if (proxyProfile.isPresent()) {
                 useProfile = proxyProfile;
+                usesProxy = true;
+            } else {
+                usesProxy = false;
             }
 
             useProfile.ifPresent(profile -> {
@@ -39,7 +43,12 @@ public class MessageHandling {
                         }
                         messageContentSB.append(String.format("> -# %s%s [[anzeigen]](%s)\n",repliedToMember, shortenedReplyMsg, originalMsgRef.getMessage().getJumpUrl()));
                     }
-                    messageContentSB.append(originalMessage.getContentRaw());
+
+                    String originalMsgString = originalMessage.getContentRaw();
+                    if (usesProxy) {
+                        originalMsgString = originalMsgString.replace(profile.proxy(), ""); // remove proxy chars from message
+                    }
+                    messageContentSB.append(originalMsgString);
                     webhook.sendMessage(messageContentSB.toString()).setAllowedMentions(List.of()).queue( _ -> {
                         originalMessage.delete().queue();
                         webhook.delete().queue();

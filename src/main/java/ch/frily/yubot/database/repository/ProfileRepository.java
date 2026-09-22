@@ -36,8 +36,30 @@ public class ProfileRepository {
 
             return new Profile(profileId, member, name, isCurrentlyUsed, profilePicture, proxy);
         }
-        throw new NotFoundException(String.format("Profil '%s' nicht gefunden.", id));
+        throw new NotFoundException(String.format("Profil mit ID '%s' nicht gefunden.", id));
     }
+
+    public static Profile getProfileByName(String profileName) throws SQLException, ClassNotFoundException {
+        DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
+        query.where(Table.ProfileColumn.NAME, DatabaseQuery.Operator.EQUALS, profileName);
+        ResultSet rs = query.executeDataQuery();
+
+        if (rs.next()) {
+            String profileId = rs.getString(Table.ProfileColumn.PROFILE_ID.getColumn());
+            String memberId = rs.getString(Table.ProfileColumn.ACCOUNT_ID.getColumn());
+            String name = rs.getString(Table.ProfileColumn.NAME.getColumn());
+            boolean isCurrentlyUsed = rs.getBoolean(Table.ProfileColumn.IS_CURRENTLY_USED.getColumn());
+            String profilePicture = rs.getString(Table.ProfileColumn.PROFILEPICTURE.getColumn());
+            String proxy = rs.getString(Table.ProfileColumn.PROXY.getColumn());
+
+            Member member = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getMemberById(memberId);
+
+            return new Profile(profileId, member, name, isCurrentlyUsed, profilePicture, proxy);
+        }
+        throw new NotFoundException(String.format("Profil mit Namen '%s' nicht gefunden.", profileName));
+    }
+
+
     public static List<Profile> getProfilesFromAccount(Member member) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
         query.where(Table.ProfileColumn.ACCOUNT_ID, DatabaseQuery.Operator.EQUALS, member.getId());
@@ -99,7 +121,6 @@ public class ProfileRepository {
     }
 
     public static void updateProfile(Profile profile)  throws SQLException, ClassNotFoundException {
-        log.info("Updating profile '{}'", profile.profileId());
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
         query.where(Table.ProfileColumn.PROFILE_ID, DatabaseQuery.Operator.EQUALS, profile.profileId());
         query.update(Table.ProfileColumn.NAME, profile.name());
@@ -107,7 +128,6 @@ public class ProfileRepository {
         query.update(Table.ProfileColumn.PROFILEPICTURE, profile.profilePicture());
         query.update(Table.ProfileColumn.PROXY, profile.proxy());
         query.executeQuery();
-        log.info("Profile '{}' updated", profile.profileId());
     }
 
     private static void updateProfileUsage(Profile profile, boolean isInUse)  throws SQLException, ClassNotFoundException {

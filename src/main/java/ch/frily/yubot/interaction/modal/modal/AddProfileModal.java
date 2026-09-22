@@ -13,11 +13,14 @@ import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.utils.FileUpload;
 import org.jspecify.annotations.NonNull;
 
+import javax.annotation.Nullable;
+import java.net.MalformedURLException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +30,8 @@ import java.util.UUID;
 public class AddProfileModal extends Modal {
 
     private Profile profile;
+
+    private static final List<String> ALLOWED_DATATYPES = List.of(".jpeg", ".jpg", ".png");
 
     @Override
     public String getId() {
@@ -77,7 +82,7 @@ public class AddProfileModal extends Modal {
                         "Proxy", "Verwende Proxy als Prefix in deinen Nachrichten um sie mit diesem Profil zu versenden.", proxy.build()
                 ),
 //                Label.of("Profilbild", AttachmentUpload.create("profilepicture").build())
-                Label.of("Profilbild", "Erlaubte Bildformate: .jepg, .jpg, .png. Dateiupload wird nicht unterstützt.", profilepicture.build() )
+                Label.of("Profilbild", String.format("Erlaubte Bildformate: %s. Dateiupload wird nicht unterstützt.", String.join(", ", ALLOWED_DATATYPES)), profilepicture.build() )
         );
     }
 
@@ -91,7 +96,6 @@ public class AddProfileModal extends Modal {
             isEditMode = true;
         } catch (InvalidStateException e) {
             // ignore missing argument
-            log.info(e.getMessage());
         }
 
         String id = isEditMode ? profile.profileId() : UUID.randomUUID().toString();
@@ -99,14 +103,13 @@ public class AddProfileModal extends Modal {
         String proxy = null;
         if (event.getValue("proxy") != null) {
             proxy = event.getValue("proxy").getAsString().trim();
+            validateProxy(event.getMember(), proxy, profile);
         }
 
         String imageUrl = null;
         if (event.getValue("profilepicture-url") != null) {
             imageUrl = event.getValue("profilepicture-url").getAsString().trim();
-            if (!imageUrl.isBlank() && !imageUrl.endsWith(".jpeg") && !imageUrl.endsWith(".jpg") && !imageUrl.endsWith(".png")) {
-                throw new InvalidStateException("Profilbild konnte nicht definiert werden.", "Dateiformat muss `.jpeg`, `.jpg` oder `.png` sein.");
-            }
+            validateUrl(imageUrl);
         }
 
         Profile newProfile = new Profile(id, event.getMember(), profilename, false, imageUrl, proxy);
@@ -116,5 +119,48 @@ public class AddProfileModal extends Modal {
             ProfileRepository.createProfile(newProfile);
         }
         event.reply(String.format("✅ Das Profil \"%s\" wurde erfolgreich %s.\n-# Wende es mit </profile show:1542519831729934447> an.",  profilename, isEditMode ? "aktualisiert" : "erstellt")).setEphemeral(true).queue();
+    }
+
+    /**
+     * Validates the given image URL
+     * <p>
+     *     This uses the {@link #ALLOWED_DATATYPES} to check whether the URL ends with an allowed datatype
+     * </p>
+     * <p>
+     *     If the URL is NOT valid, it throws an {@link InvalidStateException}, else it does nothing
+     * </p>
+     * @param url
+     */
+    private void validateUrl(@NonNull String url) {
+        if (!url.isBlank() && !url.endsWith(".jpeg") && !url.endsWith(".jpg") && !url.endsWith(".png")) {
+            throw new InvalidStateException("Profilbild konnte nicht definiert werden.", String.format("Dateiformat muss %s sein.", String.join(", ", ALLOWED_DATATYPES)));
+        }
+    }
+
+    /**
+     * Validates the proxy
+     * <p>
+     *     Aslong as the proxy was defined, it checks for an existing proxy of that member with the same name. The same parent-account can not have multiple profiles with the same proxy<br>
+     *     If a profile is beeing edited, this is taken account for by removing the editing account from the linked profiles of the parent account
+     * </p>
+     * <p>
+     *     If there are any conflicting proxies, it throws an {@link InvalidStateException}, else it does nothing
+     * </p>
+     * @param proxy
+     */
+    private void validateProxy(Member member, @NonNull String proxy, @Nullable Profile editingProfile) throws SQLException, ClassNotFoundException {
+        if (!proxy.isBlank()) {
+            List<Profile> linkedProfiles = ProfileRepository.getProfilesFromAccount(member);
+            List<Profile> conflictingProfile = linkedProfiles.stream().filter(profile -> {
+                if (editingProfile != null) {
+                    return profile.proxy().equals(proxy) && !profile.profileId().equals(editingProfile.profileId());
+                }
+                return profile.proxy().equals(proxy);
+            }).toList();
+            if (!conflictingProfile.isEmpty()) {
+                String stringConflicts = String.join(", ", conflictingProfile.stream().map(Profile::name).toList());
+                throw new InvalidStateException(String.format("Proxy `%s` kann nicht gesetzt werden.", proxy), String.format("Diese Proxy wird bereits von %s verwendet.", stringConflicts));
+            }
+        }
     }
 }

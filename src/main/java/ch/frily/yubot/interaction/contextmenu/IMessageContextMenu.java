@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEven
 import net.dv8tion.jda.api.interactions.commands.Command;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.SQLException;
+
 public interface IMessageContextMenu extends IContextMenu{
 
     /**
@@ -18,6 +20,6 @@ public interface IMessageContextMenu extends IContextMenu{
         return Command.Type.MESSAGE;
     }
 
-    void execute(@NotNull MessageContextInteractionEvent event);
+    void execute(@NotNull MessageContextInteractionEvent event) throws SQLException, ClassNotFoundException;
 
 }
