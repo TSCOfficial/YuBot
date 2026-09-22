@@ -97,10 +97,10 @@ public class EnvResolver {
             return CompletableFuture.failedFuture(new IllegalArgumentException("Channel not found"));
         }
         return channel.retrieveMessageById(messageId)
-                .submit()  // ✅ führt die Action aus und gibt CompletableFuture zurück
+                .submit()
                 .whenComplete((message, error) -> {
                     if (error != null) {
-                        log.error("retrieveMessageById fehlgeschlagen: {}", error.getMessage());
+                        log.error("retrieveMessageById failed for message '{}' in channel '{}': {}", messageId, channelId, error.getMessage());
                     }
                 });
     }

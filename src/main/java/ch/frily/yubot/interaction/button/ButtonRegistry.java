@@ -6,6 +6,7 @@ import ch.frily.yubot.interaction.button.btn.*;
 import ch.frily.yubot.interaction.button.btn.absence.*;
 import ch.frily.yubot.interaction.button.btn.activemod.*;
 import ch.frily.yubot.interaction.button.btn.profile.AddProfileBtn;
+import ch.frily.yubot.interaction.button.btn.profile.EditProfileBtn;
 import ch.frily.yubot.interaction.button.btn.profile.UseProfileBtn;
 import ch.frily.yubot.interaction.button.btn.ticket.*;
 import ch.frily.yubot.util.Util;
@@ -62,7 +63,8 @@ public class ButtonRegistry {
                 new ActiveModOptOutBtn(),
                 new ActiveModShowStatisticBtn(),
                 new AddProfileBtn(),
-                new UseProfileBtn()
+                new UseProfileBtn(),
+                new EditProfileBtn()
         );
         rawButtons.forEach(btn -> {
             String idOrUrl = btn.getId();

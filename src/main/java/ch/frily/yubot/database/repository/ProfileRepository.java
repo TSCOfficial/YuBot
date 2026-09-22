@@ -7,6 +7,7 @@ import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.feature.profile.Profile;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
 
 import java.sql.ResultSet;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 public class ProfileRepository {
 
     public static Profile getProfileById(String id) throws SQLException, ClassNotFoundException {
@@ -97,6 +99,7 @@ public class ProfileRepository {
     }
 
     public static void updateProfile(Profile profile)  throws SQLException, ClassNotFoundException {
+        log.info("Updating profile '{}'", profile.profileId());
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
         query.where(Table.ProfileColumn.PROFILE_ID, DatabaseQuery.Operator.EQUALS, profile.profileId());
         query.update(Table.ProfileColumn.NAME, profile.name());
@@ -104,6 +107,7 @@ public class ProfileRepository {
         query.update(Table.ProfileColumn.PROFILEPICTURE, profile.profilePicture());
         query.update(Table.ProfileColumn.PROXY, profile.proxy());
         query.executeQuery();
+        log.info("Profile '{}' updated", profile.profileId());
     }
 
     private static void updateProfileUsage(Profile profile, boolean isInUse)  throws SQLException, ClassNotFoundException {

@@ -8,6 +8,7 @@ import ch.frily.yubot.feature.setting.Settings;
 import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.feature.setting.Setting;
 import ch.frily.yubot.interaction.button.btn.profile.AddProfileBtn;
+import ch.frily.yubot.interaction.button.btn.profile.EditProfileBtn;
 import ch.frily.yubot.interaction.button.btn.profile.UseProfileBtn;
 import ch.frily.yubot.interaction.select.ISelect;
 import ch.frily.yubot.interaction.select.select.ProfileUseSelect;
@@ -103,6 +104,12 @@ public class ProfilContainer extends Container {
             List<Button> profileControl = new ArrayList<>();
             if (!linkedProfiles.isEmpty()) {
                 profileControl.add(useProfileBtn.build());
+
+                if (profile != null) {
+                    EditProfileBtn editProfileBtn = new EditProfileBtn();
+                    editProfileBtn.addArgument("p", profile.profileId());
+                    profileControl.add(editProfileBtn.build());
+                }
             }
             profileControl.add(new AddProfileBtn().build()); // only show when "DIS"-role?
 
@@ -127,7 +134,7 @@ public class ProfilContainer extends Container {
                 } else {
                     addFormatedText("""
                             Du hast zu viele Profile (%d). Discord limitiert die Select-Auswahl auf %d Optionen.
-                            -# Verwende </profile show:1542519831729934447>.
+                            -# Wende </profile show:1542519831729934447>, mit dem "profil"-Argument an, um ein spezifisches Profil anzusehen.
                             """, linkedProfiles.size() + 1, ISelect.MAX_SELECT_OPTIONS);
                 }
 
