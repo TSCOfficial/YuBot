@@ -148,7 +148,7 @@ public class SlashCommandRegistry {
 
         AutoCompleteQuery focusedOptionName = event.getFocusedOption();
         List<Command.Choice> choices = command.getAutocomplete(event).getOrDefault(focusedOptionName.getName(), List.of())
-                .stream().filter(choice -> choice.getName().toLowerCase().startsWith(focusedOptionName.getValue().toLowerCase())).toList();
+                .stream().filter(choice -> choice.getName().toLowerCase().contains(focusedOptionName.getValue().toLowerCase())).toList();
 
         event.replyChoices(choices.stream().limit(25).toList()).queue();
     }
