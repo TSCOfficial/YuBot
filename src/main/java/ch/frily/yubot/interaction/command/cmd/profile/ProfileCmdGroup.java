@@ -16,7 +16,8 @@ public class ProfileCmdGroup implements ISlashCommandGroup {
         return List.of(
             new ProfileShowCmd(),
             new ProfileSettingCmd(),
-            new ProfileUseCmd()
+            new ProfileUseCmd(),
+            new ProfileListCmd()
         );
     }
 }

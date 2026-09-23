@@ -95,8 +95,6 @@ public class ProfilContainer extends Container {
             }
             addTextDisplay(buildSettingsText());
 
-            addLineSeparator(Separator.Spacing.SMALL);
-
             UseProfileBtn useProfileBtn = new UseProfileBtn();
             if (profileIsAlreadyInUse) {
                 useProfileBtn.disable(true);
@@ -105,6 +103,7 @@ public class ProfilContainer extends Container {
             }
 
             List<Button> profileControl = new ArrayList<>();
+            // use & edit profile
             if (!linkedProfiles.isEmpty()) {
                 profileControl.add(useProfileBtn.build());
 
@@ -114,17 +113,19 @@ public class ProfilContainer extends Container {
                     profileControl.add(editProfileBtn.build());
                 }
             }
+            // add new profile btn
             if (Util.isPermitted(member, Stream.of(EnvKey.ROLE_DIDSYSTEM).map(EnvResolver::getRoleById).toList())) {
                 profileControl.add(new AddProfileBtn().build());
             }
 
             if (!profileControl.isEmpty()) {
+                addLineSeparator(Separator.Spacing.SMALL);
                 addComponent(
                         ActionRow.of(profileControl)
                 );
             }
 
-
+            // profile select
             if (!linkedProfiles.isEmpty()) {
                 ProfileUseSelect profileUseSelect = new ProfileUseSelect();
                 profileUseSelect.setMember(member);
