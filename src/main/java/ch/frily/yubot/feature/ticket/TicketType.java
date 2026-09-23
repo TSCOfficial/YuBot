@@ -182,12 +182,21 @@ public enum TicketType {
             TicketTypeGroup.BEWERBUNG,
             List.of(EnvKey.ROLE_EVENTLEITUNG)
     ),
-    BEWERBUNG_SOCIALMEDIA(
-            "besm",
-            "🎬 Fachbereich Social Media",
-            "Bewerbung Fachbereich Social Media",
+    BEWERBUNG_DESIGN(
+            "bedes",
+            "🎨 Fachbereich Design",
+            "Bewerbung Fachbereich Design (16+)",
             """
-                    *Dieser Text ist noch nicht vorhanden*
+                    Bitte verfasse deine Bewerbung. Für deine Bewerbung ist uns Folgendes wichtig::
+                    
+                    - Kurze Vorstellung (Name, Alter, Pronomen, ...)
+                    - Warum möchtest du Teil des Designteams werden?
+                    - Deine zeitliche Verfügbarkeit
+                    - Bisherige Erfahrungen in dem Bereich
+                    - 2-3 digitale Zeichnungen/Designs, die uns Einblick in euer Stil geben
+                    Du kannst gerne mehr schreiben!
+                    
+                    Sobald du deine Bewerbung geschrieben hast, meldet sich die zuständige Person bei dir.
                     """,
             TicketTypeGroup.BEWERBUNG,
             List.of(EnvKey.ROLE_SERVERLEITUNG)
