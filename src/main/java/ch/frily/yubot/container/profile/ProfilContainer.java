@@ -74,8 +74,8 @@ public class ProfilContainer extends Container {
         try {
             Optional<Profile> currentProfile = ProfileRepository.getCurrentUserProfile(member);
             List<Profile> linkedProfiles = ProfileRepository.getProfilesFromAccount(member);
-            boolean profileIsAlreadyInUse = (profile != null && currentProfile.isPresent() && Objects.equals(currentProfile.get().profileId(), profile.profileId()))
-                    || profile == null && !linkedProfiles.isEmpty();
+            log.info("profile: {}", profile);
+            boolean profileIsAlreadyInUse = profile != null && currentProfile.isPresent() && Objects.equals(currentProfile.get().profileId(), profile.profileId());
 
             if (profile != null) {
                 String proxy = !profile.proxy().isBlank() ? " (" + profile.proxy() + ")" : "";
