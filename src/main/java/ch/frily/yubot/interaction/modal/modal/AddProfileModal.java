@@ -112,7 +112,10 @@ public class AddProfileModal extends Modal {
             validateUrl(imageUrl);
         }
 
-        Profile newProfile = new Profile(id, event.getMember(), profilename, false, imageUrl, proxy);
+        int useCount = profile != null ? profile.useCount() : 0;
+        boolean isInUse = profile != null ? profile.isCurrentlyUsed() : false;
+
+        Profile newProfile = new Profile(id, event.getMember(), profilename, isInUse, imageUrl, proxy, useCount);
         if (isEditMode) {
             ProfileRepository.updateProfile(newProfile);
         } else {

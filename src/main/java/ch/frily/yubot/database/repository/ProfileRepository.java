@@ -31,10 +31,11 @@ public class ProfileRepository {
             boolean isCurrentlyUsed = rs.getBoolean(Table.ProfileColumn.IS_CURRENTLY_USED.getColumn());
             String profilePicture = rs.getString(Table.ProfileColumn.PROFILEPICTURE.getColumn());
             String proxy = rs.getString(Table.ProfileColumn.PROXY.getColumn());
+            int useCount = rs.getInt(Table.ProfileColumn.USE_COUNT.getColumn());
 
             Member member = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getMemberById(memberId);
 
-            return new Profile(profileId, member, name, isCurrentlyUsed, profilePicture, proxy);
+            return new Profile(profileId, member, name, isCurrentlyUsed, profilePicture, proxy, useCount);
         }
         throw new NotFoundException(String.format("Profil mit ID '%s' nicht gefunden.", id));
     }
@@ -51,10 +52,11 @@ public class ProfileRepository {
             boolean isCurrentlyUsed = rs.getBoolean(Table.ProfileColumn.IS_CURRENTLY_USED.getColumn());
             String profilePicture = rs.getString(Table.ProfileColumn.PROFILEPICTURE.getColumn());
             String proxy = rs.getString(Table.ProfileColumn.PROXY.getColumn());
+            int useCount = rs.getInt(Table.ProfileColumn.USE_COUNT.getColumn());
 
             Member member = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getMemberById(memberId);
 
-            return new Profile(profileId, member, name, isCurrentlyUsed, profilePicture, proxy);
+            return new Profile(profileId, member, name, isCurrentlyUsed, profilePicture, proxy, useCount);
         }
         throw new NotFoundException(String.format("Profil mit Namen '%s' nicht gefunden.", profileName));
     }
@@ -72,8 +74,9 @@ public class ProfileRepository {
             boolean isCurrentlyUsed = rs.getBoolean(Table.ProfileColumn.IS_CURRENTLY_USED.getColumn());
             String profilePicture = rs.getString(Table.ProfileColumn.PROFILEPICTURE.getColumn());
             String proxy = rs.getString(Table.ProfileColumn.PROXY.getColumn());
+            int useCount = rs.getInt(Table.ProfileColumn.USE_COUNT.getColumn());
 
-            profiles.add(new Profile(profileId, member, name, isCurrentlyUsed, profilePicture, proxy));
+            profiles.add(new Profile(profileId, member, name, isCurrentlyUsed, profilePicture, proxy, useCount));
         }
 
         return profiles;
@@ -97,9 +100,16 @@ public class ProfileRepository {
         query.insert(Table.ProfileColumn.IS_CURRENTLY_USED, profile.isCurrentlyUsed());
         query.insert(Table.ProfileColumn.PROFILEPICTURE, profile.profilePicture());
         query.insert(Table.ProfileColumn.PROXY, profile.proxy());
+        query.insert(Table.ProfileColumn.USE_COUNT, profile.useCount());
         query.executeQuery();
     }
 
+    /**
+     * Select a profile and automaticly deselect any other profile
+     * @param selectedProfile
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
     public static void selectProfile(Profile selectedProfile) throws SQLException, ClassNotFoundException {
 
         // clear profile usage from all member's profile
@@ -110,6 +120,15 @@ public class ProfileRepository {
         updateProfileUsage(selectedProfile, true);
     }
 
+    /**
+     * Unselect all profiles of a member
+     * <p>
+     *     This sets the "is in use" flag to false for every profile linked to the member's account
+     * </p>
+     * @param member
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
     public static void unselectProfiles(Member member) throws SQLException, ClassNotFoundException {
         getProfilesFromAccount(member).forEach(profile -> {
             try {
@@ -127,13 +146,28 @@ public class ProfileRepository {
         query.update(Table.ProfileColumn.IS_CURRENTLY_USED, profile.isCurrentlyUsed());
         query.update(Table.ProfileColumn.PROFILEPICTURE, profile.profilePicture());
         query.update(Table.ProfileColumn.PROXY, profile.proxy());
+        query.update(Table.ProfileColumn.USE_COUNT, profile.useCount());
         query.executeQuery();
     }
 
+    /**
+     * Markes a profile as in use or not in use
+     * <p>
+     *     If the profile is set to use, the use count of given profile is incremented
+     * </p>
+     * @param profile
+     * @param isInUse
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
     private static void updateProfileUsage(Profile profile, boolean isInUse)  throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
         query.where(Table.ProfileColumn.PROFILE_ID, DatabaseQuery.Operator.EQUALS, profile.profileId());
         query.update(Table.ProfileColumn.IS_CURRENTLY_USED, isInUse);
+
+        if (isInUse) {
+            query.update(Table.ProfileColumn.USE_COUNT, profile.useCount() + 1);
+        }
         query.executeQuery();
     }
 }

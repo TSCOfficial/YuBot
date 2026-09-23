@@ -75,13 +75,17 @@ public class ProfilContainer extends Container {
         try {
             Optional<Profile> currentProfile = ProfileRepository.getCurrentUserProfile(member);
             List<Profile> linkedProfiles = ProfileRepository.getProfilesFromAccount(member);
-            boolean profileIsAlreadyInUse = profile != null && currentProfile.isPresent() && Objects.equals(currentProfile.get().profileId(), profile.profileId());
+            boolean profileIsAlreadyInUse = (profile != null && currentProfile.isPresent() && Objects.equals(currentProfile.get().profileId(), profile.profileId()))
+                    || profile == null && !linkedProfiles.isEmpty();
 
             if (profile != null) {
                 String proxy = !profile.proxy().isBlank() ? " (" + profile.proxy() + ")" : "";
-                addFormatedText("# %s's Profil %s%s", profile.name(), proxy, profileIsAlreadyInUse ? ACTIVE_TAG : "");
+                addFormatedText("# %s's Profil %s %s", profile.name(), proxy, profileIsAlreadyInUse ? ACTIVE_TAG : "");
             } else {
-                addFormatedText("# %s's Profil", member.getEffectiveName());
+                addFormatedText("# %s %s", member.getEffectiveName(), profileIsAlreadyInUse ? ACTIVE_TAG : "");
+                if (!linkedProfiles.isEmpty()) {
+                    addTextDisplay("-# Standardprofil");
+                }
             }
 
 

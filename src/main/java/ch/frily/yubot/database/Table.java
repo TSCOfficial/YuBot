@@ -132,7 +132,8 @@ public enum Table {
         NAME("name"),
         IS_CURRENTLY_USED("is_currently_used"),
         PROFILEPICTURE("profilepicture"),
-        PROXY("proxy");
+        PROXY("proxy"),
+        USE_COUNT("use_count"),;
         private final String column;
     }
 
