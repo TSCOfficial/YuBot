@@ -200,7 +200,7 @@ public enum TicketType {
                     """,
             TicketTypeGroup.BEWERBUNG,
             List.of(EnvKey.ROLE_SERVERLEITUNG)
-    );;
+    );
 
 
     @Getter

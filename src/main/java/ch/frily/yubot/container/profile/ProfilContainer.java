@@ -228,7 +228,7 @@ public class ProfilContainer extends Container {
                 .thenCompose(picture -> picture != null
                         ? CompletableFuture.completedFuture(picture)
                         : ImageFetcher.fetch(getProfilePicture(true)))
-                .exceptionallyCompose(e -> {
+                .exceptionallyCompose(_ -> {
                     return ImageFetcher.fetch(getProfilePicture(true));
                 });
     }

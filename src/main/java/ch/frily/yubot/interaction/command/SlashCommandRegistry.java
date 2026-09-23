@@ -9,6 +9,7 @@ import ch.frily.yubot.interaction.command.cmd.ticket.TicketCmdGroup;
 import ch.frily.yubot.util.Util;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
@@ -21,7 +22,6 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class SlashCommandRegistry {
@@ -130,7 +130,7 @@ public class SlashCommandRegistry {
 
         // Check if user is allowed to execute command
         if (!Util.isAdministrator(event.getMember()) && !command.getAllowedRoles().isEmpty() && command.getAllowedRoles().stream().noneMatch(role -> event.getMember().getRoles().contains(role))) {
-            throw new PermissionDeniedException(String.format("Nur Mitglieder\\*innen mit einer der folgenden Rollen können diesen Befehl ausführen: %s", String.join(", ", command.getAllowedRoles().stream().map(role -> role.getAsMention()).toList())));
+            throw new PermissionDeniedException(String.format("Nur Mitglieder\\*innen mit einer der folgenden Rollen können diesen Befehl ausführen: %s", String.join(", ", command.getAllowedRoles().stream().map(IMentionable::getAsMention).toList())));
         }
 
         command.execute(event);
