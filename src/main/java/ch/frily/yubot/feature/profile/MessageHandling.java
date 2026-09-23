@@ -36,10 +36,11 @@ public class MessageHandling {
 
             useProfile.ifPresent(profile -> {
                 Icon icon = null;
-                try {
-                    icon = new ImageProxy(profile.profilePicture()).downloadAsIcon().get();
-                } catch (InterruptedException | ExecutionException e) {
-                    ExceptionHandler.handle(e);
+                if (!profile.profilePicture().isBlank()) {
+                    try {
+                        icon = new ImageProxy(profile.profilePicture()).downloadAsIcon().get();
+                    } catch (InterruptedException | ExecutionException _) {
+                    }
                 }
 
                 originalMessage.getChannel().asTextChannel().createWebhook(profile.name()).setAvatar(icon).queue(webhook -> {

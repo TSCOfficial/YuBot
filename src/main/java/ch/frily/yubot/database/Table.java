@@ -15,6 +15,7 @@ public enum Table {
     ABSENCE("absence", AbsenceColumn.class),
     SETTING("setting", SettingColumn.class),
     PROFILE("profile", ProfileColumn.class),
+    PROFILE_HISTORY("profile_history", ProfileHistoryColumn.class),
     EVENT_REMINDER("event_reminder", EventReminderColumn.class);
 
     private final String table;
@@ -128,12 +129,25 @@ public enum Table {
     @RequiredArgsConstructor
     public enum ProfileColumn implements Column {
         PROFILE_ID("profile_id"),
-        ACCOUNT_ID("parent_id"),
+        PARENT_ID("parent_id"),
         NAME("name"),
         IS_CURRENTLY_USED("is_currently_used"),
         PROFILEPICTURE("profilepicture"),
         PROXY("proxy"),
         USE_COUNT("use_count"),;
+        private final String column;
+    }
+
+    // PROFILE HISTORY
+    @Getter
+    @RequiredArgsConstructor
+    public enum ProfileHistoryColumn implements Column {
+        ID("id"),
+        PROFILE_ID("profile_id"),
+        PARENT_ID("parent_id"),
+        PREVIOUS_NAME("previous_name"),
+        NEW_NAME("new_name"),
+        CREATED_AT("created_at");
         private final String column;
     }
 

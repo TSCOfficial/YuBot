@@ -2,7 +2,6 @@ package ch.frily.yubot.database.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
-import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.feature.profile.Profile;
 import ch.frily.yubot.util.EnvKey;
@@ -28,7 +27,7 @@ public class ProfileRepository {
 
         if (rs.next()) {
             String profileId = rs.getString(Table.ProfileColumn.PROFILE_ID.getColumn());
-            String memberId = rs.getString(Table.ProfileColumn.ACCOUNT_ID.getColumn());
+            String memberId = rs.getString(Table.ProfileColumn.PARENT_ID.getColumn());
             String name = rs.getString(Table.ProfileColumn.NAME.getColumn());
             boolean isCurrentlyUsed = rs.getBoolean(Table.ProfileColumn.IS_CURRENTLY_USED.getColumn());
             String profilePicture = rs.getString(Table.ProfileColumn.PROFILEPICTURE.getColumn());
@@ -49,7 +48,7 @@ public class ProfileRepository {
 
         if (rs.next()) {
             String profileId = rs.getString(Table.ProfileColumn.PROFILE_ID.getColumn());
-            String memberId = rs.getString(Table.ProfileColumn.ACCOUNT_ID.getColumn());
+            String memberId = rs.getString(Table.ProfileColumn.PARENT_ID.getColumn());
             String name = rs.getString(Table.ProfileColumn.NAME.getColumn());
             boolean isCurrentlyUsed = rs.getBoolean(Table.ProfileColumn.IS_CURRENTLY_USED.getColumn());
             String profilePicture = rs.getString(Table.ProfileColumn.PROFILEPICTURE.getColumn());
@@ -66,7 +65,7 @@ public class ProfileRepository {
 
     public static List<Profile> getProfilesFromAccount(Member member) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
-        query.where(Table.ProfileColumn.ACCOUNT_ID, DatabaseQuery.Operator.EQUALS, member.getId());
+        query.where(Table.ProfileColumn.PARENT_ID, DatabaseQuery.Operator.EQUALS, member.getId());
         ResultSet rs = query.executeDataQuery();
 
         List<Profile> profiles = new ArrayList<>();
@@ -97,7 +96,7 @@ public class ProfileRepository {
     public static void createProfile(Profile profile) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
         query.insert(Table.ProfileColumn.PROFILE_ID, profile.profileId());
-        query.insert(Table.ProfileColumn.ACCOUNT_ID, profile.parentAccount().getId());
+        query.insert(Table.ProfileColumn.PARENT_ID, profile.parentAccount().getId());
         query.insert(Table.ProfileColumn.NAME, profile.name());
         query.insert(Table.ProfileColumn.IS_CURRENTLY_USED, profile.isCurrentlyUsed());
         query.insert(Table.ProfileColumn.PROFILEPICTURE, profile.profilePicture());
@@ -142,6 +141,8 @@ public class ProfileRepository {
     }
 
     public static void updateProfile(Profile profile)  throws SQLException, ClassNotFoundException {
+        recordToHistory(profile);
+
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
         query.where(Table.ProfileColumn.PROFILE_ID, DatabaseQuery.Operator.EQUALS, profile.profileId());
         query.update(Table.ProfileColumn.NAME, profile.name());
@@ -176,5 +177,13 @@ public class ProfileRepository {
     public static List<Profile> orderByUsage(List<Profile> profiles) {
         List<Profile> sorted = profiles.stream().sorted(Comparator.comparingInt(Profile::useCount)).toList().reversed();
         return sorted;
+    }
+
+    private static void recordToHistory(Profile newProfile) throws SQLException, ClassNotFoundException {
+        Profile oldProfile = getProfileById(newProfile.profileId());
+
+        if (!oldProfile.name().equals(newProfile.name())) {
+            ProfileHistoryRepository.create(oldProfile, newProfile);
+        }
     }
 }
