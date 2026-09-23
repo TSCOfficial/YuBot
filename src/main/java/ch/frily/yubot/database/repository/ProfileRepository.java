@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.Member;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +23,7 @@ public class ProfileRepository {
     public static Profile getProfileById(String id) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
         query.where(Table.ProfileColumn.PROFILE_ID, DatabaseQuery.Operator.EQUALS, id);
+        query.orderBy(Table.ProfileColumn.NAME, DatabaseQuery.OrderBy.ASCENDED);
         ResultSet rs = query.executeDataQuery();
 
         if (rs.next()) {
@@ -169,5 +171,10 @@ public class ProfileRepository {
             query.update(Table.ProfileColumn.USE_COUNT, profile.useCount() + 1);
         }
         query.executeQuery();
+    }
+
+    public static List<Profile> orderByUsage(List<Profile> profiles) {
+        List<Profile> sorted = profiles.stream().sorted(Comparator.comparingInt(Profile::useCount)).toList().reversed();
+        return sorted;
     }
 }

@@ -12,9 +12,7 @@ import ch.frily.yubot.interaction.button.btn.profile.EditProfileBtn;
 import ch.frily.yubot.interaction.button.btn.profile.UseProfileBtn;
 import ch.frily.yubot.interaction.select.ISelect;
 import ch.frily.yubot.interaction.select.select.ProfileUseSelect;
-import ch.frily.yubot.util.BannerResolver;
-import ch.frily.yubot.util.ImageFetcher;
-import ch.frily.yubot.util.ProfileImageComposer;
+import ch.frily.yubot.util.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +34,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.stream.Stream;
 
 @Slf4j
 public class ProfilContainer extends Container {
@@ -115,7 +114,9 @@ public class ProfilContainer extends Container {
                     profileControl.add(editProfileBtn.build());
                 }
             }
-            profileControl.add(new AddProfileBtn().build()); // only show when "DIS"-role?
+            if (Util.isPermitted(member, Stream.of(EnvKey.ROLE_DIDSYSTEM).map(EnvResolver::getRoleById).toList())) {
+                profileControl.add(new AddProfileBtn().build());
+            }
 
             if (!profileControl.isEmpty()) {
                 addComponent(
@@ -125,23 +126,19 @@ public class ProfilContainer extends Container {
 
 
             if (!linkedProfiles.isEmpty()) {
-                if (linkedProfiles.size() + 1 <= ISelect.MAX_SELECT_OPTIONS) { // +1 because of the default account-"profile"
-                    ProfileUseSelect profileUseSelect = new ProfileUseSelect();
-                    profileUseSelect.setMember(member);
-                    profileUseSelect.setProfile(profile);
+                ProfileUseSelect profileUseSelect = new ProfileUseSelect();
+                profileUseSelect.setMember(member);
+                profileUseSelect.setProfile(profile);
 
-                    addComponent(
-                            ActionRow.of(
-                                    profileUseSelect.build()
-                            )
-                    );
-                } else {
-                    addFormatedText("""
-                            Du hast zu viele Profile (%d). Discord limitiert die Select-Auswahl auf %d Optionen.
-                            -# Wende </profile show:1542519831729934447>, mit dem "profil"-Argument an, um ein spezifisches Profil anzusehen.
-                            """, linkedProfiles.size() + 1, ISelect.MAX_SELECT_OPTIONS);
+                addComponent(
+                        ActionRow.of(
+                                profileUseSelect.build()
+                        )
+                );
+
+                if (linkedProfiles.size() >= ISelect.MAX_SELECT_OPTIONS - 1) { // -1 because of the default profile in the selection
+                    addFormatedText("-# Es können nur 25 Optionen angezeigt werden. Verwende </profile show:1542519831729934447> um ein spezifisches Profil anzusehen.");
                 }
-
             }
 
 

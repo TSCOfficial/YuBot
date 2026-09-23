@@ -42,6 +42,7 @@ public class ProfileShowCmd implements ISlashSubcommand {
     @Override
     public Map<String, List<Command.Choice>> getAutocomplete(CommandAutoCompleteInteractionEvent event) throws SQLException, ClassNotFoundException {
         List<Profile> existingProfiles = ProfileRepository.getProfilesFromAccount(event.getMember());
+        existingProfiles = ProfileRepository.orderByUsage(existingProfiles).stream().limit(MAX_CHOICES - 1).toList(); // -1 because of default profile
         if (existingProfiles.isEmpty()) {
             return Map.of();
         } else {

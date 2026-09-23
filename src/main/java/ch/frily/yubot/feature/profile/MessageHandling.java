@@ -1,14 +1,18 @@
 package ch.frily.yubot.feature.profile;
 
 import ch.frily.yubot.database.repository.ProfileRepository;
+import ch.frily.yubot.exception.ExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.ImageProxy;
 
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -19,8 +23,8 @@ import java.util.stream.Collectors;
 public class MessageHandling {
     public static void handleIncomingMessage(Message originalMessage) throws SQLException, ClassNotFoundException {
         List<Profile> existingProfiles = ProfileRepository.getProfilesFromAccount(originalMessage.getMember());
-        if (existingProfiles.size() > 0) {
-            Optional<Profile> useProfile = existingProfiles.stream().filter(profile -> profile.isCurrentlyUsed()).findFirst();
+        if (!existingProfiles.isEmpty()) {
+            Optional<Profile> useProfile = existingProfiles.stream().filter(Profile::isCurrentlyUsed).findFirst();
             Optional<Profile> proxyProfile = handleProxy(originalMessage);
             boolean usesProxy;
             if (proxyProfile.isPresent()) {
@@ -31,7 +35,14 @@ public class MessageHandling {
             }
 
             useProfile.ifPresent(profile -> {
-                originalMessage.getChannel().asTextChannel().createWebhook(profile.name()).queue(webhook -> {
+                Icon icon = null;
+                try {
+                    icon = new ImageProxy(profile.profilePicture()).downloadAsIcon().get();
+                } catch (InterruptedException | ExecutionException e) {
+                    ExceptionHandler.handle(e);
+                }
+
+                originalMessage.getChannel().asTextChannel().createWebhook(profile.name()).setAvatar(icon).queue(webhook -> {
                     // send message
                     StringBuilder messageContentSB = new StringBuilder();
                     MessageReference originalMsgRef = originalMessage.getMessageReference();

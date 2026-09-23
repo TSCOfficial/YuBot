@@ -15,6 +15,9 @@ import java.util.Map;
 
 public interface ISlashCommand {
 
+    // The maximum allowed choices for arguments
+    int MAX_CHOICES = 25;
+
     /**
      * Get the name of a slashcommand.
      *

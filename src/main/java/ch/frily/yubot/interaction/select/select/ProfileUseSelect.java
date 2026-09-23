@@ -21,6 +21,9 @@ import java.util.Optional;
 public class ProfileUseSelect implements IStringSelect {
 
     private static final String DEFAULT_ACCOUNT_KEY = "default-profile";
+    private static final String ACTIVE_TAG =
+            "<:active1:1527044015927721984><:active2:1527044016942616748><:active3:1527044018276536403>";
+
     @Setter
     private Profile profile;
 
@@ -40,13 +43,16 @@ public class ProfileUseSelect implements IStringSelect {
     @Override
     public List<SelectOption> getOptions() {
         try {
-            List<Profile> profiles = ProfileRepository.getProfilesFromAccount(member);
+            List<Profile> profiles = ProfileRepository.getProfilesFromAccount(member); // -1 because of default profile
+            profiles = ProfileRepository.orderByUsage(profiles).stream().limit(MAX_SELECT_OPTIONS - 1).toList();
+
             List<SelectOption> options = new ArrayList<>();
-            profiles.stream().forEach(profile -> {
+            profiles.forEach(profile -> {
                 String proxy = !profile.proxy().isBlank() ? " (" + profile.proxy() + ")" : "";
                 String isInUse = profile.isCurrentlyUsed() ? "🟢 " : "";
                 options.add(SelectOption.of(isInUse + profile.name() + proxy, profile.profileId()));
             });
+
             options.addFirst(SelectOption.of(String.format("Standardprofil (%s)", member.getEffectiveName()), DEFAULT_ACCOUNT_KEY));
             return options;
         } catch (Exception e) {
