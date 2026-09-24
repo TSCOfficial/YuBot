@@ -45,16 +45,6 @@ public class ActiveModTrackingDetailSelect implements IStringSelect {
     }
 
     @Override
-    public Integer getMinValues() {
-        return 1;
-    }
-
-    @Override
-    public Integer getMaxValues() {
-        return 1;
-    }
-
-    @Override
     public List<SelectOption> getOptions() {
         return activeModTrackingMap.entrySet().stream()
                 .filter(entry -> {

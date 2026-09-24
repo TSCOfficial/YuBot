@@ -29,7 +29,7 @@ public class SendEmbedCmd implements ISlashSubcommand {
     public List<OptionData> getOptions() {
         return List.of(
                 new OptionData(OptionType.STRING, "embed", "Wähle eine Einbettung aus", true)
-                        .addChoices(Arrays.stream(StaticEmbedRegistry.values()).map(embed -> {
+                        .addChoices(Arrays.stream(StaticEmbedRegistry.values()).map(embed -> { // replace by autocomplete
                             return new Command.Choice(humanizeEnumName(embed.name()), embed.name());
                         }).toList()
                         )

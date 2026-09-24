@@ -9,8 +9,10 @@ import ch.frily.yubot.interaction.command.cmd.ticket.TicketCmdGroup;
 import ch.frily.yubot.util.Util;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -20,7 +22,6 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class SlashCommandRegistry {
@@ -46,7 +47,8 @@ public class SlashCommandRegistry {
     public void loadCommands() {
         List<ISlashCommand> slashCommands = List.of(
                 new TestCmd(), // tests only
-                new VoiceCheck()
+                new VoiceCheck(),
+                new SayCmd()
         );
 
         List<ISlashCommandGroup> slashCommandGroups = List.of(
@@ -129,13 +131,13 @@ public class SlashCommandRegistry {
 
         // Check if user is allowed to execute command
         if (!Util.isAdministrator(event.getMember()) && !command.getAllowedRoles().isEmpty() && command.getAllowedRoles().stream().noneMatch(role -> event.getMember().getRoles().contains(role))) {
-            throw new PermissionDeniedException(String.format("Nur Mitglieder\\*innen mit einer der folgenden Rollen können diesen Befehl ausführen: %s", String.join(", ", command.getAllowedRoles().stream().map(role -> role.getAsMention()).toList())));
+            throw new PermissionDeniedException(String.format("Nur Mitglieder\\*innen mit einer der folgenden Rollen können diesen Befehl ausführen: %s", String.join(", ", command.getAllowedRoles().stream().map(IMentionable::getAsMention).toList())));
         }
 
         command.execute(event);
     }
 
-    public void dispatchAutocompleteEvent(CommandAutoCompleteInteractionEvent event) {
+    public void dispatchAutocompleteEvent(CommandAutoCompleteInteractionEvent event) throws SQLException, ClassNotFoundException {
         Map<String, ISlashCommand> allSlashCommands = new HashMap<>();
         allSlashCommands.putAll(commands);
         allSlashCommands.putAll(subcommands);
@@ -145,25 +147,10 @@ public class SlashCommandRegistry {
             return;
         }
 
-        String focusedOptionName = event.getFocusedOption().getName();
-        List<?> choices = command.getAutocomplete(event).getOrDefault(focusedOptionName, List.of());
+        AutoCompleteQuery focusedOptionName = event.getFocusedOption();
+        List<Command.Choice> choices = command.getAutocomplete(event).getOrDefault(focusedOptionName.getName(), List.of())
+                .stream().filter(choice -> choice.getName().toLowerCase().contains(focusedOptionName.getValue().toLowerCase())).toList();
 
-        List<Command.Choice> options = choices.stream()
-                .filter(
-                        choice -> choice.toString().startsWith(event.getFocusedOption().getValue()))
-                .map(choice -> {
-                    if (choice instanceof String) {
-                        return new Command.Choice((String) choice, (String) choice);
-                    } else if (choice instanceof Integer) {
-                        return new Command.Choice(choice.toString(), (Integer) choice);
-                    } else if (choice instanceof Double) {
-                        return new Command.Choice(choice.toString(), (Double) choice);
-                    }
-                    return null;
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        event.replyChoices(options).queue();
+        event.replyChoices(choices.stream().limit(25).toList()).queue();
     }
 }

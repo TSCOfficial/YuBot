@@ -2,7 +2,7 @@ package ch.frily.yubot.interaction.command.cmd.activemod;
 
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.activemod.ActiveMod;
-import ch.frily.yubot.database.repository.ProfileRepository;
+import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.interaction.modal.modal.SelectActiveModSendTypeModal;
 import ch.frily.yubot.util.EnvKey;
@@ -35,7 +35,7 @@ public class ActiveModOptInCmd implements ISlashSubcommand {
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
-        if (ProfileRepository.getProfile(event.getMember()) == null || ProfileRepository.getProfile(event.getMember()).activeModSendInDm() == null) {
+        if (SettingRepository.getSettings(event.getMember()) == null || SettingRepository.getSettings(event.getMember()).activeModSendInDm() == null) {
             // If the user does not have set the activeModSendInDm
             event.replyModal(new SelectActiveModSendTypeModal().build()).queue();
             return;
@@ -45,7 +45,7 @@ public class ActiveModOptInCmd implements ISlashSubcommand {
         ActiveMod.registerModerator(event.getMember()).thenAccept(response -> {
             event.getHook().sendMessage(response).setEphemeral(true).queue();
         }).exceptionally(throwable -> {
-            return ExceptionHandler.fail(throwable);
+            return ExceptionHandler.fail(throwable, event);
         });
     }
 }

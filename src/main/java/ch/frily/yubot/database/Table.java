@@ -10,9 +10,13 @@ public enum Table {
     TICKET_TYPE_CONTROL("ticket_type_control", TicketTypeControlColumn.class),
     ACTIVE_MOD("active_mod", ActiveModColumn.class),
     ACTIVE_MOD_TRACKING("active_mod_tracking", ActiveModTrackingColumn.class),
+    ACTIVE_MOD_CONTROL("active_mod_control", ActiveModControlColumn.class),
     DYNAMIC_MESSAGE("dynamic_message", DynamicMessageColumn.class),
     ABSENCE("absence", AbsenceColumn.class),
+    SETTING("setting", SettingColumn.class),
     PROFILE("profile", ProfileColumn.class),
+    PROFILE_HISTORY("profile_history", ProfileHistoryColumn.class),
+    PROFILE_MESSAGE("profile_message", ProfileMessageColumn.class),
     EVENT_REMINDER("event_reminder", EventReminderColumn.class);
 
     private final String table;
@@ -87,6 +91,14 @@ public enum Table {
         private final String column;
     }
 
+    // ACTIVEMOD CONTROL
+    @Getter
+    @RequiredArgsConstructor
+    public enum ActiveModControlColumn implements Column {
+        ALLOW_OPTIN("allow_optin");
+        private final String column;
+    }
+
     // ABSCENCE
     @Getter
     @RequiredArgsConstructor
@@ -103,14 +115,51 @@ public enum Table {
         private final String column;
     }
 
-    // USER-PROFILE
+    // USER-SETTING
     @Getter
     @RequiredArgsConstructor
-    public enum ProfileColumn implements Column {
+    public enum SettingColumn implements Column {
         MEMBER_ID("member_id"),
         ACTIVEMOD_SEND_IN_DM("activemod_send_in_dm"),
         ABSENCE_NOTICE("absence_notice");
         private final String column;
+    }
+
+    // PROFILE
+    @Getter
+    @RequiredArgsConstructor
+    public enum ProfileColumn implements Column {
+        ID("id"),
+        PARENT_ID("parent_id"),
+        NAME("name"),
+        IS_CURRENTLY_USED("is_currently_used"),
+        PROFILEPICTURE("profilepicture"),
+        PROXY("proxy"),
+        USE_COUNT("use_count"),;
+        private final String column;
+    }
+
+    // PROFILE HISTORY
+    @Getter
+    @RequiredArgsConstructor
+    public enum ProfileHistoryColumn implements Column {
+        ID("id"),
+        PROFILE_ID("profile_id"),
+        PARENT_ID("parent_id"),
+        PREVIOUS_NAME("previous_name"),
+        NEW_NAME("new_name"),
+        CREATED_AT("created_at");
+        private final String column;
+    }
+
+    // PROFILE MESSAGE
+    @Getter
+    @RequiredArgsConstructor
+    public enum ProfileMessageColumn implements Column {
+        MESSAGE_ID("message_id"),
+        PROFILE_ID("profile_id"),
+        CHANNEL_ID("channel_id");
+       private final String column;
     }
 
     // EVENT REMINDER

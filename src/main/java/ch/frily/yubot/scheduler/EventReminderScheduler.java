@@ -25,7 +25,7 @@ import java.util.Map;
 public class EventReminderScheduler implements IScheduler{
     @Override
     public String cronExpression() {
-        return "0/15 * * * *"; // 0/15
+        return "* * * * *"; // 0/15
     }
 
     @Override

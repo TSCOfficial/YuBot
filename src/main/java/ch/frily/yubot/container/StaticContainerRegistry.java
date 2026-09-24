@@ -45,7 +45,7 @@ public enum StaticContainerRegistry {
     ABSENCE_EDITOWN(false, ctx -> {
         return new AbsenceEditOwnContainer(ctx).build();
     }),
-    ACTIVE_MOD_CONTROL(true, ctx -> {
+    ACTIVE_MOD_DASHBOARD(true, ctx -> {
         return new ActiveModDashboardContainer(ctx).build();
     });
 

@@ -1,4 +1,4 @@
-package ch.frily.yubot.feature.profile;
+package ch.frily.yubot.feature.setting;
 
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.util.EnvKey;
@@ -6,6 +6,7 @@ import ch.frily.yubot.util.EnvResolver;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Role;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +17,7 @@ public enum Setting {
     ACTIVEMOD_SEND_IN_DM(
             "aktivitätsbestätigungsanfrage",
             "Entscheide wo deine ActiveMod-Nachrichten gesendet werden.",
-            Table.ProfileColumn.ACTIVEMOD_SEND_IN_DM,
+            Table.SettingColumn.ACTIVEMOD_SEND_IN_DM,
             List.of(EnvKey.ROLE_MODERATOR),
             Boolean.class,
             List.of(
@@ -27,7 +28,7 @@ public enum Setting {
     ABSENCE_NOTICE(
             "abwesenheitsmeldung",
             "Nachricht welche bei @Erwähnungen während deiner Absenz gesendet wird.",
-            Table.ProfileColumn.ABSENCE_NOTICE,
+            Table.SettingColumn.ABSENCE_NOTICE,
             List.of(EnvKey.ROLE_YUTEAM, EnvKey.ROLE_TWITCHMOD),
             String.class,
             10,
@@ -45,7 +46,7 @@ public enum Setting {
     @Getter
     List<Role> allowedRoles;
     @Getter
-    List<SettingOption<?>> autocompleteOptions;
+    List<SettingOption> autocompleteOptions = new ArrayList<>();
     /** Minimal allowed characters for a string*/
     @Getter
     int min;
@@ -83,7 +84,7 @@ public enum Setting {
      * @param options Selectable types for that setting in the given dataType
      * @param <T>
      */
-    <T> Setting(String label, String description, Table.Column dbColumn, List<EnvKey> allowedRoles, Class<T> dataType, List<SettingOption<?>> options){
+    <T> Setting(String label, String description, Table.Column dbColumn, List<EnvKey> allowedRoles, Class<T> dataType, List<SettingOption> options){
         this.label = label;
         this.description = description;
         this.dbColumn = dbColumn;
@@ -108,7 +109,7 @@ public enum Setting {
      * @param <T>
      */
     public <T> SettingOption<T> getOptionByLabel(String label, Class<T> dataType) {
-        Optional<SettingOption<?>> option = this.autocompleteOptions.stream()
+        Optional<SettingOption> option = this.autocompleteOptions.stream()
                 .filter(o -> o.label().equals(label))
                 .findFirst();
 
@@ -121,7 +122,7 @@ public enum Setting {
     }
 
     public <T> SettingOption<T> getOptionByValue(T value) {
-        Optional<SettingOption<?>> option = this.autocompleteOptions.stream()
+        Optional<SettingOption> option = this.autocompleteOptions.stream()
                 .filter(o -> o.value().equals(value))
                 .findFirst();
 

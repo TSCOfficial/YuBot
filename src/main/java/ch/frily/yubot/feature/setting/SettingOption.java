@@ -1,4 +1,4 @@
-package ch.frily.yubot.feature.profile;
+package ch.frily.yubot.feature.setting;
 
 import javax.annotation.Nullable;
 

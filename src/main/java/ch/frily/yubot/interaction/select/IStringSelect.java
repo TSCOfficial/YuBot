@@ -1,5 +1,6 @@
 package ch.frily.yubot.interaction.select;
 
+import lombok.Getter;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import org.jetbrains.annotations.NotNull;
@@ -8,12 +9,14 @@ import java.sql.SQLException;
 
 public interface IStringSelect extends ISelect {
 
+    @Override
     default StringSelectMenu build() {
         return StringSelectMenu.create(getId())
                 .setPlaceholder(getPlaceholder())
                 .addOptions(getOptions())
                 .setMinValues(getMinValues())
                 .setMaxValues(getMaxValues())
+                .setDefaultOptions(getDefaultOptions())
                 .build();
     }
 

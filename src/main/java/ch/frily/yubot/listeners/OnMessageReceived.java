@@ -5,8 +5,9 @@ import ch.frily.yubot.feature.absence.Absence;
 import ch.frily.yubot.database.repository.AbsenceRepository;
 import ch.frily.yubot.feature.activemod.Closure;
 import ch.frily.yubot.feature.game.WordChainGame;
-import ch.frily.yubot.database.repository.ProfileRepository;
-import ch.frily.yubot.feature.profile.Setting;
+import ch.frily.yubot.database.repository.SettingRepository;
+import ch.frily.yubot.feature.profile.MessageHandling;
+import ch.frily.yubot.feature.setting.Setting;
 import ch.frily.yubot.feature.ticket.Ticket;
 import ch.frily.yubot.feature.ticket.TicketManager;
 import ch.frily.yubot.database.repository.TicketRepository;
@@ -70,6 +71,9 @@ public class OnMessageReceived extends ListenerAdapter {
                 WordChainGame.handleWord(event);
             }
 
+            // Handle profile webhok messages
+            MessageHandling.handleIncomingMessage(event.getMessage());
+
             // Handle absence notice
             int deleteNoticeDelay = 60; // in seconds
 
@@ -91,7 +95,7 @@ public class OnMessageReceived extends ListenerAdapter {
                         }
 
 
-                        String customAbsenceNotice = ProfileRepository.getSetting(member, Setting.ABSENCE_NOTICE, String.class);
+                        String customAbsenceNotice = SettingRepository.getSetting(member, Setting.ABSENCE_NOTICE, String.class);
                         if (customAbsenceNotice != null) {
                             sb.append(String.format("> -# %s\n", customAbsenceNotice));
                         }

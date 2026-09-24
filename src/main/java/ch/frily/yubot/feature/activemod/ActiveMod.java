@@ -1,10 +1,13 @@
 package ch.frily.yubot.feature.activemod;
 
+import ch.frily.yubot.database.repository.ActiveModControlRepository;
 import ch.frily.yubot.database.repository.ActiveModRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.InvalidStateException;
+import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -15,8 +18,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.concurrent.CompletableFuture;
 
-import static org.reflections.Reflections.log;
-
+@Slf4j
 public record ActiveMod(
         Member member,
         LocalDateTime lastActivityAt,
@@ -25,10 +27,15 @@ public record ActiveMod(
         @Nullable Long requestedAttentionMessageId) {
 
     public static CompletableFuture<String> registerModerator(Member member) throws SQLException, ClassNotFoundException {
-        log.info("ActiveMod registerModerator onlinestatus for {}: {}", member.getEffectiveName(), member.getOnlineStatus());
-        if (member.getOnlineStatus() == OnlineStatus.OFFLINE) {
+        if (!ActiveModControlRepository.isOptInAllowed()) {
             return CompletableFuture.failedFuture(
-                    new InvalidStateException("Du musst als <:status_online:1543868572609159239> Online, <:status_idle:1543868571443265557> Idle oder <:status_dnd:1543868569513623683> Do not disturb markiert sein, um deine Aktivität zu bestätigen.", "Wenn du <:statusoffline:1543871842186567750> offline bist, sehen dich die Leute nicht.")
+                    new PermissionDeniedException("Die Opt-in-Funktion wurde deaktiviert", "Du kannst dich momentan nicht Opt-in stellen.")
+            );
+        }
+        if (member.getOnlineStatus() == OnlineStatus.OFFLINE) {
+            log.info("is offline");
+            return CompletableFuture.failedFuture(
+                    new InvalidStateException("Du musst als <:status_online:1543868572609159239> Online, <:status_idle:1543868571443265557> Idle oder <:status_dnd:1543868569513623683> Do not disturb markiert sein, um Opt-in zu sein.", "Wenn du <:statusoffline:1543871842186567750> offline bist, sehen dich die Leute nicht.")
             );
         }
 

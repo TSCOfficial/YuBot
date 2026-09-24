@@ -1,6 +1,10 @@
 package ch.frily.yubot.interaction.contextmenu;
 
+import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.PermissionDeniedException;
+import ch.frily.yubot.interaction.contextmenu.ctxmenu.DeleteWebhookMsgCtxMenu;
+import ch.frily.yubot.interaction.contextmenu.ctxmenu.EditWebhookMsgCtxMenu;
+import ch.frily.yubot.interaction.contextmenu.ctxmenu.LookupProfileCtxMenu;
 import ch.frily.yubot.interaction.contextmenu.ctxmenu.ModticketCtxMenu;
 import ch.frily.yubot.util.Util;
 import javassist.NotFoundException;
@@ -32,7 +36,10 @@ public class ContextMenuRegistry {
 
     public void loadContextMenus(){
         List<IContextMenu> contextMenus = List.of(
-                new ModticketCtxMenu()
+                new ModticketCtxMenu(),
+                new LookupProfileCtxMenu(),
+                new EditWebhookMsgCtxMenu(),
+                new DeleteWebhookMsgCtxMenu()
         );
 
         contextMenus.forEach(ctxMenu -> this.contextMenus.put(ctxMenu.getName(), ctxMenu));
@@ -77,7 +84,7 @@ public class ContextMenuRegistry {
         } else if (contextMenu instanceof IMessageContextMenu messageContextMenu && event instanceof MessageContextInteractionEvent messageEvent) {
             messageContextMenu.execute(messageEvent);
         } else {
-            throw new IllegalStateException(String.format("Der Typ des Kontextmenüs '%s' passt nicht zum ausgelösten Event.", event.getName()));
+            throw new InvalidStateException(String.format("Der Typ des Kontextmenüs '%s' passt nicht zum ausgelösten Event.", event.getName()));
         }
     }
 }

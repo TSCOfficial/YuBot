@@ -5,7 +5,7 @@ import ch.frily.yubot.feature.activemod.ActiveMod;
 import ch.frily.yubot.database.repository.ActiveModRepository;
 import ch.frily.yubot.database.repository.ActiveModTrackingRepository;
 import ch.frily.yubot.feature.activemod.Closure;
-import ch.frily.yubot.database.repository.ProfileRepository;
+import ch.frily.yubot.database.repository.SettingRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
@@ -29,8 +29,8 @@ public class ActiveModActivityScheduler implements IScheduler {
         outdatedActiveMods.forEach(activeMod -> {
             try {
                 boolean sendInDM = false;
-                if (ProfileRepository.getProfile(activeMod.member()) != null) {
-                    sendInDM = ProfileRepository.getProfile(activeMod.member()).activeModSendInDm();
+                if (SettingRepository.getSettings(activeMod.member()) != null) {
+                    sendInDM = SettingRepository.getSettings(activeMod.member()).activeModSendInDm();
                 }
                 if (sendInDM) {
                     Closure.requestActivityProveViaDM(activeMod);
