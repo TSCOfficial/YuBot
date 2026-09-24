@@ -1,26 +1,33 @@
 package ch.frily.yubot.feature.profile;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.database.repository.ProfileRepository;
-import ch.frily.yubot.exception.ExceptionHandler;
+import ch.frily.yubot.exception.InvalidStateException;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.IWebhookContainerUnion;
+import net.dv8tion.jda.api.managers.WebhookManager;
 import net.dv8tion.jda.api.utils.ImageProxy;
 
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 /**
  * Handles messages according to the existing profiles
  */
 @Slf4j
 public class MessageHandling {
+
+    public static String WEBHOOK_NAME = "YuBot Profile";
+
     public static void handleIncomingMessage(Message originalMessage) throws SQLException, ClassNotFoundException {
         List<Profile> existingProfiles = ProfileRepository.getProfilesFromAccount(originalMessage.getMember());
         if (!existingProfiles.isEmpty()) {
@@ -35,40 +42,89 @@ public class MessageHandling {
             }
 
             useProfile.ifPresent(profile -> {
-                Icon icon = null;
+                var iconRef = new Object() {
+                    Icon icon;
+                };
                 if (!profile.profilePicture().isBlank()) {
                     try {
-                        icon = new ImageProxy(profile.profilePicture()).downloadAsIcon().get();
+                        iconRef.icon = new ImageProxy(profile.profilePicture()).downloadAsIcon().get();
                     } catch (InterruptedException | ExecutionException _) {
+                        iconRef.icon = null;
                     }
+                } else {
+                    iconRef.icon = null;
                 }
 
-                originalMessage.getChannel().asTextChannel().createWebhook(profile.name()).setAvatar(icon).queue(webhook -> {
-                    // send message
-                    StringBuilder messageContentSB = new StringBuilder();
-                    MessageReference originalMsgRef = originalMessage.getMessageReference();
-                    if (originalMsgRef != null &&originalMsgRef.getType() == MessageReference.MessageReferenceType.DEFAULT) {
-                        String shortenedReplyMsg = sanitizeMessage(originalMsgRef.getMessage().getContentRaw());
-                        String repliedToMember = "";
-                        if (originalMsgRef.getMessage().getMember() != null) {
-                            repliedToMember = String.format("**%s** ", originalMsgRef.getMessage().getMember().getEffectiveName());
-                        }
-                        messageContentSB.append(String.format("> -# %s%s [[anzeigen]](%s)\n",repliedToMember, shortenedReplyMsg, originalMsgRef.getMessage().getJumpUrl()));
-                    }
+                fetchOrCreateWebhook(originalMessage.getChannel())
+                    .thenAccept(webhook -> {
+                        WebhookManager webhookManager = webhook.getManager();
+                        webhookManager.setName(profile.name());
+                        webhookManager.setAvatar(iconRef.icon);
+                        webhookManager.queue(_ -> {
+                            // send message
+                            StringBuilder messageContentSB = new StringBuilder();
+                            MessageReference originalMsgRef = originalMessage.getMessageReference();
+                            if (originalMsgRef != null &&originalMsgRef.getType() == MessageReference.MessageReferenceType.DEFAULT) {
+                                String shortenedReplyMsg = sanitizeMessage(originalMsgRef.getMessage().getContentRaw());
+                                String repliedToMember = "";
+                                if (originalMsgRef.getMessage().getMember() != null) {
+                                    repliedToMember = String.format("**%s** ", originalMsgRef.getMessage().getMember().getEffectiveName());
+                                }
+                                messageContentSB.append(String.format("> -# %s%s [[anzeigen]](%s)\n",repliedToMember, shortenedReplyMsg, originalMsgRef.getMessage().getJumpUrl()));
+                            }
 
-                    String originalMsgString = originalMessage.getContentRaw();
-                    if (usesProxy) {
-                        originalMsgString = originalMsgString.replace(profile.proxy(), ""); // remove proxy chars from message
-                    }
-                    messageContentSB.append(originalMsgString);
-                    webhook.sendMessage(messageContentSB.toString()).setAllowedMentions(List.of()).queue( _ -> {
-                        originalMessage.delete().queue();
-                        webhook.delete().queue();
+                            String originalMsgString = originalMessage.getContentRaw();
+                            if (usesProxy) {
+                                originalMsgString = originalMsgString.replace(profile.proxy(), ""); // remove proxy chars from message
+                            }
+                            messageContentSB.append(originalMsgString);
+                            webhook.sendMessage(messageContentSB.toString()).setAllowedMentions(List.of()).queue( _ -> {
+                                originalMessage.delete().queue();
+                            });
+                        });
+                    })
+                    .exceptionally(exception -> {
+                        throw new InvalidStateException(String.format("Webhook could not be fetched nor created: %s", exception.getMessage()));
                     });
-                });
             });
-
         }
+    }
+
+
+    private static CompletableFuture<Webhook> fetchOrCreateWebhook(MessageChannel channel) {
+        IWebhookContainer webhookContainer;
+        if (channel instanceof TextChannel) {
+            webhookContainer = (TextChannel) channel;
+        } else if (channel instanceof VoiceChannel) {
+            webhookContainer = (VoiceChannel) channel;
+        } else {
+            return CompletableFuture.failedFuture(
+                    new IllegalArgumentException("Channel-Typ unterstützt keine Webhooks: " + channel.getType()));
+        }
+
+        return getChannelWebhook(webhookContainer).thenCompose(optionalWebhook -> {
+            if (optionalWebhook.isPresent()) {
+                log.info("existing webhook: {}", optionalWebhook.get());
+                return CompletableFuture.completedFuture(optionalWebhook.get());
+            }
+
+            return webhookContainer.createWebhook(WEBHOOK_NAME)
+                    .submit()
+                    .thenApply(newWebhook -> {
+                        log.info("new webhook: {}", newWebhook);
+                        return newWebhook;
+                    });
+        });
+    }
+
+    private static CompletableFuture<Optional<Webhook>> getChannelWebhook(IWebhookContainer webhookContainer) {
+        if (webhookContainer == null) {
+            throw new InvalidStateException("Webhook container is null");
+        }
+
+        return webhookContainer.retrieveWebhooks().submit().thenApply(webhooks -> {
+                return webhooks.stream().filter(webhook -> webhook.getOwner().getId().equals(Client.getInstance().getClient().getSelfUser().getId())).findFirst();
+            });
     }
 
     /**

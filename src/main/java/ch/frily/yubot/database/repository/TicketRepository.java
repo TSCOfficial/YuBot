@@ -47,7 +47,6 @@ public class TicketRepository {
         String statusName = resultSet.getString(Table.TicketColumn.STATUS.getColumn());
         Timestamp updatedAt = resultSet.getTimestamp(Table.TicketColumn.UPDATED_AT.getColumn());
         boolean isReminderSent = resultSet.getBoolean(Table.TicketColumn.IS_REMINDER_SENT.getColumn());
-        log.info("Ticket reminder status: {}", isReminderSent);
 
         Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
 
