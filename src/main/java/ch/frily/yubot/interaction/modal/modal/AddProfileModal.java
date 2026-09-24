@@ -113,13 +113,22 @@ public class AddProfileModal extends Modal {
         }
 
         int useCount = profile != null ? profile.useCount() : 0;
-        boolean isInUse = profile != null ? profile.isCurrentlyUsed() : false;
+        boolean isInUse = profile != null && profile.isCurrentlyUsed();
 
         Profile newProfile = new Profile(id, event.getMember(), profilename, isInUse, imageUrl, proxy, useCount);
         if (isEditMode) {
             ProfileRepository.updateProfile(newProfile);
         } else {
-            ProfileRepository.createProfile(newProfile);
+            try {
+                ProfileRepository.createProfile(newProfile);
+            } catch (SQLException e) {
+                if (e.getMessage().contains("Unique-Constraint")) {
+                    throw new InvalidStateException(String.format("\"%s\" ist bereits vergeben.", profilename), "Verwende bitte eine andere Variation des Namens.");
+                } else {
+                    throw e;
+                }
+
+            }
         }
         event.reply(String.format("✅ Das Profil \"%s\" wurde erfolgreich %s.\n-# Wende es mit </profile show:1542519831729934447> an.",  profilename, isEditMode ? "aktualisiert" : "erstellt")).setEphemeral(true).queue();
     }
