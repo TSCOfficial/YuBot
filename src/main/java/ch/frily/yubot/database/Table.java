@@ -16,6 +16,7 @@ public enum Table {
     SETTING("setting", SettingColumn.class),
     PROFILE("profile", ProfileColumn.class),
     PROFILE_HISTORY("profile_history", ProfileHistoryColumn.class),
+    PROFILE_MESSAGE("profile_message", ProfileMessageColumn.class),
     EVENT_REMINDER("event_reminder", EventReminderColumn.class);
 
     private final String table;
@@ -128,7 +129,7 @@ public enum Table {
     @Getter
     @RequiredArgsConstructor
     public enum ProfileColumn implements Column {
-        PROFILE_ID("profile_id"),
+        ID("id"),
         PARENT_ID("parent_id"),
         NAME("name"),
         IS_CURRENTLY_USED("is_currently_used"),
@@ -149,6 +150,16 @@ public enum Table {
         NEW_NAME("new_name"),
         CREATED_AT("created_at");
         private final String column;
+    }
+
+    // PROFILE MESSAGE
+    @Getter
+    @RequiredArgsConstructor
+    public enum ProfileMessageColumn implements Column {
+        MESSAGE_ID("message_id"),
+        PROFILE_ID("profile_id"),
+        CHANNEL_ID("channel_id");
+       private final String column;
     }
 
     // EVENT REMINDER

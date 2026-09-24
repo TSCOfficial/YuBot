@@ -21,12 +21,12 @@ public class ProfileRepository {
 
     public static Profile getProfileById(String id) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
-        query.where(Table.ProfileColumn.PROFILE_ID, DatabaseQuery.Operator.EQUALS, id);
+        query.where(Table.ProfileColumn.ID, DatabaseQuery.Operator.EQUALS, id);
         query.orderBy(Table.ProfileColumn.NAME, DatabaseQuery.OrderBy.ASCENDED);
         ResultSet rs = query.executeDataQuery();
 
         if (rs.next()) {
-            String profileId = rs.getString(Table.ProfileColumn.PROFILE_ID.getColumn());
+            String profileId = rs.getString(Table.ProfileColumn.ID.getColumn());
             String memberId = rs.getString(Table.ProfileColumn.PARENT_ID.getColumn());
             String name = rs.getString(Table.ProfileColumn.NAME.getColumn());
             boolean isCurrentlyUsed = rs.getBoolean(Table.ProfileColumn.IS_CURRENTLY_USED.getColumn());
@@ -47,7 +47,7 @@ public class ProfileRepository {
         ResultSet rs = query.executeDataQuery();
 
         if (rs.next()) {
-            String profileId = rs.getString(Table.ProfileColumn.PROFILE_ID.getColumn());
+            String profileId = rs.getString(Table.ProfileColumn.ID.getColumn());
             String memberId = rs.getString(Table.ProfileColumn.PARENT_ID.getColumn());
             String name = rs.getString(Table.ProfileColumn.NAME.getColumn());
             boolean isCurrentlyUsed = rs.getBoolean(Table.ProfileColumn.IS_CURRENTLY_USED.getColumn());
@@ -70,7 +70,7 @@ public class ProfileRepository {
 
         List<Profile> profiles = new ArrayList<>();
         while (rs.next()) {
-            String profileId = rs.getString(Table.ProfileColumn.PROFILE_ID.getColumn());
+            String profileId = rs.getString(Table.ProfileColumn.ID.getColumn());
             String name = rs.getString(Table.ProfileColumn.NAME.getColumn());
             boolean isCurrentlyUsed = rs.getBoolean(Table.ProfileColumn.IS_CURRENTLY_USED.getColumn());
             String profilePicture = rs.getString(Table.ProfileColumn.PROFILEPICTURE.getColumn());
@@ -95,7 +95,7 @@ public class ProfileRepository {
 
     public static void createProfile(Profile profile) throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
-        query.insert(Table.ProfileColumn.PROFILE_ID, profile.profileId());
+        query.insert(Table.ProfileColumn.ID, profile.profileId());
         query.insert(Table.ProfileColumn.PARENT_ID, profile.parentAccount().getId());
         query.insert(Table.ProfileColumn.NAME, profile.name());
         query.insert(Table.ProfileColumn.IS_CURRENTLY_USED, profile.isCurrentlyUsed());
@@ -144,7 +144,7 @@ public class ProfileRepository {
         recordToHistory(profile);
 
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
-        query.where(Table.ProfileColumn.PROFILE_ID, DatabaseQuery.Operator.EQUALS, profile.profileId());
+        query.where(Table.ProfileColumn.ID, DatabaseQuery.Operator.EQUALS, profile.profileId());
         query.update(Table.ProfileColumn.NAME, profile.name());
         query.update(Table.ProfileColumn.IS_CURRENTLY_USED, profile.isCurrentlyUsed());
         query.update(Table.ProfileColumn.PROFILEPICTURE, profile.profilePicture());
@@ -165,7 +165,7 @@ public class ProfileRepository {
      */
     private static void updateProfileUsage(Profile profile, boolean isInUse)  throws SQLException, ClassNotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
-        query.where(Table.ProfileColumn.PROFILE_ID, DatabaseQuery.Operator.EQUALS, profile.profileId());
+        query.where(Table.ProfileColumn.ID, DatabaseQuery.Operator.EQUALS, profile.profileId());
         query.update(Table.ProfileColumn.IS_CURRENTLY_USED, isInUse);
 
         if (isInUse) {

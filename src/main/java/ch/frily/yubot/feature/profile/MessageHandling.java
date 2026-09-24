@@ -1,7 +1,9 @@
 package ch.frily.yubot.feature.profile;
 
 import ch.frily.yubot.Client;
+import ch.frily.yubot.database.repository.ProfileMessageRepository;
 import ch.frily.yubot.database.repository.ProfileRepository;
+import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.InvalidStateException;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.*;
@@ -78,7 +80,13 @@ public class MessageHandling {
                                 originalMsgString = originalMsgString.replace(profile.proxy(), ""); // remove proxy chars from message
                             }
                             messageContentSB.append(originalMsgString);
-                            webhook.sendMessage(messageContentSB.toString()).setAllowedMentions(List.of()).queue( _ -> {
+                            webhook.sendMessage(messageContentSB.toString()).setAllowedMentions(List.of()).queue( msg -> {
+                                ProfileMessage profileMsg = new ProfileMessage(msg, profile, originalMessage.getChannel());
+                                try {
+                                    ProfileMessageRepository.create(profileMsg);
+                                } catch (Exception e) {
+                                    ExceptionHandler.handle(e);
+                                }
                                 originalMessage.delete().queue();
                             });
                         });
