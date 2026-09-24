@@ -54,6 +54,7 @@ public class AddProfileModal extends Modal {
         TextInput.Builder profilename = TextInput.create("profilename", TextInputStyle.SHORT);
         profilename.setRequired(true);
         profilename.setRequiredRange(2, 80);
+        profilename.setPlaceholder("Max Muster");
         if (profile != null && !profile.name().isBlank()) {
             profilename.setValue(profile.name());
         }
@@ -61,6 +62,7 @@ public class AddProfileModal extends Modal {
         TextInput.Builder proxy = TextInput.create("proxy", TextInputStyle.SHORT);
         proxy.setRequired(false);
         proxy.setRequiredRange(1, 6);
+        proxy.setPlaceholder("prx");
 
         if (profile != null && !profile.proxy().isBlank()) {
             proxy.setValue(profile.proxy());
@@ -68,6 +70,7 @@ public class AddProfileModal extends Modal {
 
         TextInput.Builder profilepicture = TextInput.create("profilepicture-url", TextInputStyle.SHORT);
         profilepicture.setRequired(false);
+        profilepicture.setPlaceholder("https://domain.org/exampleimage/xy.png");
         if (profile != null && !profile.profilePicture().isBlank()) {
             profilepicture.setValue(profile.profilePicture());
         }
@@ -79,7 +82,7 @@ public class AddProfileModal extends Modal {
                         "Profilname", profilename.build()
                 ),
                 Label.of(
-                        "Proxy", "Verwende Proxy als Prefix in deinen Nachrichten um sie mit diesem Profil zu versenden.", proxy.build()
+                        "Proxy", "Verwende Proxy als Prefix, um die Nachricht mit diesem Profil zu versenden (Emoji / Text).", proxy.build()
                 ),
 //                Label.of("Profilbild", AttachmentUpload.create("profilepicture").build())
                 Label.of("Profilbild", String.format("Erlaubte Bildformate: %s. Dateiupload wird nicht unterstützt.", String.join(", ", ALLOWED_DATATYPES)), profilepicture.build() )
@@ -144,7 +147,21 @@ public class AddProfileModal extends Modal {
      * @param url
      */
     private void validateUrl(@NonNull String url) {
-        if (!url.isBlank() && !url.endsWith(".jpeg") && !url.endsWith(".jpg") && !url.endsWith(".png")) {
+        boolean isValid = true;
+        if (url.isBlank()) {
+            isValid = false;
+        } else {
+            boolean formatIsAllowed = ALLOWED_DATATYPES.stream().anyMatch(type -> {
+                return url.endsWith(type) || url.contains(type + "?");
+            });
+            if (!formatIsAllowed) {
+                isValid = false;
+            }
+        }
+
+
+
+        if (!isValid) {
             throw new InvalidStateException("Profilbild konnte nicht definiert werden.", String.format("Dateiformat muss %s sein.", String.join(", ", ALLOWED_DATATYPES)));
         }
     }
