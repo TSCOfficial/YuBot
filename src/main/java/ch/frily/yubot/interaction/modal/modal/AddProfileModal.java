@@ -40,6 +40,9 @@ public class AddProfileModal extends Modal {
 
     @Override
     public String getTitle() {
+        if (profile != null) {
+            return "Profil bearbeiten";
+        }
         return "Profil hinzufügen";
     }
 
