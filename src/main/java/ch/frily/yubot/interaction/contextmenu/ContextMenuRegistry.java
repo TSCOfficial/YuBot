@@ -2,6 +2,7 @@ package ch.frily.yubot.interaction.contextmenu;
 
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.PermissionDeniedException;
+import ch.frily.yubot.interaction.contextmenu.ctxmenu.DeleteWebhookMsgCtxMenu;
 import ch.frily.yubot.interaction.contextmenu.ctxmenu.EditWebhookMsgCtxMenu;
 import ch.frily.yubot.interaction.contextmenu.ctxmenu.LookupProfileCtxMenu;
 import ch.frily.yubot.interaction.contextmenu.ctxmenu.ModticketCtxMenu;
@@ -37,7 +38,8 @@ public class ContextMenuRegistry {
         List<IContextMenu> contextMenus = List.of(
                 new ModticketCtxMenu(),
                 new LookupProfileCtxMenu(),
-                new EditWebhookMsgCtxMenu()
+                new EditWebhookMsgCtxMenu(),
+                new DeleteWebhookMsgCtxMenu()
         );
 
         contextMenus.forEach(ctxMenu -> this.contextMenus.put(ctxMenu.getName(), ctxMenu));
