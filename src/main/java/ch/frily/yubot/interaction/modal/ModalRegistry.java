@@ -30,7 +30,8 @@ public class ModalRegistry {
                 new AbsenceAddModal(),
                 new TicketSummaryModal(),
                 new SelectActiveModSendTypeModal(),
-                new AddProfileModal()
+                new AddProfileModal(),
+                new EditWebhookMessageModal()
         );
 
         rawModals.forEach(modal -> {
@@ -42,7 +43,6 @@ public class ModalRegistry {
     public void dispatchModalInteraction(ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException {
         String id = ArgumentComponent.extractId(event.getModalId());
         log.info("Dispatching modal with id {}", id);
-        log.info("modals: {}", modals.keySet().stream().map(String::valueOf).toList());
         Modal modal = modals.get(id);
         if (modal == null) {
             throw new NullPointerException(String.format("Modal '%s' konnte nicht gefunden werden.", event.getModalId()));

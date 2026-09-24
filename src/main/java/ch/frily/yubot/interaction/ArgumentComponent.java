@@ -3,6 +3,8 @@ package ch.frily.yubot.interaction;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.util.Randomizer;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.interactions.ICustomIdInteraction;
+import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -66,6 +68,9 @@ public abstract class ArgumentComponent {
 
     /**
      * Get an argument from the component ID
+     * <p>
+     *     Use {@link ComponentInteraction#getCustomId() getCustomId()} or {@link ComponentInteraction#getComponentId() getComponentId()} to be able to get the arguments
+     * </p>
      * @param componentId
      * @param key
      * @return

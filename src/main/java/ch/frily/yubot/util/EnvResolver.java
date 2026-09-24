@@ -90,6 +90,9 @@ public class EnvResolver {
         return getChannelById(type, guildId, channelId);
     }
 
+    public static CompletableFuture<Message> getMessageById(String guildId, String channelId, String messageId ) {
+        return getMessageById(Long.parseLong(guildId), Long.parseLong(channelId), Long.parseLong(messageId));
+    }
     public static CompletableFuture<Message> getMessageById(long guildId, long channelId, long messageId) {
         MessageChannel channel = getChannelById(TextChannel.class, guildId, channelId);
         if (channel == null) {

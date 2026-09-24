@@ -90,8 +90,14 @@ public class MessageHandling {
         }
     }
 
+    public static void editMessage(Message originalMessage, String newContent) {
+        fetchOrCreateWebhook(originalMessage.getChannel()).thenAccept(webhook -> {
+            webhook.editMessageById(originalMessage.getId(), newContent).queue();
+        });
+    }
 
-    private static CompletableFuture<Webhook> fetchOrCreateWebhook(MessageChannel channel) {
+
+    public static CompletableFuture<Webhook> fetchOrCreateWebhook(MessageChannel channel) {
         IWebhookContainer webhookContainer;
         if (channel instanceof TextChannel) {
             webhookContainer = (TextChannel) channel;
