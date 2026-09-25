@@ -91,7 +91,11 @@ public class TicketManager {
 
                     // Ticket content
                     ticket.setChannel(textChannel);
-                    textChannel.sendMessage(ticketOwner.getAsMention() + " - " + type.getResponsibleRoles().stream().map(Role::getAsMention).collect(Collectors.joining(", ")))
+                    String roleMentions = " - " + type.getResponsibleRoles().stream().map(Role::getAsMention).collect(Collectors.joining(", "));
+                    if (ticket.getType() == TicketType.MODTICKET) {
+                        roleMentions = "";
+                    }
+                    textChannel.sendMessage(ticketOwner.getAsMention() + roleMentions)
                             .addEmbeds(embed.build()).setComponents(actionrow).queue(ThrowingConsumer.wrap(null, message -> {
                                 ticket.setWelcomeMessageId(message.getIdLong());
                                 TicketRepository.createTicket(ticket);
