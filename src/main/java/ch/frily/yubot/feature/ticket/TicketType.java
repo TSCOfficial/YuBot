@@ -106,7 +106,7 @@ public enum TicketType {
                     Sobald du deine Bewerbung geschrieben hast, meldet sich die zuständige Person bei dir.
                     """,
             TicketTypeGroup.BEWERBUNG,
-            List.of(EnvKey.ROLE_SUPPORTLEITUNG)
+            List.of(EnvKey.ROLE_SUPPORTLEITUNG, EnvKey.ROLE_STVSUPPORTLEITUNG)
     ),
     BEWERBUNG_MODERATION(
             "bemod",
@@ -124,7 +124,7 @@ public enum TicketType {
                     Sobald du deine Bewerbung geschrieben hast, meldet sich die zuständige Person bei dir.
                     """,
             TicketTypeGroup.BEWERBUNG,
-            List.of(EnvKey.ROLE_MODLEITUNG, EnvKey.ROLE_SERVERLEITUNG)
+            List.of(EnvKey.ROLE_MODLEITUNG, EnvKey.ROLE_STVMODLEITUNG, EnvKey.ROLE_SERVERLEITUNG)
     ),
     BEWERBUNG_TWITCHMOD(
             "betwm",
@@ -144,7 +144,7 @@ public enum TicketType {
                     Sobald du deine Bewerbung geschrieben hast, meldet sich die zuständige Person bei dir.
                     """,
             TicketTypeGroup.BEWERBUNG,
-            List.of(EnvKey.ROLE_OWNER, EnvKey.ROLE_SERVERLEITUNG)
+            List.of(EnvKey.ROLE_SERVERLEITUNG)
     ),
     BEWERBUNG_AWARENESS(
             "beawrn",
@@ -162,7 +162,7 @@ public enum TicketType {
                     Sobald du deine Bewerbung geschrieben hast, meldet sich die zuständige Person bei dir.
                     """,
             TicketTypeGroup.BEWERBUNG,
-            List.of(EnvKey.ROLE_AWARENESSLEITUNG)
+            List.of(EnvKey.ROLE_AWARENESSLEITUNG, EnvKey.ROLE_STVAWARENESSLEITUNG)
     ),
     BEWERBUNG_EVENT(
             "beevnt",
@@ -180,7 +180,7 @@ public enum TicketType {
                     Sobald du deine Bewerbung geschrieben hast, meldet sich die zuständige Person bei dir.
                     """,
             TicketTypeGroup.BEWERBUNG,
-            List.of(EnvKey.ROLE_EVENTLEITUNG)
+            List.of(EnvKey.ROLE_EVENTLEITUNG, EnvKey.ROLE_STVEVENTLEITUNG)
     ),
     BEWERBUNG_DESIGN(
             "bedes",
