@@ -24,6 +24,13 @@ public class ModalRegistry {
         return instance;
     }
 
+    public void register(List<Modal> modals) {
+        modals.forEach(modal -> {
+            this.modals.put(modal.getId(), modal);
+            log.info("Loaded modal '{}'.", modal.getClass().getSimpleName());
+        });
+    }
+
     public void loadModals(){
         List<Modal> rawModals = List.of(
                 new TypeSelectorModal(),
@@ -35,8 +42,8 @@ public class ModalRegistry {
         );
 
         rawModals.forEach(modal -> {
-            log.info("Loaded modal with id {}", modal.getId());
-            modals.put(modal.getId(), modal);
+            this.modals.put(modal.getId(), modal);
+            log.info("Loaded modal '{}'.", modal.getClass().getSimpleName());
         });
     }
 

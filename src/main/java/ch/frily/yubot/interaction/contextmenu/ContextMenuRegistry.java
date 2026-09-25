@@ -34,6 +34,12 @@ public class ContextMenuRegistry {
         return instance;
     }
 
+    public void register(List<IContextMenu> contextMenus){
+        contextMenus.forEach(contextMenu -> {
+            this.contextMenus.put(contextMenu.getName(), contextMenu);
+        });
+    }
+
     public void loadContextMenus(){
         List<IContextMenu> contextMenus = List.of(
                 new ModticketCtxMenu(),

@@ -25,6 +25,13 @@ public class SelectRegistry {
         return instance;
     }
 
+    public void register(List<ISelect> selects) {
+        selects.forEach(select -> {
+            log.info("Loaded select with id {}", select.getId());
+            this.selects.put(select.getId(), select);
+        });
+    }
+
     public void loadSelects(){
         List<ISelect> rawModals = List.of(
                 new ActiveModTrackingDetailSelect(),

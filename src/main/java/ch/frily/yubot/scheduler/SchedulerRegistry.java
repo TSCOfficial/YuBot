@@ -18,14 +18,30 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-@UtilityClass
 public class SchedulerRegistry {
+
+    private static SchedulerRegistry instance;
 
     private static final ScheduledExecutorService executor =
             Executors.newScheduledThreadPool(4);
 
     private static final CronParser PARSER =
             new CronParser(CronDefinitionBuilder.instanceDefinitionFor(CronType.UNIX));
+
+    public static SchedulerRegistry getInstance() {
+        if (instance == null) {
+            instance = new SchedulerRegistry();
+        }
+        return instance;
+    }
+
+    public void register(List<IScheduler> schedulers) {
+        schedulers.forEach(scheduler -> {
+            scheduleNext(scheduler);
+            log.info("Registered scheduler: '{}' ({}).",
+                    scheduler.getClass().getSimpleName(), scheduler.cronExpression());
+        });
+    }
 
     public static void registerAll() {
         List<IScheduler> schedulers = List.of(

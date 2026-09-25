@@ -34,6 +34,18 @@ public class ButtonRegistry {
         return instance;
     }
 
+    public void register(List<Button> buttons) {
+        buttons.forEach(button -> {
+            String idOrUrl = button.getId();
+            if (button.getStyle() == ButtonStyle.LINK && button.getUrl() != null) {
+                idOrUrl = button.getUrl();
+            }
+            this.buttons.put(idOrUrl, button);
+
+            log.info("Registered button '{}'", button.getClass().getSimpleName());
+        });
+    }
+
     public void loadButtons() {
         List<Button> rawButtons = List.of(
                 new TicketPanelSupportBtn(),

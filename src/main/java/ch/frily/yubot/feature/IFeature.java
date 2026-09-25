@@ -2,6 +2,7 @@ package ch.frily.yubot.feature;
 
 import ch.frily.yubot.container.Container;
 import ch.frily.yubot.embed.IEmbed;
+import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.button.IButton;
 import ch.frily.yubot.interaction.command.ISlashCommand;
 import ch.frily.yubot.interaction.command.ISlashCommandGroup;
@@ -15,7 +16,7 @@ import java.util.List;
 /**
  * Basic feature class
  * <p>
- *     This class is used to define a new feature and contains all connected elements scuh as slashcommands, modals, schedulers, ...
+ *     This class is used to define a new feature and contains all connected elements such as slashcommands, modals, schedulers, ...
  * </p>
  */
 public interface IFeature {
@@ -36,7 +37,7 @@ public interface IFeature {
         return List.of();
     };
 
-    default List<IButton> getButtons() {
+    default List<Button> getButtons() {
         return List.of();
     };
 
@@ -49,10 +50,6 @@ public interface IFeature {
     };
 
     default List<IScheduler> getSchedulers() {
-        return List.of();
-    };
-
-    default List<Container> getContainers() {
         return List.of();
     };
 
