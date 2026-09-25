@@ -12,7 +12,5 @@ public interface ISlashCommandGroup {
         return List.of();
     }
 
-    //Map<IPermissionHolder, List<Permission>> getOverwritePermissions();
-
     List<ISlashSubcommand> getSubcommands();
 }
