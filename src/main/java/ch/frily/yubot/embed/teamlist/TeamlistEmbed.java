@@ -38,7 +38,8 @@ public class TeamlistEmbed implements IEmbed {
             EnvKey.ROLE_DEVLEITUNG,
             EnvKey.ROLE_DEVELOPER,
             EnvKey.ROLE_EVENTLEITUNG,
-            EnvKey.ROLE_EVENT
+            EnvKey.ROLE_EVENT,
+            EnvKey.ROLE_DESIGN
     );
 
     private static final Pattern ROLE_NAME_PATTERN = Pattern.compile("[^\\p{L}\\p{N}\\-\\s\\*]");
@@ -95,21 +96,20 @@ public class TeamlistEmbed implements IEmbed {
                 case BEWERBUNG_MODERATION -> EnvResolver.getRoleById(EnvKey.ROLE_MODERATOR);
                 case BEWERBUNG_EVENT -> EnvResolver.getRoleById(EnvKey.ROLE_EVENT);
                 case BEWERBUNG_AWARENESS -> EnvResolver.getRoleById(EnvKey.ROLE_AWARENESS);
+                case BEWERBUNG_DESIGN ->  EnvResolver.getRoleById(EnvKey.ROLE_DESIGN);
                 default -> null;
             };
         }).filter(Objects::nonNull).toList();
 
-        String searchedRoles = mappedTypes.isEmpty()
-                ? "keinem Bereich"
-                : mappedTypes.stream().map(Role::getAsMention).collect(Collectors.joining(", "));
+        if (!mappedTypes.isEmpty()) {
+            fields.add(new Field(
+                    "Wir suchen Teammitglieder*innen ✨",
+                    String.format("In %s suchen wir noch Teammitglieder. Bewerbe dich in <#%s>",
+                            mappedTypes.stream().map(Role::getAsMention).collect(Collectors.joining(", ")),
+                            EnvResolver.getString(EnvKey.CHANNEL_SUPPORT)), false
+            ));
+        }
 
-        if (mappedTypes.isEmpty()) {}
-        fields.add(new Field(
-                "Wir suchen Teammitglieder*innen ✨",
-                String.format("In %s suchen wir noch Teammitglieder. Bewerbe dich in <#%s>",
-                searchedRoles,
-                EnvResolver.getString(EnvKey.CHANNEL_SUPPORT)), false
-        ));
 
         return fillWithBlankFields(fields);
     }
