@@ -48,15 +48,21 @@ public class TicketSummaryModal extends Modal {
         TextInput.Builder summaryInput = TextInput.create("summary", TextInputStyle.PARAGRAPH);
         summaryInput.setRequiredRange(10, 200);
         summaryInput.setPlaceholder("User1 hat User2 wegen xy gemeldet...");
-        summaryInput.setRequired(ticket.getType() == TicketType.MODTICKET);
+        boolean isRequired = ticket.getType() == TicketType.MODTICKET;
+        summaryInput.setRequired(isRequired);
+
+        String summaryOptionalInfo = "Zusammenfassungen sind optional, werden aber empfohlen.";
+        if (isRequired) {
+            summaryOptionalInfo = "Zusammenfassungen für ModTickets sind pflicht.";
+        }
 
         return List.of(
                 TextDisplay.of("""
-                        Verfasse in ein paar Worten oder Sätzen, um was das Ticket ging.
-                        -# Dies hilft Tickets, im Ticket-log, schneller wieder zu finden, wenn etwas geprüft werden muss.
+                        Verfasse in ein paar Worten um was das Ticket ging.
+                        -# Dies hilft Tickets im Ticket-log schneller wieder zu finden, wenn etwas geprüft werden muss.
                         """),
                 Label.of("Zusammenfassung", summaryInput.build()),
-                TextDisplay.of("-# Zusammenfassungen sind Optional aber empfohlen.")
+                TextDisplay.of(String.format("-# %s", summaryOptionalInfo))
         );
     }
 
