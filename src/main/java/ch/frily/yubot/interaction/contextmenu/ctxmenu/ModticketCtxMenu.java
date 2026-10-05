@@ -32,7 +32,7 @@ public class ModticketCtxMenu implements IUserContextMenu {
 
     @Override
     public String getName() {
-        return "open ModTicket";
+        return "Open ModTicket";
     }
 
     @Override
