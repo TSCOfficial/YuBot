@@ -34,37 +34,11 @@ public class ContextMenuRegistry {
         return instance;
     }
 
-    public void register(List<IContextMenu> contextMenus){
+    public List<CommandData> register(List<IContextMenu> contextMenus){
         contextMenus.forEach(contextMenu -> {
             this.contextMenus.put(contextMenu.getName(), contextMenu);
         });
-    }
-
-    public void loadContextMenus(){
-        List<IContextMenu> contextMenus = List.of(
-                new ModticketCtxMenu(),
-                new LookupProfileCtxMenu(),
-                new EditWebhookMsgCtxMenu(),
-                new DeleteWebhookMsgCtxMenu()
-        );
-
-        contextMenus.forEach(ctxMenu -> this.contextMenus.put(ctxMenu.getName(), ctxMenu));
-    }
-
-    /**
-     * Prepare the context menus for the registry
-     * @return list of prepared context menus
-     */
-    public List<CommandData> prepareForRegistry(){
-        return contextMenus.values().stream().map(this::buildContextMenu).toList();
-    }
-
-    private CommandData buildContextMenu(IContextMenu contextMenu){
-        CommandData commandData = Commands.context(contextMenu.getType(), contextMenu.getName());
-        if (!contextMenu.getDefaultPermissions().isEmpty()) {
-            commandData.setDefaultPermissions(DefaultMemberPermissions.enabledFor(contextMenu.getDefaultPermissions()));
-        }
-        return commandData;
+        return contextMenus.stream().map(IContextMenu::build).toList();
     }
 
     /**

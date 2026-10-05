@@ -19,4 +19,18 @@ public interface ISlashCommandGroup {
     }
 
     List<ISlashSubcommand> getSubcommands();
+
+    default SlashCommandData build() {
+        SlashCommandData slashCommand = Commands.slash(getName(), getDescription());
+        if (!getDefaultPermissions().isEmpty())
+            slashCommand.setDefaultPermissions(DefaultMemberPermissions.enabledFor(getDefaultPermissions()));
+
+        getSubcommands().forEach(sub -> {
+            SubcommandData subData = new SubcommandData(sub.getName(), sub.getDescription());
+            if (!sub.getOptions().isEmpty()) subData.addOptions(sub.getOptions());
+            slashCommand.addSubcommands(subData);
+        });
+
+        return slashCommand;
+    }
 }

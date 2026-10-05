@@ -41,15 +41,16 @@ public class SlashCommandRegistry {
         return instance;
     }
 
-    public void registerCommands(List<ISlashCommand> commands) {
+    public List<SlashCommandData> registerCommands(List<ISlashCommand> commands) {
         commands.forEach(cmd -> {
             this.commands.put(cmd.getName(), cmd);
             log.info("Registered slashcommand '{}'.", cmd.getName());
         });
+        return commands.stream().map(ISlashCommand::build).toList();
     }
 
-    public void registerGroups(List<ISlashCommandGroup> commandGroup) {
-        commandGroup.forEach(group -> {
+    public List<SlashCommandData> registerGroups(List<ISlashCommandGroup> commandGroups) {
+        commandGroups.forEach(group -> {
             groups.add(group);
             List<String> registeredCmdNames = group.getSubcommands().stream().map(cmd -> {
                 subcommands.put(group.getName() + " " + cmd.getName(), cmd);
@@ -57,80 +58,7 @@ public class SlashCommandRegistry {
             }).toList();
             log.info("Registered slashcommand-group '{}' with subcommands {}.", group.getName(), String.join(", ", registeredCmdNames));
         });
-    }
-
-    /**
-     * Load the slashcommands
-     */
-    public void loadCommands() {
-        List<ISlashCommand> slashCommands = List.of(
-                new TestCmd(), // tests only
-                new VoiceCheck(),
-                new SayCmd()
-        );
-
-        List<ISlashCommandGroup> slashCommandGroups = List.of(
-                new TicketCmdGroup(),
-                new ActiveModCmdGroup(),
-                new SendCmdGroup(),
-                new ProfileCmdGroup()
-        );
-
-        slashCommands.forEach(cmd -> {
-            commands.put(cmd.getName(), cmd);
-        });
-
-        slashCommandGroups.forEach(group -> {
-            groups.add(group);
-            group.getSubcommands().forEach(cmd -> {
-                subcommands.put(group.getName() + " " + cmd.getName(), cmd);
-            });
-
-        });
-    }
-
-    /**
-     * Prepare the commands to be able to register them
-     * @return list of prepared commands
-     */
-    public List<CommandData> prepareCommandsForRegistry() {
-        List<CommandData> commandDataList = new ArrayList<>();
-
-        commands.forEach((_, cmd) -> {
-            commandDataList.add(buildCommand(cmd));
-        });
-
-        groups.forEach(group -> {
-            commandDataList.add(buildGroup(group));
-        });
-
-        return commandDataList;
-    }
-
-    private SlashCommandData buildCommand(ISlashCommand command) {
-        SlashCommandData slashCommand = Commands.slash(command.getName(), command.getDescription());
-        if (!command.getOptions().isEmpty()) {
-            slashCommand.addOptions(command.getOptions());
-        }
-        if (!command.getDefaultPermissions().isEmpty()) {
-            slashCommand.setDefaultPermissions(DefaultMemberPermissions.enabledFor(command.getDefaultPermissions()));
-        }
-
-        return slashCommand;
-    }
-
-    private SlashCommandData buildGroup(ISlashCommandGroup group) {
-        SlashCommandData slashCommand = Commands.slash(group.getName(), "no-description-set");
-        if (!group.getDefaultPermissions().isEmpty())
-            slashCommand.setDefaultPermissions(DefaultMemberPermissions.enabledFor(group.getDefaultPermissions()));
-
-        group.getSubcommands().forEach(sub -> {
-            SubcommandData subData = new SubcommandData(sub.getName(), sub.getDescription());
-            if (!sub.getOptions().isEmpty()) subData.addOptions(sub.getOptions());
-            slashCommand.addSubcommands(subData);
-        });
-
-        return slashCommand;
+        return commandGroups.stream().map(ISlashCommandGroup::build).toList();
     }
 
     /**

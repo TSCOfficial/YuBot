@@ -1,13 +1,22 @@
 package ch.frily.yubot.feature;
 
+import ch.frily.yubot.feature.ticket.TicketFeature;
 import ch.frily.yubot.interaction.button.ButtonRegistry;
 import ch.frily.yubot.interaction.command.SlashCommandRegistry;
 import ch.frily.yubot.interaction.contextmenu.ContextMenuRegistry;
 import ch.frily.yubot.interaction.modal.ModalRegistry;
 import ch.frily.yubot.interaction.select.SelectRegistry;
 import ch.frily.yubot.scheduler.SchedulerRegistry;
+import ch.frily.yubot.util.EnvKey;
+import ch.frily.yubot.util.EnvResolver;
 import lombok.Getter;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,7 +25,7 @@ import java.util.List;
 public class FeatureRegistry {
 
     @Getter
-    private List<IFeature> features;
+    private List<Feature> features;
 
     private static FeatureRegistry instance;
     public static FeatureRegistry getInstance() {
@@ -27,20 +36,36 @@ public class FeatureRegistry {
     }
 
     /**
-     * Register all features and register their content to their appropriate registry
+     * Loads the features and registers them
+     * <p>
+     *     This also automatically registers the Slashcommands & Context-Menus.
+     * </p>
      */
-    public void register() {
-        this.features = List.of();
+    public void load() {
+        this.features = List.of(
+                new TicketFeature()
+        );
 
+
+        ArrayList<CommandData> commands = new ArrayList<>();
 
         this.features.forEach(feature -> {
-            SlashCommandRegistry.getInstance().registerCommands(feature.getSlashCommands());
-            SlashCommandRegistry.getInstance().registerGroups(feature.getSlashCommandGroups());
+            List<SlashCommandData> slashcommands = SlashCommandRegistry.getInstance().registerCommands(feature.getSlashCommands());
+            commands.addAll(slashcommands);
+            List<SlashCommandData> slashcommandGroups = SlashCommandRegistry.getInstance().registerGroups(feature.getSlashCommandGroups());
+            commands.addAll(slashcommandGroups);
+            List<CommandData> ctxMenus = ContextMenuRegistry.getInstance().register(feature.getContextMenus());
+            commands.addAll(ctxMenus);
             ButtonRegistry.getInstance().register(feature.getButtons());
             ModalRegistry.getInstance().register(feature.getModals());
             SelectRegistry.getInstance().register(feature.getSelects());
             SchedulerRegistry.getInstance().register(feature.getSchedulers());
-            ContextMenuRegistry.getInstance().register(feature.getContextMenus());
         });
+
+
+        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+        guild.updateCommands()
+                .addCommands(commands)
+                .queue();
     }
 }

@@ -4,7 +4,7 @@ import lombok.Getter;
 
 public abstract class Feature implements IFeature {
 
-    private Feature instance;
+    protected Feature instance;
 
 
 }

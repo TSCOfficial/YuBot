@@ -4,6 +4,10 @@ import ch.frily.yubot.util.EnvKey;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 
 import java.util.List;
 
@@ -41,4 +45,18 @@ public interface IContextMenu {
      */
     default List<Role> getAllowedRoles() {
         return List.of();
-    }}
+    }
+
+    /**
+     * Build the contextmenu for Discord
+     * @return
+     */
+    default CommandData build(){
+        CommandData commandData = Commands.context(getType(), getName());
+        if (!getDefaultPermissions().isEmpty()) {
+            commandData.setDefaultPermissions(DefaultMemberPermissions.enabledFor(getDefaultPermissions()));
+        }
+        return commandData;
+    }
+}
+

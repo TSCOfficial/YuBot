@@ -5,8 +5,13 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
@@ -84,5 +89,21 @@ public interface ISlashCommand {
      */
     default List<Role> getAllowedRoles() {
         return List.of();
+    }
+
+    /**
+     * Builds the {@link SlashCommandData Discord-Slashcommand}
+     * @return
+     */
+    default SlashCommandData build() {
+        SlashCommandData slashCommand = Commands.slash(getName(), getDescription());
+        if (!getOptions().isEmpty()) {
+            slashCommand.addOptions(getOptions());
+        }
+        if (!getDefaultPermissions().isEmpty()) {
+            slashCommand.setDefaultPermissions(DefaultMemberPermissions.enabledFor(getDefaultPermissions()));
+        }
+
+        return slashCommand;
     }
 }

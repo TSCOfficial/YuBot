@@ -21,13 +21,9 @@ import java.util.List;
  */
 public interface IFeature {
 
-    IFeature getInstance();
-
     String getName();
 
-    default String getDescription() {
-        return null;
-    }
+    String getDescription();
 
     default List<ISlashCommand> getSlashCommands() {
         return List.of();

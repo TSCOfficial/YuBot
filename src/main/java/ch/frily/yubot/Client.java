@@ -2,7 +2,9 @@ package ch.frily.yubot;
 
 import ch.frily.yubot.database.Database;
 import ch.frily.yubot.exception.ExceptionHandler;
+import ch.frily.yubot.feature.FeatureRegistry;
 import ch.frily.yubot.interaction.button.ButtonRegistry;
+import ch.frily.yubot.interaction.command.ISlashCommand;
 import ch.frily.yubot.interaction.contextmenu.ContextMenuRegistry;
 import ch.frily.yubot.interaction.modal.ModalRegistry;
 import ch.frily.yubot.interaction.select.SelectRegistry;
@@ -82,24 +84,7 @@ public class Client {
 
             Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
             // Load actions
-            ContextMenuRegistry.getInstance().loadContextMenus();
-            SlashCommandRegistry.getInstance().loadCommands();
-            ButtonRegistry.getInstance().loadButtons();
-            ModalRegistry.getInstance().loadModals();
-            SelectRegistry.getInstance().loadSelects();
-
-            // Register actions
-            SchedulerRegistry.registerAll();
-            List<CommandData> slashcommand = SlashCommandRegistry.getInstance().prepareCommandsForRegistry();
-            List<CommandData> ctxcommand = ContextMenuRegistry.getInstance().prepareForRegistry();
-
-            ArrayList<CommandData> allCommands = new ArrayList<>();
-            allCommands.addAll(slashcommand);
-            allCommands.addAll(ctxcommand);
-
-            guild.updateCommands()
-                    .addCommands(allCommands)
-                    .queue();
+            FeatureRegistry.getInstance().load();
 
 
         } catch (Exception exception) {
@@ -118,6 +103,7 @@ public class Client {
         jdaBuilder.setMemberCachePolicy(MemberCachePolicy.ALL);
         jdaBuilder.enableCache(CacheFlag.ACTIVITY);
         jdaBuilder.setActivity(Activity.listening("Yu"));
+
 
         // Event listeners
         jdaBuilder.addEventListeners(InteractionListener.getInstance());
