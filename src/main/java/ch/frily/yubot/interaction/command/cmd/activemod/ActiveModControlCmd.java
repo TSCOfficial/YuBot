@@ -66,18 +66,14 @@ public class ActiveModControlCmd implements ISlashSubcommand {
                 🟢 **Opt-in-Funktion retabliert**
                 -# Die Opt-in-Funktion ist wieder verfügbar und kann wieder wie gewohnt verwendet werden.
                 -# *<:timer:1522290651742339122> Nachricht wird <t:%d:R> gelöscht.*
-                """, timestamp)).queue(message -> {
-                message.delete().queueAfter(delay, TimeUnit.SECONDS);
-            });
+                """, timestamp)).queue(message -> message.delete().queueAfter(delay, TimeUnit.SECONDS));
             event.reply("Die Opt-in Funktion wurde aktiviert und kann von den Moderator*innen wieder verwendet werden.").setEphemeral(true).queue();
         } else {
             modIntern.sendMessage(String.format("""
                 ⚠️ **Opt-in-Funktion deaktiviert**
                 -# Die Opt-in-Funktion wurde temporär deaktiviert und kann bis zur Reaktivierung nicht mehr verwendet werden.
                 -# *<:timer:1522290651742339122> Nachricht wird <t:%d:R> gelöscht.*
-                """, timestamp)).queue(message -> {
-                message.delete().queueAfter(delay, TimeUnit.SECONDS);
-            });
+                """, timestamp)).queue(message -> message.delete().queueAfter(delay, TimeUnit.SECONDS));
             event.reply("Die Opt-in Funktion wurde deaktiviert.").setEphemeral(true).queue();
         }
         DynamicMessageList.ACTIVE_MOD_DASHBOARD.update();

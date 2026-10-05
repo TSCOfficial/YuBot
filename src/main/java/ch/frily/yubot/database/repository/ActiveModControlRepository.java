@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ActiveModControlRepository {
-    public static void updateControl(Boolean state) throws SQLException, ClassNotFoundException {
+    public static void updateControl(Boolean state) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD_CONTROL);
         query.update(Table.ActiveModControlColumn.ALLOW_OPTIN, state);
         query.executeQuery();
@@ -16,10 +16,9 @@ public class ActiveModControlRepository {
     /**
      * Whether the activemod control is enabled or disabled
      * @return True if mods can opt-in, false if not
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @throws SQLException Database failure
      */
-    public static boolean isOptInAllowed() throws SQLException, ClassNotFoundException {
+    public static boolean isOptInAllowed() throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD_CONTROL);
         query.select(Table.ActiveModControlColumn.ALLOW_OPTIN);
         ResultSet rs = query.executeDataQuery();

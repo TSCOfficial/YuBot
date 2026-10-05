@@ -69,9 +69,9 @@ public class Closure {
      * Trigger the closure system.
      * <p></p>
      * This synchronizes the Database, handles closure & opening
-     * @throws SQLException
+     * @throws SQLException Database failure
      */
-    public void triggerUpdate() throws SQLException, ClassNotFoundException, IOException {
+    public void triggerUpdate() throws SQLException, IOException {
         List<Member> activeMods = getActiveMods();
 
         // Whether the server is open or not
@@ -158,7 +158,7 @@ public class Closure {
 
     /**
      * Get all currently active moderators (active: based if they have their role or not)
-     * @return
+     * @return get all active moderators
      */
     public static List<Member> getActiveMods() {
         Role activeModRole = EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD);
@@ -169,7 +169,7 @@ public class Closure {
     /**
      * Add missing mods and remove still saved active-mods
      */
-    private static void syncDatabaseMods() throws SQLException, ClassNotFoundException {
+    private static void syncDatabaseMods() throws SQLException {
         // All mods based on the database data
         List<ActiveMod> currentModsInDatabase = ActiveModRepository.getModerators();
 
@@ -206,8 +206,8 @@ public class Closure {
     }
 
     /**
-     * Check if a member is a moderator
-     * @param member
+     * Check if a member is a moderator by checking if the member has the {@link EnvKey#ROLE_MODERATOR}-role
+     * @param member the member to check whether its a moderator or not
      * @return True if they are a mod, false if not
      */
     public static boolean isMod(Member member) {
@@ -222,11 +222,10 @@ public class Closure {
 
     /**
      * When an activemod proves they're active
-     * @param member
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @param member the activemod
+     * @throws SQLException Database failure
      */
-    public static void handleModActivity(Member member) throws SQLException, ClassNotFoundException {
+    public static void handleModActivity(Member member) throws SQLException {
         ActiveMod activeMod = ActiveModRepository.getModerator(member);
         deleteRequestedAttentionMessages();
 
@@ -305,7 +304,7 @@ public class Closure {
 
     /**
      * Handle an unresponded activity request
-     * @param moderator
+     * @param moderator the active moderator
      */
     private static void handleActivityProveTimeout(ActiveMod moderator) throws SQLException, ClassNotFoundException {
         if (getActiveMods().size() == 1) {
@@ -368,7 +367,7 @@ public class Closure {
     /**
      * If someone gave their attention (opt-in, accepted activity-prove-request, sent message) delete the message
      */
-    public static void deleteRequestedAttentionMessages() throws SQLException, ClassNotFoundException {
+    public static void deleteRequestedAttentionMessages() throws SQLException {
         List<ActiveMod> activeMods = ActiveModRepository.getModeratorsWithRequestedAttentionMessageId();
 
         activeMods.forEach(activeMod -> {

@@ -9,25 +9,19 @@ import net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
-import net.dv8tion.jda.api.utils.concurrent.Task;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Util {
 
     /**
      * Check if a member has the {@link EnvKey#ROLE_YUTEAM} role
-     * @param member
+     * @param member the member to check
      * @return True if they have the role, false if not
      */
     public static boolean isTeamMember(Member member) {
@@ -42,7 +36,7 @@ public class Util {
 
     /**
      * Find members that have a given role<br>
-     * @param role
+     * @param role the role to get the members from
      * @return true | false : Returns true when the list is completed
      */
     public static List<Member> getUsersByRole(Role role) {

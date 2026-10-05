@@ -11,16 +11,15 @@ import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.entities.channel.unions.IWebhookContainerUnion;
 import net.dv8tion.jda.api.managers.WebhookManager;
 import net.dv8tion.jda.api.utils.ImageProxy;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Handles messages according to the existing profiles
@@ -28,7 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public class MessageHandling {
 
-    public static String WEBHOOK_NAME = "YuBot Profile";
+    public static final String WEBHOOK_NAME = "YuBot Profile";
 
     public static void handleIncomingMessage(Message originalMessage) throws SQLException, ClassNotFoundException {
         List<Profile> existingProfiles = ProfileRepository.getProfilesFromAccount(originalMessage.getMember());
@@ -137,7 +136,7 @@ public class MessageHandling {
         }
 
         return webhookContainer.retrieveWebhooks().submit().thenApply(webhooks -> {
-                return webhooks.stream().filter(webhook -> webhook.getOwner().getId().equals(Client.getInstance().getClient().getSelfUser().getId())).findFirst();
+                return webhooks.stream().filter(webhook -> Objects.requireNonNull(webhook.getOwner()).getId().equals(Client.getInstance().getClient().getSelfUser().getId())).findFirst();
             });
     }
 
@@ -146,12 +145,11 @@ public class MessageHandling {
      * <p>
      *     Using the message and all of the member's profiles, it searches for a matching proxy and, if found, uses this profile to send the message instead of the current active profile
      * </p>
-     * @param originalMessage
-     * @return
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @param originalMessage the original message sent by the member
+     * @return the profile assigned to the given proxy
+     * @throws SQLException Database failure
      */
-    private static Optional<Profile> handleProxy(Message originalMessage) throws SQLException, ClassNotFoundException {
+    private static Optional<Profile> handleProxy(Message originalMessage) throws SQLException {
         Member member = originalMessage.getMember();
         List<Profile> existingProfiles = ProfileRepository.getProfilesFromAccount(member);
 
@@ -176,8 +174,8 @@ public class MessageHandling {
      * <p>
      *     This replaces code-blocks by inline-code, replaces header-markdown (#, ##, ###) by bold text, removes quote-markdown (> ), replaces linebreaks with spaces
      * </p>
-     * @param message
-     * @return
+     * @param message the raw message
+     * @return a cleaned up version of the message, that prevents weird markdown-styling
      */
     private static String sanitizeMessage(String message) {
         if (message.length() > 70) {

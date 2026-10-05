@@ -11,8 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-;
-
 public enum Setting {
     ACTIVEMOD_SEND_IN_DM(
             "aktivitätsbestätigungsanfrage",
@@ -36,17 +34,17 @@ public enum Setting {
     );
 
     @Getter
-    String label;
+    final String label;
     @Getter
-    String description;
+    final String description;
     @Getter
-    Table.Column dbColumn;
+    final Table.Column dbColumn;
     @Getter
-    Class<?> dataType;
+    final Class<?> dataType;
     @Getter
-    List<Role> allowedRoles;
+    final List<Role> allowedRoles;
     @Getter
-    List<SettingOption> autocompleteOptions = new ArrayList<>();
+    final List<SettingOption> autocompleteOptions = new ArrayList<>();
     /** Minimal allowed characters for a string*/
     @Getter
     int min;
@@ -59,11 +57,11 @@ public enum Setting {
      * <p>
      *     This is primarily used for boolean-settings, because boolean inputs automatically show true/false.
      * </p>
-     * @param label
-     * @param description
+     * @param label the label of the setting
+     * @param description the description of the setting
      * @param dbColumn database column to be able to resolve for generic actions
      * @param dataType The type of the setting
-     * @param <T>
+     * @param <T> the datatype of the given setting
      */
     <T> Setting(String label, String description, Table.Column dbColumn, List<EnvKey> allowedRoles, Class<T> dataType, int min, int max){
         this.label = label;
@@ -77,12 +75,12 @@ public enum Setting {
 
     /**
      * Define a Setting with autocomplete options
-     * @param label
-     * @param description
+     * @param label the label of the setting
+     * @param description the description of the setting
      * @param dbColumn database column to be able to resolve for generic actions
      * @param dataType The type of the setting
      * @param options Selectable types for that setting in the given dataType
-     * @param <T>
+     * @param <T> the datatype of the setting
      */
     <T> Setting(String label, String description, Table.Column dbColumn, List<EnvKey> allowedRoles, Class<T> dataType, List<SettingOption> options){
         this.label = label;
@@ -90,7 +88,7 @@ public enum Setting {
         this.dbColumn = dbColumn;
         this.dataType = dataType;
         this.allowedRoles = allowedRoles.stream().map(EnvResolver::getRoleById).toList();
-        this.autocompleteOptions = options;
+        this.autocompleteOptions.addAll(options);
     }
 
     public static Setting getSettingByLabel(String label){
@@ -98,15 +96,15 @@ public enum Setting {
     }
 
     /**
-     * Get the option by it's option-label
+     * Get the option by its option-label
      * <p>
      *     This use primarily used for the discord autocomplete feature.
      *     The autocomplete shows the label and needs to be converted to its corresponding value for the database.
      * </p>
-     * @param label
-     * @param dataType
-     * @return
-     * @param <T>
+     * @param label the label of the setting to get the value from
+     * @param dataType the datatype of the setting
+     * @return the value of the setting
+     * @param <T> the datatype of the value
      */
     public <T> SettingOption<T> getOptionByLabel(String label, Class<T> dataType) {
         Optional<SettingOption> option = this.autocompleteOptions.stream()

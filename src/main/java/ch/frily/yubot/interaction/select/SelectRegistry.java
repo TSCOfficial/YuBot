@@ -16,7 +16,7 @@ public class SelectRegistry {
 
     private static SelectRegistry instance;
 
-    private Map<String, ISelect> selects = new HashMap<>();
+    private final Map<String, ISelect> selects = new HashMap<>();
 
     public static SelectRegistry getInstance(){
         if (instance == null) {
@@ -29,18 +29,6 @@ public class SelectRegistry {
         selects.forEach(select -> {
             log.info("Loaded select with id {}", select.getId());
             this.selects.put(select.getId(), select);
-        });
-    }
-
-    public void loadSelects(){
-        List<ISelect> rawModals = List.of(
-                new ActiveModTrackingDetailSelect(),
-                new ProfileUseSelect()
-        );
-
-        rawModals.forEach(select -> {
-            log.info("Loaded select with id {}", select.getId());
-            selects.put(select.getId(), select);
         });
     }
 

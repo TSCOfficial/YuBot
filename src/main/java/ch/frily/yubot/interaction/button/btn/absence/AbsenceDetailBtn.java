@@ -13,6 +13,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Allowes the team to view an absance in detail
@@ -36,12 +37,10 @@ public class AbsenceDetailBtn extends Button {
     }
 
     @Override
-    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
+    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, NullPointerException {
         Absence absence = AbsenceRepository.getAbsenceById(Integer.parseInt(getArgument(event.getComponentId(), "absence_id")));
-        if (absence.member() == null) {
-            throw new NullPointerException("Abwesenheit eines ehemaligen Teammitglieds kann nicht angezeigt werden.");
-        }
-        boolean isOwner = event.getMember().getId().equals(absence.member().getId());
+
+        boolean isOwner = Objects.requireNonNull(event.getMember()).getId().equals(absence.member().getId());
         AbsenceDetailContainer detailContainer = new AbsenceDetailContainer(absence, isOwner);
         event.replyComponents(detailContainer.build()).useComponentsV2().setAllowedMentions(List.of()).setEphemeral(true).queue();
     }

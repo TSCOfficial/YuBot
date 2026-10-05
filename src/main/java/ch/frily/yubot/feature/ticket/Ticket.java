@@ -170,7 +170,7 @@ public class Ticket {
 
     /**
      * Checks if the {@link TextChannel} is a NEW Ticket or nor
-     * @return True if its a NEW Ticket / False if not
+     * @return True if it's a NEW Ticket / False if not
      */
     public boolean isNewTicket() {
         return status.equals(TicketStatus.NEW);
@@ -218,7 +218,7 @@ public class Ticket {
      * @param event Interaction
      * @throws PermissionDeniedException If the member (initiator) is not the ticket owner
      */
-    public void rejectCloseRequest(IReplyCallback event) throws PermissionDeniedException, SQLException, ClassNotFoundException {
+    public void rejectCloseRequest(IReplyCallback event) throws PermissionDeniedException, SQLException {
         if (this.isOwner(event.getMember())) {
             this.updateRequestStatus(false);
         } else {
@@ -253,7 +253,7 @@ public class Ticket {
      * Set the close request count
      * @param count how many times a close-request was sent
      */
-    public void updateCloseRequestCount(int count) throws SQLException, ClassNotFoundException {
+    public void updateCloseRequestCount(int count) throws SQLException {
         closeRequestCount = count;
         TicketRepository.updateTicket(this);
     }
@@ -284,7 +284,7 @@ public class Ticket {
      * Close a Ticket<br>
      * Removes user permissions, changes status, ...
      */
-    public void close(IReplyCallback event, boolean isForceClosed) throws SQLException, ClassNotFoundException {
+    public void close(IReplyCallback event, boolean isForceClosed) throws SQLException {
         if (!isClosable()) {
             throw new InvalidStateException("Ticket kann nicht geschlossen werden.");
         }
@@ -320,7 +320,7 @@ public class Ticket {
 
     }
 
-    public void delete() throws SQLException, ClassNotFoundException {
+    public void delete() throws SQLException {
         TicketRepository.deleteTicket(this);
         this.getChannel().delete().queue();
     }

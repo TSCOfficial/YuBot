@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
+import java.util.Objects;
 
 public class AbsenceEditBtn extends Button {
     @Override
@@ -30,9 +31,9 @@ public class AbsenceEditBtn extends Button {
     }
 
     @Override
-    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
+    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, NullPointerException {
         Absence absence = AbsenceRepository.getAbsenceById(Integer.parseInt(getArgument(event.getComponentId(), "absence_id")));
-        if (absence.member().getId().equals(event.getMember().getId())) {
+        if (absence.member().getId().equals(Objects.requireNonNull(event.getMember()).getId())) {
             AbsenceAddModal editModal = new AbsenceAddModal();
             editModal.setAbsence(absence);
             editModal.setMember(event.getMember());

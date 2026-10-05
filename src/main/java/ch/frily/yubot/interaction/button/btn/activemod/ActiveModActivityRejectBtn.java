@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * Reject the activity request and opt-out
@@ -33,9 +34,9 @@ public class ActiveModActivityRejectBtn extends Button {
     }
 
     @Override
-    public void execute(@NotNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
-        ActiveMod forActiveMod = ActiveModRepository.getModeratorByActivityRequestMessageId(event.getMessageIdLong());
-        if (event.getMember().equals(forActiveMod.member())) {
+    public void execute(@NotNull ButtonInteractionEvent event) throws SQLException {
+        ActiveMod forActiveMod = Objects.requireNonNull(ActiveModRepository.getModeratorByActivityRequestMessageId(event.getMessageIdLong()));
+        if (Objects.equals(event.getMember(), forActiveMod.member())) {
             Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
             guild.removeRoleFromMember(forActiveMod.member(), EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD)).queue();
             event.getMessage().delete().queue();

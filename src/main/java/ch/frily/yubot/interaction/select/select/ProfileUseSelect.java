@@ -15,14 +15,11 @@ import org.jspecify.annotations.NonNull;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 public class ProfileUseSelect implements IStringSelect {
 
     private static final String DEFAULT_ACCOUNT_KEY = "default-profile";
-    private static final String ACTIVE_TAG =
-            "<:active1:1527044015927721984><:active2:1527044016942616748><:active3:1527044018276536403>";
 
     @Setter
     private Profile profile;
@@ -82,9 +79,7 @@ public class ProfileUseSelect implements IStringSelect {
 
         profileContainer.buildAsync().thenAccept(container -> {
             event.editComponents(container.build()).useComponentsV2().queue();
-        }).exceptionally(e -> {
-            return ExceptionHandler.fail(e);
-        });
+        }).exceptionally(ExceptionHandler::fail);
 
     }
 }

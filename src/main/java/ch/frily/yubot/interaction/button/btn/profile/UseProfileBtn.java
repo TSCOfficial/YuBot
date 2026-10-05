@@ -5,7 +5,6 @@ import ch.frily.yubot.database.repository.ProfileRepository;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.feature.profile.Profile;
 import ch.frily.yubot.interaction.button.Button;
-import lombok.Setter;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jspecify.annotations.NonNull;
@@ -38,7 +37,7 @@ public class UseProfileBtn extends Button {
     }
 
     @Override
-    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
+    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException {
         String profileId = null;
         try {
             profileId = getArgument(event.getComponentId(), "p");

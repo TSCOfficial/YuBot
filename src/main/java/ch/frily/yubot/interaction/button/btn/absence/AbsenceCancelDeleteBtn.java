@@ -24,7 +24,7 @@ public class AbsenceCancelDeleteBtn extends Button {
     }
 
     @Override
-    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
+    public void execute(@NonNull ButtonInteractionEvent event) {
         event.reply("Absenzlöschung abgebrochen.").setEphemeral(true).queue();
         event.getMessage().delete().queue();
     }

@@ -17,7 +17,7 @@ public class TicketTypeControlRepository {
         }
     }
 
-    private static boolean exists(TicketType type) throws SQLException, ClassNotFoundException {
+    private static boolean exists(TicketType type) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET_TYPE_CONTROL);
         query.select().where(Table.TicketTypeControlColumn.TYPE, DatabaseQuery.Operator.EQUALS, type.name());
 
@@ -25,14 +25,14 @@ public class TicketTypeControlRepository {
         return resultSet.next();
     }
 
-    private static void createType(TicketType type, boolean isLocked) throws SQLException, ClassNotFoundException {
+    private static void createType(TicketType type, boolean isLocked) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET_TYPE_CONTROL);
         query.insert(Table.TicketTypeControlColumn.TYPE, type.name());
         query.insert(Table.TicketTypeControlColumn.IS_LOCKED, isLocked);
         query.executeQuery();
     }
 
-    private static void updateType(TicketType type, boolean isLocked) throws SQLException, ClassNotFoundException {
+    private static void updateType(TicketType type, boolean isLocked) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET_TYPE_CONTROL);
         query.update(Table.TicketTypeControlColumn.IS_LOCKED, isLocked);
         query.where(Table.TicketTypeControlColumn.TYPE, DatabaseQuery.Operator.EQUALS, type.name());
@@ -41,12 +41,11 @@ public class TicketTypeControlRepository {
 
     /**
      * Check if the ticket type is locked
-     * @param type
+     * @param type the {@link TicketType} to check
      * @return True if the ticket type is locked, false if not
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @throws SQLException Database failure
      */
-    public static boolean isTypeLocked(TicketType type) throws SQLException, ClassNotFoundException {
+    public static boolean isTypeLocked(TicketType type) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET_TYPE_CONTROL);
         query.select().where(Table.TicketTypeControlColumn.TYPE, DatabaseQuery.Operator.EQUALS, type.name());
 

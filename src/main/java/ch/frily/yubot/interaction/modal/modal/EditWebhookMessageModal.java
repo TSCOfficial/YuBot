@@ -10,10 +10,12 @@ import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
+import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This modal allows a profile-user to edit a message sent from their profile-webhook
@@ -50,14 +52,15 @@ public class EditWebhookMessageModal extends Modal {
     }
 
     @Override
-    public void execute(@NonNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException {
+    public void execute(@NonNull ModalInteractionEvent event) throws NullPointerException {
+        ModalMapping messageValue = Objects.requireNonNull(event.getValue("message"));
         event.deferReply(true).queue();
         String messageId = getArgument(event.getCustomId(), "msg");
         String channelId = getArgument(event.getCustomId(), "channel");
 
-        String editedMessage = event.getValue("message").getAsString();
+        String editedMessage = messageValue.getAsString();
 
-        EnvResolver.getMessageById(event.getGuild().getId(), channelId, messageId)
+        EnvResolver.getMessageById(Objects.requireNonNull(event.getGuild()).getId(), channelId, messageId)
                 .thenAccept(originalMessage -> {
                     MessageHandling.editMessage(originalMessage, editedMessage);
                     event.getHook().deleteOriginal().queue();

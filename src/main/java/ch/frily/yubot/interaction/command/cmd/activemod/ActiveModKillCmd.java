@@ -41,9 +41,7 @@ public class ActiveModKillCmd implements ISlashSubcommand {
         Role activeMod = EnvResolver.getRoleById(1513639704870912130L);
 
         int activeModCount = Closure.getActiveMods().size();
-        List<CompletableFuture<Void>> removeRoleFutures = event.getGuild().getMembersWithRoles(activeMod).stream().map(member -> {
-            return event.getGuild().removeRoleFromMember(member, activeMod).submit();
-        }).toList();
+        List<CompletableFuture<Void>> removeRoleFutures = event.getGuild().getMembersWithRoles(activeMod).stream().map(member -> event.getGuild().removeRoleFromMember(member, activeMod).submit()).toList();
         CompletableFuture<Void> allRoleFutures = CompletableFuture.allOf(removeRoleFutures.toArray(new CompletableFuture[0]));
 
         allRoleFutures.thenAccept(_ -> {

@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 public class EventReminderScheduler implements IScheduler {
@@ -26,7 +27,7 @@ public class EventReminderScheduler implements IScheduler {
     }
 
     @Override
-    public void execute() throws SQLException, ClassNotFoundException {
+    public void execute() {
         Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
         List<ScheduledEvent> upcomingEvents = guild.getScheduledEvents().stream().filter(event -> {
             try {
@@ -37,8 +38,8 @@ public class EventReminderScheduler implements IScheduler {
                 LocalDateTime startTime = event.getStartTime().atZoneSameInstant(ZoneId.of("Europe/Zurich")).toLocalDateTime();
                 LocalDateTime now = LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MINUTES);
                 if (event.getStatus().equals(ScheduledEvent.Status.SCHEDULED) && (!startTime.isBefore(now) && !startTime.isAfter(now.plusHours(2)))) {
-                        Map<String, Boolean> reminderEntry = EventReminderRepository.getEvent(event.getId());
-                        return reminderEntry != null ? !reminderEntry.get(event.getId()) : true;
+                        Boolean reminderIsSent = EventReminderRepository.reminderAlreadySent(event.getId());
+                        return reminderIsSent == null || !reminderIsSent;
                 }
             } catch (Exception e) {
                 ExceptionHandler.handle(e);
@@ -46,9 +47,7 @@ public class EventReminderScheduler implements IScheduler {
             return false;
         }).toList();
 
-        upcomingEvents.forEach(event -> {
-            sendReminder(event);
-        });
+        upcomingEvents.forEach(this::sendReminder);
     }
 
     private void sendReminder(ScheduledEvent event) {
@@ -58,7 +57,7 @@ public class EventReminderScheduler implements IScheduler {
         reminderSB.append(String.format("# __%s__ startet in <t:%d:R>", event.getName(), Util.toEpochSeconds(event.getStartTime().atZoneSameInstant(ZoneId.of("Europe/Zurich")).toLocalDateTime()))).append("\n");
         reminderSB.append(event.getDescription()).append("\n");
         if (event.getType() == ScheduledEvent.Type.STAGE_INSTANCE || event.getType() == ScheduledEvent.Type.VOICE) {
-            reminderSB.append(String.format("-# %s | %s", event.getChannel().getJumpUrl(), event.getJumpUrl()));
+            reminderSB.append(String.format("-# %s | %s", Objects.requireNonNull(event.getChannel()).getJumpUrl(), event.getJumpUrl()));
         } else if (event.getType() == ScheduledEvent.Type.EXTERNAL) {
             reminderSB.append(String.format("-# %s | %s", event.getLocation(), event.getJumpUrl()));
         } else {

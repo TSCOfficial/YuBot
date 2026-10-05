@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * When the last active mod wants to opt-out via command, the bot askes to approve the opt-out before closing the server
@@ -29,10 +30,9 @@ public class ActiveModApproveOptOutBtn extends Button {
     }
 
     @Override
-    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
+    public void execute(@NonNull ButtonInteractionEvent event) {
         Role activeMod = EnvResolver.getRoleById(1513639704870912130L);
-        event.getGuild().removeRoleFromMember(event.getMember(), activeMod).submit().thenAccept(_ -> {
-
+        Objects.requireNonNull(event.getGuild()).removeRoleFromMember(Objects.requireNonNull(event.getMember()), activeMod).submit().thenAccept(_ -> {
             event.reply("Opt-out erfolgreich.\n-# Der Server wird nun geschlossen.").setEphemeral(true).queue();
         });
     }

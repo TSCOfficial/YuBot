@@ -16,15 +16,15 @@ public interface ISelect {
 
     default Integer getMinValues(){
         return 1;
-    };
+    }
 
     default Integer getMaxValues(){
         return 1;
-    };
+    }
 
     List<SelectOption> getOptions();
 
     default List<SelectOption> getDefaultOptions() {
         return List.of();
-    };
+    }
 }

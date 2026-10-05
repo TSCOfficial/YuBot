@@ -27,9 +27,4 @@ public class ActiveModCmdGroup implements ISlashCommandGroup {
                 new ActiveModControlCmd()
         );
     }
-
-    @Override
-    public List<Permission> getDefaultPermissions() {
-        return ISlashCommandGroup.super.getDefaultPermissions();
-    }
 }

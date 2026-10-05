@@ -11,16 +11,16 @@ public record DynamicMessage(String name, Message message) {
 
     /**
      * Retrieve a dynamic message
-     * @param name the registry name of the dynamic message
+     * @param registryName the registry name of the dynamic message
      * @param channelId current channel id
      * @param messageId current message id
-     * @return
+     * @return a {@link CompletableFuture}, consisting of the {@link DynamicMessage}
      */
-    public static CompletableFuture<DynamicMessage> retrieve(String name, long channelId, long messageId) {
+    public static CompletableFuture<DynamicMessage> retrieve(String registryName, long channelId, long messageId) {
         long guildId = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getIdLong();
 
         return EnvResolver.getMessageById(guildId, channelId, messageId)
-                .thenApply(Message -> new DynamicMessage(name, Message))
+                .thenApply(Message -> new DynamicMessage(registryName, Message))
                 .exceptionally(ExceptionHandler::fail);
     }
 }

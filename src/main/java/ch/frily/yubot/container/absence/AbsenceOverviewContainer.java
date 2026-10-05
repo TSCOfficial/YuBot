@@ -33,9 +33,6 @@ import java.util.stream.Stream;
 @Slf4j
 public class AbsenceOverviewContainer extends PaginationContainer {
 
-    /** max componentcount may be filled before the overview gets truncated */
-    private static final int MAX_DISPLAYED_COMPONENTS = 30;
-
     /** Roles that are taken in account for when displaying the roles of an absenced member */
     private static final List<Role> DISPLAYABLE_ROLES = Stream.of(
             EnvKey.ROLE_OWNER,
@@ -148,11 +145,11 @@ public class AbsenceOverviewContainer extends PaginationContainer {
 
     /**
      * Get the team roles of a member to show what teams the member is part of
-     * @param member
-     * @return
+     * @param member the member to get the roles from
+     * @return a list of the members displayable roles
      */
     private List<Role> getTeamRoles(Member member) {
-        return member.getRoles().stream().filter(role -> DISPLAYABLE_ROLES.contains(role)).toList();
+        return member.getRoles().stream().filter(DISPLAYABLE_ROLES::contains).toList();
     }
 
     /**

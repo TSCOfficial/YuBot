@@ -1,7 +1,6 @@
 package ch.frily.yubot.embed;
 
 import ch.frily.yubot.util.Color;
-import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
@@ -14,44 +13,44 @@ public interface IEmbed {
     // Author
     default String getAuthorName(){
         return null;
-    };
+    }
 
     default String getAuthorUrl(){
         return null;
-    };
+    }
 
     default String getAuthorIconUrl(){
         return null;
-    };
+    }
 
     // Content
     default String getTitle(){
         return null;
-    };
+    }
 
     default String getTitleUrl(){
         return null;
-    };
+    }
 
     default String getDescription(){
         return null;
-    };
+    }
 
     default List<Field> getFields() {
         return null;
-    };
+    }
 
     default java.awt.Color getColor(){
         return Color.LIGHT_GRAY;
-    };
+    }
 
     default String getFooterText(){
         return null;
-    };
+    }
 
     default String getFooterIconUrl(){
         return null;
-    };
+    }
 
     default Instant getTimestamp() {
         return new Date().toInstant();

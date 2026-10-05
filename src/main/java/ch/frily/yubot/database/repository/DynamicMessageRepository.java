@@ -25,12 +25,11 @@ public class DynamicMessageRepository {
 
     /**
      * Get a dynamic message reference by its registry name.
-     * @param name
-     * @return
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @param name the registry name of the dynamic message
+     * @return the reference to the dynamic message
+     * @throws SQLException Database failure
      */
-    public static DynamicMessageReference getDynamicMessageReference(String name) throws SQLException, ClassNotFoundException {
+    public static DynamicMessageReference getDynamicMessageReference(String name) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.DYNAMIC_MESSAGE);
         query.select().where(Table.DynamicMessageColumn.NAME, DatabaseQuery.Operator.EQUALS, name);
 
@@ -48,17 +47,16 @@ public class DynamicMessageRepository {
 
     /**
      * retrieve a dynamic message by its registry name
-     * @param name
-     * @return
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @param name the registry name of the dynamic message
+     * @return a {@link CompletableFuture}, consisting of the {@link DynamicMessage}
+     * @throws SQLException Database failure
      */
-    public static CompletableFuture<DynamicMessage> getDynamicMessage(String name) throws SQLException, ClassNotFoundException {
+    public static CompletableFuture<DynamicMessage> getDynamicMessage(String name) throws SQLException {
         DynamicMessageReference reference = getDynamicMessageReference(name);
         return DynamicMessage.retrieve(reference.name(), reference.channelId(), reference.messageId());
     }
 
-    public static boolean exists(String name) throws SQLException, ClassNotFoundException {
+    public static boolean exists(String name) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.DYNAMIC_MESSAGE);
         query.select(Table.DynamicMessageColumn.NAME)
                 .where(Table.DynamicMessageColumn.NAME, DatabaseQuery.Operator.EQUALS, name);
@@ -67,7 +65,7 @@ public class DynamicMessageRepository {
         return resultSet.next();
     }
 
-    public static void createDynamicMessage(DynamicMessage dynamicMessage) throws SQLException, ClassNotFoundException {
+    public static void createDynamicMessage(DynamicMessage dynamicMessage) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.DYNAMIC_MESSAGE);
         query.insert(Table.DynamicMessageColumn.NAME, dynamicMessage.name());
         query.insert(Table.DynamicMessageColumn.CHANNEL_ID, dynamicMessage.message().getChannel().getIdLong());
@@ -76,13 +74,13 @@ public class DynamicMessageRepository {
         query.executeQuery();
     }
 
-    public static void deleteDynamicMessage(DynamicMessage dynamicMessage) throws SQLException, ClassNotFoundException {
+    public static void deleteDynamicMessage(DynamicMessage dynamicMessage) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.DYNAMIC_MESSAGE);
         query.where(Table.DynamicMessageColumn.NAME, DatabaseQuery.Operator.EQUALS, dynamicMessage.name()).delete();
         query.executeQuery();
     }
 
-    public static void updateDynamicMessage(DynamicMessage dynamicMessage) throws SQLException, ClassNotFoundException {
+    public static void updateDynamicMessage(DynamicMessage dynamicMessage) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.DYNAMIC_MESSAGE);
         query.update(Table.DynamicMessageColumn.CHANNEL_ID, dynamicMessage.message().getChannel().getIdLong());
         query.update(Table.DynamicMessageColumn.MESSAGE_ID, dynamicMessage.message().getIdLong());
@@ -91,7 +89,7 @@ public class DynamicMessageRepository {
         query.executeQuery();
     }
 
-    public static void upsertDynamicMessage(DynamicMessage dynamicMessage) throws SQLException, ClassNotFoundException {
+    public static void upsertDynamicMessage(DynamicMessage dynamicMessage) throws SQLException {
         if (exists(dynamicMessage.name())) {
             updateDynamicMessage(dynamicMessage);
         } else {

@@ -26,7 +26,7 @@ public class AbsenceEditOwnBtn extends Button {
     }
 
     @Override
-    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
+    public void execute(@NonNull ButtonInteractionEvent event) {
         event.replyComponents(new AbsenceEditOwnContainer(ContainerContext.of(event)).build()).useComponentsV2().setEphemeral(true).queue();
     }
 }

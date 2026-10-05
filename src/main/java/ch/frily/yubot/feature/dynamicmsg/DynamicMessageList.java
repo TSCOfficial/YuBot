@@ -83,8 +83,8 @@ public enum DynamicMessageList {
 
     /**
      * Check if a given embed or container is a dynamic message by its registry name
-     * @param registryName
-     * @return
+     * @param registryName the registry name of the dynamic message
+     * @return whether the given name matches with a registry-name or not
      */
     public static boolean isDynamic(String registryName) {
         return Arrays.stream(values())
@@ -93,8 +93,8 @@ public enum DynamicMessageList {
 
     /**
      * Get a dynamic message by its registry name
-     * @param registryName
-     * @return
+     * @param registryName the registry name of the dynamic message
+     * @return get the dynamic message from the registry name
      */
     public static DynamicMessageList fromRegistryName(String registryName) {
         return Arrays.stream(values())
@@ -106,21 +106,20 @@ public enum DynamicMessageList {
     /**
      * Remember a message as a dynamic message
      * @param message the message to remember
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @throws SQLException Database failure
      */
-    public void remember(Message message) throws SQLException, ClassNotFoundException {
+    public void remember(Message message) throws SQLException {
         DynamicMessageRepository.upsertDynamicMessage(new DynamicMessage(name(), message));
     }
 
     /**
      * Update the dynamic message
-     * <br>
-     * If no dynamic message could be retrieved, the reference is used to send a new message to the original channel.
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * <p>
+     *     If no dynamic message could be retrieved, the reference is used to send a new message to the original channel.
+     * </p>
+     * @throws SQLException Database failure
      */
-    public void update() throws SQLException, ClassNotFoundException {
+    public void update() throws SQLException {
         update(ContainerContext.defaults());
     }
 
@@ -129,10 +128,9 @@ public enum DynamicMessageList {
      * <br>
      * If no dynamic message could be retrieved, the reference is used to send a new message to the original channel.
      * @param context the arguments the embed/container gets built with
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @throws SQLException Database failure
      */
-    public void update(ContainerContext context) throws SQLException, ClassNotFoundException {
+    public void update(ContainerContext context) throws SQLException {
         DynamicMessageRepository.DynamicMessageReference reference =
                 DynamicMessageRepository.getDynamicMessageReference(name());
 
@@ -146,9 +144,11 @@ public enum DynamicMessageList {
 
     /**
      * Update the dynamic message
-     * <br>
-     * If a message could not be found, the reference is used to send a new message to the original channel.
-     * @param dynamicMessage
+     * <p>
+     *     If a message could not be found, the reference is used to send a new message to the original channel.
+     * </p>
+     * @param dynamicMessage the dynamic message to update
+     * @param context the context that supplies the dynamic message with the required arguments
      */
     public void update(DynamicMessage dynamicMessage, ContainerContext context) {
         if (type == DynamicMessageType.EMBED) {

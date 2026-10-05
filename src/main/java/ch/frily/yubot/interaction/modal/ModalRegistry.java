@@ -1,9 +1,6 @@
 package ch.frily.yubot.interaction.modal;
 
-import ch.frily.yubot.feature.ticket.modal.TicketSummaryModal;
-import ch.frily.yubot.feature.ticket.modal.TicketTypeSelectorModal;
 import ch.frily.yubot.interaction.ArgumentComponent;
-import ch.frily.yubot.interaction.modal.modal.*;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 

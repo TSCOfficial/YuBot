@@ -44,8 +44,8 @@ public abstract class Container {
      *     <li>...</li>
      * </ul>
      * <a href="https://docs.discord.com/developers/components/reference">Discord components reference</a>
-     * @param component
-     * @return
+     * @param component the childcomponent to add
+     * @return a list of the current children - for chaining
      */
     public List<ContainerChildComponent> addComponent(ContainerChildComponent component) {
         components.add(component);
@@ -64,8 +64,8 @@ public abstract class Container {
 
     /**
      * Add a {@link TextDisplay} component
-     * @param text
-     * @return
+     * @param text the text to display
+     * @return a list of the current children - for chaining
      */
     public List<ContainerChildComponent> addTextDisplay(String text){
         return addComponent(TextDisplay.of(text));
@@ -81,7 +81,7 @@ public abstract class Container {
 
     /**
      * Add a (invisible) separator
-     * @return
+     * @return a list of the current children - for chaining
      */
     public List<ContainerChildComponent> addInvisibleSeparator(Separator.Spacing spacing){
         return addComponent(Separator.createInvisible(spacing));
@@ -89,7 +89,7 @@ public abstract class Container {
 
     /**
      * Add a (visible) divider
-     * @return
+     * @return a list of the current children - for chaining
      */
     public List<ContainerChildComponent> addLineSeparator(Separator.Spacing spacing){
         return addComponent(Separator.createDivider(spacing));

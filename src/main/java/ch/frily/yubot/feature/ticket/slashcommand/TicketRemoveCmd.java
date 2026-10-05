@@ -44,9 +44,4 @@ public class TicketRemoveCmd implements ISlashSubcommand {
                 new OptionData(OptionType.MENTIONABLE, "user-role", "Person oder Rolle welche vom Ticket entfernt werden soll.", true)
         );
     }
-
-    @Override
-    public List<Permission> getDefaultPermissions() {
-        return ISlashSubcommand.super.getDefaultPermissions();
-    }
 }

@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @Slf4j
 public class OnReadyListener extends ListenerAdapter {
@@ -29,7 +31,7 @@ public class OnReadyListener extends ListenerAdapter {
     }
 
     @Override
-    public void onReady(ReadyEvent event) {
+    public void onReady(@NotNull ReadyEvent event) {
         log.debug("ON READY");
     }
 }

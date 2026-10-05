@@ -25,7 +25,7 @@ public class AbsenceApproveDeleteBtn extends Button {
     }
 
     @Override
-    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
+    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException {
         String absenceId = this.getArgument(event.getComponentId(), "absence_id");
         AbsenceRepository.deleteAbsenceById(Integer.parseInt(absenceId));
         event.getMessage().delete().queue();

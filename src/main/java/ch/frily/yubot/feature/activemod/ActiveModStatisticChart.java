@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -83,10 +82,10 @@ public final class ActiveModStatisticChart {
 
     /**
      * Generate linechart for active mod tracking
-     * @param title
-     * @param xAxisTitle
-     * @param yAxisTitle
-     * @return
+     * @param title Chart title
+     * @param xAxisTitle x-axis title
+     * @param yAxisTitle y-axis title
+     * @return a chart statistic
      */
     private ActiveModStatisticChart generateLineChart(List<ActiveModStatisticChartData> lineChartData, String title, String xAxisTitle, String yAxisTitle) {
         CategoryChart chart = new CategoryChartBuilder()

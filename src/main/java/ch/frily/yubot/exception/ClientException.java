@@ -62,7 +62,7 @@ public class ClientException extends RuntimeException {
 
     /**
      * Set the icon for the message based on the log level.
-     * @param level
+     * @param level log {@link Level}
      * @return formatted log-level-based message
      */
     private String setMessageIcon(Level level) {

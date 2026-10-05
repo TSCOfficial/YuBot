@@ -26,7 +26,7 @@ public class AddProfileBtn extends Button {
     }
 
     @Override
-    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
+    public void execute(@NonNull ButtonInteractionEvent event) {
         event.replyModal(new AddProfileModal().build()).queue();
     }
 }

@@ -1,14 +1,7 @@
 package ch.frily.yubot.interaction.button;
 
 import ch.frily.yubot.exception.PermissionDeniedException;
-import ch.frily.yubot.feature.ticket.button.*;
 import ch.frily.yubot.interaction.ArgumentComponent;
-import ch.frily.yubot.interaction.button.btn.*;
-import ch.frily.yubot.interaction.button.btn.absence.*;
-import ch.frily.yubot.interaction.button.btn.activemod.*;
-import ch.frily.yubot.interaction.button.btn.profile.AddProfileBtn;
-import ch.frily.yubot.interaction.button.btn.profile.EditProfileBtn;
-import ch.frily.yubot.interaction.button.btn.profile.UseProfileBtn;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
@@ -27,7 +20,7 @@ public class ButtonRegistry {
     private static ButtonRegistry instance;
 
     // id/url, Button
-    public Map<String, Button> buttons = new HashMap<>();
+    public final Map<String, Button> buttons = new HashMap<>();
 
     public static ButtonRegistry getInstance(){
         if (instance == null) {

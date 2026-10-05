@@ -27,7 +27,7 @@ public class ActiveModCancelOptOutBtn extends Button {
     }
 
     @Override
-    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
+    public void execute(@NonNull ButtonInteractionEvent event) {
         event.editMessage("Opt-out Prozess abgebrochen.").queue();
     }
 }

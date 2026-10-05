@@ -30,11 +30,11 @@ public class ClosureActivityRequestEmbed implements IEmbed {
 
     @Override
     public String getDescription() {
-        boolean activeModSendInDm = false;
+        boolean activeModSendInDm;
         try {
-            activeModSendInDm = SettingRepository.getSettingsOrThrow(activeMod.member()).activeModSendInDm().equals("Via DM");
+            activeModSendInDm = SettingRepository.getSettingsOrThrow(activeMod.member()).activeModSendInDm();
         } catch (Exception e) {
-            // already false if no profile exist
+            activeModSendInDm = false;
         }
         StringBuilder builder = new StringBuilder();
         builder.append(String.format("## %s, bestätige deine Anwesenheit\n", activeMod.member().getEffectiveName()));

@@ -50,7 +50,7 @@ public class TicketManager {
         return instance;
     }
 
-    public void createTicket(TicketType type, Member ticketOwner, Consumer<TextChannel> onCreated) throws SQLException, ClassNotFoundException {
+    public void createTicket(TicketType type, Member ticketOwner, Consumer<TextChannel> onCreated) throws SQLException {
         List<TextChannel> openedTickets = TicketRepository.getTicketsByUser(ticketOwner.getUser()).stream().map(Ticket::getChannel).toList();
         if (openedTickets.size() >= MAX_TICKET_COUNT) {
             throw new PermissionDeniedException(String.format("""

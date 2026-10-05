@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 
 import java.util.List;
 
@@ -41,7 +40,7 @@ public interface IContextMenu {
      * </code></pre>
      * <p>
      * If left empty, everyone can execute the command. (except defined otherwise in {@link #getDefaultPermissions()})
-     * @return
+     * @return a list of {@link Role}s that are allowed to use the button. Administrators bypass this check.
      */
     default List<Role> getAllowedRoles() {
         return List.of();
@@ -49,7 +48,7 @@ public interface IContextMenu {
 
     /**
      * Build the contextmenu for Discord
-     * @return
+     * @return the {@link CommandData} for Discord
      */
     default CommandData build(){
         CommandData commandData = Commands.context(getType(), getName());

@@ -39,13 +39,13 @@ public abstract class PaginationContainer extends Container {
     /** The container wrapping a page counts as a component itself */
     private static final int CONTAINER_COMPONENT_COUNT = 1;
 
+    /** The amount of components that have been rendered on the current page */
     @Getter
     @Setter
-    /** The amount of components that have been rendered on the current page */
     private int currentPageComponentCount = 0;
 
     /** List of the items */
-    private List<PaginationItem> items = new ArrayList<>();
+    private final List<PaginationItem> items = new ArrayList<>();
 
     @Getter
     @Setter
@@ -56,7 +56,7 @@ public abstract class PaginationContainer extends Container {
     private PaginationItem footer;
 
     /** List of the pages */
-    private List<Page> pages = new ArrayList<>();
+    private final List<Page> pages = new ArrayList<>();
 
     protected void addItem(PaginationItem item){
         this.items.add(item);
@@ -139,7 +139,7 @@ public abstract class PaginationContainer extends Container {
 
     /**
      * Build the container of the {@link #currentPage current page}, framed by the header, the footer, and the navigation controls
-     * @return
+     * @return the container with the current components, matching the pagination
      */
     public net.dv8tion.jda.api.components.container.Container buildPagination() {
         buildPages();

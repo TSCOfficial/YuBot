@@ -9,15 +9,16 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
@@ -67,9 +68,10 @@ public class SayCmd implements ISlashSubcommand {
     }
 
     @Override
-    public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
-        String text = event.getOption("text").getAsString();
-        Integer deleteAfter = event.getOption("delete-after") != null ? event.getOption("delete-after").getAsInt() : null;
+    public void execute(@NonNull SlashCommandInteractionEvent event) {
+        OptionMapping textOption = Objects.requireNonNull(event.getOption("text"));
+        String text =  textOption.getAsString();
+        Integer deleteAfter = event.getOption("delete-after") != null ? textOption.getAsInt() : null;
         log.info(String.valueOf(deleteAfter));
         if (deleteAfter != null) {
             long timestamp = Instant.now().plusSeconds(deleteAfter).toEpochMilli() / 1000;
@@ -83,7 +85,6 @@ public class SayCmd implements ISlashSubcommand {
         event.getChannel().sendMessage(text).queue(message -> {
             String deleteAfterInfo = "";
             if (deleteAfter != null) {
-                log.info("setting delete after to {}", deleteAfter);
                 message.delete().queueAfter(deleteAfter, TimeUnit.SECONDS);
                 deleteAfterInfo = String.format(" und wird in %s gelöscht.", Util.calcDurationSeconds(deleteAfter));
             }

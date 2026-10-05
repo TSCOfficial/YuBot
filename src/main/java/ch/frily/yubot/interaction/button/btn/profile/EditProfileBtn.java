@@ -28,7 +28,7 @@ public class EditProfileBtn extends Button {
     }
 
     @Override
-    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
+    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException {
         String profileId = getArgument(event.getComponentId(), "p");
         Profile profile = ProfileRepository.getProfileById(profileId);
         AddProfileModal modal =  new AddProfileModal();

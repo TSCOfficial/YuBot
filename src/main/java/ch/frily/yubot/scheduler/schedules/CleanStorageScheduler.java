@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 public class CleanStorageScheduler implements IScheduler {
     @Override
-    public void execute() throws SQLException, ClassNotFoundException {
+    public void execute() {
         SessionStorage.getInstance().clean();
     }
 

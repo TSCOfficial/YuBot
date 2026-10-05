@@ -2,6 +2,7 @@ package ch.frily.yubot.database.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
+import ch.frily.yubot.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.ResultSet;
@@ -12,31 +13,33 @@ import java.util.Map;
 public class EventReminderRepository {
 
     /**
-     * Get the event informations (as a map with)
-     * @param eventId
-     * @return
+     * Get the event information
+     * <p>
+     *     The events are organized in a map covering their
+     * </p>
+     * @param eventId the ID of the event to check
+     * @return True if the reminder was already sent, false if not.
      * @throws SQLException
      * @throws ClassNotFoundException
      */
-    public static Map<String, Boolean> getEvent(String eventId) throws SQLException, ClassNotFoundException {
+    public static Boolean reminderAlreadySent(String eventId) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.EVENT_REMINDER);
         query.where(Table.EventReminderColumn.ID, DatabaseQuery.Operator.EQUALS, eventId);
         ResultSet rs = query.executeDataQuery();
 
         if (rs.next()) {
-            return Map.of(eventId, rs.getBoolean(Table.EventReminderColumn.IS_REMINDER_SENT.getColumn()));
+            return rs.getBoolean(Table.EventReminderColumn.IS_REMINDER_SENT.getColumn());
         }
-        return null;
+        throw new NotFoundException("Event not found");
     }
 
     /**
      * Changes the "is reminder sent" status
-     * @param eventId
-     * @param status
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @param eventId the ID of the event to modify
+     * @param status the new status to define
+     * @throws SQLException Database failure
      */
-    public static void setStatus(String eventId, boolean status) throws SQLException, ClassNotFoundException {
+    public static void setStatus(String eventId, boolean status) throws SQLException {
         createIfMissing(eventId);
         DatabaseQuery query = new DatabaseQuery(Table.EVENT_REMINDER);
         query.where(Table.EventReminderColumn.ID, DatabaseQuery.Operator.EQUALS, eventId);
@@ -46,11 +49,10 @@ public class EventReminderRepository {
 
     /**
      * Creates the event-reminder entry
-     * @param eventId
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @param eventId the ID of the event to save
+     * @throws SQLException Database failure
      */
-    public static void create(String eventId) throws SQLException, ClassNotFoundException {
+    public static void create(String eventId) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.EVENT_REMINDER);
         query.insert(Table.EventReminderColumn.ID, eventId);
         query.insert(Table.EventReminderColumn.IS_REMINDER_SENT, false);
@@ -59,23 +61,23 @@ public class EventReminderRepository {
 
     /**
      * Creates the event-reimder entry for the given event if it does not exist in the database
-     * @param eventId
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @param eventId the ID of the event to save
+     * @throws SQLException Database failure
      */
-    public static void createIfMissing(String eventId) throws SQLException, ClassNotFoundException {
-        if (getEvent(eventId) == null) {
+    public static void createIfMissing(String eventId) throws SQLException {
+        try {
+            reminderAlreadySent(eventId);
+        } catch (NotFoundException e) {
             create(eventId);
         }
     }
 
     /**
      * Deletes the event-reimder entry
-     * @param eventId
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @param eventId the ID of the event to save
+     * @throws SQLException Database failure
      */
-    public static void delete(String eventId) throws SQLException, ClassNotFoundException {
+    public static void delete(String eventId) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.EVENT_REMINDER);
         query.where(Table.EventReminderColumn.ID, DatabaseQuery.Operator.EQUALS, eventId);
         query.delete();

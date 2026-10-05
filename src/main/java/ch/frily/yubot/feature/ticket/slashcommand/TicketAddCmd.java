@@ -54,9 +54,4 @@ public class TicketAddCmd implements ISlashSubcommand {
                 new OptionData(OptionType.STRING, "reason", "Weshalb wird die Person/Rolle hinzugefügt?")
         );
     }
-
-    @Override
-    public List<Permission> getDefaultPermissions() {
-        return ISlashSubcommand.super.getDefaultPermissions();
-    }
 }

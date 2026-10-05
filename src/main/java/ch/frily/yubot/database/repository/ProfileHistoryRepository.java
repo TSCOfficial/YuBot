@@ -2,7 +2,6 @@ package ch.frily.yubot.database.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
-import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.feature.profile.Profile;
 import ch.frily.yubot.feature.profile.ProfileHistory;
@@ -22,7 +21,7 @@ import java.time.LocalDateTime;
  */
 public class ProfileHistoryRepository {
 
-    public static void create(Profile oldProfile, Profile newProfile) throws SQLException, ClassNotFoundException {
+    public static void create(Profile oldProfile, Profile newProfile) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE_HISTORY);
         query.insert(Table.ProfileHistoryColumn.PROFILE_ID, oldProfile.profileId());
         query.insert(Table.ProfileHistoryColumn.PREVIOUS_NAME, oldProfile.name());
@@ -33,7 +32,7 @@ public class ProfileHistoryRepository {
         query.executeQuery();
     }
 
-    public static ProfileHistory getByName(String name) throws SQLException, ClassNotFoundException {
+    public static ProfileHistory getByName(String name) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE_HISTORY);
         query.where(Table.ProfileHistoryColumn.PREVIOUS_NAME, DatabaseQuery.Operator.EQUALS, name);
 

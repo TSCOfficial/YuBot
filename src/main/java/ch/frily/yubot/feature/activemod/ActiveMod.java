@@ -26,7 +26,7 @@ public record ActiveMod(
         @Nullable Long activityRequestMessageId,
         @Nullable Long requestedAttentionMessageId) {
 
-    public static CompletableFuture<String> registerModerator(Member member) throws SQLException, ClassNotFoundException {
+    public static CompletableFuture<String> registerModerator(Member member) throws SQLException {
         if (!ActiveModControlRepository.isOptInAllowed()) {
             return CompletableFuture.failedFuture(
                     new PermissionDeniedException("Die Opt-in-Funktion wurde deaktiviert", "Du kannst dich momentan nicht Opt-in stellen.")

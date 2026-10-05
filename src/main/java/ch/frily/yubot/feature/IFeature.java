@@ -1,9 +1,6 @@
 package ch.frily.yubot.feature;
 
-import ch.frily.yubot.container.Container;
-import ch.frily.yubot.embed.IEmbed;
 import ch.frily.yubot.interaction.button.Button;
-import ch.frily.yubot.interaction.button.IButton;
 import ch.frily.yubot.interaction.command.ISlashCommand;
 import ch.frily.yubot.interaction.command.ISlashCommandGroup;
 import ch.frily.yubot.interaction.contextmenu.IContextMenu;
@@ -27,29 +24,29 @@ public interface IFeature {
 
     default List<ISlashCommand> getSlashCommands() {
         return List.of();
-    };
+    }
 
     default List<ISlashCommandGroup> getSlashCommandGroups() {
         return List.of();
-    };
+    }
 
     default List<Button> getButtons() {
         return List.of();
-    };
+    }
 
     default List<Modal> getModals() {
         return List.of();
-    };
+    }
 
     default List<ISelect> getSelects() {
         return List.of();
-    };
+    }
 
     default List<IScheduler> getSchedulers() {
         return List.of();
-    };
+    }
 
     default List<IContextMenu> getContextMenus() {
         return List.of();
-    };
+    }
 }

@@ -7,7 +7,6 @@ import ch.frily.yubot.interaction.select.select.ProfileUseSelect;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.separator.Separator;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileListContainer extends Container {

@@ -17,7 +17,7 @@ import java.util.List;
 
 public class ActiveModRepository {
 
-    public static List<ActiveMod> getModerators() throws SQLException, ClassNotFoundException {
+    public static List<ActiveMod> getModerators() throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD);
 
         ResultSet resultSet = query.select().executeDataQuery();
@@ -54,7 +54,7 @@ public class ActiveModRepository {
 
     }
 
-    public static ActiveMod getModerator(Member member) throws SQLException, ClassNotFoundException {
+    public static ActiveMod getModerator(Member member) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD);
         query.select().where(Table.ActiveModColumn.MODERATOR_ID, DatabaseQuery.Operator.EQUALS, member.getIdLong());
 
@@ -75,11 +75,11 @@ public class ActiveModRepository {
      * Get the {@link ActiveMod} by the activity-request message id
      * <p></p>
      * Useful when you need to get the moderator by a button action on a message
-     * @param messageId
-     * @return
-     * @throws SQLException
+     * @param messageId the message ID to get the moderators from (activity request message)
+     * @return the activemod that the activityrequest was for
+     * @throws SQLException Database failure
      */
-    public static ActiveMod getModeratorByActivityRequestMessageId(long messageId) throws SQLException, ClassNotFoundException {
+    public static ActiveMod getModeratorByActivityRequestMessageId(long messageId) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD);
         query.select().where(Table.ActiveModColumn.ACTIVITY_REQUEST_MESSAGE_ID, DatabaseQuery.Operator.EQUALS, messageId);
 
@@ -97,7 +97,7 @@ public class ActiveModRepository {
         return new ActiveMod(member, lastActivityAt, activityRequestedAtTimestamp == null ? null : activityRequestedAtTimestamp.toLocalDateTime(), activityRequestMessageId, requestedAttentionMessageId);
     }
 
-    public static List<ActiveMod> getModeratorsWithRequestedAttentionMessageId() throws SQLException, ClassNotFoundException {
+    public static List<ActiveMod> getModeratorsWithRequestedAttentionMessageId() throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD);
         query.where(Table.ActiveModColumn.REQUESTED_ATTENTION_MESSAGE_ID, DatabaseQuery.Operator.NOT_EQUALS, 0L);
         query.select();
@@ -117,20 +117,20 @@ public class ActiveModRepository {
         return activeMods;
     }
 
-    public static void deleteModerator(Member member) throws SQLException, ClassNotFoundException {
+    public static void deleteModerator(Member member) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD);
         query.where(Table.ActiveModColumn.MODERATOR_ID, DatabaseQuery.Operator.EQUALS, member.getIdLong()).delete();
         query.executeQuery();
     }
 
-    public static void createModerator(Member member) throws SQLException, ClassNotFoundException {
+    public static void createModerator(Member member) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD);
         query.insert(Table.ActiveModColumn.MODERATOR_ID, member.getIdLong());
         query.insert(Table.ActiveModColumn.LAST_ACTIVITY_AT, LocalDateTime.now());
         query.executeQuery();
     }
 
-    public static void updateModerator(ActiveMod activeMod) throws SQLException, ClassNotFoundException {
+    public static void updateModerator(ActiveMod activeMod) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD);
         query.update(Table.ActiveModColumn.LAST_ACTIVITY_AT, activeMod.lastActivityAt());
         query.update(Table.ActiveModColumn.ACTIVITY_REQUESTED_AT, activeMod.activityRequestedAt());
@@ -141,7 +141,7 @@ public class ActiveModRepository {
         query.executeQuery();
     }
 
-    public static void updateModeratorActivity(Member member) throws SQLException, ClassNotFoundException {
+    public static void updateModeratorActivity(Member member) throws SQLException {
         ActiveMod activeMod = new ActiveMod(member, LocalDateTime.now(), null, null, null);
         updateModerator(activeMod);
     }

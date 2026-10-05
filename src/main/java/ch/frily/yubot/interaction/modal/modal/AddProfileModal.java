@@ -4,25 +4,18 @@ import ch.frily.yubot.database.repository.ProfileRepository;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.feature.profile.Profile;
 import ch.frily.yubot.interaction.modal.Modal;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
-import net.dv8tion.jda.api.components.attachmentupload.AttachmentUpload;
 import net.dv8tion.jda.api.components.label.Label;
-import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
-import net.dv8tion.jda.api.utils.FileUpload;
 import org.jspecify.annotations.NonNull;
 
 import javax.annotation.Nullable;
-import java.net.MalformedURLException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -147,7 +140,7 @@ public class AddProfileModal extends Modal {
      * <p>
      *     If the URL is NOT valid, it throws an {@link InvalidStateException}, else it does nothing
      * </p>
-     * @param url
+     * @param url URL to validate
      */
     private void validateUrl(@NonNull String url) {
         boolean isValid = true;
@@ -178,7 +171,7 @@ public class AddProfileModal extends Modal {
      * <p>
      *     If there are any conflicting proxies, it throws an {@link InvalidStateException}, else it does nothing
      * </p>
-     * @param proxy
+     * @param proxy Proxy to validate
      */
     private void validateProxy(Member member, @NonNull String proxy, @Nullable Profile editingProfile) throws SQLException, ClassNotFoundException {
         if (!proxy.isBlank()) {

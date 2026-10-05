@@ -21,6 +21,8 @@ import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
+import net.dv8tion.jda.api.interactions.modals.ModalMapping;
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
@@ -30,6 +32,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The modal for adding and editing absences
@@ -146,7 +149,7 @@ public class AbsenceAddModal extends Modal {
                     absenceNoticeLabel,
                     absenceDeleteLabel
             );
-        };
+        }
         return List.of(
                 startTimeLabel,
                 endTimeLabel,
@@ -158,6 +161,9 @@ public class AbsenceAddModal extends Modal {
 
     @Override
     public void execute(@NonNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException {
+        ModalMapping startTimeValue = Objects.requireNonNull(event.getValue("start-time"));
+        ModalMapping endTimeValue = Objects.requireNonNull(event.getValue("end-time"));
+        ModalMapping absenceTypeValue = Objects.requireNonNull(event.getValue("absence-type-select"));
         Absence existingAbsence = null;
         if (hasArgument(event.getModalId(), "absence_id")) {
             int id = Integer.parseInt(getArgument(event.getModalId(), "absence_id"));
@@ -170,12 +176,12 @@ public class AbsenceAddModal extends Modal {
 
 
 
-        String startTimeString = event.getValue("start-time") != null ? event.getValue("start-time").getAsString() : existingAbsence.fromDateTime().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
-        String endTimeString = event.getValue("end-time").getAsString();
-        String absenceTypeString = event.getValue("absence-type-select").getAsStringList().getFirst();
+        String startTimeString = startTimeValue.getAsString();
+        String endTimeString = endTimeValue.getAsString();
+        String absenceTypeString = absenceTypeValue.getAsStringList().getFirst();
         String reason = event.getValue("reason") != null ? event.getValue("reason").getAsString() : existingAbsence.reason();
         boolean showNotice = event.getValue("absence-notice").getAsBoolean();
-        boolean deleteAbsence = event.getValue("absence-delete") != null ? event.getValue("absence-delete").getAsBoolean() : false;
+        boolean deleteAbsence = event.getValue("absence-delete") != null && event.getValue("absence-delete").getAsBoolean();
 
         // Delete Absence option
         if (deleteAbsence && existingAbsence != null) {
@@ -230,12 +236,14 @@ public class AbsenceAddModal extends Modal {
         return sb.toString();
     }
 
-    private boolean absenceTimeIsValid(Member member, Absence originalAbsence, Absence absenceToValidate, LocalDateTime startDateTime, LocalDateTime endDateTime, boolean bypassStartTimeCheck) throws SQLException, ClassNotFoundException {
+    private void absenceTimeIsValid(Member member, Absence originalAbsence, Absence absenceToValidate, LocalDateTime startDateTime, LocalDateTime endDateTime, boolean bypassStartTimeCheck) throws SQLException, ClassNotFoundException {
         List<Absence> otherAbsences = new java.util.ArrayList<>(AbsenceRepository.getAbsencesByMemberAndDateSpan(member, startDateTime, endDateTime));
-        if (absenceToValidate != null){
-            otherAbsences.removeIf(currentAbsence -> currentAbsence.id().equals(absenceToValidate.id()));
-        }
-        if (originalAbsence != null && originalAbsence.fromDateTime().isAfter(absenceToValidate.fromDateTime())){
+        Objects.requireNonNull(originalAbsence);
+        Objects.requireNonNull(absenceToValidate);
+
+        otherAbsences.removeIf(currentAbsence -> currentAbsence.id().equals(absenceToValidate.id()));
+
+        if (originalAbsence.fromDateTime().isAfter(absenceToValidate.fromDateTime())){
             throw new InvalidStateException("Ungültige Zeitangabe.", "Die Startzeit darf nicht weiter in die Vergangenheit gesetzt werden.");
         }
 
@@ -254,18 +262,16 @@ public class AbsenceAddModal extends Modal {
         if (startDateTime.plusMinutes(MINIMUM_ABSENCE_DURATION).isAfter(endDateTime)) {
             throw new InvalidStateException("Ungültige Zeitangabe.", "Die Dauer der Abwesenheit muss mindestens " + MINIMUM_ABSENCE_DURATION / 60 + " Stunden betragen.");
         }
-        return true;
     }
 
     /**
      * Check if the absence would exceed the maximum number ({@link #MAX_ABSENCES_AT_SAME_TIME}) of items that can be displayed at the same time on the container
-     * @param startTime
-     * @param endTime
-     * @throws SQLException
-     * @throws ClassNotFoundException
-     * @throws InvalidStateException
+     * @param startTime start date-time of the absence
+     * @param endTime end date-time of the absence
+     * @throws SQLException Database failure
+     * @throws InvalidStateException when an absence already exist in the given timespan
      */
-    private void validateAbsenceDisplayCap(Absence absenceToValidate, LocalDateTime startTime, LocalDateTime endTime) throws SQLException, ClassNotFoundException, InvalidStateException {
+    private void validateAbsenceDisplayCap(Absence absenceToValidate, LocalDateTime startTime, LocalDateTime endTime) throws SQLException, InvalidStateException {
         LocalDate currentDay = startTime.toLocalDate();
         LocalDate lastDay = endTime.toLocalDate();
 

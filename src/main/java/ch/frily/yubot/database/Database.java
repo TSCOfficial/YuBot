@@ -13,9 +13,6 @@ public class Database {
 
     private static Database instance;
 
-    // init database constants
-    private static final String DATABASE_DRIVER = "org.postgresql.Driver";
-
     // init connection object
     private Connection connection;
     // init properties object

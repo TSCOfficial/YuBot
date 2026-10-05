@@ -15,7 +15,6 @@ import net.dv8tion.jda.api.entities.Member;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.*;
-import java.util.List;
 
 @Slf4j
 public class ActiveModStatisticContainer extends Container {
@@ -82,7 +81,7 @@ public class ActiveModStatisticContainer extends Container {
                         """,
                 member.getEffectiveName(), member.getId(), activeTag, youTag,
                 Util.calcDuration(totalActiveMinutes),
-                thisMonth, tendencySB.toString())
+                thisMonth, tendencySB)
         );
     }
 

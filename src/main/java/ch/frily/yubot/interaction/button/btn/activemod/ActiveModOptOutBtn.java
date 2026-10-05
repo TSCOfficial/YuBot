@@ -43,7 +43,7 @@ public class ActiveModOptOutBtn extends Button {
     }
 
     @Override
-    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
+    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException {
         Role activeMod = EnvResolver.getRoleById(1513639704870912130L);
         Member member = event.getMember() == null ? Util.getMemberByUser(event.getUser()) : event.getMember();
         if (!member.getRoles().contains(activeMod)) {

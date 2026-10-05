@@ -1,16 +1,11 @@
 package ch.frily.yubot.interaction.modal;
 
-import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
-import net.dv8tion.jda.api.components.label.Label;
-import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
-import net.dv8tion.jda.api.modals.Modal;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 public interface IModal {
 
@@ -18,7 +13,7 @@ public interface IModal {
 
     /**
      * Component tree with Label & component
-     * @return
+     * @return a list of the {@link ModalTopLevelComponent} children
      */
     List<ModalTopLevelComponent> getComponents();
 

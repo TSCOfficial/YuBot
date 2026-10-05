@@ -16,8 +16,8 @@ import java.util.List;
 @Slf4j
 public class PaginationNavBtn extends Button {
 
-    @Setter
     /** Define button style. Default: {@link ButtonStyle#PRIMARY}*/
+    @Setter
     private ButtonStyle style = ButtonStyle.PRIMARY;
     @Nullable
     @Setter
@@ -39,12 +39,12 @@ public class PaginationNavBtn extends Button {
     }
 
     @Override
-    public EmojiUnion getEmoji() {
+    public @Nullable EmojiUnion getEmoji() {
         return emoji;
     }
 
     @Override
-    public String getLabel() {
+    public @Nullable String getLabel() {
         return label;
     }
 

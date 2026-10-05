@@ -89,14 +89,12 @@ public class TeamlistEmbed implements IEmbed {
                     }
         }).toList();
 
-        List<Role> mappedTypes = openedTypes.stream().map(type -> {
-            return switch (type) {
-                case BEWERBUNG_SUPPORT -> EnvResolver.getRoleById(EnvKey.ROLE_SUPPORT);
-                case BEWERBUNG_MODERATION -> EnvResolver.getRoleById(EnvKey.ROLE_MODERATOR);
-                case BEWERBUNG_EVENT -> EnvResolver.getRoleById(EnvKey.ROLE_EVENT);
-                case BEWERBUNG_AWARENESS -> EnvResolver.getRoleById(EnvKey.ROLE_AWARENESS);
-                default -> null;
-            };
+        List<Role> mappedTypes = openedTypes.stream().map(type -> switch (type) {
+            case BEWERBUNG_SUPPORT -> EnvResolver.getRoleById(EnvKey.ROLE_SUPPORT);
+            case BEWERBUNG_MODERATION -> EnvResolver.getRoleById(EnvKey.ROLE_MODERATOR);
+            case BEWERBUNG_EVENT -> EnvResolver.getRoleById(EnvKey.ROLE_EVENT);
+            case BEWERBUNG_AWARENESS -> EnvResolver.getRoleById(EnvKey.ROLE_AWARENESS);
+            default -> null;
         }).filter(Objects::nonNull).toList();
 
         String searchedRoles = mappedTypes.isEmpty()

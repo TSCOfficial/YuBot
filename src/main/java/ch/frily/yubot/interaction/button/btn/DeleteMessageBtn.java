@@ -37,7 +37,7 @@ public class DeleteMessageBtn extends Button {
     }
 
     @Override
-    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
+    public void execute(@NonNull ButtonInteractionEvent event) {
         Pattern pattern = Pattern.compile("<@\\d+>");
         Matcher matcher = pattern.matcher(event.getMessage().getContentRaw());
         if (matcher.find()) {

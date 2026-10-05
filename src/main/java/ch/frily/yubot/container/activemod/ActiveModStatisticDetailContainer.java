@@ -92,7 +92,7 @@ public class ActiveModStatisticDetailContainer extends Container {
                 trackingViews.add(TextDisplay.of(monthDetail.toString()));
 
                 index++;
-            };
+            }
 
             addComponents(trackingViews.reversed());
 

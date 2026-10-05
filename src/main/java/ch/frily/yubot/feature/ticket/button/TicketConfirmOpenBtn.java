@@ -31,7 +31,7 @@ public class TicketConfirmOpenBtn extends Button {
     }
 
     @Override
-    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
+    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException {
         String ticketTypeString = getArgument(event.getComponentId(), "type");
         TicketType ticketType = TicketType.valueOf(ticketTypeString);
 

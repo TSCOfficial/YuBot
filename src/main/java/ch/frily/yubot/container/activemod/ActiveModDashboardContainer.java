@@ -34,7 +34,7 @@ public class ActiveModDashboardContainer extends Container {
             Role activeModRole = EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD);
             List<Member> activeMods = Util.getUsersByRole(activeModRole);
             addFormatedText("## Aktive Moderator*innen (%d)", activeMods.size());
-            if (activeMods.size() > 0) {
+            if (!activeMods.isEmpty()) {
                 addFormatedText("%s\n%s", activeModRole.getAsMention(), activeMods.stream().map(Member::getEffectiveName).collect(Collectors.joining(", ")));
             } else {
                 addFormatedText("%s\n*Keine aktiven Moderator\\*innen*", activeModRole.getAsMention());

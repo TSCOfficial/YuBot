@@ -1,14 +1,12 @@
 package ch.frily.yubot.util;
 
 import ch.frily.yubot.Client;
-import ch.frily.yubot.exception.ClientException;
 import ch.frily.yubot.exception.InvalidStateException;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
-import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -25,7 +23,7 @@ public class EnvResolver {
 
     /**
      * Get a Guild by its integer ID
-     * @param guildId
+     * @param guildId the ID of the guild
      * @return Guild object
      */
     public static Guild getGuildById(long guildId) {
@@ -44,7 +42,7 @@ public class EnvResolver {
 
     /**
      * Get a Role by its integer ID
-     * @param roleId
+     * @param roleId the ID of the role
      * @return Role object
      */
     public static Role getRoleById(long roleId) {
@@ -63,7 +61,7 @@ public class EnvResolver {
 
     /**
      * Get a Channel by its integer ID
-     * @param channelId
+     * @param channelId the ID of the channel
      * @return  object
      */
     public static <T> T getChannelById(Class<T> type, long guildId, long channelId) {
@@ -123,12 +121,12 @@ public class EnvResolver {
 
     /**
      * Checks the keyword for empty or null value, and resolves the key
-     * @param keyword
+     * @param keyword the keyword to check and resolve
      * @return Resolved value
-     * @param <T> Returntype of the resolved value
+     * @param <T> return type of the resolved value
      */
     private static <T> T checkAndResolve(EnvKey keyword, Class<T> type) {
-        if (Objects.equals(keyword, "")) {
+        if (Objects.equals(keyword.get(), "")) {
             throw new InvalidStateException("Keyword is empty!");
         }
 

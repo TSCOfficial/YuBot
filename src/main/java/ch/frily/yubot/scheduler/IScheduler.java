@@ -13,7 +13,7 @@ public interface IScheduler {
      *     Minute Hour Day Month Weekday<br>
      *     Example: 0 * * * * -> Each full hour, at minute 0
      * </p>
-     * @return
+     * @return the unix cron expression, when the scheduler should fire
      */
     String cronExpression();
 

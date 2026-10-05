@@ -51,11 +51,7 @@ public class ActiveModTrackingRepository {
         Map<Member, List<ActiveModTracking>> groupedActiveMods = new LinkedHashMap<>();
 
         activeModTrackings.forEach(activeModTracking -> {
-            List<ActiveModTracking> groupedTrackings = groupedActiveMods.get(activeModTracking.moderator());
-            if (groupedTrackings == null) {
-                groupedTrackings = new ArrayList<>();
-                groupedActiveMods.put(activeModTracking.moderator(), groupedTrackings);
-            }
+            List<ActiveModTracking> groupedTrackings = groupedActiveMods.computeIfAbsent(activeModTracking.moderator(), k -> new ArrayList<>());
             groupedTrackings.add(activeModTracking);
             groupedActiveMods.replace(activeModTracking.moderator(), groupedTrackings);
         });
@@ -72,15 +68,14 @@ public class ActiveModTrackingRepository {
                         (a, b) -> a,
                         LinkedHashMap::new
                 ));
-    };
+    }
 
     /**
      * Get all active moderators from the database.
-     * @return
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @return all activemod trackings
+     * @throws SQLException Database failure
      */
-    public static List<ActiveModTracking> getActiveModTrackings() throws SQLException, ClassNotFoundException {
+    public static List<ActiveModTracking> getActiveModTrackings() throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD_TRACKING);
         ResultSet resultSet = query.select().executeDataQuery();
 
@@ -103,13 +98,12 @@ public class ActiveModTrackingRepository {
 
     /**
      * Get an active moderator's tracking data for a given month.
-     * @param member
-     * @param atMonth
-     * @return
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @param member the member to get the tracking from
+     * @param atMonth the month to get the tracking from
+     * @return the tracking of given member and month
+     * @throws SQLException Database failure
      */
-    public static ActiveModTracking getActiveModTracking(Member member, YearMonth atMonth) throws SQLException, ClassNotFoundException {
+    public static ActiveModTracking getActiveModTracking(Member member, YearMonth atMonth) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD_TRACKING);
         query.select();
         query.where(Table.ActiveModTrackingColumn.MODERATOR_ID, DatabaseQuery.Operator.EQUALS, member.getIdLong());
@@ -135,11 +129,10 @@ public class ActiveModTrackingRepository {
      *     Using the {@link YearMonth}, the system checks for an existing activemod-tracking entry of given month (at day 1).
      *     If there is no entry, a new entry is created for the current month.
      * </p>
-     * @param member
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @param member member to upsetr as activemod
+     * @throws SQLException Database failure
      */
-    public static void upsertActiveMod(Member member) throws SQLException, ClassNotFoundException {
+    public static void upsertActiveMod(Member member) throws SQLException {
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
         try {
             ActiveModTracking tracking = getActiveModTracking(member, YearMonth.now());
@@ -179,10 +172,9 @@ public class ActiveModTrackingRepository {
      *     Month is set to the first day of the current month to be compatible with the DB's date type.
      * </p>
      * @param member The activemod to create a tracking entry for
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @throws SQLException Database failure
      */
-    public static void createActiveModTracking(Member member) throws SQLException, ClassNotFoundException {
+    public static void createActiveModTracking(Member member) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD_TRACKING);
         query.insert(Table.ActiveModTrackingColumn.MODERATOR_ID, member.getIdLong());
         query.insert(Table.ActiveModTrackingColumn.MONTH, YearMonth.now().atDay(1));
@@ -190,7 +182,7 @@ public class ActiveModTrackingRepository {
         query.executeQuery();
     }
 
-    public static void updateActiveModTracking(ActiveModTracking activeModTracking) throws SQLException, ClassNotFoundException {
+    public static void updateActiveModTracking(ActiveModTracking activeModTracking) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD_TRACKING);
         query.update(Table.ActiveModTrackingColumn.ACTIVE_TIME, activeModTracking.activeTime());
         query.update(Table.ActiveModTrackingColumn.LAST_TIME_ACTIVE, LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));

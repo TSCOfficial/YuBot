@@ -27,7 +27,7 @@ public class TicketCancelOpenBtn extends Button {
     }
 
     @Override
-    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
+    public void execute(@NonNull ButtonInteractionEvent event) {
         event.editMessage("Ticket erstellen wurde abgebrochen.").setComponents(event.getMessage().getComponentTree().asDisabled()).queue();
     }
 }

@@ -38,16 +38,11 @@ public class ActiveModShowStatisticBtn extends Button {
     }
 
     @Override
-    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
+    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
         event.deferReply(true).queue();
         Map<Member, List<ActiveModTracking>> activeModTrackings = ActiveModTrackingRepository.getActiveModTrackingsAsMap();
         activeModTrackings = ActiveModTrackingRepository.completeWithMissingModerators(activeModTrackings);
         ActiveModStatisticContainer activeModStatisticContainer = new ActiveModStatisticContainer(activeModTrackings, event.getMember());
         event.getHook().sendMessageComponents(activeModStatisticContainer.build()).useComponentsV2().setAllowedMentions(List.of()).setEphemeral(true).queue();
-    }
-
-    @Override
-    public List<Role> getAllowedRoles() {
-        return super.getAllowedRoles();
     }
 }

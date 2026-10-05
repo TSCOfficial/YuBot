@@ -3,7 +3,6 @@ package ch.frily.yubot.interaction.command.cmd.profile;
 import ch.frily.yubot.Client;
 import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.database.repository.ProfileRepository;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.feature.setting.Setting;
 import ch.frily.yubot.feature.setting.SettingOption;
@@ -24,8 +23,6 @@ import org.jspecify.annotations.NonNull;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static org.reflections.Reflections.log;
 
 /**
  * Command to control the profile settings.
@@ -54,15 +51,15 @@ public class ProfileSettingCmd implements ISlashSubcommand {
                 setting.getLabel(),
                 setting.getDescription(),
                 false,
-                setting.getAutocompleteOptions() == null ? false : true
+                !setting.getAutocompleteOptions().isEmpty()
         )).toList();
     }
 
     @Override
     public Map<String, List<Command.Choice>> getAutocomplete(CommandAutoCompleteInteractionEvent event) {
         return Arrays.stream(Setting.values())
-                .filter(setting -> setting.getAutocompleteOptions() != null)
-                .filter(setting -> Util.isPermitted(event.getMember(), setting.getAllowedRoles()))
+                .filter(setting -> !setting.getAutocompleteOptions().isEmpty())
+                .filter(setting -> Util.isPermitted(Objects.requireNonNull(event.getMember()), setting.getAllowedRoles()))
                 .collect(Collectors.toMap(Setting::getLabel, setting -> setting.getAutocompleteOptions().stream().map(autocompleteOption -> {
                     if (autocompleteOption.value() instanceof String || autocompleteOption.value() instanceof Boolean) {
                         return new Command.Choice(autocompleteOption.label(), String.valueOf(autocompleteOption.value()));
@@ -75,7 +72,7 @@ public class ProfileSettingCmd implements ISlashSubcommand {
     }
 
     @Override
-    public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
+    public void execute(@NonNull SlashCommandInteractionEvent event) {
         List<OptionMapping> options = Arrays.stream(Setting.values()).map(setting -> {
             return event.getOption(setting.getLabel());
         }).filter(Objects::nonNull).toList();
@@ -85,7 +82,7 @@ public class ProfileSettingCmd implements ISlashSubcommand {
         for (OptionMapping option : options) {
             try {
                 Setting setting = Setting.getSettingByLabel(option.getName());
-                if (!Util.isPermitted(event.getMember(), setting.getAllowedRoles())) {
+                if (!Util.isPermitted(Objects.requireNonNull(event.getMember()), setting.getAllowedRoles())) {
                     failedSettingsSB.append(String.format("- `%s`: Du bist nicht berechtigt diese Einstellung zu ändern.\n", setting.getLabel()));
                 }
                 if (validateInput(option, setting)) {
@@ -93,7 +90,7 @@ public class ProfileSettingCmd implements ISlashSubcommand {
                     if (specificFailure.isPresent()) {
                         failedSettingsSB.append(specificFailure.get());
                     } else {
-                        if (setting.getAutocompleteOptions() != null) {
+                        if (!setting.getAutocompleteOptions().isEmpty()) {
                             SettingOption<?> resolvedOption = setting.getOptionByLabel(option.getAsString(), setting.getDataType());
                             SettingRepository.upsertSetting(event.getMember(), setting, resolvedOption.value());
                         } else {
@@ -115,7 +112,7 @@ public class ProfileSettingCmd implements ISlashSubcommand {
             } catch (Exception e) {
                 ExceptionHandler.handle(e, event);
             }
-        };
+        }
 
         StringBuilder resultStringSB = new StringBuilder();
         if (modifiedSettingsSB.toString().isBlank()) {
@@ -145,16 +142,16 @@ public class ProfileSettingCmd implements ISlashSubcommand {
      * <p>
      *     Autocomplete options are only allowed for non-boolean settings, so the method can handle any input as a string
      * </p>
-     * @param inputOption
-     * @param setting
-     * @return
+     * @param inputOption the input to validate
+     * @param setting the setting that the input gets validated for
+     * @return whether the input is valid (true) or not (false)
      */
     private boolean validateInput(OptionMapping inputOption, Setting setting){
         if (setting.getDataType() == Boolean.class){
             return true;
         }
         List<SettingOption> autocompleteOptions = setting.getAutocompleteOptions();
-        if(autocompleteOptions == null){
+        if(autocompleteOptions.isEmpty()){
             return true;
         }
         if (inputOption.getType() == OptionType.STRING) {
@@ -163,8 +160,6 @@ public class ProfileSettingCmd implements ISlashSubcommand {
             return autocompleteOptions.stream().anyMatch(option -> option.value().equals(inputOption.getAsInt()));
         } else if (inputOption.getType() == OptionType.BOOLEAN) {
             return autocompleteOptions.stream().anyMatch(option -> option.value().equals(inputOption.getAsBoolean()));
-        } else {
-
         }
         return false;
     }

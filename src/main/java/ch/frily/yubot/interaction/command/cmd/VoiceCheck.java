@@ -36,7 +36,7 @@ public class VoiceCheck implements ISlashCommand {
     }
 
     @Override
-    public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
+    public void execute(@NonNull SlashCommandInteractionEvent event) {
         event.deferReply(true).queue();
         if (event.getChannelType() == ChannelType.VOICE) {
             TextChannel checkChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_VOICECHECK);

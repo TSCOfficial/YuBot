@@ -15,11 +15,13 @@ import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
+import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -53,9 +55,9 @@ public class SelectActiveModSendTypeModal extends Modal {
     }
 
     @Override
-    public void execute(@NonNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException {
-        log.info("ActiveModSendTypeModal executed: {}", event.getValue("type-selector").getAsString());
-        Boolean sendInDM = event.getValue("type-selector").getAsString().equals("true");
+    public void execute(@NonNull ModalInteractionEvent event) throws SQLException {
+        ModalMapping typeSelectValue = Objects.requireNonNull(event.getValue("type-selector"));
+        boolean sendInDM = typeSelectValue.getAsString().equals("true");
         AtomicBoolean couldntSetToDMs = new AtomicBoolean(false);
         if (sendInDM) {
             try {
@@ -74,7 +76,7 @@ public class SelectActiveModSendTypeModal extends Modal {
         } else {
             SettingRepository.upsertSetting(event.getMember(), Setting.ACTIVEMOD_SEND_IN_DM, false);
         }
-        SettingOption<Boolean> selectedSetting = Setting.ACTIVEMOD_SEND_IN_DM.getOptionByValue(couldntSetToDMs.get() ? false : sendInDM); // get the option if it could be sent, else get overwrite (via Server)
+        SettingOption<Boolean> selectedSetting = Setting.ACTIVEMOD_SEND_IN_DM.getOptionByValue(!couldntSetToDMs.get() && sendInDM); // get the option if it could be sent, else get overwrite (via Server)
         ActiveMod.registerModerator(event.getMember()).thenAccept(responseText -> {
             StringBuilder replySB = new StringBuilder();
             replySB.append(couldntSetToDMs.get() ? "⚠️ " : "✅ ");

@@ -26,7 +26,7 @@ public class WordChainGame {
 
     /**
      * Handle a sent message
-     * @param messageEvent
+     * @param messageEvent the message event
      */
     public static void handleWord(MessageReceivedEvent messageEvent) {
         Message message = messageEvent.getMessage();
@@ -52,7 +52,7 @@ public class WordChainGame {
     /**
      * Check if a message is valid for the word chain game
      * <p>
-     * @param messageEvent
+     * @param messageEvent the message event
      * @return null if valid, otherwise a string with the reason why it is invalid
      */
     private static String validateWord(MessageReceivedEvent messageEvent) {

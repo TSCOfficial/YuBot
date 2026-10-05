@@ -1,6 +1,5 @@
 package ch.frily.yubot.database;
 
-import ch.frily.yubot.exception.ExceptionHandler;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -48,12 +47,12 @@ public class DatabaseQuery {
 	 * <i>Help text is not relevant for programming. Its only goal is to be shown when selecting an enum option in the popup window.</i>
 	 */
 	public enum OrderBy {
-		ASCENDED ("asc", "from low to high, lowest number/character first"),
-		DESCENDED ("desc", "from high to low, high number/character first");
+		ASCENDED ("asc"), // from low to high, 0/a -> 26/z
+		DESCENDED ("desc"); // from high to low, 26/z -> 0/a
 		
 		private final String name;
 		
-		OrderBy(String name, String helpText) {
+		OrderBy(String name) {
 			this.name = name;
 		}
 		
@@ -225,7 +224,7 @@ public class DatabaseQuery {
      * Execute the database query for architectural purposes
      * @return The database results
      */
-    public ResultSet executeDataQuery() throws SQLException, ClassNotFoundException {
+    public ResultSet executeDataQuery() throws SQLException {
         Connection conn = Database.getInstance().connect();
         PreparedStatement stmt = conn.prepareStatement(buildSQL());
         setParameters(stmt);

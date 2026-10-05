@@ -17,7 +17,7 @@ import java.util.List;
 public class PaginationItem {
 
     @Getter
-    private List<ContainerChildComponent> children = new ArrayList<>();
+    private final List<ContainerChildComponent> children = new ArrayList<>();
 
     @Setter
     private String title;

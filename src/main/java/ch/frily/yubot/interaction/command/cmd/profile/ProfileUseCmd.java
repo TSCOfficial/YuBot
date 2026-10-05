@@ -4,7 +4,6 @@ import ch.frily.yubot.database.repository.ProfileRepository;
 import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.feature.profile.Profile;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
-import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -14,7 +13,6 @@ import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

@@ -7,11 +7,12 @@ import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.modal.modal.SelectActiveModSendTypeModal;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.ILoggerFactory;
 
 import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * When the last active mod wants to opt-out via command, the bot askes to approve the opt-out before closing the server
@@ -34,8 +35,9 @@ public class ActiveModOptInBtn extends Button {
     }
 
     @Override
-    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException {
-        if (SettingRepository.getSettings(event.getMember()) == null || SettingRepository.getSettings(event.getMember()).activeModSendInDm() == null) {
+    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException {
+        Member member = Objects.requireNonNull(event.getMember());
+        if (SettingRepository.getSettings(member) == null || SettingRepository.getSettings(member).activeModSendInDm() == null) {
             // If the user does not have set the activeModSendInDm in Profile, request to set it
             event.replyModal(new SelectActiveModSendTypeModal().build()).queue();
             return;

@@ -1,7 +1,6 @@
 package ch.frily.yubot.interaction.button;
 
 import ch.frily.yubot.util.EnvKey;
-import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
@@ -10,14 +9,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.ThreadLocalRandom;
 
 public interface IButton {
     default String getLabel() {
         return null;
-    };
+    }
 
     ButtonStyle getStyle();
 
@@ -36,23 +32,24 @@ public interface IButton {
         return null;
     }
 
-    void execute(@NotNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException, NoSuchMethodException;
+    void execute(@NotNull ButtonInteractionEvent event) throws SQLException;
 
     /**
      * Get the allowed roles of an interaction.
      * <p>
      * Allowed roles are roles that a user needs to execute the interaction. (The user needs to have at least one of these roles)
+     * </p>
      * <p>
-     * <b>How to define roles using {@link EnvKey}:</b>
-     * <pre><code>
-     *     Stream.of(
+     *     <b>How to define roles using {@link EnvKey}:</b>
+     *     <pre><code>
+     *         Stream.of(
      *             EnvKey.ROLE_MODLEITUNG,
      *             EnvKey.ROLE_MODERATOR,
-     *     ).map(EnvResolver::getRoleById).toList();
-     * </code></pre>
+     *         ).map(EnvResolver::getRoleById).toList();
+     *      </code></pre>
      * <p>
      * If left empty, everyone can execute the interaction.
-     * @return
+     * @return a list of {@link Role}s that are allowed to use the button. Administrators bypass this check.
      */
     default List<Role> getAllowedRoles() {
         return List.of();

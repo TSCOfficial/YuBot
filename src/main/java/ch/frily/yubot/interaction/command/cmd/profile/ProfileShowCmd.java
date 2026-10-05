@@ -2,7 +2,6 @@ package ch.frily.yubot.interaction.command.cmd.profile;
 
 import ch.frily.yubot.container.profile.ProfilContainer;
 import ch.frily.yubot.database.repository.ProfileRepository;
-import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.feature.profile.Profile;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import lombok.extern.slf4j.Slf4j;
@@ -61,9 +60,7 @@ public class ProfileShowCmd implements ISlashSubcommand {
         Member member = event.getMember();
         ProfilContainer container = new ProfilContainer(member);
 
-        ProfileRepository.getCurrentUserProfile(member).ifPresent(profile -> {
-            container.setProfile(profile);
-        });
+        ProfileRepository.getCurrentUserProfile(member).ifPresent(container::setProfile);
         if (event.getOption("profile") != null) {
             Profile selectedProfile = ProfileRepository.getProfileById(event.getOption("profile").getAsString());
             container.setProfile(selectedProfile);

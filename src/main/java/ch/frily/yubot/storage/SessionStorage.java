@@ -4,12 +4,10 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
 
-import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * The SessionStorage allows the system to save some data for a limited time.
@@ -23,17 +21,13 @@ public class SessionStorage {
     private static SessionStorage instance;
 
     @Getter
-    private List<StorageData<?>> sessionStorage = new ArrayList<>();
+    private final List<StorageData<?>> sessionStorage = new ArrayList<>();
 
     public static SessionStorage getInstance() {
         if (instance == null) {
             instance = new SessionStorage();
         }
         return instance;
-    }
-
-    public List<StorageData<?>> getSessionStorage() {
-        return sessionStorage;
     }
 
     public <T> T getValue(String key, Member member, Class<T> type) {

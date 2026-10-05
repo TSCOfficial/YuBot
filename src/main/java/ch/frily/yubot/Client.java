@@ -3,17 +3,10 @@ package ch.frily.yubot;
 import ch.frily.yubot.database.Database;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.FeatureRegistry;
-import ch.frily.yubot.interaction.button.ButtonRegistry;
-import ch.frily.yubot.interaction.command.ISlashCommand;
-import ch.frily.yubot.interaction.contextmenu.ContextMenuRegistry;
-import ch.frily.yubot.interaction.modal.ModalRegistry;
-import ch.frily.yubot.interaction.select.SelectRegistry;
 import ch.frily.yubot.listeners.InteractionListener;
 import ch.frily.yubot.listeners.OnMessageReceived;
 import ch.frily.yubot.listeners.OnReadyListener;
 import ch.frily.yubot.listeners.GuildMemberUpdateListener;
-import ch.frily.yubot.interaction.command.SlashCommandRegistry;
-import ch.frily.yubot.scheduler.SchedulerRegistry;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -24,15 +17,12 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 public class Client {
@@ -82,7 +72,6 @@ public class Client {
             client.awaitReady();
             log.info("Application started successfully!");
 
-            Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
             // Load actions
             FeatureRegistry.getInstance().load();
 
