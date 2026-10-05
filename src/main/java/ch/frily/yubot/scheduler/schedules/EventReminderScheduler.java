@@ -1,9 +1,9 @@
-package ch.frily.yubot.scheduler;
+package ch.frily.yubot.scheduler.schedules;
 
-import ch.frily.yubot.database.Table;
 import ch.frily.yubot.database.repository.EventReminderRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.ThrowingConsumer;
+import ch.frily.yubot.scheduler.IScheduler;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
@@ -11,9 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ScheduledEvent;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.utils.FileUpload;
-import net.dv8tion.jda.api.utils.ImageFormat;
-import net.dv8tion.jda.api.utils.ImageProxy;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -22,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class EventReminderScheduler implements IScheduler{
+public class EventReminderScheduler implements IScheduler {
     @Override
     public String cronExpression() {
         return "* * * * *"; // 0/15

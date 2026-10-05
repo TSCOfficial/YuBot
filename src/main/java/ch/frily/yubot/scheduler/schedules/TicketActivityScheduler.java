@@ -1,9 +1,10 @@
-package ch.frily.yubot.scheduler;
+package ch.frily.yubot.scheduler.schedules;
 
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.ticket.Ticket;
 import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.feature.ticket.TicketStatus;
+import ch.frily.yubot.scheduler.IScheduler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
@@ -16,7 +17,7 @@ import java.util.List;
  * @author aliz frily
  */
 @Slf4j
-public class TicketActivityScheduler implements IScheduler{
+public class TicketActivityScheduler implements IScheduler {
     @Override
     public void execute() throws SQLException, ClassNotFoundException {
         List<Ticket> outdatedTickets = TicketRepository.getTickets().stream().filter(ticket -> {

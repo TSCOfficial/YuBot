@@ -33,7 +33,7 @@ public class ModalRegistry {
 
     public void loadModals(){
         List<Modal> rawModals = List.of(
-                new TypeSelectorModal(),
+                new TicketTypeSelectorModal(),
                 new AbsenceAddModal(),
                 new TicketSummaryModal(),
                 new SelectActiveModSendTypeModal(),

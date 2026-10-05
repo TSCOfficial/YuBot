@@ -1,12 +1,12 @@
 package ch.frily.yubot.scheduler;
 
 import ch.frily.yubot.exception.ExceptionHandler;
+import ch.frily.yubot.scheduler.schedules.*;
 import com.cronutils.model.Cron;
 import com.cronutils.model.CronType;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
