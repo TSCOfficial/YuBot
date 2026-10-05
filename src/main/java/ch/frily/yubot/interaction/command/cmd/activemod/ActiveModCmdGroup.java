@@ -13,6 +13,11 @@ public class ActiveModCmdGroup implements ISlashCommandGroup {
     }
 
     @Override
+    public String getDescription() {
+        return "Steuere die Serveröffnung.";
+    }
+
+    @Override
     public List<ISlashSubcommand> getSubcommands() {
         return List.of(
                 new ActiveModOptInCmd(),

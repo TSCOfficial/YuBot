@@ -13,6 +13,11 @@ public class SendCmdGroup implements ISlashCommandGroup {
     }
 
     @Override
+    public String getDescription() {
+        return "Versende verschiedene Objekte.";
+    }
+
+    @Override
     public List<Permission> getDefaultPermissions() {
         return List.of(Permission.ADMINISTRATOR);
     }

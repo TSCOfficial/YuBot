@@ -12,6 +12,11 @@ public class ProfileCmdGroup implements ISlashCommandGroup {
     }
 
     @Override
+    public String getDescription() {
+        return "Verwalte dein(e) Profil(e).";
+    }
+
+    @Override
     public List<ISlashSubcommand> getSubcommands() {
         return List.of(
             new ProfileShowCmd(),

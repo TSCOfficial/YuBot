@@ -12,6 +12,11 @@ public class TicketCmdGroup implements ISlashCommandGroup {
     }
 
     @Override
+    public String getDescription() {
+        return "Steuere das Ticketsystem.";
+    }
+
+    @Override
     public List<ISlashSubcommand> getSubcommands() {
         return List.of(
                 new TicketCloseCmd(),
