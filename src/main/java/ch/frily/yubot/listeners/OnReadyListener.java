@@ -5,7 +5,6 @@ import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
-import org.jspecify.annotations.NonNull;
 
 @Slf4j
 public class OnReadyListener extends ListenerAdapter {

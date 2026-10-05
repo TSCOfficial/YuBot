@@ -35,7 +35,7 @@ public class ActiveModActivityProveBtn extends Button {
     }
 
     @Override
-    public void execute(@NotNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
+    public void execute(@NotNull ButtonInteractionEvent event) throws SQLException {
         ActiveMod forActiveMod = ActiveModRepository.getModeratorByActivityRequestMessageId(event.getMessageIdLong());
         Member member = event.getMember() == null ? Util.getMemberByUser(event.getUser()) : event.getMember();
 

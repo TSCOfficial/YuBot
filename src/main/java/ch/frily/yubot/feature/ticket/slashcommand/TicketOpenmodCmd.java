@@ -47,7 +47,7 @@ public class TicketOpenmodCmd implements ISlashSubcommand {
     }
 
     @Override
-    public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
+    public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException {
         event.deferReply(true).queue();
         OptionMapping memberOption = Objects.requireNonNull(event.getOption("user"));
         TicketManager.getInstance().createTicket(TicketType.MODTICKET, Objects.requireNonNull(memberOption.getAsMember()), ThrowingConsumer.wrap(event, channel -> {

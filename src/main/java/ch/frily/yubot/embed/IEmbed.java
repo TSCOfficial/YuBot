@@ -5,39 +5,41 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public interface IEmbed {
 
     // Author
     default String getAuthorName(){
-        return null;
+        return "";
     }
 
     default String getAuthorUrl(){
-        return null;
+        return "";
     }
 
     default String getAuthorIconUrl(){
-        return null;
+        return "";
     }
 
     // Content
     default String getTitle(){
-        return null;
+        return "";
     }
 
     default String getTitleUrl(){
-        return null;
+        return "";
     }
 
     default String getDescription(){
-        return null;
+        return "";
     }
 
     default List<Field> getFields() {
-        return null;
+        return new ArrayList<>();
     }
 
     default java.awt.Color getColor(){
@@ -45,11 +47,11 @@ public interface IEmbed {
     }
 
     default String getFooterText(){
-        return null;
+        return "";
     }
 
     default String getFooterIconUrl(){
-        return null;
+        return "";
     }
 
     default Instant getTimestamp() {
@@ -60,32 +62,32 @@ public interface IEmbed {
         EmbedBuilder builder = new EmbedBuilder();
 
         // Author
-        if (getAuthorName() != null && getAuthorUrl() != null && getAuthorIconUrl() != null) {
+        if (!getAuthorName().isBlank() && !getAuthorUrl().isBlank() && !getAuthorIconUrl().isBlank()) {
             builder.setAuthor(getAuthorName(), getAuthorUrl(), getAuthorIconUrl());
-        } else if (getAuthorName() != null && getAuthorUrl() != null) {
+        } else if (!getAuthorName().isBlank() && !getAuthorUrl().isBlank()) {
             builder.setAuthor(getAuthorName(), getAuthorUrl());
-        } else if (getAuthorName() != null && getAuthorIconUrl() != null) {
+        } else if (!getAuthorName().isBlank() && !getAuthorIconUrl().isBlank()) {
             builder.setAuthor(getAuthorName(), null, getAuthorIconUrl());
-        } else if (getAuthorName() != null) {
+        } else if (!getAuthorName().isBlank()) {
             builder.setAuthor(getAuthorName());
         }
 
         // Title
-        if (getTitle() != null && getTitleUrl() != null) {
+        if (!getTitle().isBlank() && !getTitleUrl().isBlank()) {
             builder.setTitle(getTitle(), getTitleUrl());
-        } else if (getTitle() != null) {
+        } else if (!getTitle().isBlank()) {
             builder.setTitle(getTitle());
         }
 
         // Description
-        if (getDescription() != null) {
+        if (!getDescription().isBlank()) {
             builder.setDescription(getDescription());
         }
 
         // Fields
-        if (getFields() != null) {
+        if (getFields().isEmpty()) {
             for (Field field : getFields()) {
-                if (field.getName() == " " && field.getValue() == " ") {
+                if (Objects.equals(field.getName(), " ") && Objects.equals(field.getValue(), " ")) {
                     builder.addBlankField(field.isInline());
                 } else {
                     builder.addField(field);
@@ -99,8 +101,10 @@ public interface IEmbed {
         }
 
         // Footer
-        if (getFooterText() != null) {
+        if (!getFooterText().isBlank() && !getFooterIconUrl().isBlank()) {
             builder.setFooter(getFooterText(), getFooterIconUrl());
+        } else if (!getFooterText().isBlank()) {
+            builder.setFooter(getFooterText());
         }
 
         // Timestamp

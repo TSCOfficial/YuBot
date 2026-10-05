@@ -9,7 +9,7 @@ import java.sql.SQLException;
 @Slf4j
 public class AbsenceContainerScheduler implements IScheduler {
     @Override
-    public void execute() throws SQLException, ClassNotFoundException {
+    public void execute() throws SQLException {
         DynamicMessageList.ABSENCES.update();
     }
 

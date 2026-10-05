@@ -46,7 +46,7 @@ public class TicketDeleteBtn extends Button {
     }
 
     @Override
-    public void execute(@NotNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
+    public void execute(@NotNull ButtonInteractionEvent event) throws SQLException {
 
         Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
 

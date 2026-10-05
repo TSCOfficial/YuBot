@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jspecify.annotations.NonNull;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 

@@ -34,7 +34,7 @@ public class ActiveModOptInCmd implements ISlashSubcommand {
     }
 
     @Override
-    public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
+    public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException {
         if (SettingRepository.getSettings(event.getMember()) == null || SettingRepository.getSettings(event.getMember()).activeModSendInDm() == null) {
             // If the user does not have set the activeModSendInDm
             event.replyModal(new SelectActiveModSendTypeModal().build()).queue();

@@ -14,7 +14,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jspecify.annotations.NonNull;
 
-import java.sql.SQLException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;

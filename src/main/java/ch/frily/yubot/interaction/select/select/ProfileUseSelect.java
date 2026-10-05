@@ -66,7 +66,7 @@ public class ProfileUseSelect implements IStringSelect {
     }
 
     @Override
-    public void execute(@NonNull StringSelectInteractionEvent event) throws SQLException, ClassNotFoundException {
+    public void execute(@NonNull StringSelectInteractionEvent event) throws SQLException {
         String selectedValue = event.getSelectedOptions().getFirst().getValue();
 
         ProfilContainer profileContainer = new ProfilContainer(event.getMember());

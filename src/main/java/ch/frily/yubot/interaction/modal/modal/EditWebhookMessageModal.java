@@ -13,7 +13,6 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import org.jspecify.annotations.NonNull;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 

@@ -61,7 +61,7 @@ public class GuildMemberUpdateListener extends ListenerAdapter {
     @Override
     public void onGuildMemberRemove(@NonNull GuildMemberRemoveEvent event) {
         try {
-            if (event.getMember() != null && event.getMember().getUser() != null) {
+            if (event.getMember() != null) {
                 TicketRepository.getTicketsByUser(event.getMember().getUser()).forEach(ticket -> {
                     try {
                         ticket.getChannel().sendMessage("Der Benutzer hat den Server verlassen. Das Ticket wird geschlossen.").queue();

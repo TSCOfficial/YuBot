@@ -74,8 +74,7 @@ public class ProfilContainer extends Container {
         try {
             Optional<Profile> currentProfile = ProfileRepository.getCurrentUserProfile(member);
             List<Profile> linkedProfiles = ProfileRepository.getProfilesFromAccount(member);
-            log.info("profile: {}", profile);
-            boolean profileIsAlreadyInUse = profile != null && currentProfile.isPresent() && Objects.equals(currentProfile.get().profileId(), profile.profileId());
+            boolean profileIsAlreadyInUse = (profile != null && currentProfile.isPresent() && Objects.equals(currentProfile.get().profileId(), profile.profileId())) || (profile == null && !linkedProfiles.isEmpty() && currentProfile.isEmpty());
 
             if (profile != null) {
                 String proxy = !profile.proxy().isBlank() ? " (" + profile.proxy() + ")" : "";
@@ -152,7 +151,7 @@ public class ProfilContainer extends Container {
         Map<String, String> settings;
         try {
             settings = mapSettings();
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             return ExceptionHandler.fail(e);
         }
 
@@ -169,7 +168,7 @@ public class ProfilContainer extends Container {
         return settingsSB.toString();
     }
 
-    private Map<String, String> mapSettings() throws SQLException, ClassNotFoundException {
+    private Map<String, String> mapSettings() throws SQLException {
         Settings settings = SettingRepository.getSettings(member);
         if (settings == null) {
             return null;

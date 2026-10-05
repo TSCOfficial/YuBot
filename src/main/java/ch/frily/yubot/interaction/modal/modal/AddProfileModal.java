@@ -173,7 +173,7 @@ public class AddProfileModal extends Modal {
      * </p>
      * @param proxy Proxy to validate
      */
-    private void validateProxy(Member member, @NonNull String proxy, @Nullable Profile editingProfile) throws SQLException, ClassNotFoundException {
+    private void validateProxy(Member member, @NonNull String proxy, @Nullable Profile editingProfile) throws SQLException {
         if (!proxy.isBlank()) {
             List<Profile> linkedProfiles = ProfileRepository.getProfilesFromAccount(member);
             List<Profile> conflictingProfile = linkedProfiles.stream().filter(profile -> {

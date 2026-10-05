@@ -32,7 +32,7 @@ public class ButtonRegistry {
     public void register(List<Button> buttons) {
         buttons.forEach(button -> {
             String idOrUrl = button.getId();
-            if (button.getStyle() == ButtonStyle.LINK && button.getUrl() != null) {
+            if (button.getStyle() == ButtonStyle.LINK && !button.getUrl().isBlank()) {
                 idOrUrl = button.getUrl();
             }
             this.buttons.put(idOrUrl, button);
@@ -41,7 +41,7 @@ public class ButtonRegistry {
         });
     }
 
-    public void dispatchButtonInteraction(ButtonInteractionEvent event) throws SQLException, IllegalStateException, ClassNotFoundException, NoSuchMethodException {
+    public void dispatchButtonInteraction(ButtonInteractionEvent event) throws SQLException, IllegalStateException {
         String idOrUrl = ArgumentComponent.extractId(Objects.requireNonNull(event.getButton().getCustomId()));
         if (event.getButton().getStyle() == ButtonStyle.LINK && event.getButton().getUrl() != null) {
             idOrUrl = event.getButton().getUrl();

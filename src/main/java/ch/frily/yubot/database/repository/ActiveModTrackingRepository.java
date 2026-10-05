@@ -46,7 +46,7 @@ public class ActiveModTrackingRepository {
 
     }
 
-    public static Map<Member, List<ActiveModTracking>> getActiveModTrackingsAsMap() throws SQLException, ClassNotFoundException {
+    public static Map<Member, List<ActiveModTracking>> getActiveModTrackingsAsMap() throws SQLException {
         List <ActiveModTracking> activeModTrackings = getActiveModTrackings();
         Map<Member, List<ActiveModTracking>> groupedActiveMods = new LinkedHashMap<>();
 
@@ -148,7 +148,7 @@ public class ActiveModTrackingRepository {
         }
     }
 
-    public static void incrementMissedActivityRequestCount(Member member) throws SQLException, ClassNotFoundException {
+    public static void incrementMissedActivityRequestCount(Member member) throws SQLException {
 
         ActiveModTracking tracking = getActiveModTracking(member, YearMonth.now());
         ActiveModTracking updated = new ActiveModTracking(
@@ -157,7 +157,7 @@ public class ActiveModTrackingRepository {
         updateActiveModTracking(updated);
     }
 
-    public static void incrementTotalActivityRequestCount(Member member) throws SQLException, ClassNotFoundException {
+    public static void incrementTotalActivityRequestCount(Member member) throws SQLException {
 
         ActiveModTracking tracking = getActiveModTracking(member, YearMonth.now());
         ActiveModTracking updated = new ActiveModTracking(

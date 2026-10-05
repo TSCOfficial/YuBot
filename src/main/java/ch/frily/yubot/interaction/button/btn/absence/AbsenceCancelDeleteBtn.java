@@ -5,8 +5,6 @@ import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jspecify.annotations.NonNull;
 
-import java.sql.SQLException;
-
 public class AbsenceCancelDeleteBtn extends Button {
     @Override
     public String getId() {

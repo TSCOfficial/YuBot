@@ -61,7 +61,7 @@ public class TicketSummaryModal extends Modal {
     }
 
     @Override
-    public void execute(@NonNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException {
+    public void execute(@NonNull ModalInteractionEvent event) throws SQLException, NullPointerException {
         event.deferReply(true).queue();
         ModalMapping summary = event.getValue("summary");
         String summaryText;

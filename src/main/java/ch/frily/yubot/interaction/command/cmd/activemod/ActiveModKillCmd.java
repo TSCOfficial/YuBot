@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
@@ -41,12 +42,12 @@ public class ActiveModKillCmd implements ISlashSubcommand {
         Role activeMod = EnvResolver.getRoleById(1513639704870912130L);
 
         int activeModCount = Closure.getActiveMods().size();
-        List<CompletableFuture<Void>> removeRoleFutures = event.getGuild().getMembersWithRoles(activeMod).stream().map(member -> event.getGuild().removeRoleFromMember(member, activeMod).submit()).toList();
+        List<CompletableFuture<Void>> removeRoleFutures = Objects.requireNonNull(event.getGuild()).getMembersWithRoles(activeMod).stream().map(member -> event.getGuild().removeRoleFromMember(member, activeMod).submit()).toList();
         CompletableFuture<Void> allRoleFutures = CompletableFuture.allOf(removeRoleFutures.toArray(new CompletableFuture[0]));
 
         allRoleFutures.thenAccept(_ -> {
             EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_ACTIVEMODERATION)
-                    .sendMessage(String.format("⚠️ Der Server wurde von %s gekillt.\n-# Allen ActiveMods (%d) wurde die Rolle entfernt und der Server geschlossen.", event.getMember().getAsMention(), activeModCount));
+                    .sendMessage(String.format("⚠️ Der Server wurde von %s gekillt.\n-# Allen ActiveMods (%d) wurde die Rolle entfernt und der Server geschlossen.", Objects.requireNonNull(event.getMember()).getAsMention(), activeModCount));
             event.reply("✅ Alle aktiven Moderator*innen wurden entfernt und der Server wird nun geschlossen.").setEphemeral(true).queue();
         }).exceptionally(_ -> {
             throw new InvalidStateException("Fehler beim Entfernen der aktiven Moderator*innen.");

@@ -9,7 +9,7 @@ import java.sql.SQLException;
 
 public class TicketTypeControlRepository {
 
-    public static void upsertType(TicketType type, boolean isLocked) throws SQLException, ClassNotFoundException {
+    public static void upsertType(TicketType type, boolean isLocked) throws SQLException {
         if (exists(type)) {
             updateType(type, isLocked);
         } else {

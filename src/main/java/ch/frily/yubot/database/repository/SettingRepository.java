@@ -19,7 +19,7 @@ public class SettingRepository {
     /**
      * Get the settings of a given member
      * @param member The member to get the settings from
-     * @return a {@link Settings}-record with the member's settings
+     * @return a {@link Settings}-record with the member's settings, or <code>null</code> if no setting-record found
      * @throws SQLException Database failure
      */
     @Nullable

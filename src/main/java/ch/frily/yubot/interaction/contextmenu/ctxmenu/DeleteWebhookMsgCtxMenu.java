@@ -22,7 +22,7 @@ public class DeleteWebhookMsgCtxMenu implements IMessageContextMenu {
     }
 
     @Override
-    public void execute(@NonNull MessageContextInteractionEvent event) throws SQLException, ClassNotFoundException {
+    public void execute(@NonNull MessageContextInteractionEvent event) throws SQLException {
         event.deferReply(true).queue();
         boolean isOwner = ProfileMessageRepository.isOwner(Objects.requireNonNull(event.getMember()), event.getTarget());
 

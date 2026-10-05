@@ -46,7 +46,7 @@ public class UseProfileBtn extends Button {
         }
 
         ProfilContainer newProfileView = new ProfilContainer(event.getMember());
-        String reply = "";
+        String reply;
         if (profileId == null) {
             ProfileRepository.unselectProfiles(event.getMember());
             reply = "✅ Profilauswahl zurückgesetzt.\n-# Du verwendest nun kein Profil mehr.";

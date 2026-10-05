@@ -9,7 +9,7 @@ public abstract class Button extends ArgumentComponent implements IButton {
 
     public net.dv8tion.jda.api.components.buttons.Button build(){
         String idOrUrl = getFullIdentification();
-        if (getStyle() == ButtonStyle.LINK && getUrl() != null) {
+        if (getStyle() == ButtonStyle.LINK && !getUrl().isBlank()) {
             idOrUrl = getUrl();
         }
         net.dv8tion.jda.api.components.buttons.Button button = net.dv8tion.jda.api.components.buttons.Button.of(getStyle(), idOrUrl, getLabel(), getEmoji());

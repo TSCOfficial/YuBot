@@ -29,7 +29,7 @@ public class MessageHandling {
 
     public static final String WEBHOOK_NAME = "YuBot Profile";
 
-    public static void handleIncomingMessage(Message originalMessage) throws SQLException, ClassNotFoundException {
+    public static void handleIncomingMessage(Message originalMessage) throws SQLException {
         List<Profile> existingProfiles = ProfileRepository.getProfilesFromAccount(originalMessage.getMember());
         if (!existingProfiles.isEmpty()) {
             Optional<Profile> useProfile = existingProfiles.stream().filter(Profile::isCurrentlyUsed).findFirst();

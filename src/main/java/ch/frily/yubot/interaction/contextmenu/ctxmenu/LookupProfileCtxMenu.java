@@ -14,6 +14,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Look up whom a profile belongs to
@@ -27,13 +28,13 @@ public class LookupProfileCtxMenu implements IMessageContextMenu {
 
     @Override
     public List<Role> getAllowedRoles() {
-        return List.of(
+        return Stream.of(
                 EnvKey.ROLE_YUTEAM
-        ).stream().map(EnvResolver::getRoleById).toList();
+        ).map(EnvResolver::getRoleById).toList();
     }
 
     @Override
-    public void execute(@NonNull MessageContextInteractionEvent event) throws SQLException, ClassNotFoundException {
+    public void execute(@NonNull MessageContextInteractionEvent event) throws SQLException {
         String profileName = event.getTarget().getAuthor().getName();
         Message message = event.getTarget();
 

@@ -5,8 +5,6 @@ import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jspecify.annotations.NonNull;
 
-import java.sql.SQLException;
-
 /**
  * This button is the opposite of {@link TicketConfirmOpenBtn}. The user can cancel the ticket creation process.
  * */

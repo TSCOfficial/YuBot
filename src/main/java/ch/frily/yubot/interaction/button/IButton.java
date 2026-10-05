@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface IButton {
     default String getLabel() {
-        return null;
+        return "";
     }
 
     ButtonStyle getStyle();
@@ -21,7 +21,7 @@ public interface IButton {
      * define URL if style URL
      */
     default String getUrl(){
-        return null;
+        return "";
     }
 
     default boolean isDisabled(){

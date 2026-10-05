@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
 
 @Slf4j
 public class EventReminderRepository {
@@ -19,10 +18,10 @@ public class EventReminderRepository {
      * </p>
      * @param eventId the ID of the event to check
      * @return True if the reminder was already sent, false if not.
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @throws SQLException Database failure
+     * @throws NotFoundException Event not found
      */
-    public static Boolean reminderAlreadySent(String eventId) throws SQLException {
+    public static Boolean reminderAlreadySent(String eventId) throws SQLException, NotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.EVENT_REMINDER);
         query.where(Table.EventReminderColumn.ID, DatabaseQuery.Operator.EQUALS, eventId);
         ResultSet rs = query.executeDataQuery();

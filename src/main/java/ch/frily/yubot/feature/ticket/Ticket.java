@@ -232,7 +232,7 @@ public class Ticket {
      * @param event Interaction
      * @throws PermissionDeniedException If the member (initiator) is not the ticket owner
      */
-    public void acceptCloseRequest(IReplyCallback event) throws PermissionDeniedException, SQLException, ClassNotFoundException {
+    public void acceptCloseRequest(IReplyCallback event) throws PermissionDeniedException, SQLException {
         if (this.isOwner(event.getMember())) {
             this.close(event, false);
             return;
@@ -261,7 +261,7 @@ public class Ticket {
     public void forceClose(IReplyCallback event) throws PermissionDeniedException, SQLException, ClassNotFoundException {
         forceClose(event, false);
     }
-    public void forceClose(IReplyCallback event, boolean skipPermissionCheck) throws PermissionDeniedException, SQLException, ClassNotFoundException {
+    public void forceClose(IReplyCallback event, boolean skipPermissionCheck) throws PermissionDeniedException, SQLException {
 
         if (skipPermissionCheck) {
             close(event, true);

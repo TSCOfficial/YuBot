@@ -17,5 +17,5 @@ public interface IScheduler {
      */
     String cronExpression();
 
-    void execute() throws SQLException, ClassNotFoundException;
+    void execute() throws SQLException;
 }

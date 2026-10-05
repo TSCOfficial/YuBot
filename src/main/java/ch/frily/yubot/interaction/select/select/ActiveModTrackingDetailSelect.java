@@ -69,7 +69,7 @@ public class ActiveModTrackingDetailSelect implements IStringSelect {
     @Override
     public void execute(@NonNull StringSelectInteractionEvent event) throws SQLException, ClassNotFoundException {
         String selectedMemberId = event.getInteraction().getSelectedOptions().getFirst().getValue();
-        Member selectedMember = event.getGuild().getMemberById(selectedMemberId);
+        Member selectedMember = Objects.requireNonNull(event.getGuild()).getMemberById(selectedMemberId);
         Map<Member, List<ActiveModTracking>> activeModTrackingMap = ActiveModTrackingRepository.getActiveModTrackingsAsMap();
         activeModTrackingMap = ActiveModTrackingRepository.completeWithMissingModerators(activeModTrackingMap);
         ActiveModStatisticDetailContainer activeModStatisticDetailContainer = new ActiveModStatisticDetailContainer(selectedMember, activeModTrackingMap);

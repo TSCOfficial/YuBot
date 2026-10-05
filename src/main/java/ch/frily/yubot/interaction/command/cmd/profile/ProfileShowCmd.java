@@ -39,7 +39,7 @@ public class ProfileShowCmd implements ISlashSubcommand {
     }
 
     @Override
-    public Map<String, List<Command.Choice>> getAutocomplete(CommandAutoCompleteInteractionEvent event) throws SQLException, ClassNotFoundException {
+    public Map<String, List<Command.Choice>> getAutocomplete(CommandAutoCompleteInteractionEvent event) throws SQLException {
         List<Profile> existingProfiles = ProfileRepository.getProfilesFromAccount(event.getMember());
         existingProfiles = ProfileRepository.orderByUsage(existingProfiles);
         if (existingProfiles.isEmpty()) {
@@ -55,7 +55,7 @@ public class ProfileShowCmd implements ISlashSubcommand {
     }
 
     @Override
-    public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
+    public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException {
         event.deferReply(true).queue();
         Member member = event.getMember();
         ProfilContainer container = new ProfilContainer(member);

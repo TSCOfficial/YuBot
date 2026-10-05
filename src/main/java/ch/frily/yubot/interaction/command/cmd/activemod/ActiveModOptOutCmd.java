@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -44,8 +45,8 @@ public class ActiveModOptOutCmd implements ISlashSubcommand {
                     .addComponents(ActionRow.of(new ActiveModApproveOptOutBtn().build(), new ActiveModCancelOptOutBtn().build())).setEphemeral(true).queue();
             return;
         }
-        if (event.getMember().getRoles().stream().anyMatch(role -> role.getIdLong() == EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD).getIdLong())) {
-            event.getGuild().removeRoleFromMember(event.getMember(), activeMod).submit().thenAccept(_ -> {
+        if (Objects.requireNonNull(event.getMember()).getRoles().stream().anyMatch(role -> role.getIdLong() == EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD).getIdLong())) {
+            Objects.requireNonNull(event.getGuild()).removeRoleFromMember(event.getMember(), activeMod).submit().thenAccept(_ -> {
                 String countInfo = "Es sind nun **" + activeModCount + "** aktive Moderator\\*innen";
                 if (activeModCount == 1) {
                     countInfo = "Es ist nun nurnoch **" + activeModCount + "** aktive\\*r Modderator\\*in";

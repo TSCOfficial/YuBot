@@ -57,7 +57,7 @@ public class TicketTypeSelectorModal extends Modal {
     }
 
     @Override
-    public void execute(@NotNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException {
+    public void execute(@NotNull ModalInteractionEvent event) throws SQLException, NullPointerException {
         event.deferReply(true).queue();
         TicketType ticketType = Arrays.stream(TicketType.values()).filter(type -> {
             ModalMapping typeSelectorValue = Objects.requireNonNull(event.getValue("select-menu:ticket-type-selector"));

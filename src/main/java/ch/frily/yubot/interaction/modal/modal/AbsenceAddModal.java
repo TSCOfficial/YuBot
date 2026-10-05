@@ -10,6 +10,7 @@ import ch.frily.yubot.interaction.button.btn.absence.AbsenceCancelDeleteBtn;
 import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.storage.SessionStorage;
 import ch.frily.yubot.util.Util;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
@@ -22,7 +23,6 @@ import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
@@ -46,6 +46,7 @@ public class AbsenceAddModal extends Modal {
 
     private boolean isEditing = false;
     private Absence absence;
+    @Setter
     private Member member;
 
     public void setAbsence(Absence absence) {
@@ -56,10 +57,6 @@ public class AbsenceAddModal extends Modal {
         if (isEditing && absence.fromDateTime().isBefore(LocalDateTime.now())) {
             addArgument("bypass", true);
         }
-    }
-
-    public void setMember(Member member) {
-        this.member = member;
     }
 
     @Override
@@ -78,7 +75,7 @@ public class AbsenceAddModal extends Modal {
     public List<ModalTopLevelComponent> getComponents() {
         AbsenceModalDataRecord absenceModalDataRecord = SessionStorage.getInstance().getValue("invalid-absence-clipboard", member, AbsenceModalDataRecord.class);
 
-        ModalTopLevelComponent startTimeLabel = null;
+        ModalTopLevelComponent startTimeLabel;
 
         TextInput.Builder startTime = TextInput.create("start-time", TextInputStyle.SHORT);
         startTime.setRequiredRange(16, 16);
@@ -164,6 +161,7 @@ public class AbsenceAddModal extends Modal {
         ModalMapping startTimeValue = Objects.requireNonNull(event.getValue("start-time"));
         ModalMapping endTimeValue = Objects.requireNonNull(event.getValue("end-time"));
         ModalMapping absenceTypeValue = Objects.requireNonNull(event.getValue("absence-type-select"));
+
         Absence existingAbsence = null;
         if (hasArgument(event.getModalId(), "absence_id")) {
             int id = Integer.parseInt(getArgument(event.getModalId(), "absence_id"));
@@ -179,9 +177,9 @@ public class AbsenceAddModal extends Modal {
         String startTimeString = startTimeValue.getAsString();
         String endTimeString = endTimeValue.getAsString();
         String absenceTypeString = absenceTypeValue.getAsStringList().getFirst();
-        String reason = event.getValue("reason") != null ? event.getValue("reason").getAsString() : existingAbsence.reason();
+        String reason = Objects.nonNull(event.getValue("reason")) ? event.getValue("reason").getAsString() : existingAbsence.reason();
         boolean showNotice = event.getValue("absence-notice").getAsBoolean();
-        boolean deleteAbsence = event.getValue("absence-delete") != null && event.getValue("absence-delete").getAsBoolean();
+        boolean deleteAbsence = Objects.nonNull(event.getValue("absence-delete")) && event.getValue("absence-delete").getAsBoolean();
 
         // Delete Absence option
         if (deleteAbsence && existingAbsence != null) {
@@ -204,7 +202,7 @@ public class AbsenceAddModal extends Modal {
             AbsenceType absenceType = AbsenceType.valueOf(absenceTypeString);
 
             String responseText = "Deine Abwesenheit wurde erfolgreich angelegt.";
-            if (hasArgument(event.getModalId(), "absence_id")) {
+            if (Objects.nonNull(existingAbsence)) {
                 absence = new Absence(existingAbsence.id(), event.getMember(), startTime, endTime, absenceType, reason, showNotice, existingAbsence.createdAt(), LocalDateTime.now());
                 responseText = "Deine Abwesenheit wurde erfolgreich aktualisiert.";
             } else {

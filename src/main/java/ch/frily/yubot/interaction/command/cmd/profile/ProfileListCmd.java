@@ -26,7 +26,7 @@ public class ProfileListCmd implements ISlashSubcommand {
     }
 
     @Override
-    public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
+    public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException {
         event.deferReply(true).queue();
         List<Profile> existingProfiles = ProfileRepository.getProfilesFromAccount(event.getMember());
         existingProfiles = ProfileRepository.orderByUsage(existingProfiles);

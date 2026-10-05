@@ -37,7 +37,7 @@ public class ActiveModOptInBtn extends Button {
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) throws SQLException {
         Member member = Objects.requireNonNull(event.getMember());
-        if (SettingRepository.getSettings(member) == null || SettingRepository.getSettings(member).activeModSendInDm() == null) {
+        if (Objects.nonNull(SettingRepository.getSettings(member)) || Objects.nonNull(SettingRepository.getSettings(member).activeModSendInDm())) {
             // If the user does not have set the activeModSendInDm in Profile, request to set it
             event.replyModal(new SelectActiveModSendTypeModal().build()).queue();
             return;

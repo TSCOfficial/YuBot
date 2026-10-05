@@ -3,7 +3,6 @@ package ch.frily.yubot.feature.ticket.slashcommand;
 import ch.frily.yubot.feature.ticket.Ticket;
 import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -28,7 +27,7 @@ public class TicketRemoveCmd implements ISlashSubcommand {
     }
 
     @Override
-    public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
+    public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException {
         OptionMapping userRoleOption = Objects.requireNonNull(event.getOption("user-role"));
         Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
         IMentionable mentionable = userRoleOption.getAsMentionable();

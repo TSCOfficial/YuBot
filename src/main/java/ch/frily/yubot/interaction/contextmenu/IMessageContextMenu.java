@@ -18,6 +18,6 @@ public interface IMessageContextMenu extends IContextMenu{
         return Command.Type.MESSAGE;
     }
 
-    void execute(@NotNull MessageContextInteractionEvent event) throws SQLException, ClassNotFoundException;
+    void execute(@NotNull MessageContextInteractionEvent event) throws SQLException;
 
 }

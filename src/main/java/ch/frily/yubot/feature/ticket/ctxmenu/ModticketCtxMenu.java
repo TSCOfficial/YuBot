@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 
 public class ModticketCtxMenu implements IUserContextMenu {
     @Override
-    public void execute(@NonNull UserContextInteractionEvent event) throws SQLException, ClassNotFoundException {
+    public void execute(@NonNull UserContextInteractionEvent event) throws SQLException {
         event.deferReply(true).queue();
         Member member = Objects.requireNonNull(event.getTargetMember());
         TicketManager.getInstance().createTicket(TicketType.MODTICKET, member, ThrowingConsumer.wrap(event, channel -> {

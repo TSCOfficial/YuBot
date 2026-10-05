@@ -17,6 +17,7 @@ import org.jspecify.annotations.NonNull;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
@@ -55,8 +56,8 @@ public class ActiveModControlCmd implements ISlashSubcommand {
     }
 
     @Override
-    public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
-        boolean state = event.getOption("opt-in").getAsString().equals("allow");
+    public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException {
+        boolean state = Objects.requireNonNull(event.getOption("opt-in")).getAsString().equals("allow");
         ActiveModControlRepository.updateControl(state);
         TextChannel modIntern = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_ACTIVEMODERATION);
         int delay = 600; // 10min

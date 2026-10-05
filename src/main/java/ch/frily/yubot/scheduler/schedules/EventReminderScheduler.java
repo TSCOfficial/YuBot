@@ -2,6 +2,7 @@ package ch.frily.yubot.scheduler.schedules;
 
 import ch.frily.yubot.database.repository.EventReminderRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
+import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.scheduler.IScheduler;
 import ch.frily.yubot.util.EnvKey;
@@ -12,11 +13,9 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ScheduledEvent;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -30,6 +29,7 @@ public class EventReminderScheduler implements IScheduler {
     public void execute() {
         Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
         List<ScheduledEvent> upcomingEvents = guild.getScheduledEvents().stream().filter(event -> {
+            // remove already reminded events from list by returning false
             try {
                 if (event.getStatus() != ScheduledEvent.Status.SCHEDULED) {
                     EventReminderRepository.delete(event.getId());
@@ -38,8 +38,12 @@ public class EventReminderScheduler implements IScheduler {
                 LocalDateTime startTime = event.getStartTime().atZoneSameInstant(ZoneId.of("Europe/Zurich")).toLocalDateTime();
                 LocalDateTime now = LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MINUTES);
                 if (event.getStatus().equals(ScheduledEvent.Status.SCHEDULED) && (!startTime.isBefore(now) && !startTime.isAfter(now.plusHours(2)))) {
-                        Boolean reminderIsSent = EventReminderRepository.reminderAlreadySent(event.getId());
-                        return reminderIsSent == null || !reminderIsSent;
+                    try {
+                        return EventReminderRepository.reminderAlreadySent(event.getId());
+
+                    } catch (NotFoundException e) {
+                        return true;
+                    }
                 }
             } catch (Exception e) {
                 ExceptionHandler.handle(e);

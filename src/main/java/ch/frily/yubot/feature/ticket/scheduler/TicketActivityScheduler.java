@@ -19,7 +19,7 @@ import java.util.List;
 @Slf4j
 public class TicketActivityScheduler implements IScheduler {
     @Override
-    public void execute() throws SQLException, ClassNotFoundException {
+    public void execute() throws SQLException {
         List<Ticket> outdatedTickets = TicketRepository.getTickets().stream().filter(ticket -> {
             if (ticket.getStatus() != TicketStatus.NEW) {
                 return false;

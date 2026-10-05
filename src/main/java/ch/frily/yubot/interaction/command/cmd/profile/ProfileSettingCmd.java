@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jspecify.annotations.NonNull;
 
-import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -120,7 +119,7 @@ public class ProfileSettingCmd implements ISlashSubcommand {
         } else {
             log.info("Einstellungen erfolgreich gespeichert: {} ({})", modifiedSettingsSB, modifiedSettingsSB.length());
             resultStringSB.append(String.format("""
-                    ✅ **Einstellungen erfolgreich gespeichert:**\n
+                    ✅ **Einstellungen erfolgreich gespeichert:**
                     %s
                     """, modifiedSettingsSB)
             );
@@ -130,7 +129,8 @@ public class ProfileSettingCmd implements ISlashSubcommand {
             resultStringSB.append(String.format("""
                             \n
                             
-                            ⚠️ **Folgende Einstellungen konnten nicht gespeichert werden:**\n%s
+                            ⚠️ **Folgende Einstellungen konnten nicht gespeichert werden:**
+                            %s
                             """, failedSettingsSB)
             );
         }

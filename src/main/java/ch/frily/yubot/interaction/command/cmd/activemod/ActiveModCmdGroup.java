@@ -2,7 +2,6 @@ package ch.frily.yubot.interaction.command.cmd.activemod;
 
 import ch.frily.yubot.interaction.command.ISlashCommandGroup;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
-import net.dv8tion.jda.api.Permission;
 
 import java.util.List;
 

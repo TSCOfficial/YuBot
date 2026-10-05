@@ -36,8 +36,7 @@ public class AbsenceEditOwnContainer extends PaginationContainer {
             }
 
             List<Absence> absences = AbsenceRepository.getAbsences(member);
-            absences.stream()
-                    .forEach(this::addSectionText);
+            absences.forEach(this::addSectionText);
 
             if (absences.isEmpty()) {
                 PaginationItem noAbsences = new PaginationItem();

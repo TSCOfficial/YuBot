@@ -5,8 +5,6 @@ import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jspecify.annotations.NonNull;
 
-import java.sql.SQLException;
-
 /**
  * When the last active mod wants to opt-out via command, the bot askes to approve the opt-out before closing the server
  */
