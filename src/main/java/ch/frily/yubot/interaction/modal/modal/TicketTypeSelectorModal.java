@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class TypeSelectorModal extends Modal {
+public class TicketTypeSelectorModal extends Modal {
 
     @Setter
     private TicketTypeGroup typeGroup;
