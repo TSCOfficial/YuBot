@@ -192,15 +192,17 @@ public class ProfileSettingCmd implements ISlashSubcommand {
      */
     private boolean validateActiveModSendIn(SlashCommandInteractionEvent event) {
         try {
-            PrivateChannel privateChannel = event.getMember().getUser().openPrivateChannel().complete();
+            PrivateChannel privateChannel = Objects.requireNonNull(event.getMember()).getUser().openPrivateChannel().complete();
             privateChannel.sendMessage("ℹ️ Du erhälst absofort die ActiveMod-Nachrichten via DM.").complete();
             return true;
         } catch (ErrorResponseException ere) {
-
             if (ere.getErrorResponse() == ErrorResponse.CANNOT_SEND_TO_USER || ere.getErrorCode() == Client.NO_MUTUAL_GUILD_EXCEPTION) {
                 return false;
             }
             ExceptionHandler.handle(ere, event);
+            return false;
+        } catch (NullPointerException npe) {
+            ExceptionHandler.handle(npe, event);
             return false;
         }
     }
