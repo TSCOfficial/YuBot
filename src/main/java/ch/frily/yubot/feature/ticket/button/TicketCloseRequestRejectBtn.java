@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -55,7 +56,7 @@ public class TicketCloseRequestRejectBtn extends Button {
                 .setComponents(event.getMessage().getComponentTree().asDisabled())
                 .queue();
 
-        CompletableFuture<Message> welcomeMessage = EnvResolver.getMessageById(event.getGuild().getIdLong(), ticket.getChannel().getIdLong(), ticket.getWelcomeMessageId());
+        CompletableFuture<Message> welcomeMessage = EnvResolver.getMessageById(Objects.requireNonNull(event.getGuild()).getIdLong(), ticket.getChannel().getIdLong(), ticket.getWelcomeMessageId());
         welcomeMessage.thenAccept(message -> {
           message.editMessageComponents(message.getComponentTree().asEnabled()).queue();
         });

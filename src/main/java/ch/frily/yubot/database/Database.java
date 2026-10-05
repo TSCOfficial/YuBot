@@ -45,12 +45,15 @@ public class Database {
      * Connect to the database
      * @return The database connection
      */
-    public Connection connect() throws SQLException, ClassNotFoundException {
-        if (connection == null) {
-            Class.forName(DATABASE_DRIVER);
-            connection = DriverManager.getConnection(EnvResolver.getString(EnvKey.CRED_DB_URL), getProperties());
+    public Connection connect() {
+        try {
+            if (connection == null) {
+                connection = DriverManager.getConnection(EnvResolver.getString(EnvKey.CRED_DB_URL), getProperties());
+            }
+            return connection;
+        } catch (SQLException e) {
+            return ExceptionHandler.fail(e);
         }
-        return connection;
     }
 
     /**

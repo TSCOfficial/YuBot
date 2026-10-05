@@ -28,10 +28,11 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-@Slf4j
 /**
  * The {@link TicketManager} manages the tickets, such as creating or checking permissions
+ * @author Aliz Rose Frily
  */
+@Slf4j
 public class TicketManager {
 
     private static TicketManager instance;

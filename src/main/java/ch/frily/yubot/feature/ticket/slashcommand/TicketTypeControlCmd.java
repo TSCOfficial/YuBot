@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jspecify.annotations.NonNull;
@@ -15,6 +16,7 @@ import org.jspecify.annotations.NonNull;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 public class TicketTypeControlCmd implements ISlashSubcommand {
@@ -59,10 +61,11 @@ public class TicketTypeControlCmd implements ISlashSubcommand {
 
     @Override
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
-        String typeName = event.getOption("type").getAsString();
-        boolean isLocked = event.getOption("status").getAsInt() == 0 ? true : false;
+        OptionMapping typeOption = Objects.requireNonNull(event.getOption("type"));
+        OptionMapping statusOption = Objects.requireNonNull(event.getOption("status"));
+        boolean isLocked = statusOption.getAsInt() == 0;
 
-        TicketType type = TicketType.valueOf(typeName);
+        TicketType type = TicketType.valueOf(typeOption.getAsString());
         TicketTypeControlRepository.upsertType(type, isLocked);
 
         event.reply(String.format("✅ Tickettyp '%s' erfolgreich auf **%s** gesetzt", type.getLabel(), isLocked ? "geschlossen" : "geöffnet")).setEphemeral(true).queue();

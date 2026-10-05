@@ -11,12 +11,14 @@ import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 public class TicketOpenmodCmd implements ISlashSubcommand {
@@ -48,8 +50,8 @@ public class TicketOpenmodCmd implements ISlashSubcommand {
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
         event.deferReply(true).queue();
-        Member member = event.getOption("user").getAsMember();
-        TicketManager.getInstance().createTicket(TicketType.MODTICKET, member, ThrowingConsumer.wrap(event, channel -> {
+        OptionMapping memberOption = Objects.requireNonNull(event.getOption("user"));
+        TicketManager.getInstance().createTicket(TicketType.MODTICKET, Objects.requireNonNull(memberOption.getAsMember()), ThrowingConsumer.wrap(event, channel -> {
             event.getHook().editOriginal(String.format("Modticket wurde erstellt: %s", channel.getAsMention())).queue();
 
             Ticket ticket = TicketRepository.getTicketById(channel.getIdLong());

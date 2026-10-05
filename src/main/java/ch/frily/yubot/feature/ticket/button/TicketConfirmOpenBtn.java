@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * This button is used to confirm the opening a new ticket, when the user already has an opened ticket with the same {@link TicketType}.
@@ -34,7 +35,7 @@ public class TicketConfirmOpenBtn extends Button {
         String ticketTypeString = getArgument(event.getComponentId(), "type");
         TicketType ticketType = TicketType.valueOf(ticketTypeString);
 
-        TicketManager.getInstance().createTicket(ticketType, event.getMember(), channel -> {
+        TicketManager.getInstance().createTicket(ticketType, Objects.requireNonNull(event.getMember()), channel -> {
             event.editMessage("Dein Ticket wurde erstellt: " + channel.getAsMention()).setComponents(event.getMessage().getComponentTree().asDisabled()).queue();
         });
     }

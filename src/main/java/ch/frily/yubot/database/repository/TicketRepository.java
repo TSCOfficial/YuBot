@@ -155,7 +155,7 @@ public class TicketRepository {
         return tickets;
     }
 
-    public static void createTicket(Ticket ticket) throws SQLException, ClassNotFoundException {
+    public static void createTicket(Ticket ticket) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET);
         query.insert(Table.TicketColumn.OWNER_ID, ticket.getOwner().getIdLong());
         query.insert(Table.TicketColumn.CHANNEL_ID, ticket.getChannel().getIdLong());
@@ -167,7 +167,7 @@ public class TicketRepository {
         query.executeQuery();
     }
 
-    public static void updateTicket(Ticket ticket) throws SQLException, ClassNotFoundException {
+    public static void updateTicket(Ticket ticket) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET);
         log.info("Updating ticket with ID: {}, reminder state: {}", ticket.getId(), ticket.isReminderSent());
 

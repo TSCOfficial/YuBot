@@ -21,7 +21,6 @@ public class SlashCommandRegistry {
 
     // name, SlashCommand
     private final Map<String, ISlashCommand> commands = new HashMap<>();
-    private final List<ISlashCommandGroup> groups = new ArrayList<>();
     // group-subname, Slashcommand
     private final Map<String, ISlashSubcommand> subcommands = new HashMap<>();
 
@@ -42,7 +41,6 @@ public class SlashCommandRegistry {
 
     public List<SlashCommandData> registerGroups(List<ISlashCommandGroup> commandGroups) {
         commandGroups.forEach(group -> {
-            groups.add(group);
             List<String> registeredCmdNames = group.getSubcommands().stream().map(cmd -> {
                 subcommands.put(group.getName() + " " + cmd.getName(), cmd);
                 return "'" + cmd.getName() + "'";
@@ -54,7 +52,7 @@ public class SlashCommandRegistry {
 
     /**
      * Dispatch the event from an eventlistener to the appropriate interaction executor
-     * @param event
+     * @param event Slashcommand interaction
      */
     public void dispatchInteractionEvent(SlashCommandInteractionEvent event) throws NotFoundException, SQLException, ClassNotFoundException {
         Map<String, ISlashCommand> allSlashCommands = new HashMap<>();
@@ -67,7 +65,7 @@ public class SlashCommandRegistry {
         }
 
         // Check if user is allowed to execute command
-        if (!Util.isAdministrator(event.getMember()) && !command.getAllowedRoles().isEmpty() && command.getAllowedRoles().stream().noneMatch(role -> event.getMember().getRoles().contains(role))) {
+        if (!Util.isAdministrator(Objects.requireNonNull(event.getMember())) && !command.getAllowedRoles().isEmpty() && command.getAllowedRoles().stream().noneMatch(role -> event.getMember().getRoles().contains(role))) {
             throw new PermissionDeniedException(String.format("Nur Mitglieder\\*innen mit einer der folgenden Rollen können diesen Befehl ausführen: %s", String.join(", ", command.getAllowedRoles().stream().map(IMentionable::getAsMention).toList())));
         }
 

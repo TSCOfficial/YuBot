@@ -15,13 +15,14 @@ import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 public class ModticketCtxMenu implements IUserContextMenu {
     @Override
     public void execute(@NonNull UserContextInteractionEvent event) throws SQLException, ClassNotFoundException {
         event.deferReply(true).queue();
-        Member member = event.getTargetMember();
+        Member member = Objects.requireNonNull(event.getTargetMember());
         TicketManager.getInstance().createTicket(TicketType.MODTICKET, member, ThrowingConsumer.wrap(event, channel -> {
             event.getHook().editOriginal(String.format("Modticket wurde erstellt: %s", channel.getAsMention())).queue();
 

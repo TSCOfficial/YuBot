@@ -12,12 +12,14 @@ import ch.frily.yubot.interaction.button.btn.profile.UseProfileBtn;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 public class ButtonRegistry {
@@ -46,50 +48,8 @@ public class ButtonRegistry {
         });
     }
 
-    public void loadButtons() {
-        List<Button> rawButtons = List.of(
-                new TicketPanelSupportBtn(),
-                new TicketPanelAwarenessBtn(),
-                new TicketPanelBewerbungBtn(),
-                new TicketCloseRequestBtn(),
-                new TicketDeleteBtn(),
-                new TicketCloseRequestAcceptBtn(),
-                new TicketCloseRequestRejectBtn(),
-                new ActiveModActivityProveBtn(),
-                new ActiveModActivityRejectBtn(),
-                new AddServeropenRoleBtn(),
-                new ActiveModStatisticGoToHomeBtn(),
-                new DeleteMessageBtn(),
-                new AbsenceAddBtn(),
-                new AbsenceDetailBtn(),
-                new AbsenceEditBtn(),
-                new AbsenceEditOwnBtn(),
-                new PaginationNavBtn(),
-                new AbsenceApproveDeleteBtn(),
-                new AbsenceCancelDeleteBtn(),
-                new TicketConfirmOpenBtn(),
-                new TicketCancelOpenBtn(),
-                new ActiveModApproveOptOutBtn(),
-                new ActiveModCancelOptOutBtn(),
-                new ActiveModOptInBtn(),
-                new ActiveModOptOutBtn(),
-                new ActiveModShowStatisticBtn(),
-                new AddProfileBtn(),
-                new UseProfileBtn(),
-                new EditProfileBtn()
-        );
-        rawButtons.forEach(btn -> {
-            String idOrUrl = btn.getId();
-            if (btn.getStyle() == ButtonStyle.LINK && btn.getUrl() != null) {
-                idOrUrl = btn.getUrl();
-            }
-            buttons.put(idOrUrl, btn);
-            log.info("Registered button with id/url: {}", idOrUrl);
-        });
-    }
-
     public void dispatchButtonInteraction(ButtonInteractionEvent event) throws SQLException, IllegalStateException, ClassNotFoundException, NoSuchMethodException {
-        String idOrUrl = ArgumentComponent.extractId(event.getButton().getCustomId());
+        String idOrUrl = ArgumentComponent.extractId(Objects.requireNonNull(event.getButton().getCustomId()));
         if (event.getButton().getStyle() == ButtonStyle.LINK && event.getButton().getUrl() != null) {
             idOrUrl = event.getButton().getUrl();
         }
@@ -100,8 +60,8 @@ public class ButtonRegistry {
 
         // Check if user is allowed to execute command, aslong as its on the guild. if its via DM, the message was already verified for permissions
         if (event.getChannelType().isGuild()) {
-            if (!Util.isAdministrator(event.getMember()) && !button.getAllowedRoles().isEmpty() && button.getAllowedRoles().stream().noneMatch(role -> event.getMember().getRoles().contains(role))) {
-                throw new PermissionDeniedException(String.format("Nur Mitglieder\\*innen mit einer der folgenden Rollen können diesen Button verwenden: %s", String.join(", ", button.getAllowedRoles().stream().map(role -> role.getAsMention()).toList())));
+            if (!Util.isAdministrator(Objects.requireNonNull(event.getMember())) && !button.getAllowedRoles().isEmpty() && button.getAllowedRoles().stream().noneMatch(role -> event.getMember().getRoles().contains(role))) {
+                throw new PermissionDeniedException(String.format("Nur Mitglieder\\*innen mit einer der folgenden Rollen können diesen Button verwenden: %s", String.join(", ", button.getAllowedRoles().stream().map(IMentionable::getAsMention).toList())));
             }
         }
 

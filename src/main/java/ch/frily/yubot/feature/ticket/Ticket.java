@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 import static ch.frily.yubot.feature.ticket.TicketManager.USER_PERMISSION;
@@ -120,7 +121,7 @@ public class Ticket {
 
     /**
      * Ticket without owner - only used when the owner left the server
-     * @param type
+     * @param type the type of the ticket
      */
     public Ticket(TicketType type){
         this(null, type);
@@ -150,7 +151,7 @@ public class Ticket {
 
     /**
      * Sets the status of this ticket
-     * @param status
+     * @param status The state the Ticket is currently ({@link TicketStatus})
      */
     public void setStatus(TicketStatus status){
         this.status = status;
@@ -159,11 +160,10 @@ public class Ticket {
 
     /**
      * Sets the status of this ticket and automatically updates the database record
-     * @param status
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @param status The state the Ticket is currently ({@link TicketStatus})
+     * @throws SQLException Database connection failed
      */
-    public void updateStatus(TicketStatus status) throws SQLException, ClassNotFoundException {
+    public void updateStatus(TicketStatus status) throws SQLException {
         setStatus(status);
         TicketRepository.updateTicket(this);
     }
@@ -182,7 +182,7 @@ public class Ticket {
      * @throws PermissionDeniedException When the member is not allowed to close the ticket
      */
     public void requestClose(IReplyCallback event) throws IllegalStateException, PermissionDeniedException, SQLException, ClassNotFoundException {
-        if (Util.isTeamMember(event.getMember())) {
+        if (Util.isTeamMember(Objects.requireNonNull(event.getMember()))) {
             if (!isOwner(event.getMember())) {
                 if (this.isClosable()) {
                     if (owner == null) { // execute forceclose if owner left server
@@ -242,16 +242,16 @@ public class Ticket {
 
     /**
      * Set the pending request flag
-     * @param state
+     * @param state whether the "isrequestPending"-flag is true or not
      */
-    public void updateRequestStatus(boolean state) throws SQLException, ClassNotFoundException {
+    public void updateRequestStatus(boolean state) throws SQLException {
         isRequestPending = state;
         TicketRepository.updateTicket(this);
     }
 
     /**
      * Set the close request count
-     * @param count
+     * @param count how many times a close-request was sent
      */
     public void updateCloseRequestCount(int count) throws SQLException, ClassNotFoundException {
         closeRequestCount = count;
@@ -268,7 +268,7 @@ public class Ticket {
             return;
         }
 
-        if (ALLOW_DIRECT_FORCECLOSE_ROLES.stream().anyMatch(role -> event.getMember().getRoles().contains(role))) {
+        if (ALLOW_DIRECT_FORCECLOSE_ROLES.stream().anyMatch(role -> Objects.requireNonNull(event.getMember()).getRoles().contains(role))) {
             close(event, true);
         } else if (isForceClosable()) {
             close(event, true);
@@ -289,7 +289,7 @@ public class Ticket {
             throw new InvalidStateException("Ticket kann nicht geschlossen werden.");
         }
 
-        if (event != null && !Util.isTeamMember(event.getMember()) && !isOwner(event.getMember())) {
+        if (event != null && !Util.isTeamMember(Objects.requireNonNull(event.getMember())) && !isOwner(event.getMember())) {
             throw new PermissionDeniedException("Nur Teammitglieder oder der/die Ticketinhaber\\*in können Tickets schliessen.");
         }
 
@@ -338,7 +338,7 @@ public class Ticket {
                         throw new PermissionException(
                                 "Failed to generate transcript due to missing '%s' permission."
                                         .formatted(ex.getMissingPermissions().stream().map(Permission::getName)));
-                    };
+                    }
 
                     throw new RuntimeException("Failed to generate transcript due to unknown exception.");
                 });
@@ -346,10 +346,9 @@ public class Ticket {
 
     /**
      * Claims a ticket to assign it to someone
-     * @param member
-     * @return True if claimed successfully, false if the member is not qualified or the ticket can not be claimed
+     * @param member the member who claims the ticket (usually a team-member)
      */
-    public void claim(Member member) throws SQLException, ClassNotFoundException {
+    public void claim(Member member) throws SQLException {
         if (assignee == null && this.isNewTicket() && !isOwner(member)){
             this.assignee = member;
 
@@ -357,15 +356,15 @@ public class Ticket {
             this.updateChannelTopic();
 
             TicketRepository.updateTicket(this);
-        };
+        }
     }
 
-    public void reopen(Member member, IReplyCallback event) throws SQLException, ClassNotFoundException {
+    public void reopen(Member member, IReplyCallback event) throws SQLException {
         if (!status.equals(TicketStatus.CLOSED)) {
             throw new InvalidStateException("Ticket kann nicht erneut eröffnet werden, da es nicht geschlossen ist.");
         }
 
-        if (Util.isTeamMember(event.getMember())) {
+        if (Util.isTeamMember(Objects.requireNonNull(event.getMember()))) {
             updateStatus(TicketStatus.CLAIMED);
 
             channel.getManager().putPermissionOverride(owner, USER_PERMISSION, null).queue();
@@ -384,10 +383,10 @@ public class Ticket {
 
     /**
      * Add a member to this ticket
-     * @param initiator
-     * @param permissionHolder
-     * @throws PermissionDeniedException
-     * @throws InvalidStateException
+     * @param initiator the member that initiates the toggle (usually a team-member)
+     * @param permissionHolder the user or role to toggle
+     * @throws PermissionDeniedException if the initator is missing permissions to execute this action
+     * @throws InvalidStateException if the user/role is already added/removed, the ticket owner tries to be removed or the ticket is already closed
      */
     public void addMember(Member initiator, IPermissionHolder permissionHolder) throws PermissionDeniedException, InvalidStateException {
         toggleAdditionalMember(initiator, permissionHolder, true);
@@ -395,15 +394,23 @@ public class Ticket {
 
     /**
      * Remove member from this ticket
-     * @param initiator
-     * @param permissionHolder
-     * @throws PermissionDeniedException
-     * @throws InvalidStateException
+     * @param initiator the member that initiates the toggle (usually a team-member)
+     * @param permissionHolder the user or role to toggle
+     * @throws PermissionDeniedException if the initator is missing permissions to execute this action
+     * @throws InvalidStateException if the user/role is already added/removed, the ticket owner tries to be removed or the ticket is already closed
      */
     public void removeMember(Member initiator, IPermissionHolder permissionHolder) throws PermissionDeniedException, InvalidStateException {
         toggleAdditionalMember(initiator, permissionHolder, false);
     }
 
+    /**
+     * Add/remove a user or role from the ticket
+     * @param initiator the member that initiates the toggle (usually a team-member)
+     * @param permissionHolder the user or role to toggle
+     * @param addMember whether to add (true) or remove (false) the user/role
+     * @throws PermissionDeniedException if the initator is missing permissions to execute this action
+     * @throws InvalidStateException if the user/role is already added/removed, the ticket owner tries to be removed or the ticket is already closed
+     */
     private void toggleAdditionalMember(Member initiator, IPermissionHolder permissionHolder, boolean addMember) throws PermissionDeniedException, InvalidStateException {
         if (Util.isTeamMember(initiator)){
             if (status != TicketStatus.CLOSED) {
@@ -472,11 +479,10 @@ public class Ticket {
     /**
      * Sends a reminder to the ticket when the owner never sent a message
      */
-    public void sendReminder() throws SQLException, ClassNotFoundException {
-        StringBuilder sb = new StringBuilder();
-        sb.append(owner.getAsMention()).append("\n");
-        sb.append(type.getEmbedDescription());
-        channel.sendMessage(sb.toString()).queue();
+    public void sendReminder() throws SQLException {
+        String sb = owner.getAsMention() + "\n" +
+                type.getEmbedDescription();
+        channel.sendMessage(sb).queue();
         setReminderSent(true);
         TicketRepository.updateTicket(this);
     }

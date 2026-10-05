@@ -7,12 +7,14 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 public class TicketRemoveCmd implements ISlashSubcommand {
     @Override
@@ -27,12 +29,13 @@ public class TicketRemoveCmd implements ISlashSubcommand {
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
+        OptionMapping userRoleOption = Objects.requireNonNull(event.getOption("user-role"));
         Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
-        IMentionable mentionable = event.getOption("user-role").getAsMentionable();
+        IMentionable mentionable = userRoleOption.getAsMentionable();
         IPermissionHolder permissionHolder = (IPermissionHolder) mentionable;
         ticket.removeMember(event.getMember(), permissionHolder);
 
-        event.reply(String.format("✅ %s wurde erfolgreich entfernt.", event.getOption("user-role").getAsMentionable().getAsMention())).queue();
+        event.reply(String.format("✅ %s wurde erfolgreich entfernt.", userRoleOption.getAsMentionable().getAsMention())).queue();
     }
 
     @Override

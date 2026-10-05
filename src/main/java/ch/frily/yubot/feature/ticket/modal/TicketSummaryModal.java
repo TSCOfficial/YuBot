@@ -78,7 +78,7 @@ public class TicketSummaryModal extends Modal {
             fileUpload.setName("transkript-" + ticket.getNameWithoutStatus() + ".html");
             TextChannel logChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_TICKETLOGS);
             List<Container> containers = new TicketTranscriptContainer(event.getMember(), ticket, fileUpload, summaryText).build();
-            logChannel.sendMessageComponents(containers).useComponentsV2().addFiles(fileUpload).setAllowedMentions(List.of()).queue(ThrowingConsumer.wrap(event, message -> {
+            logChannel.sendMessageComponents(containers).useComponentsV2().addFiles(fileUpload).setAllowedMentions(List.of()).queue(ThrowingConsumer.wrap(event, _ -> {
                 event.getHook().editOriginal("Ticket wird gelöscht.").queue();
                 ticket.delete();
             }));

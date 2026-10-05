@@ -17,7 +17,7 @@ public class ModalRegistry {
 
     private static ModalRegistry instance;
 
-    private Map<String, Modal> modals = new HashMap<>();
+    private final Map<String, Modal> modals = new HashMap<>();
 
     public static ModalRegistry getInstance(){
         if (instance == null) {
@@ -28,22 +28,6 @@ public class ModalRegistry {
 
     public void register(List<Modal> modals) {
         modals.forEach(modal -> {
-            this.modals.put(modal.getId(), modal);
-            log.info("Loaded modal '{}'.", modal.getClass().getSimpleName());
-        });
-    }
-
-    public void loadModals(){
-        List<Modal> rawModals = List.of(
-                new TicketTypeSelectorModal(),
-                new AbsenceAddModal(),
-                new TicketSummaryModal(),
-                new SelectActiveModSendTypeModal(),
-                new AddProfileModal(),
-                new EditWebhookMessageModal()
-        );
-
-        rawModals.forEach(modal -> {
             this.modals.put(modal.getId(), modal);
             log.info("Loaded modal '{}'.", modal.getClass().getSimpleName());
         });

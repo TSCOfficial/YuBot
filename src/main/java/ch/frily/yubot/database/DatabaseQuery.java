@@ -235,7 +235,7 @@ public class DatabaseQuery {
     /**
      * For every data manipulation query that does not return any {@link ResultSet}.
      */
-    public void executeQuery() throws SQLException, ClassNotFoundException {
+    public void executeQuery() throws SQLException {
         Connection conn = Database.getInstance().connect();
         PreparedStatement stmt = conn.prepareStatement(buildSQL());
         setParameters(stmt);

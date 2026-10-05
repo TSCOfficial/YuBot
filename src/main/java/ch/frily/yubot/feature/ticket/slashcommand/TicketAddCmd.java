@@ -7,12 +7,14 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 public class TicketAddCmd implements ISlashSubcommand {
     @Override
@@ -27,7 +29,9 @@ public class TicketAddCmd implements ISlashSubcommand {
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
-        IMentionable mentionable = event.getOption("user-role").getAsMentionable();
+        OptionMapping userRoleOption = Objects.requireNonNull(event.getOption("user-role"));
+        OptionMapping reasonOption = Objects.requireNonNull(event.getOption("reason"));
+        IMentionable mentionable = userRoleOption.getAsMentionable();
         IPermissionHolder permissionHolder = (IPermissionHolder) mentionable;
 
         Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
@@ -35,9 +39,9 @@ public class TicketAddCmd implements ISlashSubcommand {
         ticket.addMember(event.getMember(), permissionHolder);
 
         StringBuilder reply = new StringBuilder();
-        reply.append(String.format("✅ %s wurde erfolgreich hinzugefügt.", event.getOption("user-role").getAsMentionable().getAsMention()));
+        reply.append(String.format("✅ %s wurde erfolgreich hinzugefügt.", userRoleOption.getAsMentionable().getAsMention()));
         if (event.getOption("reason") != null) {
-            reply.append(String.format("\n-# Begründung: %s", event.getOption("reason").getAsString()));
+            reply.append(String.format("\n-# Begründung: %s", reasonOption.getAsString()));
         }
 
         event.reply(reply.toString()).queue();

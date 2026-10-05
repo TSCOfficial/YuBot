@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
+import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
@@ -58,14 +59,15 @@ public class TicketTypeSelectorModal extends Modal {
     @Override
     public void execute(@NotNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException {
         event.deferReply(true).queue();
-        TicketType ticketType = Arrays.stream(TicketType.values()).filter(type ->
-                Objects.equals(type.getId(), event.getValue("select-menu:ticket-type-selector").getAsStringList().getFirst())
-        ).findFirst().orElseThrow(() -> new IllegalStateException("Tickettyp ist ungültig."));
+        TicketType ticketType = Arrays.stream(TicketType.values()).filter(type -> {
+            ModalMapping typeSelectorValue = Objects.requireNonNull(event.getValue("select-menu:ticket-type-selector"));
+            return Objects.equals(type.getId(), typeSelectorValue.getAsStringList().getFirst());
+        }).findFirst().orElseThrow(() -> new IllegalStateException("Tickettyp ist ungültig."));
 
         // check if person already has a ticket with the same type
-        List<Ticket> openedTickets = TicketRepository.getTicketsByUser(event.getMember().getUser());
+        List<Ticket> openedTickets = TicketRepository.getTicketsByUser(Objects.requireNonNull(event.getMember()).getUser());
         openedTickets = openedTickets.stream().filter(ticket -> !ticket.getStatus().equals(TicketStatus.CLOSED) && ticket.getType().equals(ticketType)).toList();
-        if (openedTickets.size() > 0) {
+        if (!openedTickets.isEmpty()) {
             String text = String.format("Du besitzt bereits ein Ticket mit dieser Art: %s", openedTickets.getFirst().getChannel().getAsMention());
             if (openedTickets.size() > 1) {
                 text = String.format("Du besitzt bereits Tickets mit dieser Art: %s", openedTickets.stream().map(ticket -> ticket.getChannel().getAsMention()).collect(Collectors.joining(", ")));

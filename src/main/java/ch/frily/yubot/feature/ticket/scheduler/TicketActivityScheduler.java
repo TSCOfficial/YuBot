@@ -27,6 +27,7 @@ public class TicketActivityScheduler implements IScheduler {
             if (ticket.getLastActivityAt().plusHours(Ticket.getMAX_OWNER_NOREPLY_DURATION()).isAfter(LocalDateTime.now())) { // time needs to be before now (in the past)
                 return false;
             }
+            // todo add new flag "owner has already written", to check if the ticket-opener ignosres the ticket or not. return true if the owner DID NOT already write something
             if (ticket.isReminderSent()) {
                 return false;
             }

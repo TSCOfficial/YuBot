@@ -44,22 +44,6 @@ public class SchedulerRegistry {
         });
     }
 
-    public static void registerAll() {
-        List<IScheduler> schedulers = List.of(
-                new ActiveModActivityScheduler(),
-                new CleanStorageScheduler(),
-                new AbsenceContainerScheduler(),
-                new TicketActivityScheduler(),
-                new EventReminderScheduler()
-        );
-
-        for (IScheduler scheduler : schedulers) {
-            scheduleNext(scheduler);
-            log.info("Registered scheduler: {} ({})",
-                    scheduler.getClass().getSimpleName(), scheduler.cronExpression());
-        }
-    }
-
     private static void scheduleNext(IScheduler scheduler) {
         Cron cron = PARSER.parse(scheduler.cronExpression());
         ExecutionTime executionTime = ExecutionTime.forCron(cron);
