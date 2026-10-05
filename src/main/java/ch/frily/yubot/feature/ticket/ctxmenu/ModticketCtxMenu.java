@@ -1,4 +1,4 @@
-package ch.frily.yubot.interaction.contextmenu.ctxmenu;
+package ch.frily.yubot.feature.ticket.ctxmenu;
 
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.feature.ticket.Ticket;

@@ -1,4 +1,4 @@
-package ch.frily.yubot.interaction.modal.modal;
+package ch.frily.yubot.feature.ticket.modal;
 
 import ch.frily.yubot.container.ticket.TicketTranscriptContainer;
 import ch.frily.yubot.exception.ThrowingConsumer;

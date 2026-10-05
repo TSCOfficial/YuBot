@@ -2,19 +2,13 @@ package ch.frily.yubot.interaction.contextmenu;
 
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.PermissionDeniedException;
-import ch.frily.yubot.interaction.contextmenu.ctxmenu.DeleteWebhookMsgCtxMenu;
-import ch.frily.yubot.interaction.contextmenu.ctxmenu.EditWebhookMsgCtxMenu;
-import ch.frily.yubot.interaction.contextmenu.ctxmenu.LookupProfileCtxMenu;
-import ch.frily.yubot.interaction.contextmenu.ctxmenu.ModticketCtxMenu;
 import ch.frily.yubot.util.Util;
 import javassist.NotFoundException;
 import net.dv8tion.jda.api.events.interaction.command.GenericContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 import java.sql.SQLException;
 import java.util.HashMap;

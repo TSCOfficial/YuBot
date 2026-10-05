@@ -1,8 +1,8 @@
-package ch.frily.yubot.interaction.button.btn.ticket;
+package ch.frily.yubot.feature.ticket.button;
 
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.feature.ticket.TicketTypeGroup;
-import ch.frily.yubot.interaction.modal.modal.TicketTypeSelectorModal;
+import ch.frily.yubot.feature.ticket.modal.TicketTypeSelectorModal;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jetbrains.annotations.NotNull;

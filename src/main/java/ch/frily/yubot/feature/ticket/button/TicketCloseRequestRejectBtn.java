@@ -1,4 +1,4 @@
-package ch.frily.yubot.interaction.button.btn.ticket;
+package ch.frily.yubot.feature.ticket.button;
 
 import ch.frily.yubot.embed.ticket.TicketCloseRejectedEmbed;
 import ch.frily.yubot.feature.ticket.Ticket;

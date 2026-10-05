@@ -1,42 +1,42 @@
-package ch.frily.yubot.interaction.button.btn.ticket;
+package ch.frily.yubot.feature.ticket.button;
 
-import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.feature.ticket.TicketTypeGroup;
-import ch.frily.yubot.interaction.modal.modal.TicketTypeSelectorModal;
+import ch.frily.yubot.interaction.button.Button;
+import ch.frily.yubot.feature.ticket.modal.TicketTypeSelectorModal;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class TicketPanelAwarenessBtn extends Button {
+public class TicketPanelBewerbungBtn extends Button {
 
-    private static TicketPanelAwarenessBtn instance;
+    private static TicketPanelBewerbungBtn instance;
 
-    public static TicketPanelAwarenessBtn getInstance(){
+    public static TicketPanelBewerbungBtn getInstance(){
         if (instance == null) {
-            instance = new TicketPanelAwarenessBtn();
+            instance = new TicketPanelBewerbungBtn();
         }
         return instance;
     }
 
     @Override
     public String getId() {
-        return "ticket-awareness";
+        return "ticket-bewerbung-btn";
     }
 
     @Override
     public String getLabel() {
-        return "Awareness";
+        return "Bewerbung";
     }
 
     @Override
     public ButtonStyle getStyle() {
-        return ButtonStyle.SUCCESS;
+        return ButtonStyle.PRIMARY;
     }
 
     @Override
     public void execute(@NotNull ButtonInteractionEvent event) {
         TicketTypeSelectorModal modal = new TicketTypeSelectorModal();
-        modal.setTypeGroup(TicketTypeGroup.AWARENESS);
+        modal.setTypeGroup(TicketTypeGroup.BEWERBUNG);
         event.replyModal(modal.build()).queue();
     }
 }

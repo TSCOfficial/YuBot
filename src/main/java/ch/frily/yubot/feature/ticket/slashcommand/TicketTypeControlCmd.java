@@ -1,4 +1,4 @@
-package ch.frily.yubot.interaction.command.cmd.ticket;
+package ch.frily.yubot.feature.ticket.slashcommand;
 
 import ch.frily.yubot.feature.dynamicmsg.DynamicMessageList;
 import ch.frily.yubot.feature.ticket.TicketType;

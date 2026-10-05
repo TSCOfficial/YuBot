@@ -1,17 +1,17 @@
 package ch.frily.yubot.feature.ticket;
 
 import ch.frily.yubot.feature.Feature;
+import ch.frily.yubot.feature.ticket.button.*;
 import ch.frily.yubot.interaction.button.Button;
-import ch.frily.yubot.interaction.button.btn.ticket.*;
 import ch.frily.yubot.interaction.command.ISlashCommandGroup;
-import ch.frily.yubot.interaction.command.cmd.ticket.TicketCmdGroup;
+import ch.frily.yubot.feature.ticket.slashcommand.TicketCmdGroup;
 import ch.frily.yubot.interaction.contextmenu.IContextMenu;
-import ch.frily.yubot.interaction.contextmenu.ctxmenu.ModticketCtxMenu;
+import ch.frily.yubot.feature.ticket.ctxmenu.ModticketCtxMenu;
 import ch.frily.yubot.interaction.modal.Modal;
-import ch.frily.yubot.interaction.modal.modal.TicketSummaryModal;
-import ch.frily.yubot.interaction.modal.modal.TicketTypeSelectorModal;
+import ch.frily.yubot.feature.ticket.modal.TicketSummaryModal;
+import ch.frily.yubot.feature.ticket.modal.TicketTypeSelectorModal;
 import ch.frily.yubot.scheduler.IScheduler;
-import ch.frily.yubot.scheduler.schedules.TicketActivityScheduler;
+import ch.frily.yubot.feature.ticket.scheduler.TicketActivityScheduler;
 
 import java.util.List;
 

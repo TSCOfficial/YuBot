@@ -1,4 +1,4 @@
-package ch.frily.yubot.interaction.button.btn.ticket;
+package ch.frily.yubot.feature.ticket.button;
 
 import ch.frily.yubot.interaction.button.Button;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;

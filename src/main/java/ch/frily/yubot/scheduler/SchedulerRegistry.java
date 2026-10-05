@@ -1,6 +1,7 @@
 package ch.frily.yubot.scheduler;
 
 import ch.frily.yubot.exception.ExceptionHandler;
+import ch.frily.yubot.feature.ticket.scheduler.TicketActivityScheduler;
 import ch.frily.yubot.scheduler.schedules.*;
 import com.cronutils.model.Cron;
 import com.cronutils.model.CronType;

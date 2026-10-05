@@ -1,4 +1,4 @@
-package ch.frily.yubot.interaction.command.cmd.ticket;
+package ch.frily.yubot.feature.ticket.slashcommand;
 
 import ch.frily.yubot.feature.ticket.Ticket;
 import ch.frily.yubot.database.repository.TicketRepository;
@@ -6,8 +6,6 @@ import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;

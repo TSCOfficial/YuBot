@@ -1,4 +1,4 @@
-package ch.frily.yubot.interaction.button.btn.ticket;
+package ch.frily.yubot.feature.ticket.button;
 
 import ch.frily.yubot.container.ticket.TicketTranscriptContainer;
 import ch.frily.yubot.exception.ThrowingConsumer;
@@ -6,7 +6,7 @@ import ch.frily.yubot.feature.ticket.Ticket;
 import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.feature.ticket.TicketTypeGroup;
 import ch.frily.yubot.interaction.button.Button;
-import ch.frily.yubot.interaction.modal.modal.TicketSummaryModal;
+import ch.frily.yubot.feature.ticket.modal.TicketSummaryModal;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import lombok.extern.slf4j.Slf4j;

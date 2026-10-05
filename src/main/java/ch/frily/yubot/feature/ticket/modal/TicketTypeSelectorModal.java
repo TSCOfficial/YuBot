@@ -1,9 +1,9 @@
-package ch.frily.yubot.interaction.modal.modal;
+package ch.frily.yubot.feature.ticket.modal;
 
 import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.feature.ticket.*;
-import ch.frily.yubot.interaction.button.btn.ticket.TicketCancelOpenBtn;
-import ch.frily.yubot.interaction.button.btn.ticket.TicketConfirmOpenBtn;
+import ch.frily.yubot.feature.ticket.button.TicketCancelOpenBtn;
+import ch.frily.yubot.feature.ticket.button.TicketConfirmOpenBtn;
 import ch.frily.yubot.interaction.modal.Modal;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

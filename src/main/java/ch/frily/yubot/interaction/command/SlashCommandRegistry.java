@@ -1,11 +1,6 @@
 package ch.frily.yubot.interaction.command;
 
 import ch.frily.yubot.exception.PermissionDeniedException;
-import ch.frily.yubot.interaction.command.cmd.*;
-import ch.frily.yubot.interaction.command.cmd.activemod.ActiveModCmdGroup;
-import ch.frily.yubot.interaction.command.cmd.profile.ProfileCmdGroup;
-import ch.frily.yubot.interaction.command.cmd.send.SendCmdGroup;
-import ch.frily.yubot.interaction.command.cmd.ticket.TicketCmdGroup;
 import ch.frily.yubot.util.Util;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -14,11 +9,7 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 import java.sql.SQLException;
 import java.util.*;

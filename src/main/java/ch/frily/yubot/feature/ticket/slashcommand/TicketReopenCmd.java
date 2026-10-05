@@ -1,4 +1,4 @@
-package ch.frily.yubot.interaction.command.cmd.ticket;
+package ch.frily.yubot.feature.ticket.slashcommand;
 
 import ch.frily.yubot.feature.ticket.Ticket;
 import ch.frily.yubot.database.repository.TicketRepository;
