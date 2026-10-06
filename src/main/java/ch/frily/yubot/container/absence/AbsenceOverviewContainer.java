@@ -45,6 +45,7 @@ public class AbsenceOverviewContainer extends PaginationContainer {
             EnvKey.ROLE_AWARENESS,
             EnvKey.ROLE_DEVELOPER,
             EnvKey.ROLE_EVENT,
+            EnvKey.ROLE_DESIGN,
             EnvKey.ROLE_TWITCHMOD
     ).map(EnvResolver::getRoleById).toList();
 
