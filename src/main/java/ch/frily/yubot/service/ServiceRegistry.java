@@ -1,5 +1,7 @@
 package ch.frily.yubot.service;
 
+import ch.frily.yubot.listeners.ListenerRegistry;
+import ch.frily.yubot.service.game.WordChainGameService;
 import ch.frily.yubot.service.ticket.TicketService;
 import ch.frily.yubot.interaction.button.ButtonRegistry;
 import ch.frily.yubot.interaction.command.SlashCommandRegistry;
@@ -41,7 +43,8 @@ public class ServiceRegistry {
      */
     public void load() {
         this.features = List.of(
-                new TicketService()
+                new TicketService(),
+                new WordChainGameService()
         );
 
 
@@ -58,6 +61,7 @@ public class ServiceRegistry {
             ModalRegistry.getInstance().register(feature.getModals());
             SelectRegistry.getInstance().register(feature.getSelects());
             SchedulerRegistry.getInstance().register(feature.getSchedulers());
+            ListenerRegistry.getInstance().register(feature.getListeners());
         });
 
 

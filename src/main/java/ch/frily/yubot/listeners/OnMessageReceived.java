@@ -66,11 +66,6 @@ public class OnMessageReceived extends ListenerAdapter {
                 Closure.handleModActivity(event.getMember());
             }
 
-            // Word-Chain game
-            if (event.getChannel().getId().equals(EnvResolver.getString(EnvKey.CHANNEL_KETTENBRIEF))) {
-                WordChainGame.handleWord(event);
-            }
-
             // Handle profile webhok messages
             MessageHandling.handleIncomingMessage(event.getMessage());
 

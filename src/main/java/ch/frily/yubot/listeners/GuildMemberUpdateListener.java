@@ -30,6 +30,8 @@ public class GuildMemberUpdateListener extends ListenerAdapter {
     @Override
     public void onGuildMemberRoleAdd(@NotNull GuildMemberRoleAddEvent event) {
         try {
+            ListenerRegistry.getInstance().dispatchEvent(event);
+
             if (Util.isTeamMember(event.getMember())) {
 
                 if (event.getRoles().contains(EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD))) {
