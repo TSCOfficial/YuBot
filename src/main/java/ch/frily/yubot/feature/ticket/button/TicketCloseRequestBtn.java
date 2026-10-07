@@ -40,7 +40,7 @@ public class TicketCloseRequestBtn extends Button {
     }
 
     @Override
-    public void execute(@NotNull ButtonInteractionEvent event) throws SQLException, IllegalStateException, ClassNotFoundException {
+    public void execute(@NotNull ButtonInteractionEvent event) throws SQLException, IllegalStateException {
         Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
         ticket.requestClose(event);
 

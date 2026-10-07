@@ -28,7 +28,7 @@ public class ActiveModStatisticCmd implements ISlashSubcommand {
     }
 
     @Override
-    public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
+    public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException {
         event.deferReply(true).queue();
         Map<Member, List<ActiveModTracking>> activeModTrackings = ActiveModTrackingRepository.getActiveModTrackingsAsMap();
         activeModTrackings = ActiveModTrackingRepository.completeWithMissingModerators(activeModTrackings);

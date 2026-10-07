@@ -93,12 +93,12 @@ public class ProfileSettingCmd implements ISlashSubcommand {
                             SettingOption<?> resolvedOption = setting.getOptionByLabel(option.getAsString(), setting.getDataType());
                             SettingRepository.upsertSetting(event.getMember(), setting, resolvedOption.value());
                         } else {
-                            if (setting.getMin() > option.getAsString().length()) {
-                                failedSettingsSB.append(String.format("- `%s`: __%s__ ist zu kurz (%d) und muss mindestens %d Zeichen lang sein.\n", setting.getLabel(), option.getAsString(), option.getAsString().length(), setting.getMin()));
+                            if (setting.getMinLength() > option.getAsString().length()) {
+                                failedSettingsSB.append(String.format("- `%s`: __%s__ ist zu kurz (%d) und muss mindestens %d Zeichen lang sein.\n", setting.getLabel(), option.getAsString(), option.getAsString().length(), setting.getMinLength()));
                                 continue;
                             }
-                            if (setting.getMax() < option.getAsString().length()) {
-                                failedSettingsSB.append(String.format("- `%s`: __%s__ ist zu lang (%d) und darf maximal %d Zeichen lang sein.\n", setting.getLabel(), option.getAsString(), option.getAsString().length(), setting.getMax()));
+                            if (setting.getMaxLength() < option.getAsString().length()) {
+                                failedSettingsSB.append(String.format("- `%s`: __%s__ ist zu lang (%d) und darf maximal %d Zeichen lang sein.\n", setting.getLabel(), option.getAsString(), option.getAsString().length(), setting.getMaxLength()));
                                 continue;
                             }
                             SettingRepository.upsertSetting(event.getMember(), setting, option.getAsString());

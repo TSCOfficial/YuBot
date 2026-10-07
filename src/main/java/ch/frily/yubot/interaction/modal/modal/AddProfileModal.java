@@ -12,11 +12,13 @@ import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
+import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import org.jspecify.annotations.NonNull;
 
 import javax.annotation.Nullable;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Slf4j
@@ -86,7 +88,9 @@ public class AddProfileModal extends Modal {
     }
 
     @Override
-    public void execute(@NonNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException {
+    public void execute(@NonNull ModalInteractionEvent event) throws SQLException, NullPointerException {
+        ModalMapping profilenameValue = Objects.requireNonNull(event.getValue("profilename"));
+
         boolean isEditMode = false;
         Profile profile = null;
         try {
@@ -98,15 +102,15 @@ public class AddProfileModal extends Modal {
         }
 
         String id = isEditMode ? profile.profileId() : UUID.randomUUID().toString();
-        String profilename = event.getValue("profilename").getAsString().trim();
+        String profilename = profilenameValue.getAsString().trim();
         String proxy = null;
-        if (event.getValue("proxy") != null) {
+        if (Objects.nonNull(event.getValue("proxy"))) {
             proxy = event.getValue("proxy").getAsString().trim();
             validateProxy(event.getMember(), proxy, profile);
         }
 
         String imageUrl = null;
-        if (event.getValue("profilepicture-url") != null) {
+        if (Objects.nonNull(event.getValue("profilepicture-url"))) {
             imageUrl = event.getValue("profilepicture-url").getAsString().trim();
             validateUrl(imageUrl);
         }

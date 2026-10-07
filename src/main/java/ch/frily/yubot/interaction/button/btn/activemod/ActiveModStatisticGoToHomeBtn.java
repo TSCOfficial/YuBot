@@ -32,7 +32,7 @@ public class ActiveModStatisticGoToHomeBtn extends Button {
     }
 
     @Override
-    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException, ClassNotFoundException {
+    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException {
         Map<Member, List<ActiveModTracking>> activeModTrackings = ActiveModTrackingRepository.getActiveModTrackingsAsMap();
         activeModTrackings = ActiveModTrackingRepository.completeWithMissingModerators(activeModTrackings);
         ActiveModStatisticContainer activeModStatisticContainer = new ActiveModStatisticContainer(activeModTrackings, event.getMember());

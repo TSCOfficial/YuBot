@@ -44,7 +44,7 @@ public class ContextMenuRegistry {
      * Handles both {@link Command.Type#USER USER} and {@link Command.Type#MESSAGE MESSAGE} context menus.
      * @param event the generic context interaction event fired by discord
      */
-    public void dispatchInteractionEvent(@NotNull GenericContextInteractionEvent<?> event) throws NotFoundException, SQLException, ClassNotFoundException {
+    public void dispatchInteractionEvent(@NotNull GenericContextInteractionEvent<?> event) throws NotFoundException, SQLException {
         IContextMenu contextMenu = contextMenus.get(event.getName());
 
         if (contextMenu == null) {

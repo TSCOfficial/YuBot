@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 public class ActiveModOptInCmd implements ISlashSubcommand {
@@ -35,7 +36,7 @@ public class ActiveModOptInCmd implements ISlashSubcommand {
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException {
-        if (SettingRepository.getSettings(event.getMember()) == null || SettingRepository.getSettings(event.getMember()).activeModSendInDm() == null) {
+        if (Objects.isNull(SettingRepository.getSettings(event.getMember())) || Objects.isNull(SettingRepository.getSettings(event.getMember()).activeModSendInDm())) {
             // If the user does not have set the activeModSendInDm
             event.replyModal(new SelectActiveModSendTypeModal().build()).queue();
             return;

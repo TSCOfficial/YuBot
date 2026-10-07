@@ -1,5 +1,6 @@
 package ch.frily.yubot.feature.ticket.slashcommand;
 
+import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.feature.dynamicmsg.DynamicMessageList;
 import ch.frily.yubot.feature.ticket.TicketType;
 import ch.frily.yubot.database.repository.TicketTypeControlRepository;
@@ -38,8 +39,8 @@ public class TicketTypeControlCmd implements ISlashSubcommand {
                     String status = "";
                     try {
                         status = TicketTypeControlRepository.isTypeLocked(type) ? " (🔒)" : " (🔓)";
-                    } catch (SQLException | ClassNotFoundException e) {
-                        log.error("Failed to get ticket type", e);
+                    } catch (SQLException e) {
+                        ExceptionHandler.handle(e);
                     }
                     String choiceName = String.format("%s / %s %s", type.getGroup().getLabel(), type.getLabel(), status);
                     return new Command.Choice(choiceName, type.name());
@@ -60,7 +61,7 @@ public class TicketTypeControlCmd implements ISlashSubcommand {
     }
 
     @Override
-    public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
+    public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException {
         OptionMapping typeOption = Objects.requireNonNull(event.getOption("type"));
         OptionMapping statusOption = Objects.requireNonNull(event.getOption("status"));
         boolean isLocked = statusOption.getAsInt() == 0;

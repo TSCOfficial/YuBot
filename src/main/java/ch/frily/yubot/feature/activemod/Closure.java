@@ -22,11 +22,13 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
@@ -83,7 +85,7 @@ public class Closure {
         toggleServerClosedInfoChannelPermissions(serverIsOpen);
 
         Role everyoneRole = EnvResolver.getRoleById(EnvKey.ROLE_EVERYONE);
-        TextChannel logChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_CLOSURELOGS);
+
         Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
         TextChannel lobbyChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_LOBBY);
 
@@ -92,23 +94,39 @@ public class Closure {
             Role mentionRole = EnvResolver.getRoleById(EnvKey.ROLE_EROEFFNUNGSPING);
             lobbyChannel.sendMessage(String.format("%s, es ist Zeit zu quatschen ✨", mentionRole.getAsMention())).queue();
 
-            logChannel.sendMessageEmbeds(new ClosureLogEmbed(true).build()).queue();
-            guild.getManager().setIcon(Icon.from(getClass().getResourceAsStream("/icon/server-icon.png"))).queue();
-            guild.getManager().setBanner(Icon.from(getClass().getResourceAsStream("/icon/server-banner.png"))).queue();
+            logClosure(true);
+
+            InputStream serverIcon = Objects.requireNonNull(getClass().getResourceAsStream("/icon/server-icon.png"));
+            InputStream serverBanner = Objects.requireNonNull(getClass().getResourceAsStream("/icon/server-banner.png"));
+            guild.getManager().setIcon(Icon.from(serverIcon)).queue();
+            guild.getManager().setBanner(Icon.from(serverBanner)).queue();
         }
         // Closing the server
         if (!serverIsOpen && everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL)) {
-            logChannel.sendMessageEmbeds(new ClosureLogEmbed(false).build()).queue();
+
             lobbyChannel.sendMessage(String.format("""
                     ## %s
                     Der server ist nun geschlossen.
                     -# Es gibt keine aktiven Moderator*innen mehr.
                     """, EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_SERVERGESCHLOSSEN).getAsMention())).queue();
-            guild.getManager().setIcon(Icon.from(getClass().getResourceAsStream("/icon/server-icon-closed.png"))).queue();
-            guild.getManager().setBanner(Icon.from(getClass().getResourceAsStream("/icon/server-banner-closed.png"))).queue();
+
+            logClosure(false);
+            InputStream serverIcon = Objects.requireNonNull(getClass().getResourceAsStream("/icon/server-icon-closed.png"));
+            InputStream serverBanner = Objects.requireNonNull(getClass().getResourceAsStream("/icon/server-banner-closed.png"));
+            guild.getManager().setIcon(Icon.from(serverIcon)).queue();
+            guild.getManager().setBanner(Icon.from(serverBanner)).queue();
         }
         DynamicMessageList.TICKET_PANEL.update();
         DynamicMessageList.ACTIVE_MOD_DASHBOARD.update();
+    }
+
+    /**
+     * Loggs whenever the server opens or closes
+     * @param isOpen whether the server was opened (true) or closed (false)
+     */
+    private void logClosure(boolean isOpen) {
+        TextChannel logChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_CLOSURELOGS);
+        logChannel.sendMessageEmbeds(new ClosureLogEmbed(isOpen).build()).queue();
     }
 
     /**
@@ -150,7 +168,7 @@ public class Closure {
     private void kickMembersFromVoice() {
         Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
         guild.getVoiceStates().forEach(voiceState -> {
-            if (voiceState.getChannel().getParentCategory() == null || voiceState.getChannel().getParentCategory() != EnvResolver.getCategoryById(EnvKey.CATEGORY_TEAMBEREICH) ) {
+            if (Objects.requireNonNull(voiceState.getChannel()).getParentCategory() == null || voiceState.getChannel().getParentCategory() != EnvResolver.getCategoryById(EnvKey.CATEGORY_TEAMBEREICH) ) {
                 guild.moveVoiceMember(voiceState.getMember(), null).queue();
             }
         });
@@ -226,7 +244,7 @@ public class Closure {
      * @throws SQLException Database failure
      */
     public static void handleModActivity(Member member) throws SQLException {
-        ActiveMod activeMod = ActiveModRepository.getModerator(member);
+        ActiveMod activeMod = Objects.requireNonNull(ActiveModRepository.getModerator(member));
         deleteRequestedAttentionMessages();
 
         if (activeMod.activityRequestMessageId() != 0) { // automatically accept an active activity-prove-request
@@ -306,9 +324,9 @@ public class Closure {
      * Handle an unresponded activity request
      * @param moderator the active moderator
      */
-    private static void handleActivityProveTimeout(ActiveMod moderator) throws SQLException, ClassNotFoundException {
+    private static void handleActivityProveTimeout(ActiveMod moderator) throws SQLException {
         if (getActiveMods().size() == 1) {
-            if (moderator.activityRequestedAt().isBefore(LocalDateTime.now().minusMinutes(Closure.PING_MODS_AFTER_ACTIVITY_REQUEST_IF_ALONE)) && moderator.requestedAttentionMessageId() == 0) {
+            if (Objects.requireNonNull(moderator.activityRequestedAt()).isBefore(LocalDateTime.now().minusMinutes(Closure.PING_MODS_AFTER_ACTIVITY_REQUEST_IF_ALONE)) && Objects.requireNonNull(moderator.requestedAttentionMessageId()) == 0) {
                 TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_ACTIVEMODERATION);
                 channel.sendMessage(String.format("""
                                 %s

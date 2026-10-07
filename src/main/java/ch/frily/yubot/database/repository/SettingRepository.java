@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Objects;
 
 @Slf4j
 public class SettingRepository {
@@ -23,7 +24,9 @@ public class SettingRepository {
      * @throws SQLException Database failure
      */
     @Nullable
-    public static Settings getSettings(Member member) throws SQLException {
+    public static Settings getSettings(@Nullable Member member) throws SQLException {
+        Objects.requireNonNull(member);
+
         DatabaseQuery query = new DatabaseQuery(Table.SETTING);
         query.where(Table.SettingColumn.MEMBER_ID, DatabaseQuery.Operator.EQUALS, member.getId());
         ResultSet rs = query.executeDataQuery();

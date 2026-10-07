@@ -19,7 +19,7 @@ public enum Setting {
             List.of(EnvKey.ROLE_MODERATOR),
             Boolean.class,
             List.of(
-                    new SettingOption<>("Via Server", false, "Sendet dir Nachricht in #active-moderation (standard)"),
+                    new SettingOption<>("Via Server", false, "Sendet die Nachricht in #active-moderation (standard)"),
                     new SettingOption<>("Via DM", true, "Sendet die Nachrichten per DM")
             )
     ),
@@ -47,10 +47,10 @@ public enum Setting {
     final List<SettingOption> autocompleteOptions = new ArrayList<>();
     /** Minimal allowed characters for a string*/
     @Getter
-    int min;
+    int minLength;
     /** Maximal allowed characters for a string*/
     @Getter
-    int max;
+    int maxLength;
 
     /**
      * Define a Setting without autocomplete options
@@ -63,14 +63,14 @@ public enum Setting {
      * @param dataType The type of the setting
      * @param <T> the datatype of the given setting
      */
-    <T> Setting(String label, String description, Table.Column dbColumn, List<EnvKey> allowedRoles, Class<T> dataType, int min, int max){
+    <T> Setting(String label, String description, Table.Column dbColumn, List<EnvKey> allowedRoles, Class<T> dataType, int minLength, int maxLength){
         this.label = label;
         this.description = description;
         this.dbColumn = dbColumn;
         this.dataType = dataType;
         this.allowedRoles = allowedRoles.stream().map(EnvResolver::getRoleById).toList();
-        this.min = min;
-        this.max = max;
+        this.minLength = minLength;
+        this.maxLength = maxLength;
     }
 
     /**

@@ -19,5 +19,5 @@ public interface IStringSelect extends ISelect {
                 .build();
     }
 
-    void execute(@NotNull StringSelectInteractionEvent event) throws SQLException, ClassNotFoundException;
+    void execute(@NotNull StringSelectInteractionEvent event) throws SQLException;
 }

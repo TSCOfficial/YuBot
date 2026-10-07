@@ -157,10 +157,11 @@ public class AbsenceAddModal extends Modal {
     }
 
     @Override
-    public void execute(@NonNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException {
+    public void execute(@NonNull ModalInteractionEvent event) throws SQLException, NullPointerException {
         ModalMapping startTimeValue = Objects.requireNonNull(event.getValue("start-time"));
         ModalMapping endTimeValue = Objects.requireNonNull(event.getValue("end-time"));
         ModalMapping absenceTypeValue = Objects.requireNonNull(event.getValue("absence-type-select"));
+        ModalMapping noticeValue = Objects.requireNonNull(event.getValue("absence-notice"));
 
         Absence existingAbsence = null;
         if (hasArgument(event.getModalId(), "absence_id")) {
@@ -177,8 +178,8 @@ public class AbsenceAddModal extends Modal {
         String startTimeString = startTimeValue.getAsString();
         String endTimeString = endTimeValue.getAsString();
         String absenceTypeString = absenceTypeValue.getAsStringList().getFirst();
-        String reason = Objects.nonNull(event.getValue("reason")) ? event.getValue("reason").getAsString() : existingAbsence.reason();
-        boolean showNotice = event.getValue("absence-notice").getAsBoolean();
+        String reason = Objects.nonNull(event.getValue("reason")) ? event.getValue("reason").getAsString() : Objects.requireNonNull(existingAbsence).reason();
+        boolean showNotice = noticeValue.getAsBoolean();
         boolean deleteAbsence = Objects.nonNull(event.getValue("absence-delete")) && event.getValue("absence-delete").getAsBoolean();
 
         // Delete Absence option
@@ -234,7 +235,7 @@ public class AbsenceAddModal extends Modal {
         return sb.toString();
     }
 
-    private void absenceTimeIsValid(Member member, Absence originalAbsence, Absence absenceToValidate, LocalDateTime startDateTime, LocalDateTime endDateTime, boolean bypassStartTimeCheck) throws SQLException, ClassNotFoundException {
+    private void absenceTimeIsValid(Member member, Absence originalAbsence, Absence absenceToValidate, LocalDateTime startDateTime, LocalDateTime endDateTime, boolean bypassStartTimeCheck) throws SQLException {
         List<Absence> otherAbsences = new java.util.ArrayList<>(AbsenceRepository.getAbsencesByMemberAndDateSpan(member, startDateTime, endDateTime));
         Objects.requireNonNull(originalAbsence);
         Objects.requireNonNull(absenceToValidate);

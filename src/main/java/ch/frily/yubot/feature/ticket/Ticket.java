@@ -181,7 +181,7 @@ public class Ticket {
      * @throws IllegalStateException When no close request can be sent
      * @throws PermissionDeniedException When the member is not allowed to close the ticket
      */
-    public void requestClose(IReplyCallback event) throws IllegalStateException, PermissionDeniedException, SQLException, ClassNotFoundException {
+    public void requestClose(IReplyCallback event) throws IllegalStateException, PermissionDeniedException, SQLException {
         if (Util.isTeamMember(Objects.requireNonNull(event.getMember()))) {
             if (!isOwner(event.getMember())) {
                 if (this.isClosable()) {
@@ -258,7 +258,7 @@ public class Ticket {
         TicketRepository.updateTicket(this);
     }
 
-    public void forceClose(IReplyCallback event) throws PermissionDeniedException, SQLException, ClassNotFoundException {
+    public void forceClose(IReplyCallback event) throws PermissionDeniedException, SQLException {
         forceClose(event, false);
     }
     public void forceClose(IReplyCallback event, boolean skipPermissionCheck) throws PermissionDeniedException, SQLException {

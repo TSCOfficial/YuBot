@@ -97,17 +97,15 @@ public class TeamlistEmbed implements IEmbed {
             default -> null;
         }).filter(Objects::nonNull).toList();
 
-        String searchedRoles = mappedTypes.isEmpty()
-                ? "keinem Bereich"
-                : mappedTypes.stream().map(Role::getAsMention).collect(Collectors.joining(", "));
+        if (!mappedTypes.isEmpty()) {
+            fields.add(new Field(
+                    "Wir suchen Teammitglieder*innen ✨",
+                    String.format("In %s suchen wir noch Teammitglieder. Bewerbe dich in <#%s>",
+                            mappedTypes.stream().map(Role::getAsMention).collect(Collectors.joining(", ")),
+                            EnvResolver.getString(EnvKey.CHANNEL_SUPPORT)), false
+            ));
+        }
 
-        if (mappedTypes.isEmpty()) {}
-        fields.add(new Field(
-                "Wir suchen Teammitglieder*innen ✨",
-                String.format("In %s suchen wir noch Teammitglieder. Bewerbe dich in <#%s>",
-                searchedRoles,
-                EnvResolver.getString(EnvKey.CHANNEL_SUPPORT)), false
-        ));
 
         return fillWithBlankFields(fields);
     }

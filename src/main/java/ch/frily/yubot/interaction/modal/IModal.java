@@ -17,5 +17,5 @@ public interface IModal {
      */
     List<ModalTopLevelComponent> getComponents();
 
-    void execute(@NotNull ModalInteractionEvent event) throws SQLException, ClassNotFoundException, NullPointerException;
+    void execute(@NotNull ModalInteractionEvent event) throws SQLException, NullPointerException;
 }
