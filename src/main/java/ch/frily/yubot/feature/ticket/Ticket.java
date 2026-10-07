@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
-import static ch.frily.yubot.feature.ticket.TicketManager.USER_PERMISSION;
+import static ch.frily.yubot.feature.ticket.TicketFeature.USER_PERMISSION;
 
 @Slf4j
 public class Ticket {
@@ -107,7 +107,7 @@ public class Ticket {
     /**
      * Create a Ticket object<br>
      * Tickets are used within the Ticketsystem and every action for a Ticket or its TextChannel are controlled here.
-     * Managing tickets (such as creating) happens in {@link TicketManager}.
+     * Managing tickets (such as creating) happens in {@link TicketFeature}.
      * @param owner Ticket owner
      * @param type Ticket type
      */

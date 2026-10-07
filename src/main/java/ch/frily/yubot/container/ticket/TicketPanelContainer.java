@@ -2,7 +2,7 @@ package ch.frily.yubot.container.ticket;
 
 import ch.frily.yubot.container.Container;
 import ch.frily.yubot.database.repository.ActiveModRepository;
-import ch.frily.yubot.feature.ticket.TicketManager;
+import ch.frily.yubot.feature.ticket.TicketFeature;
 import ch.frily.yubot.feature.ticket.TicketType;
 import ch.frily.yubot.database.repository.TicketTypeControlRepository;
 import ch.frily.yubot.feature.ticket.TicketTypeGroup;
@@ -70,7 +70,7 @@ public class TicketPanelContainer extends Container {
             this.addLineSeparator(Separator.Spacing.LARGE);
 
             this.addSection(
-                    TicketManager.getInstance().getButtonByTypeGroup(typeGroup).build(),
+                    TicketFeature.getInstance().getButtonByTypeGroup(typeGroup).build(),
                     TextDisplay.of(String.format("### %s", typeGroup.getLabel())),
                     TextDisplay.of(typeGroup.getDescription())
             );

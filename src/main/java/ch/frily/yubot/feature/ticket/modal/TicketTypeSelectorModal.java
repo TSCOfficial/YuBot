@@ -80,7 +80,7 @@ public class TicketTypeSelectorModal extends Modal {
             return;
         }
 
-        TicketManager.getInstance().createTicket(ticketType, event.getMember(), channel -> {
+        TicketFeature.getInstance().createTicket(ticketType, event.getMember(), channel -> {
             event.getHook().editOriginal("Dein Ticket wurde erstellt: " + channel.getAsMention()).queue();
         });
     }

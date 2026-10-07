@@ -9,7 +9,7 @@ import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.feature.profile.MessageHandling;
 import ch.frily.yubot.feature.setting.Setting;
 import ch.frily.yubot.feature.ticket.Ticket;
-import ch.frily.yubot.feature.ticket.TicketManager;
+import ch.frily.yubot.feature.ticket.TicketFeature;
 import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
@@ -47,7 +47,7 @@ public class OnMessageReceived extends ListenerAdapter {
 
             // Ticket funtions
             if (event.getChannel() instanceof TextChannel
-                    && TicketManager.getInstance().isTicketchannel(event.getChannel().asTextChannel())) {
+                    && TicketFeature.getInstance().isTicketchannel(event.getChannel().asTextChannel())) {
                 Ticket ticket = TicketRepository.getTicketById(event.getChannel().getIdLong());
 
                 // ticket claim function

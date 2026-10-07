@@ -1,6 +1,6 @@
 package ch.frily.yubot.feature.ticket.button;
 
-import ch.frily.yubot.feature.ticket.TicketManager;
+import ch.frily.yubot.feature.ticket.TicketFeature;
 import ch.frily.yubot.feature.ticket.TicketType;
 import ch.frily.yubot.interaction.button.Button;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
@@ -35,7 +35,7 @@ public class TicketConfirmOpenBtn extends Button {
         String ticketTypeString = getArgument(event.getComponentId(), "type");
         TicketType ticketType = TicketType.valueOf(ticketTypeString);
 
-        TicketManager.getInstance().createTicket(ticketType, Objects.requireNonNull(event.getMember()), channel -> {
+        TicketFeature.getInstance().createTicket(ticketType, Objects.requireNonNull(event.getMember()), channel -> {
             event.editMessage("Dein Ticket wurde erstellt: " + channel.getAsMention()).setComponents(event.getMessage().getComponentTree().asDisabled()).queue();
         });
     }
