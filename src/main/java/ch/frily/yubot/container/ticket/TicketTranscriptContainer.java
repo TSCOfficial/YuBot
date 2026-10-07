@@ -1,8 +1,8 @@
 package ch.frily.yubot.container.ticket;
 
 import ch.frily.yubot.container.Container;
-import ch.frily.yubot.feature.ticket.Ticket;
-import ch.frily.yubot.feature.ticket.TicketType;
+import ch.frily.yubot.service.ticket.Ticket;
+import ch.frily.yubot.service.ticket.TicketType;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.filedisplay.FileDisplay;

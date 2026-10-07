@@ -1,6 +1,6 @@
 package ch.frily.yubot.scheduler.schedules;
 
-import ch.frily.yubot.feature.dynamicmsg.DynamicMessageList;
+import ch.frily.yubot.service.dynamicmsg.DynamicMessageList;
 import ch.frily.yubot.scheduler.IScheduler;
 import lombok.extern.slf4j.Slf4j;
 

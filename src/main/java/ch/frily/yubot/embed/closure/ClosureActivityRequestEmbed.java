@@ -2,8 +2,8 @@ package ch.frily.yubot.embed.closure;
 
 
 import ch.frily.yubot.embed.IEmbed;
-import ch.frily.yubot.feature.activemod.ActiveMod;
-import ch.frily.yubot.feature.activemod.Closure;
+import ch.frily.yubot.service.activemod.ActiveMod;
+import ch.frily.yubot.service.activemod.Closure;
 import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;

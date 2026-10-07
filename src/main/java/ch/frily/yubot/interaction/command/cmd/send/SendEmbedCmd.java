@@ -2,7 +2,7 @@ package ch.frily.yubot.interaction.command.cmd.send;
 
 import ch.frily.yubot.embed.StaticEmbedRegistry;
 import ch.frily.yubot.exception.ThrowingConsumer;
-import ch.frily.yubot.feature.dynamicmsg.DynamicMessageList;
+import ch.frily.yubot.service.dynamicmsg.DynamicMessageList;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;

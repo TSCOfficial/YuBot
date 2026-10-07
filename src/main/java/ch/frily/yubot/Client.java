@@ -2,7 +2,7 @@ package ch.frily.yubot;
 
 import ch.frily.yubot.database.Database;
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.feature.FeatureRegistry;
+import ch.frily.yubot.service.ServiceRegistry;
 import ch.frily.yubot.listeners.InteractionListener;
 import ch.frily.yubot.listeners.OnMessageReceived;
 import ch.frily.yubot.listeners.OnReadyListener;
@@ -71,7 +71,7 @@ public class Client {
             log.info("Application started successfully!");
 
             // Load actions
-            FeatureRegistry.getInstance().load();
+            ServiceRegistry.getInstance().load();
 
 
         } catch (Exception exception) {

@@ -2,10 +2,10 @@ package ch.frily.yubot.interaction.modal.modal;
 
 import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.feature.activemod.ActiveMod;
+import ch.frily.yubot.service.activemod.ActiveMod;
 import ch.frily.yubot.database.repository.SettingRepository;
-import ch.frily.yubot.feature.setting.Setting;
-import ch.frily.yubot.feature.setting.SettingOption;
+import ch.frily.yubot.service.profile.Setting;
+import ch.frily.yubot.service.profile.SettingOption;
 import ch.frily.yubot.interaction.modal.Modal;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;

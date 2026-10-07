@@ -1,7 +1,7 @@
 package ch.frily.yubot.interaction.select.select;
 
 import ch.frily.yubot.container.activemod.ActiveModStatisticDetailContainer;
-import ch.frily.yubot.feature.activemod.ActiveModTracking;
+import ch.frily.yubot.service.activemod.ActiveModTracking;
 import ch.frily.yubot.database.repository.ActiveModTrackingRepository;
 import ch.frily.yubot.interaction.select.IStringSelect;
 import ch.frily.yubot.util.Util;

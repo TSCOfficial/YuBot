@@ -1,8 +1,8 @@
 package ch.frily.yubot.container.activemod;
 
 import ch.frily.yubot.container.Container;
-import ch.frily.yubot.feature.activemod.ActiveModStatisticChart;
-import ch.frily.yubot.feature.activemod.ActiveModTracking;
+import ch.frily.yubot.service.activemod.ActiveModStatisticChart;
+import ch.frily.yubot.service.activemod.ActiveModTracking;
 import ch.frily.yubot.interaction.button.btn.activemod.ActiveModStatisticGoToHomeBtn;
 import ch.frily.yubot.interaction.select.select.ActiveModTrackingDetailSelect;
 import ch.frily.yubot.util.Util;

@@ -1,9 +1,9 @@
 package ch.frily.yubot.container.profile;
 
 import ch.frily.yubot.container.Container;
-import ch.frily.yubot.feature.profile.Profile;
+import ch.frily.yubot.service.profile.Profile;
 import ch.frily.yubot.interaction.select.ISelect;
-import ch.frily.yubot.interaction.select.select.ProfileUseSelect;
+import ch.frily.yubot.service.profile.select.ProfileUseSelect;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.separator.Separator;
 

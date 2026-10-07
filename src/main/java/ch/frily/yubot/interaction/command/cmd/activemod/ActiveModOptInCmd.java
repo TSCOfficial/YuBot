@@ -1,7 +1,7 @@
 package ch.frily.yubot.interaction.command.cmd.activemod;
 
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.feature.activemod.ActiveMod;
+import ch.frily.yubot.service.activemod.ActiveMod;
 import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.interaction.modal.modal.SelectActiveModSendTypeModal;

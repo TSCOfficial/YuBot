@@ -1,7 +1,7 @@
 package ch.frily.yubot.interaction.button.btn.activemod;
 
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.feature.activemod.ActiveMod;
+import ch.frily.yubot.service.activemod.ActiveMod;
 import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.modal.modal.SelectActiveModSendTypeModal;

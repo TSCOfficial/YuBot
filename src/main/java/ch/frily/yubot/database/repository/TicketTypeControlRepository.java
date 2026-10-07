@@ -2,7 +2,7 @@ package ch.frily.yubot.database.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
-import ch.frily.yubot.feature.ticket.TicketType;
+import ch.frily.yubot.service.ticket.TicketType;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

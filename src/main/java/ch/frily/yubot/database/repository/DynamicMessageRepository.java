@@ -2,7 +2,7 @@ package ch.frily.yubot.database.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
-import ch.frily.yubot.feature.dynamicmsg.DynamicMessage;
+import ch.frily.yubot.service.dynamicmsg.DynamicMessage;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.ResultSet;

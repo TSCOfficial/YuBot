@@ -1,7 +1,7 @@
 package ch.frily.yubot.interaction.button.btn.activemod;
 
 import ch.frily.yubot.exception.PermissionDeniedException;
-import ch.frily.yubot.feature.activemod.ActiveMod;
+import ch.frily.yubot.service.activemod.ActiveMod;
 import ch.frily.yubot.database.repository.ActiveModRepository;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.util.EnvKey;

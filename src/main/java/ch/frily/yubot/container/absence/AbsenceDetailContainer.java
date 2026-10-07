@@ -1,7 +1,7 @@
 package ch.frily.yubot.container.absence;
 
 import ch.frily.yubot.container.Container;
-import ch.frily.yubot.feature.absence.Absence;
+import ch.frily.yubot.service.absence.Absence;
 import ch.frily.yubot.interaction.button.btn.absence.AbsenceEditBtn;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;

@@ -2,7 +2,7 @@ package ch.frily.yubot.interaction.button.btn.activemod;
 
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.ThrowingConsumer;
-import ch.frily.yubot.feature.activemod.Closure;
+import ch.frily.yubot.service.activemod.Closure;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;

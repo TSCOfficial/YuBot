@@ -1,7 +1,7 @@
 package ch.frily.yubot.interaction.command.cmd.activemod;
 
 import ch.frily.yubot.exception.InvalidStateException;
-import ch.frily.yubot.feature.activemod.Closure;
+import ch.frily.yubot.service.activemod.Closure;
 import ch.frily.yubot.interaction.button.btn.activemod.ActiveModApproveOptOutBtn;
 import ch.frily.yubot.interaction.button.btn.activemod.ActiveModCancelOptOutBtn;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;

@@ -2,9 +2,9 @@ package ch.frily.yubot.embed.teamlist;
 
 import ch.frily.yubot.embed.Field;
 import ch.frily.yubot.embed.IEmbed;
-import ch.frily.yubot.feature.ticket.TicketType;
+import ch.frily.yubot.service.ticket.TicketType;
 import ch.frily.yubot.database.repository.TicketTypeControlRepository;
-import ch.frily.yubot.feature.ticket.TicketTypeGroup;
+import ch.frily.yubot.service.ticket.TicketTypeGroup;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;

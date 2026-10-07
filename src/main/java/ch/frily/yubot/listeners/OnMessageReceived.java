@@ -1,15 +1,15 @@
 package ch.frily.yubot.listeners;
 
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.feature.absence.Absence;
+import ch.frily.yubot.service.absence.Absence;
 import ch.frily.yubot.database.repository.AbsenceRepository;
-import ch.frily.yubot.feature.activemod.Closure;
-import ch.frily.yubot.feature.game.WordChainGame;
+import ch.frily.yubot.service.activemod.Closure;
+import ch.frily.yubot.service.game.WordChainGame;
 import ch.frily.yubot.database.repository.SettingRepository;
-import ch.frily.yubot.feature.profile.MessageHandling;
-import ch.frily.yubot.feature.setting.Setting;
-import ch.frily.yubot.feature.ticket.Ticket;
-import ch.frily.yubot.feature.ticket.TicketFeature;
+import ch.frily.yubot.service.profile.MessageHandling;
+import ch.frily.yubot.service.profile.Setting;
+import ch.frily.yubot.service.ticket.Ticket;
+import ch.frily.yubot.service.ticket.TicketService;
 import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
@@ -47,7 +47,7 @@ public class OnMessageReceived extends ListenerAdapter {
 
             // Ticket funtions
             if (event.getChannel() instanceof TextChannel
-                    && TicketFeature.getInstance().isTicketchannel(event.getChannel().asTextChannel())) {
+                    && TicketService.getInstance().isTicketchannel(event.getChannel().asTextChannel())) {
                 Ticket ticket = TicketRepository.getTicketById(event.getChannel().getIdLong());
 
                 // ticket claim function

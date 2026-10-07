@@ -3,8 +3,8 @@ package ch.frily.yubot.database.repository;
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.NotFoundException;
-import ch.frily.yubot.feature.profile.Profile;
-import ch.frily.yubot.feature.profile.ProfileMessage;
+import ch.frily.yubot.service.profile.Profile;
+import ch.frily.yubot.service.profile.ProfileMessage;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 
