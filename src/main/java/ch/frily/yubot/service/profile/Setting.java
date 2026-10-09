@@ -55,7 +55,7 @@ public enum Setting {
     /**
      * Define a Setting without autocomplete options
      * <p>
-     *     This is primarily used for boolean-settings, because boolean inputs automatically show true/false.
+     *     This is primarily used for boolean-settings, because boolean inputs automatically show true/false, or for free-text input.
      * </p>
      * @param label the label of the setting
      * @param description the description of the setting
