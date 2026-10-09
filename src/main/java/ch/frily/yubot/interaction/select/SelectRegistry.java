@@ -25,7 +25,7 @@ public class SelectRegistry {
 
     public void register(List<ISelect> selects) {
         selects.forEach(select -> {
-            log.info("Loaded select with id {}", select.getId());
+            log.info("Loaded select with id '{}'", select.getId());
             this.selects.put(select.getId(), select);
         });
     }

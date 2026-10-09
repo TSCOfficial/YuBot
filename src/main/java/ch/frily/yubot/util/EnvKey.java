@@ -1,5 +1,7 @@
 package ch.frily.yubot.util;
 
+import ch.frily.yubot.Client;
+
 public enum EnvKey {
     CRED_TOKEN,
     CRED_DB_URL,
@@ -70,7 +72,7 @@ public enum EnvKey {
     TIMEZONE;
 
     String get(){
-        return EnvResolver.getString(this);
+        return Client.getInstance().getConfig().get(this.name());
     }
 }
 // todo evntl sogar funktional? dass die enum elemente vars sind welche den ..env-aufruf automatisch machen und den wert direkt ausgeben?
