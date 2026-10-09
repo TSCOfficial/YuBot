@@ -8,7 +8,7 @@ import ch.frily.yubot.service.dynamicmsg.DynamicMessageList;
 import ch.frily.yubot.service.absence.button.AbsenceApproveDeleteBtn;
 import ch.frily.yubot.service.absence.button.AbsenceCancelDeleteBtn;
 import ch.frily.yubot.interaction.modal.Modal;
-import ch.frily.yubot.storage.SessionStorage;
+import ch.frily.yubot.service.storage.SessionStorageService;
 import ch.frily.yubot.util.Util;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -73,7 +73,7 @@ public class AbsenceAddModal extends Modal {
 
     @Override
     public List<ModalTopLevelComponent> getComponents() {
-        AbsenceModalDataRecord absenceModalDataRecord = SessionStorage.getInstance().getValue("invalid-absence-clipboard", member, AbsenceModalDataRecord.class);
+        AbsenceModalDataRecord absenceModalDataRecord = SessionStorageService.getInstance().getValue("invalid-absence-clipboard", member, AbsenceModalDataRecord.class);
 
         ModalTopLevelComponent startTimeLabel;
 
@@ -195,7 +195,7 @@ public class AbsenceAddModal extends Modal {
 
         // save data to session storage in case anything goes wrong
         AbsenceModalDataRecord absenceModalDataRecord = new AbsenceModalDataRecord(startTimeString, endTimeString, absenceTypeString, reason, showNotice);
-        SessionStorage.getInstance().addStorage("invalid-absence-clipboard", event.getMember(), absenceModalDataRecord, 10);
+        SessionStorageService.getInstance().addStorage("invalid-absence-clipboard", event.getMember(), absenceModalDataRecord, 10);
 
         try {
             LocalDateTime startTime = LocalDateTime.parse(startTimeString, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
@@ -214,7 +214,7 @@ public class AbsenceAddModal extends Modal {
             absenceTimeIsValid(event.getMember(), existingAbsence, absence, startTime, endTime, bypassStartTimeCheck);
 
             AbsenceRepository.upsertAbsence(absence);
-            SessionStorage.getInstance().removeStorage("invalid-absence-clipboard", event.getMember()); // remove after successful upsert
+            SessionStorageService.getInstance().removeStorage("invalid-absence-clipboard", event.getMember()); // remove after successful upsert
 
             event.reply(responseText).setEphemeral(true).queue();
 

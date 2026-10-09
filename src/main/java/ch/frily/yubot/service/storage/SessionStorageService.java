@@ -1,5 +1,8 @@
-package ch.frily.yubot.storage;
+package ch.frily.yubot.service.storage;
 
+import ch.frily.yubot.scheduler.IScheduler;
+import ch.frily.yubot.service.Service;
+import ch.frily.yubot.service.storage.schedule.CleanStorageScheduler;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
@@ -16,18 +19,35 @@ import java.util.List;
  * </p>
  */
 @Slf4j
-public class SessionStorage {
+public class SessionStorageService extends Service {
 
-    private static SessionStorage instance;
+    private static SessionStorageService instance;
 
     @Getter
     private final List<StorageData<?>> sessionStorage = new ArrayList<>();
 
-    public static SessionStorage getInstance() {
+    public static SessionStorageService getInstance() {
         if (instance == null) {
-            instance = new SessionStorage();
+            instance = new SessionStorageService();
         }
         return instance;
+    }
+
+    @Override
+    public String getName() {
+        return "Session Storage";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Speichert daten zwischen interaktionen um die Benutzererfahrung zu verbessern.";
+    }
+
+    @Override
+    public List<IScheduler> getSchedulers() {
+        return List.of(
+                new CleanStorageScheduler()
+        );
     }
 
     public <T> T getValue(String key, Member member, Class<T> type) {

@@ -1,4 +1,4 @@
-package ch.frily.yubot.storage;
+package ch.frily.yubot.service.storage;
 
 import net.dv8tion.jda.api.entities.Member;
 import org.jspecify.annotations.Nullable;

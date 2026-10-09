@@ -1,12 +1,12 @@
-package ch.frily.yubot.scheduler.schedules;
+package ch.frily.yubot.service.storage.schedule;
 
 import ch.frily.yubot.scheduler.IScheduler;
-import ch.frily.yubot.storage.SessionStorage;
+import ch.frily.yubot.service.storage.SessionStorageService;
 
 public class CleanStorageScheduler implements IScheduler {
     @Override
     public void execute() {
-        SessionStorage.getInstance().clean();
+        SessionStorageService.getInstance().clean();
     }
 
     @Override

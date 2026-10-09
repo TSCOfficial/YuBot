@@ -1,4 +1,4 @@
-package ch.frily.yubot.storage;
+package ch.frily.yubot.service.storage;
 
 import lombok.Getter;
 import lombok.Setter;
