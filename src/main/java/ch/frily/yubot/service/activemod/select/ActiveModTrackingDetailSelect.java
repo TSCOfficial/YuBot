@@ -1,4 +1,4 @@
-package ch.frily.yubot.interaction.select.select;
+package ch.frily.yubot.service.activemod.select;
 
 import ch.frily.yubot.container.activemod.ActiveModStatisticDetailContainer;
 import ch.frily.yubot.service.activemod.ActiveModTracking;

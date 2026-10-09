@@ -1,4 +1,4 @@
-package ch.frily.yubot.interaction.button.btn.activemod;
+package ch.frily.yubot.service.activemod.button;
 
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.util.EnvResolver;

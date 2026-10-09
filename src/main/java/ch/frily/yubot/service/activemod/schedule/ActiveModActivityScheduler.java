@@ -1,4 +1,4 @@
-package ch.frily.yubot.scheduler.schedules;
+package ch.frily.yubot.service.activemod.schedule;
 
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.activemod.ActiveMod;

@@ -1,4 +1,4 @@
-package ch.frily.yubot.interaction.button.btn.activemod;
+package ch.frily.yubot.service.activemod.button;
 
 import ch.frily.yubot.container.activemod.ActiveModStatisticContainer;
 import ch.frily.yubot.service.activemod.ActiveModTracking;
@@ -15,15 +15,10 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-public class ActiveModShowStatisticBtn extends Button {
+public class ActiveModStatisticGoToHomeBtn extends Button {
     @Override
     public String getId() {
-        return "show-statistic-btn";
-    }
-
-    @Override
-    public String getLabel() {
-        return "Statistik anzeigen";
+        return "activemod-statistic-home-btn";
     }
 
     @Override
@@ -33,15 +28,14 @@ public class ActiveModShowStatisticBtn extends Button {
 
     @Override
     public EmojiUnion getEmoji() {
-        return Emoji.fromFormatted("📊");
+        return Emoji.fromFormatted("<:home:1526737131282763816>");
     }
 
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) throws SQLException {
-        event.deferReply(true).queue();
         Map<Member, List<ActiveModTracking>> activeModTrackings = ActiveModTrackingRepository.getActiveModTrackingsAsMap();
         activeModTrackings = ActiveModTrackingRepository.completeWithMissingModerators(activeModTrackings);
         ActiveModStatisticContainer activeModStatisticContainer = new ActiveModStatisticContainer(activeModTrackings, event.getMember());
-        event.getHook().sendMessageComponents(activeModStatisticContainer.build()).useComponentsV2().setAllowedMentions(List.of()).setEphemeral(true).queue();
+        event.editComponents(activeModStatisticContainer.build()).useComponentsV2().setAllowedMentions(List.of()).queue();
     }
 }

@@ -1,4 +1,4 @@
-package ch.frily.yubot.interaction.command.cmd.activemod;
+package ch.frily.yubot.service.activemod.slashcommand;
 
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.PermissionDeniedException;

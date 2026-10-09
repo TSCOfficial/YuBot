@@ -1,6 +1,7 @@
 package ch.frily.yubot.service;
 
 import ch.frily.yubot.listeners.ListenerRegistry;
+import ch.frily.yubot.service.activemod.ActivemodService;
 import ch.frily.yubot.service.game.WordChainGameService;
 import ch.frily.yubot.service.ticket.TicketService;
 import ch.frily.yubot.interaction.button.ButtonRegistry;
@@ -44,7 +45,8 @@ public class ServiceRegistry {
     public void load() {
         this.features = List.of(
                 new TicketService(),
-                new WordChainGameService()
+                new WordChainGameService(),
+                new ActivemodService()
         );
 
 

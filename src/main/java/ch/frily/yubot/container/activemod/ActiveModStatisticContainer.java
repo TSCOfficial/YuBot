@@ -3,7 +3,7 @@ package ch.frily.yubot.container.activemod;
 import ch.frily.yubot.container.Container;
 import ch.frily.yubot.service.activemod.ActiveModStatisticChart;
 import ch.frily.yubot.service.activemod.ActiveModTracking;
-import ch.frily.yubot.interaction.select.select.ActiveModTrackingDetailSelect;
+import ch.frily.yubot.service.activemod.select.ActiveModTrackingDetailSelect;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;

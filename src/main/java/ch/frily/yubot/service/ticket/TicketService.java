@@ -16,7 +16,7 @@ import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.service.ticket.modal.TicketSummaryModal;
 import ch.frily.yubot.service.ticket.modal.TicketTypeSelectorModal;
 import ch.frily.yubot.scheduler.IScheduler;
-import ch.frily.yubot.service.ticket.scheduler.TicketActivityScheduler;
+import ch.frily.yubot.service.ticket.schedule.TicketActivityScheduler;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.Permission;

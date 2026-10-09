@@ -1,4 +1,4 @@
-package ch.frily.yubot.service.ticket.scheduler;
+package ch.frily.yubot.service.ticket.schedule;
 
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.ticket.Ticket;

@@ -1,4 +1,4 @@
-package ch.frily.yubot.interaction.modal.modal;
+package ch.frily.yubot.service.activemod.modal;
 
 import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.ExceptionHandler;

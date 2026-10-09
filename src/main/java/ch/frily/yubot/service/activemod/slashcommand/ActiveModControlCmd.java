@@ -1,4 +1,4 @@
-package ch.frily.yubot.interaction.command.cmd.activemod;
+package ch.frily.yubot.service.activemod.slashcommand;
 
 import ch.frily.yubot.database.repository.ActiveModControlRepository;
 import ch.frily.yubot.service.dynamicmsg.DynamicMessageList;
