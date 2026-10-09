@@ -4,7 +4,6 @@ import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.absence.Absence;
 import ch.frily.yubot.database.repository.AbsenceRepository;
 import ch.frily.yubot.service.activemod.Closure;
-import ch.frily.yubot.service.game.WordChainGame;
 import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.service.profile.MessageHandling;
 import ch.frily.yubot.service.profile.Setting;

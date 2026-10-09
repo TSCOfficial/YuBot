@@ -1,6 +1,7 @@
-package ch.frily.yubot.service.game;
+package ch.frily.yubot.service.game.listener;
 
 import ch.frily.yubot.listeners.IListener;
+import ch.frily.yubot.service.game.WordChainGameService;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.events.Event;
@@ -17,7 +18,7 @@ public class WordListener implements IListener<MessageReceivedEvent> {
         MessageReceivedEvent castEvent = (MessageReceivedEvent) event;
 
         if (castEvent.getChannel().getId().equals(EnvResolver.getString(EnvKey.CHANNEL_KETTENBRIEF))) {
-            WordChainGame.handleWord(castEvent);
+            WordChainGameService.handleWord(castEvent);
         }
     }
 }
