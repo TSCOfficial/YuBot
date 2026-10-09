@@ -1,4 +1,4 @@
-package ch.frily.yubot.interaction.button.btn.absence;
+package ch.frily.yubot.service.absence.button;
 
 import ch.frily.yubot.container.absence.AbsenceDetailContainer;
 import ch.frily.yubot.service.absence.Absence;

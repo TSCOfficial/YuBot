@@ -1,10 +1,10 @@
-package ch.frily.yubot.interaction.button.btn.absence;
+package ch.frily.yubot.service.absence.button;
 
 import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.service.absence.Absence;
 import ch.frily.yubot.database.repository.AbsenceRepository;
 import ch.frily.yubot.interaction.button.Button;
-import ch.frily.yubot.interaction.modal.modal.AbsenceAddModal;
+import ch.frily.yubot.service.absence.modal.AbsenceAddModal;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;

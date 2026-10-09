@@ -1,4 +1,4 @@
-package ch.frily.yubot.interaction.modal.modal;
+package ch.frily.yubot.service.absence.modal;
 
 import ch.frily.yubot.storage.SessionStorage;
 

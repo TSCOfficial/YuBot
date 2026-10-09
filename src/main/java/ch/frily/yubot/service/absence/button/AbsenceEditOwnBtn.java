@@ -1,32 +1,30 @@
-package ch.frily.yubot.interaction.button.btn.absence;
+package ch.frily.yubot.service.absence.button;
 
+import ch.frily.yubot.container.absence.AbsenceEditOwnContainer;
+import ch.frily.yubot.container.ContainerContext;
 import ch.frily.yubot.interaction.button.Button;
-import ch.frily.yubot.interaction.modal.modal.AbsenceAddModal;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jspecify.annotations.NonNull;
 
-public class AbsenceAddBtn extends Button {
-
+public class AbsenceEditOwnBtn extends Button {
     @Override
     public String getId() {
-        return "add-absence-btn";
+        return "absence-edit-own-btn";
     }
 
     @Override
     public String getLabel() {
-        return "Abwesenheit anlegen";
+        return "Eigene Absenzen bearbeiten";
     }
 
     @Override
     public ButtonStyle getStyle() {
-        return ButtonStyle.PRIMARY;
+        return ButtonStyle.SECONDARY;
     }
 
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) {
-        AbsenceAddModal addAbence = new AbsenceAddModal();
-        addAbence.setMember(event.getMember());
-        event.replyModal(addAbence.build()).queue();
+        event.replyComponents(new AbsenceEditOwnContainer(ContainerContext.of(event)).build()).useComponentsV2().setEphemeral(true).queue();
     }
 }

@@ -1,4 +1,4 @@
-package ch.frily.yubot.scheduler.schedules;
+package ch.frily.yubot.service.absence.schedule;
 
 import ch.frily.yubot.service.dynamicmsg.DynamicMessageList;
 import ch.frily.yubot.scheduler.IScheduler;

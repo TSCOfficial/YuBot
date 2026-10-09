@@ -2,7 +2,7 @@ package ch.frily.yubot.container.absence;
 
 import ch.frily.yubot.container.Container;
 import ch.frily.yubot.service.absence.Absence;
-import ch.frily.yubot.interaction.button.btn.absence.AbsenceEditBtn;
+import ch.frily.yubot.service.absence.button.AbsenceEditBtn;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.separator.Separator;

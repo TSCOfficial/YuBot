@@ -1,21 +1,19 @@
-package ch.frily.yubot.interaction.button.btn.absence;
+package ch.frily.yubot.service.absence.button;
 
-import ch.frily.yubot.container.absence.AbsenceEditOwnContainer;
-import ch.frily.yubot.container.ContainerContext;
 import ch.frily.yubot.interaction.button.Button;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jspecify.annotations.NonNull;
 
-public class AbsenceEditOwnBtn extends Button {
+public class AbsenceCancelDeleteBtn extends Button {
     @Override
     public String getId() {
-        return "absence-edit-own-btn";
+        return "cancel-detele-absence-btn";
     }
 
     @Override
     public String getLabel() {
-        return "Eigene Absenzen bearbeiten";
+        return "Nein, abbrechen";
     }
 
     @Override
@@ -25,6 +23,7 @@ public class AbsenceEditOwnBtn extends Button {
 
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) {
-        event.replyComponents(new AbsenceEditOwnContainer(ContainerContext.of(event)).build()).useComponentsV2().setEphemeral(true).queue();
+        event.reply("Absenzlöschung abgebrochen.").setEphemeral(true).queue();
+        event.getMessage().delete().queue();
     }
 }

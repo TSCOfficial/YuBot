@@ -1,6 +1,7 @@
 package ch.frily.yubot.service;
 
 import ch.frily.yubot.listeners.ListenerRegistry;
+import ch.frily.yubot.service.absence.AbsenceService;
 import ch.frily.yubot.service.activemod.ActivemodService;
 import ch.frily.yubot.service.game.WordChainGameService;
 import ch.frily.yubot.service.ticket.TicketService;
@@ -46,7 +47,8 @@ public class ServiceRegistry {
         this.features = List.of(
                 new TicketService(),
                 new WordChainGameService(),
-                new ActivemodService()
+                new ActivemodService(),
+                new AbsenceService()
         );
 
 
