@@ -3,12 +3,14 @@ package ch.frily.yubot.service.ticket;
 import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.database.repository.TicketTypeControlRepository;
 import ch.frily.yubot.embed.ticket.TicketOpenEmbed;
+import ch.frily.yubot.event.IEvent;
 import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.service.Service;
 import ch.frily.yubot.service.ticket.button.*;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.command.ISlashCommandGroup;
+import ch.frily.yubot.service.ticket.event.TicketOwnerLeftGuildEvent;
 import ch.frily.yubot.service.ticket.slashcommand.TicketCmdGroup;
 import ch.frily.yubot.interaction.contextmenu.IContextMenu;
 import ch.frily.yubot.service.ticket.ctxmenu.ModticketCtxMenu;
@@ -102,6 +104,13 @@ public class TicketService extends Service {
     public List<IContextMenu> getContextMenus() {
         return List.of(
                 new ModticketCtxMenu()
+        );
+    }
+
+    @Override
+    public List<IEvent> getEvents() {
+        return List.of(
+                TicketOwnerLeftGuildEvent.getInstance()
         );
     }
 
