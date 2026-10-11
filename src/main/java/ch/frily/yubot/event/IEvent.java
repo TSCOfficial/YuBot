@@ -23,5 +23,5 @@ public interface IEvent<T extends Event> {
      * @param event
      * @param <T>
      */
-    <T extends Event> void execute(T event) throws SQLException;
+    <T extends Event> void execute(T event) throws SQLException, IOException;
 }
