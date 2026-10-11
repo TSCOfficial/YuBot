@@ -1,4 +1,4 @@
-package ch.frily.yubot.listeners;
+package ch.frily.yubot.event;
 
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.activemod.Closure;

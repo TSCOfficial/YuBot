@@ -1,6 +1,6 @@
 package ch.frily.yubot.service;
 
-import ch.frily.yubot.listeners.ListenerRegistry;
+import ch.frily.yubot.event.EventRegistry;
 import ch.frily.yubot.service.absence.AbsenceService;
 import ch.frily.yubot.service.activemod.ActivemodService;
 import ch.frily.yubot.service.game.WordChainGameService;
@@ -65,7 +65,7 @@ public class ServiceRegistry {
             ModalRegistry.getInstance().register(feature.getModals());
             SelectRegistry.getInstance().register(feature.getSelects());
             SchedulerRegistry.getInstance().register(feature.getSchedulers());
-            ListenerRegistry.getInstance().register(feature.getListeners());
+            EventRegistry.getInstance().register(feature.getEvents());
         });
 
 

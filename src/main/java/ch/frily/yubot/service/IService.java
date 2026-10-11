@@ -6,7 +6,7 @@ import ch.frily.yubot.interaction.command.ISlashCommandGroup;
 import ch.frily.yubot.interaction.contextmenu.IContextMenu;
 import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.interaction.select.ISelect;
-import ch.frily.yubot.listeners.IListener;
+import ch.frily.yubot.event.IEvent;
 import ch.frily.yubot.scheduler.IScheduler;
 
 import java.util.List;
@@ -51,7 +51,7 @@ public interface IService {
         return List.of();
     }
 
-    default List<IListener> getListeners() {
+    default List<IEvent> getEvents() {
         return List.of();
     }
 }

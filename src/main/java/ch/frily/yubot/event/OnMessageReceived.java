@@ -1,4 +1,4 @@
-package ch.frily.yubot.listeners;
+package ch.frily.yubot.event;
 
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.absence.Absence;
@@ -43,7 +43,7 @@ public class OnMessageReceived extends ListenerAdapter {
             if (!event.isFromGuild()) return;
             if (event.getAuthor().isBot()) return;
 
-            ListenerRegistry.getInstance().dispatchEvent(event);
+            EventRegistry.getInstance().dispatchEvent(event);
 
             // Ticket funtions
             if (event.getChannel() instanceof TextChannel

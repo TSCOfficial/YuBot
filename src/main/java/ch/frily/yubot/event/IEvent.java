@@ -1,8 +1,11 @@
-package ch.frily.yubot.listeners;
+package ch.frily.yubot.event;
 
 import net.dv8tion.jda.api.events.Event;
 
-public interface IListener<T extends Event> {
+import java.io.IOException;
+import java.sql.SQLException;
+
+public interface IEvent<T extends Event> {
 
     Class<? extends Event> getListenerType();
 
@@ -20,5 +23,5 @@ public interface IListener<T extends Event> {
      * @param event
      * @param <T>
      */
-    <T extends Event> void execute(T event);
+    <T extends Event> void execute(T event) throws SQLException;
 }

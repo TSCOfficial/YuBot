@@ -73,7 +73,7 @@ public class Closure {
      * This synchronizes the Database, handles closure & opening
      * @throws SQLException Database failure
      */
-    public void triggerUpdate() throws SQLException, IOException {
+    public void triggerUpdate() throws SQLException {
         List<Member> activeMods = getActiveMods();
 
         // Whether the server is open or not

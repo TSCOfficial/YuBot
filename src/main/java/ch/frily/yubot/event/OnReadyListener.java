@@ -1,4 +1,4 @@
-package ch.frily.yubot.listeners;
+package ch.frily.yubot.event;
 
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;

@@ -1,8 +1,8 @@
 package ch.frily.yubot.service.game;
 
-import ch.frily.yubot.listeners.IListener;
+import ch.frily.yubot.event.IEvent;
 import ch.frily.yubot.service.Service;
-import ch.frily.yubot.service.game.listener.WordListener;
+import ch.frily.yubot.service.game.event.WordInputEvent;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -26,9 +26,9 @@ public class WordChainGameService extends Service {
     }
 
     @Override
-    public List<IListener> getListeners() {
+    public List<IEvent> getEvents() {
         return List.of(
-                new WordListener()
+                new WordInputEvent()
         );
     }
 

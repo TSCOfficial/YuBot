@@ -1,13 +1,13 @@
-package ch.frily.yubot.service.game.listener;
+package ch.frily.yubot.service.game.event;
 
-import ch.frily.yubot.listeners.IListener;
+import ch.frily.yubot.event.IEvent;
 import ch.frily.yubot.service.game.WordChainGameService;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class WordListener implements IListener<MessageReceivedEvent> {
+public class WordInputEvent implements IEvent<MessageReceivedEvent> {
     @Override
     public Class<? extends Event> getListenerType() {
         return MessageReceivedEvent.class;
