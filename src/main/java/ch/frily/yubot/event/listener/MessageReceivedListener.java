@@ -1,5 +1,6 @@
-package ch.frily.yubot.event;
+package ch.frily.yubot.event.listener;
 
+import ch.frily.yubot.event.EventRegistry;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.absence.Absence;
 import ch.frily.yubot.database.repository.AbsenceRepository;
@@ -26,13 +27,13 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class OnMessageReceived extends ListenerAdapter {
+public class MessageReceivedListener extends ListenerAdapter {
 
-    private static OnMessageReceived instance;
+    private static MessageReceivedListener instance;
 
-    public static OnMessageReceived getInstance(){
+    public static MessageReceivedListener getInstance(){
         if (instance == null) {
-            instance = new OnMessageReceived();
+            instance = new MessageReceivedListener();
         }
         return instance;
     }

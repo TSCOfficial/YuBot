@@ -1,6 +1,8 @@
 package ch.frily.yubot.event;
 
+import ch.frily.yubot.event.listener.*;
 import ch.frily.yubot.exception.ExceptionHandler;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.Event;
 
@@ -13,6 +15,28 @@ public class EventRegistry {
     public static EventRegistry instance;
 
     private final List<IEvent> events = new ArrayList<>();
+
+    /**
+     * the list of available listeners for the events
+     * <p>
+     *     It's get method need to be called at the jda builder to connect the listeners
+     * </p>
+     **/
+    @Getter
+    private static final List<Object> LISTENERS = List.of(
+            ButtonInteractionListener.getInstance(),
+            CommandAutoCompleteInteractionListener.getInstance(),
+            GenericContextInteractionListener.getInstance(),
+            GenericSelectMenuInteraction.getInstance(),
+            GuildMemberRemoveListener.getInstance(),
+            GuildMemberRoleAddListener.getInstance(),
+            GuildMemberRoleRemoveListener.getInstance(),
+            GuildReadyListener.getInstance(),
+            MessageReceivedListener.getInstance(),
+            ModalInteractionListener.getInstance(),
+            ReadyListener.getInstance(),
+            SlashCommandInteractionListener.getInstance()
+    );
 
     public static EventRegistry getInstance() {
         if (instance == null) {

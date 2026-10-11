@@ -1,12 +1,9 @@
 package ch.frily.yubot;
 
 import ch.frily.yubot.database.Database;
+import ch.frily.yubot.event.*;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.ServiceRegistry;
-import ch.frily.yubot.event.InteractionListener;
-import ch.frily.yubot.event.OnMessageReceived;
-import ch.frily.yubot.event.OnReadyListener;
-import ch.frily.yubot.event.GuildMemberUpdateListener;
 import ch.frily.yubot.util.EnvKey;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.Getter;
@@ -93,10 +90,7 @@ public class Client {
 
 
         // Event listeners
-        jdaBuilder.addEventListeners(InteractionListener.getInstance());
-        jdaBuilder.addEventListeners(OnReadyListener.getInstance());
-        jdaBuilder.addEventListeners(GuildMemberUpdateListener.getInstance());
-        jdaBuilder.addEventListeners(OnMessageReceived.getInstance());
+        jdaBuilder.addEventListeners(EventRegistry.getLISTENERS());
         return jdaBuilder.build();
     }
 

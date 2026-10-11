@@ -1,5 +1,6 @@
 package ch.frily.yubot.service.activemod;
 
+import ch.frily.yubot.event.IEvent;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.command.ISlashCommandGroup;
 import ch.frily.yubot.interaction.modal.Modal;
@@ -7,6 +8,8 @@ import ch.frily.yubot.interaction.select.ISelect;
 import ch.frily.yubot.scheduler.IScheduler;
 import ch.frily.yubot.service.Service;
 import ch.frily.yubot.service.activemod.button.*;
+import ch.frily.yubot.service.activemod.event.OnOptInEvent;
+import ch.frily.yubot.service.activemod.event.OnOptOutEvent;
 import ch.frily.yubot.service.activemod.modal.SelectActiveModSendTypeModal;
 import ch.frily.yubot.service.activemod.schedule.ActiveModActivityScheduler;
 import ch.frily.yubot.service.activemod.select.ActiveModTrackingDetailSelect;
@@ -15,6 +18,16 @@ import ch.frily.yubot.service.activemod.slashcommand.ActiveModCmdGroup;
 import java.util.List;
 
 public class ActivemodService extends Service {
+
+    private static ActivemodService instance;
+
+    public static ActivemodService getInstance() {
+        if (instance == null) {
+            instance = new ActivemodService();
+        }
+        return instance;
+    }
+
     @Override
     public String getName() {
         return "Serverschliessung";
@@ -63,7 +76,15 @@ public class ActivemodService extends Service {
     @Override
     public List<IScheduler> getSchedulers() {
         return List.of(
-                new ActiveModActivityScheduler()
+                ActiveModActivityScheduler.getInstance()
+        );
+    }
+
+    @Override
+    public List<IEvent> getEvents() {
+        return List.of(
+                OnOptInEvent.getInstance(),
+                OnOptOutEvent.getInstance()
         );
     }
 }

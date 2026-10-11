@@ -1,10 +1,17 @@
 package ch.frily.yubot.event;
 
+import ch.frily.yubot.Client;
 import net.dv8tion.jda.api.events.Event;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
+/**
+ * Events are used to define an action for a specific event-type.<br>
+ * Using the {@link EventRegistry#getLISTENERS() Listeners}, registered via {@link Client#setup()}, the registered {@link EventRegistry#register(List) events} are dispatched and execute their set actions.
+ * @param <T>
+ */
 public interface IEvent<T extends Event> {
 
     Class<? extends Event> getListenerType();

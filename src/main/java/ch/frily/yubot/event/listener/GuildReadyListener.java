@@ -1,4 +1,4 @@
-package ch.frily.yubot.event;
+package ch.frily.yubot.event.listener;
 
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
@@ -7,13 +7,13 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 @Slf4j
-public class OnReadyListener extends ListenerAdapter {
+public class GuildReadyListener extends ListenerAdapter {
 
-    private static OnReadyListener instance;
+    private static GuildReadyListener instance;
 
-    public static OnReadyListener getInstance() {
+    public static GuildReadyListener getInstance() {
         if (instance == null) {
-            instance = new OnReadyListener();
+            instance = new GuildReadyListener();
         }
         return instance;
     }
@@ -27,10 +27,5 @@ public class OnReadyListener extends ListenerAdapter {
 
             log.debug("{}: Cached members: {} / Total members: {}", event.getGuild(), cached, total);
         });
-    }
-
-    @Override
-    public void onReady(@NotNull ReadyEvent event) {
-        log.debug("ON READY");
     }
 }

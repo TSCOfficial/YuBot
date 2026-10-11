@@ -12,6 +12,16 @@ import ch.frily.yubot.service.absence.schedule.AbsenceContainerScheduler;
 import java.util.List;
 
 public class AbsenceService extends Service {
+
+    private static AbsenceService instance;
+
+    public static AbsenceService getInstance() {
+        if (instance == null) {
+            instance = new AbsenceService();
+        }
+        return instance;
+    }
+
     @Override
     public String getName() {
         return "Abwesenheitsmanagement";

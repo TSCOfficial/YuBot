@@ -30,7 +30,7 @@ public class SelectRegistry {
         });
     }
 
-    public void dispatchSelectInteraction(GenericSelectMenuInteractionEvent<?, ?> event) throws SQLException, ClassNotFoundException, NullPointerException {
+    public void dispatchSelectInteraction(GenericSelectMenuInteractionEvent<?, ?> event) throws SQLException, NullPointerException {
         ISelect select = selects.get(event.getInteraction().getComponentId());
         if (select == null) {
             throw new NullPointerException(String.format("Select '%s' konnte nicht gefunden werden.", event.getId()));

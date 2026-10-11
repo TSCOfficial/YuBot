@@ -38,17 +38,27 @@ public class ServiceRegistry {
     }
 
     /**
-     * Loads the features and registers them
+     * Loads the services and registers their components
      * <p>
-     *     This also automatically registers the Slashcommands & Context-Menus.
+     *     This method registers the following components of the services:
+     *     <ul>
+     *         <li>Slashcommands & Slashcommand-Groups</li>
+     *         <li>Context Menus, both User & Message</li>
+     *         <li>Buttons</li>
+     *         <li>Modals</li>
+     *         <li>Select Menus of all type</li>
+     *         <li>Schedules</li>
+     *         <li>Events</li>
+     *     </ul>
+     *     Each registered component is then handled in their according register.
      * </p>
      */
     public void load() {
         this.features = List.of(
-                new TicketService(),
-                new WordChainGameService(),
-                new ActivemodService(),
-                new AbsenceService()
+                TicketService.getInstance(),
+                WordChainGameService.getInstance(),
+                ActivemodService.getInstance(),
+                AbsenceService.getInstance()
         );
 
 

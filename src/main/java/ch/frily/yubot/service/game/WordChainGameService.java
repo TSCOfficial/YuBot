@@ -15,6 +15,16 @@ import java.util.regex.Pattern;
 
 @Slf4j
 public class WordChainGameService extends Service {
+
+    private static WordChainGameService instance;
+
+    public static WordChainGameService getInstance() {
+        if (instance == null) {
+            instance = new WordChainGameService();
+        }
+        return instance;
+    }
+
     @Override
     public String getName() {
         return "Kettenbrief Minigame";

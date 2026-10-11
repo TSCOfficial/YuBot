@@ -17,6 +17,15 @@ import java.util.Objects;
 @Slf4j
 public class ActiveModActivityScheduler implements IScheduler {
 
+    private static ActiveModActivityScheduler instance;
+
+    public static ActiveModActivityScheduler getInstance() {
+        if (instance == null) {
+            instance = new ActiveModActivityScheduler();
+        }
+        return instance;
+    }
+
     @Override
     public void execute() throws SQLException {
         List<ActiveMod> outdatedActiveMods = ActiveModRepository.getModerators().stream().filter(activeMod -> {
