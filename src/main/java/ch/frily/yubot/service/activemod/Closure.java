@@ -96,8 +96,8 @@ public class Closure {
 
             logClosure(true);
 
-            InputStream serverIcon = Objects.requireNonNull(getClass().getResourceAsStream("/icon/server-icon.png"));
-            InputStream serverBanner = Objects.requireNonNull(getClass().getResourceAsStream("/icon/server-banner.png"));
+            InputStream serverIcon = Objects.requireNonNull(getClass().getResourceAsStream("/img/server-icon.png"));
+            InputStream serverBanner = Objects.requireNonNull(getClass().getResourceAsStream("/img/server-banner.png"));
             guild.getManager().setIcon(Icon.from(serverIcon)).queue();
             guild.getManager().setBanner(Icon.from(serverBanner)).queue();
         }
@@ -111,8 +111,8 @@ public class Closure {
                     """, EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_SERVERGESCHLOSSEN).getAsMention())).queue();
 
             logClosure(false);
-            InputStream serverIcon = Objects.requireNonNull(getClass().getResourceAsStream("/icon/server-icon-closed.png"));
-            InputStream serverBanner = Objects.requireNonNull(getClass().getResourceAsStream("/icon/server-banner-closed.png"));
+            InputStream serverIcon = Objects.requireNonNull(getClass().getResourceAsStream("/img/server-icon-closed.png"));
+            InputStream serverBanner = Objects.requireNonNull(getClass().getResourceAsStream("/img/server-banner-closed.png"));
             guild.getManager().setIcon(Icon.from(serverIcon)).queue();
             guild.getManager().setBanner(Icon.from(serverBanner)).queue();
         }
