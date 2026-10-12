@@ -14,7 +14,7 @@ public class EventRegistry {
 
     public static EventRegistry instance;
 
-    private final List<IEvent> events = new ArrayList<>();
+    private final List<IEvent<? extends Event>> events = new ArrayList<>();
 
     /**
      * the list of available listeners for the events
@@ -45,7 +45,7 @@ public class EventRegistry {
         return instance;
     }
 
-    public void register(List<IEvent> listeners) {
+    public void register(List<IEvent<? extends Event>> listeners) {
         listeners.forEach(listener -> {
             this.events.add(listener);
             log.info("Registered event '{}' for listener '{}'", listener.getClass().getSimpleName(), listener.getListenerType().getSimpleName());
@@ -57,7 +57,7 @@ public class EventRegistry {
      * @param event the event triggered by discord
      */
     public void dispatchEvent(Event event) {
-        List<IEvent> matchingEvents = events.stream().filter(localEvent -> localEvent.getListenerType() == event.getClass()).toList();
+        List<IEvent<? extends Event>> matchingEvents = events.stream().filter(localEvent -> localEvent.getListenerType() == event.getClass()).toList();
         log.info("Listener '{}' triggered event(s): {}.", event.getClass().getSimpleName(), String.join(", ", matchingEvents.stream().map(localEvent -> localEvent.getClass().getSimpleName()).toList()));
         if (!matchingEvents.isEmpty()) {
 

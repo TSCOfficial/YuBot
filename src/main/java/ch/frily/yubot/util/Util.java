@@ -16,6 +16,7 @@ import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.List;
+import java.util.Objects;
 
 public class Util {
 
@@ -25,6 +26,7 @@ public class Util {
      * @return True if they have the role, false if not
      */
     public static boolean isTeamMember(Member member) {
+        Objects.requireNonNull(member);
         Role teamRole = EnvResolver.getRoleById(EnvKey.ROLE_YUTEAM);
         return member.getRoles().contains(teamRole);
     }

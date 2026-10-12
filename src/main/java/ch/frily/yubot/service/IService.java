@@ -8,6 +8,7 @@ import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.interaction.select.ISelect;
 import ch.frily.yubot.event.IEvent;
 import ch.frily.yubot.scheduler.IScheduler;
+import net.dv8tion.jda.api.events.Event;
 
 import java.util.List;
 
@@ -51,7 +52,7 @@ public interface IService {
         return List.of();
     }
 
-    default List<IEvent> getEvents() {
+    default List<IEvent<? extends Event>> getEvents() {
         return List.of();
     }
 }

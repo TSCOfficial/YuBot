@@ -14,6 +14,7 @@ import ch.frily.yubot.service.activemod.modal.SelectActiveModSendTypeModal;
 import ch.frily.yubot.service.activemod.schedule.ActiveModActivityScheduler;
 import ch.frily.yubot.service.activemod.select.ActiveModTrackingDetailSelect;
 import ch.frily.yubot.service.activemod.slashcommand.ActiveModCmdGroup;
+import net.dv8tion.jda.api.events.Event;
 
 import java.util.List;
 
@@ -81,7 +82,7 @@ public class ActivemodService extends Service {
     }
 
     @Override
-    public List<IEvent> getEvents() {
+    public List<IEvent<? extends Event>> getEvents() {
         return List.of(
                 OnOptInEvent.getInstance(),
                 OnOptOutEvent.getInstance()

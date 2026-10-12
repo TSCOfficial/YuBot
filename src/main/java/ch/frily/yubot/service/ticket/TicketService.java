@@ -10,6 +10,7 @@ import ch.frily.yubot.service.Service;
 import ch.frily.yubot.service.ticket.button.*;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.command.ISlashCommandGroup;
+import ch.frily.yubot.service.ticket.event.TicketMessageReceivedEvent;
 import ch.frily.yubot.service.ticket.event.TicketOwnerLeftGuildEvent;
 import ch.frily.yubot.service.ticket.slashcommand.TicketCmdGroup;
 import ch.frily.yubot.interaction.contextmenu.IContextMenu;
@@ -28,6 +29,7 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.managers.channel.concrete.TextChannelManager;
 
 import java.sql.SQLException;
@@ -108,9 +110,10 @@ public class TicketService extends Service {
     }
 
     @Override
-    public List<IEvent> getEvents() {
+    public List<IEvent<? extends Event>> getEvents() {
         return List.of(
-                TicketOwnerLeftGuildEvent.getInstance()
+                TicketOwnerLeftGuildEvent.getInstance(),
+                TicketMessageReceivedEvent.getInstance()
         );
     }
 

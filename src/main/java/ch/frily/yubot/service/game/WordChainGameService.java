@@ -6,6 +6,7 @@ import ch.frily.yubot.service.game.event.WordInputEvent;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.time.Instant;
@@ -36,9 +37,9 @@ public class WordChainGameService extends Service {
     }
 
     @Override
-    public List<IEvent> getEvents() {
+    public List<IEvent<? extends Event>> getEvents() {
         return List.of(
-                new WordInputEvent()
+                WordInputEvent.getInstance()
         );
     }
 

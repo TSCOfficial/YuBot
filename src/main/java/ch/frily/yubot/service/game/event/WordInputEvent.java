@@ -8,6 +8,15 @@ import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class WordInputEvent implements IEvent<MessageReceivedEvent> {
+
+    private static WordInputEvent instance;
+    public static WordInputEvent getInstance() {
+        if (instance == null) {
+            instance = new WordInputEvent();
+        }
+        return instance;
+    }
+
     @Override
     public Class<? extends Event> getListenerType() {
         return MessageReceivedEvent.class;
