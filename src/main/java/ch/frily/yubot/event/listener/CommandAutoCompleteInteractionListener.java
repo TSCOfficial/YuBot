@@ -29,7 +29,8 @@ public class CommandAutoCompleteInteractionListener extends ListenerAdapter {
         try {
             SlashCommandRegistry.getInstance().dispatchAutocompleteEvent(event);
         } catch (Exception exception) {
-            ExceptionHandler.handle(exception, null);
+            log.error("Error while dispatching autocomplete option '{}' from command '/{}' executed by '{}'", event.getFocusedOption(), event.getFullCommandName(), event.getUser().getEffectiveName());
+            ExceptionHandler.handle(exception);
         }
     }
 }

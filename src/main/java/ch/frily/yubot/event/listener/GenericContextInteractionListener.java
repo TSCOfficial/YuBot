@@ -32,7 +32,7 @@ public class GenericContextInteractionListener extends ListenerAdapter {
         try {
             ContextMenuRegistry.getInstance().dispatchInteractionEvent(event);
         } catch (Exception exception) {
-            log.error("Error while dispatching '{}' context interaction for {}: {}", event.getInteraction().getFullCommandName(), event.getUser().getEffectiveName(), exception.getMessage());
+            log.error("Error while dispatching '{}' context interaction executed by {}: {}", event.getInteraction().getFullCommandName(), event.getUser().getEffectiveName(), exception.getMessage());
             ExceptionHandler.handle(exception, event);
         }
     }

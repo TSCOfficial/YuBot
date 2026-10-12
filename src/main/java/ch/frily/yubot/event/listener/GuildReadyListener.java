@@ -20,7 +20,8 @@ public class GuildReadyListener extends ListenerAdapter {
 
     @Override
     public void onGuildReady(GuildReadyEvent event) {
-        event.getGuild().loadMembers().onSuccess(members -> {
+        // syncs the cache data
+        event.getGuild().loadMembers().onSuccess(_ -> {
             log.info("Loaded members for guild '{}'.", event.getGuild().getName());
             int cached = event.getGuild().getMembers().size();
             int total  = event.getGuild().getMemberCount();

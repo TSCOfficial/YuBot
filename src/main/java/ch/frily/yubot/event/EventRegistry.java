@@ -34,7 +34,6 @@ public class EventRegistry {
             GuildReadyListener.getInstance(),
             MessageReceivedListener.getInstance(),
             ModalInteractionListener.getInstance(),
-            ReadyListener.getInstance(),
             SlashCommandInteractionListener.getInstance()
     );
 
@@ -58,13 +57,14 @@ public class EventRegistry {
      */
     public void dispatchEvent(Event event) {
         List<IEvent<? extends Event>> matchingEvents = events.stream().filter(localEvent -> localEvent.getListenerType() == event.getClass()).toList();
-        log.info("Listener '{}' triggered event(s): {}.", event.getClass().getSimpleName(), String.join(", ", matchingEvents.stream().map(localEvent -> localEvent.getClass().getSimpleName()).toList()));
+        log.info("Listener '{}' dispatching {} event(s): {}.", event.getClass().getSimpleName(), matchingEvents.size(), String.join(", ", matchingEvents.stream().map(localEvent -> localEvent.getClass().getSimpleName()).toList()));
         if (!matchingEvents.isEmpty()) {
 
                 matchingEvents.forEach(listener -> {
                     try {
                         listener.execute(event);
                     } catch (Exception e) {
+                        log.error("Error while executing event '{}' from listener '{}'", event.getClass().getSimpleName(), listener);
                         ExceptionHandler.handle(e);
                     }
                 });

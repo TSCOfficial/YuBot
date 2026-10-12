@@ -32,6 +32,7 @@ public class Util {
     }
 
     public static boolean isActiveMod(Member member) {
+        Objects.requireNonNull(member);
         Role activeModRole = EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD);
         return member.getRoles().contains(activeModRole);
     }
