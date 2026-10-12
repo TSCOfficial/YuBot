@@ -1,4 +1,4 @@
-package ch.frily.yubot.interaction.command.cmd.send;
+package ch.frily.yubot.service.postoffice.slashcommand;
 
 import ch.frily.yubot.interaction.command.ISlashCommandGroup;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
@@ -14,7 +14,7 @@ public class SendCmdGroup implements ISlashCommandGroup {
 
     @Override
     public String getDescription() {
-        return "Versende verschiedene Objekte.";
+        return "Versende Nachrichten mit diversen inhalten.";
     }
 
     @Override

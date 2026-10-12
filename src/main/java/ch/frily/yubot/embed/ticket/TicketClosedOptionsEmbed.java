@@ -27,7 +27,7 @@ public class TicketClosedOptionsEmbed implements IEmbed {
     @Override
     public String getAuthorName() {
         if (initiator == null) {
-            return null;
+            return IEmbed.super.getAuthorName();
         }
         return initiator.getEffectiveName();
     }
@@ -35,7 +35,7 @@ public class TicketClosedOptionsEmbed implements IEmbed {
     @Override
     public String getAuthorIconUrl() {
         if (initiator == null) {
-            return null;
+            return IEmbed.super.getAuthorIconUrl();
         }
         return initiator.getEffectiveAvatarUrl();
     }

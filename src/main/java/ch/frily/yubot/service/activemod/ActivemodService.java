@@ -2,6 +2,7 @@ package ch.frily.yubot.service.activemod;
 
 import ch.frily.yubot.event.IEvent;
 import ch.frily.yubot.interaction.button.Button;
+import ch.frily.yubot.interaction.command.ISlashCommand;
 import ch.frily.yubot.interaction.command.ISlashCommandGroup;
 import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.interaction.select.ISelect;
@@ -14,6 +15,7 @@ import ch.frily.yubot.service.activemod.modal.SelectActiveModSendTypeModal;
 import ch.frily.yubot.service.activemod.schedule.ActiveModActivityScheduler;
 import ch.frily.yubot.service.activemod.select.ActiveModTrackingDetailSelect;
 import ch.frily.yubot.service.activemod.slashcommand.ActiveModCmdGroup;
+import ch.frily.yubot.service.activemod.slashcommand.VoiceCheck;
 import net.dv8tion.jda.api.events.Event;
 
 import java.util.List;
@@ -37,6 +39,13 @@ public class ActivemodService extends Service {
     @Override
     public String getDescription() {
         return "Verwaltet die Schliessung des Servers anhand der Active-Mods.";
+    }
+
+    @Override
+    public List<ISlashCommand> getSlashCommands() {
+        return List.of(
+                new VoiceCheck()
+        );
     }
 
     @Override

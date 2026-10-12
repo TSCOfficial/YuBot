@@ -1,4 +1,4 @@
-package ch.frily.yubot.interaction.command.cmd.send;
+package ch.frily.yubot.service.postoffice.slashcommand;
 
 import ch.frily.yubot.container.ContainerContext;
 import ch.frily.yubot.container.StaticContainerRegistry;

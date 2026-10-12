@@ -7,6 +7,15 @@ import ch.frily.yubot.service.Service;
 import java.util.List;
 
 public class EventReminderService extends Service {
+
+    private static EventReminderService instance;
+    public static EventReminderService getInstance() {
+        if (instance == null) {
+            instance = new EventReminderService();
+        }
+        return instance;
+    }
+
     @Override
     public String getName() {
         return "Event Reminder";

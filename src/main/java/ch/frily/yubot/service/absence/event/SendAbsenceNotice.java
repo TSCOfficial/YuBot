@@ -33,7 +33,7 @@ public class SendAbsenceNotice implements IEvent<MessageReceivedEvent> {
 
     @Override
     public Class<? extends Event> getListenerType() {
-        return null;
+        return MessageReceivedEvent.class;
     }
 
     @Override

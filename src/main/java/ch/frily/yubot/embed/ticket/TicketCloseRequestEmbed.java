@@ -22,7 +22,7 @@ public class TicketCloseRequestEmbed implements IEmbed {
 
     @Override
     public String getAuthorIconUrl() {
-        return initiator.getAvatarUrl();
+        return initiator.getEffectiveAvatarUrl();
     }
 
     @Override

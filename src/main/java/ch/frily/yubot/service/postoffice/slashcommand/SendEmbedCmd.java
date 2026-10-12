@@ -1,4 +1,4 @@
-package ch.frily.yubot.interaction.command.cmd.send;
+package ch.frily.yubot.service.postoffice.slashcommand;
 
 import ch.frily.yubot.embed.StaticEmbedRegistry;
 import ch.frily.yubot.exception.ThrowingConsumer;

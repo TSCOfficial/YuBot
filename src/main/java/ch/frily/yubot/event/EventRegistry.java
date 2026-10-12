@@ -5,12 +5,14 @@ import ch.frily.yubot.exception.ExceptionHandler;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.hooks.EventListener;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class EventRegistry {
+public class EventRegistry extends ListenerAdapter {
 
     public static EventRegistry instance;
 

@@ -23,6 +23,16 @@ import net.dv8tion.jda.api.events.Event;
 import java.util.List;
 
 public class ProfileService extends Service {
+
+    private static ProfileService instance;
+
+    public static ProfileService getInstance() {
+        if (instance == null) {
+            instance = new ProfileService();
+        }
+        return instance;
+    }
+
     @Override
     public String getName() {
         return "Profil";

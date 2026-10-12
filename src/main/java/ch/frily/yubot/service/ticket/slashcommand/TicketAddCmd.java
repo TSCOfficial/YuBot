@@ -29,7 +29,7 @@ public class TicketAddCmd implements ISlashSubcommand {
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException {
         OptionMapping userRoleOption = Objects.requireNonNull(event.getOption("user-role"));
-        OptionMapping reasonOption = Objects.requireNonNull(event.getOption("reason"));
+        OptionMapping reasonOption = event.getOption("reason");
         IMentionable mentionable = userRoleOption.getAsMentionable();
         IPermissionHolder permissionHolder = (IPermissionHolder) mentionable;
 
@@ -39,7 +39,7 @@ public class TicketAddCmd implements ISlashSubcommand {
 
         StringBuilder reply = new StringBuilder();
         reply.append(String.format("✅ %s wurde erfolgreich hinzugefügt.", userRoleOption.getAsMentionable().getAsMention()));
-        if (event.getOption("reason") != null) {
+        if (reasonOption != null) {
             reply.append(String.format("\n-# Begründung: %s", reasonOption.getAsString()));
         }
 

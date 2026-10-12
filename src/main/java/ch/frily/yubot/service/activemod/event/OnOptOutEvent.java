@@ -25,7 +25,7 @@ public class OnOptOutEvent implements IEvent<GuildMemberRoleRemoveEvent> {
 
     @Override
     public Class<? extends Event> getListenerType() {
-        return null;
+        return GuildMemberRoleRemoveEvent.class;
     }
 
     @Override

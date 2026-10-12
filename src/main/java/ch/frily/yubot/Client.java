@@ -90,7 +90,8 @@ public class Client {
 
 
         // Event listeners
-        jdaBuilder.addEventListeners(EventRegistry.getLISTENERS());
+        EventRegistry.getLISTENERS().forEach(jdaBuilder::addEventListeners);
+
         return jdaBuilder.build();
     }
 

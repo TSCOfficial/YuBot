@@ -1,4 +1,4 @@
-package ch.frily.yubot.interaction.command.cmd;
+package ch.frily.yubot.service.postoffice.slashcommand;
 
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.util.EnvKey;
@@ -30,7 +30,7 @@ public class SayCmd implements ISlashSubcommand {
 
     @Override
     public String getDescription() {
-        return "Sag etwas über den YuBot";
+        return "Sende etwas über den YuBot";
     }
 
     @Override
@@ -52,7 +52,7 @@ public class SayCmd implements ISlashSubcommand {
                         new Command.Choice("5min", 300),
                         new Command.Choice("10min", 600),
                         new Command.Choice("15min", 900),
-                        new Command.Choice("130min", 1800),
+                        new Command.Choice("30min", 1800),
                         new Command.Choice("1h", 3800),
                         new Command.Choice("2h", 7200)
                 )
@@ -70,8 +70,7 @@ public class SayCmd implements ISlashSubcommand {
     public void execute(@NonNull SlashCommandInteractionEvent event) {
         OptionMapping textOption = Objects.requireNonNull(event.getOption("text"));
         String text =  textOption.getAsString();
-        Integer deleteAfter = event.getOption("delete-after") != null ? textOption.getAsInt() : null;
-        log.info(String.valueOf(deleteAfter));
+        Integer deleteAfter = event.getOption("delete-after") != null ? event.getOption("delete-after").getAsInt() : null;
         if (deleteAfter != null) {
             long timestamp = Instant.now().plusSeconds(deleteAfter).toEpochMilli() / 1000;
             text += String.format("""
