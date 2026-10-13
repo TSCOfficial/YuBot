@@ -52,14 +52,14 @@ public class ActiveModControlCmd implements ISlashSubcommand {
     public List<Role> getAllowedRoles() {
         return Stream.of(
                 EnvKey.ROLE_SERVERLEITUNG
-        ).map(EnvResolver::getRoleById).toList();
+        ).map(EnvKey::getAsRole).toList();
     }
 
     @Override
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException {
         boolean state = Objects.requireNonNull(event.getOption("opt-in")).getAsString().equals("allow");
         ActiveModControlRepository.updateControl(state);
-        TextChannel modIntern = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_ACTIVEMODERATION);
+        TextChannel modIntern = EnvKey.CHANNEL_ACTIVEMODERATION.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
         int delay = 600; // 10min
         long timestamp = Instant.now().plusSeconds(delay).toEpochMilli() / 1000;
         if (state) {

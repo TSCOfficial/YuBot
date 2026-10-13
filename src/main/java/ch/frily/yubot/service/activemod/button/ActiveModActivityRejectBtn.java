@@ -37,8 +37,8 @@ public class ActiveModActivityRejectBtn extends Button {
     public void execute(@NotNull ButtonInteractionEvent event) throws SQLException {
         ActiveMod forActiveMod = Objects.requireNonNull(ActiveModRepository.getModeratorByActivityRequestMessageId(event.getMessageIdLong()));
         if (Objects.equals(event.getMember(), forActiveMod.member())) {
-            Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
-            guild.removeRoleFromMember(forActiveMod.member(), EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD)).queue();
+            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+            guild.removeRoleFromMember(forActiveMod.member(), EnvKey.ROLE_ACTIVEMOD.getAsRole()).queue();
             event.getMessage().delete().queue();
             event.reply("✅ Du wurdest erfolgreich als Active-mod entfernt.").setEphemeral(true).queue();
         } else {

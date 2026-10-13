@@ -44,14 +44,14 @@ public class ActiveModOptOutBtn extends Button {
 
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) throws SQLException {
-        Role activeMod = EnvResolver.getRoleById(1513639704870912130L);
+        Role activeMod = EnvKey.ROLE_ACTIVEMOD.getAsRole();
         Member member = event.getMember() == null ? Util.getMemberByUser(event.getUser()) : event.getMember();
         if (!member.getRoles().contains(activeMod)) {
             throw new InvalidStateException("Du bist nicht als aktiver moderator\\*in markiert.", null);
         }
 
         Closure.deleteRequestedAttentionMessages();
-        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
         guild.removeRoleFromMember(member, activeMod).submit().thenAccept(ThrowingConsumer.wrap(null, _ -> {
             int activeModCount = Closure.getActiveMods().size();
 

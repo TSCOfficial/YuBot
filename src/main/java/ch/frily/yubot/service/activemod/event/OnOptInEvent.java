@@ -33,7 +33,7 @@ public class OnOptInEvent implements IEvent<GuildMemberRoleAddEvent> {
         GuildMemberRoleAddEvent castEvent = (GuildMemberRoleAddEvent) event;
         if (Util.isTeamMember(castEvent.getMember())) {
 
-            if (castEvent.getRoles().contains(EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD))) {
+            if (castEvent.getRoles().contains(EnvKey.ROLE_ACTIVEMOD.getAsRole())) {
                 Closure.getInstance().triggerUpdate();
             }
 

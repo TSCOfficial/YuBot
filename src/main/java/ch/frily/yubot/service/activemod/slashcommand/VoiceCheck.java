@@ -31,15 +31,15 @@ public class VoiceCheck implements ISlashCommand {
         return Stream.of(
                 EnvKey.ROLE_SUPPORT,
                 EnvKey.ROLE_MODERATOR
-        ).map(EnvResolver::getRoleById).toList();
+        ).map(EnvKey::getAsRole).toList();
     }
 
     @Override
     public void execute(@NonNull SlashCommandInteractionEvent event) {
         event.deferReply(true).queue();
         if (event.getChannelType() == ChannelType.VOICE) {
-            TextChannel checkChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_VOICECHECK);
-            checkChannel.sendMessage(String.format("%s ist in Ordnung", event.getChannel().getAsMention())).queue(_ -> {
+            TextChannel checkChannel = EnvKey.CHANNEL_VOICECHECK.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
+            checkChannel.sendMessage(String.format("%s (%s) ist in Ordnung", event.getChannel().getAsMention(), event.getChannel().getName())).queue(_ -> {
                 event.getHook().editOriginal(String.format("✅ %s wurde als geprüft vermerkt", event.getChannel().getAsMention())).queue();
             });
         } else {

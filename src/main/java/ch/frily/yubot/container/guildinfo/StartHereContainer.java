@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 public class StartHereContainer extends Container {
     public StartHereContainer() {
 
-        this.addTextDisplay(String.format("# Willkommen bei %s!", EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getName()));
+        this.addTextDisplay(String.format("# Willkommen bei %s!", EnvKey.GUILD_YUSERVER.getAsGuild().getName()));
         this.addTextDisplay("""
                 Heyyy ihr Süßen und schön, dass ihr da seid! 🤞
                 Weirdos soll ein Safe Space sein, an dem ihr euch wohlfühlen und genauso sein könnt, wie ihr seid. Macht es euch gemütlich, lernt neue Menschen kennen und genießt gemeinsam die Zeit auf unserem Server!
@@ -36,7 +36,7 @@ public class StartHereContainer extends Container {
                 Fühlt ihr euch gerade nicht gut, braucht jemanden zum Reden oder möchtet euch mit einer Person aus unserem Awareness-Team austauschen, könnt ihr dort ein Awareness-Ticket öffnen. Unser Team ist immer gerne für euch da! ❤️
                 
                 Bei Fragen, Problemen oder wenn ihr einen möglichen Regelverstoß melden möchtet, könnt ihr stattdessen ein Support-Ticket erstellen. Nachdem ihr „Support“ ausgewählt habt, könnt ihr im nächsten Schritt das passende Thema für euer Anliegen wählen.
-                """, EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_SUPPORT).getAsMention()));
+                """, EnvKey.CHANNEL_SUPPORT.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER).getAsMention()));
 
         this.addInvisibleSeparator(Separator.Spacing.LARGE);
 
@@ -46,8 +46,8 @@ public class StartHereContainer extends Container {
                 
                 Sollte der Server zwischenzeitlich geschlossen sein, könnt ihr euch trotzdem in %s die Zeit vertreiben und gemeinsam versuchen, bis ins Unendliche zu zählen. 1️⃣6️⃣1️⃣
                 Bitte achtet auch dort weiterhin auf die geltenden Regeln.
-                """, EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_SERVERGESCHLOSSEN).getAsMention(),
-                EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_COUNTING).getAsMention()));
+                """, EnvKey.CHANNEL_SERVERGESCHLOSSEN.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER).getAsMention(),
+                EnvKey.CHANNEL_COUNTING.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER).getAsMention()));
 
         this.addInvisibleSeparator(Separator.Spacing.LARGE);
 
@@ -58,7 +58,7 @@ public class StartHereContainer extends Container {
                 Unsere größeren Events finden auf der %s statt. Dort könnt ihr beitreten, zuhören und gemeinsam an Events teilnehmen, die von einer Person aus unserem Team moderiert werden.
                 
                 Für kleinere Aktionen können außerdem zeitweise separate Text- oder Voice-Channels erstellt werden. Dort könnt ihr euch austauschen, mitmachen und gemeinsam eine schöne Zeit verbringen. ☎️
-                """, EnvResolver.getChannelById(StageChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_LIVESTAGE).getAsMention()));
+                """, EnvKey.CHANNEL_LIVESTAGE.getAsChannel(StageChannel.class, EnvKey.GUILD_YUSERVER).getAsMention()));
 
         this.addInvisibleSeparator(Separator.Spacing.LARGE);
 
@@ -85,16 +85,16 @@ public class StartHereContainer extends Container {
                 
                 Nicht wundern wenn von Zeit zur Zeit mal ein\\*e Moderator\\*in oder ein\\*e Supporter\\*in dem Voicechat joint und nach dem rechten sieht.
                 """,
-                EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_LOBBY).getAsMention(),
-                EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_STELLDICHVOR).getAsMention(),
-                EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_FANART).getAsMention(),
-                EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MUSICDISCUSSION).getAsMention(),
-                EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_LYRICLAB).getAsMention(),
-                EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_QUEERSPACE).getAsMention(),
-                EnvResolver.getChannelById(ForumChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_FEEDBACK).getAsMention(),
-                EnvResolver.getChannelById(ForumChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_KONZERTBEGLEITUNG).getAsMention(),
-                EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_YUKONZERTFESTIVALS).getAsMention(),
-                EnvResolver.getChannelById(VoiceChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_JOINTOCREATE).getAsMention()
+                EnvKey.CHANNEL_LOBBY.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER).getAsMention(),
+                EnvKey.CHANNEL_STELLDICHVOR.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER).getAsMention(),
+                EnvKey.CHANNEL_FANART.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER).getAsMention(),
+                EnvKey.CHANNEL_MUSICDISCUSSION.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER).getAsMention(),
+                EnvKey.CHANNEL_LYRICLAB.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER).getAsMention(),
+                EnvKey.CHANNEL_QUEERSPACE.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER).getAsMention(),
+                EnvKey.CHANNEL_FEEDBACK.getAsChannel(ForumChannel.class, EnvKey.GUILD_YUSERVER).getAsMention(),
+                EnvKey.CHANNEL_KONZERTBEGLEITUNG.getAsChannel(ForumChannel.class, EnvKey.GUILD_YUSERVER).getAsMention(),
+                EnvKey.CHANNEL_YUKONZERTFESTIVALS.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER).getAsMention(),
+                EnvKey.CHANNEL_JOINTOCREATE.getAsChannel(VoiceChannel.class, EnvKey.GUILD_YUSERVER).getAsMention()
             ));
 
         this.addInvisibleSeparator(Separator.Spacing.LARGE);

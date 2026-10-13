@@ -68,7 +68,7 @@ public enum Setting {
         this.description = description;
         this.dbColumn = dbColumn;
         this.dataType = dataType;
-        this.allowedRoles = allowedRoles.stream().map(EnvResolver::getRoleById).toList();
+        this.allowedRoles = allowedRoles.stream().map(EnvKey::getAsRole).toList();
         this.minLength = minLength;
         this.maxLength = maxLength;
     }
@@ -87,7 +87,7 @@ public enum Setting {
         this.description = description;
         this.dbColumn = dbColumn;
         this.dataType = dataType;
-        this.allowedRoles = allowedRoles.stream().map(EnvResolver::getRoleById).toList();
+        this.allowedRoles = allowedRoles.stream().map(EnvKey::getAsRole).toList();
         this.autocompleteOptions.addAll(options);
     }
 

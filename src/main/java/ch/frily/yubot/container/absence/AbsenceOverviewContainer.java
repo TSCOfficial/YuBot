@@ -41,9 +41,10 @@ public class AbsenceOverviewContainer extends PaginationContainer {
             EnvKey.ROLE_SUPPORT,
             EnvKey.ROLE_AWARENESS,
             EnvKey.ROLE_DEVELOPER,
+            EnvKey.ROLE_DESIGN,
             EnvKey.ROLE_EVENT,
             EnvKey.ROLE_TWITCHMOD
-    ).map(EnvResolver::getRoleById).toList();
+    ).map(EnvKey::getAsRole).toList();
 
     /**
      * All absences split up into day-absences, grouped by the day they belong to

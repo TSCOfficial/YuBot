@@ -31,7 +31,7 @@ public class ActiveModDashboardContainer extends Container {
             addTextDisplay("# Active Moderation");
             addTextDisplay("Siehe den aktuellen Status der Aktiven Moderator*innen und kontrolliere dein ActiveMod Status.");
 
-            Role activeModRole = EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD);
+            Role activeModRole = EnvKey.ROLE_ACTIVEMOD.getAsRole();
             List<Member> activeMods = Util.getUsersByRole(activeModRole);
             addFormatedText("## Aktive Moderator*innen (%d)", activeMods.size());
             if (!activeMods.isEmpty()) {

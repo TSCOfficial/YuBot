@@ -1,6 +1,7 @@
 package ch.frily.yubot.service.activemod.button;
 
 import ch.frily.yubot.interaction.button.Button;
+import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Role;
@@ -30,7 +31,7 @@ public class ActiveModApproveOptOutBtn extends Button {
 
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) {
-        Role activeMod = EnvResolver.getRoleById(1513639704870912130L);
+        Role activeMod = EnvKey.ROLE_ACTIVEMOD.getAsRole();
         Objects.requireNonNull(event.getGuild()).removeRoleFromMember(Objects.requireNonNull(event.getMember()), activeMod).submit().thenAccept(_ -> {
             event.reply("Opt-out erfolgreich.\n-# Der Server wird nun geschlossen.").setEphemeral(true).queue();
         });

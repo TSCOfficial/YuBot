@@ -90,7 +90,7 @@ public class ServiceRegistry {
         });
 
 
-        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
         guild.updateCommands()
                 .addCommands(commands)
                 .queue();

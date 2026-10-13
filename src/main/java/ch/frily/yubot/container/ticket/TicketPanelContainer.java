@@ -34,13 +34,13 @@ public class TicketPanelContainer extends Container {
         this.addTextDisplay("Wähle die passende Kategorie aus, drücke den dazugehörigen Button und wähle anschliessend die gewünschte Ticketart aus.");
         this.addTextDisplay(String.format(
                 "-# Falls du ein Vorschlag oder anderweitiges Feedback geben willst, kannst du dies gerne in %s schreiben.",
-                EnvResolver.getChannelById(ForumChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_FEEDBACK).getAsMention()
+                EnvKey.CHANNEL_FEEDBACK.getAsChannel(ForumChannel.class, EnvKey.GUILD_YUSERVER).getAsMention()
                 )
         );
 
         if (!isServerOpen) {
-            Channel serverClosedChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_SERVERGESCHLOSSEN);
-            Channel startHereChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_STARTHERE);
+            Channel serverClosedChannel = EnvKey.CHANNEL_SERVERGESCHLOSSEN.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
+            Channel startHereChannel = EnvKey.CHANNEL_STARTHERE.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
             this.addTextDisplay(String.format("""
                     ### ⚠️ Server geschlossen
                     **Hinweis:** Der Server ist momentan geschlossen, du siehst also keine Communitychannels mehr. Das Ticketsystem ist aber weiterhin verfügbar.

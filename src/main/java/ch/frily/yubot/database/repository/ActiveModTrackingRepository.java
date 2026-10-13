@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 public class ActiveModTrackingRepository {
 
     public static Map<Member, List<ActiveModTracking>> completeWithMissingModerators(Map<Member, List<ActiveModTracking>> groupedActiveMods) {
-        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
-        List<Member> allModerators = guild.getMembersWithRoles(EnvResolver.getRoleById(EnvKey.ROLE_MODERATOR));
+        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+        List<Member> allModerators = guild.getMembersWithRoles(EnvKey.ROLE_MODERATOR.getAsRole());
         Map<Member, List<ActiveModTracking>> completeWithMissingModerators = new LinkedHashMap<>();
 
         allModerators.forEach(moderator -> {
@@ -89,7 +89,7 @@ public class ActiveModTrackingRepository {
             int missedActivityRequestCount = resultSet.getInt(Table.ActiveModTrackingColumn.MISSED_ACTIVITY_REQUEST_COUNT.getColumn());
             int totalActivityRequestCount = resultSet.getInt(Table.ActiveModTrackingColumn.TOTAL_ACTIVITY_REQUEST_COUNT.getColumn());
 
-            Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
             Member member = guild.getMemberById(moderatorId);
             activeModTrackings.add(new ActiveModTracking(member, activeTime, lastTimeActive, month, missedActivityRequestCount, totalActivityRequestCount));
         }

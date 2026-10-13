@@ -2,25 +2,22 @@ package ch.frily.yubot.util;
 
 import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.InvalidStateException;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.Channel;
-import net.dv8tion.jda.api.entities.channel.concrete.Category;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.*;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
 import java.time.ZoneId;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 public enum EnvKey {
-    CRED_TOKEN(Client.getInstance().getConfig().get("CRED_TOKEN")),
-    CRED_DB_URL(Client.getInstance().getConfig().get("CRED_DB_URL")),
-    CRED_DB_USERNAME(Client.getInstance().getConfig().get("CRED_DB_USERNAME")),
-    CRED_DB_PASSWORD(Client.getInstance().getConfig().get("CRED_DB_PASSWORD")),
-
     GUILD_YUSERVER("1045025807065698314"),
 
     ROLE_OWNER("1045025807065698320"),
@@ -84,10 +81,19 @@ public enum EnvKey {
 
     TIMEZONE("Europe/Berlin");
 
-    final String value;
+    @Getter
+    private final String value;
 
     EnvKey(String value) {
         this.value = value;
+    }
+
+    public Integer getAsInt() {
+        return Integer.valueOf(this.value);
+    }
+
+    public Long getAsLong() {
+        return Long.valueOf(this.value);
     }
 
     /**
@@ -106,6 +112,9 @@ public enum EnvKey {
         return Client.getInstance().getClient().getRoleById(this.value);
     }
 
+    public <T extends Channel> T getAsChannel(Class<T> type, EnvKey guildKey) {
+        return getAsChannel(type, guildKey.getAsLong());
+    }
     /**
      * Get as {@link Channel} to be able to convert it further
      * @param type the channel type
@@ -115,70 +124,46 @@ public enum EnvKey {
     public <T extends Channel> T getAsChannel(Class<T> type, long guildId) {
         Guild guild = Client.getInstance().getClient().getGuildById(guildId);
 
-        return guild.getChannelById(type);
+        Objects.requireNonNull(guild);
+
+        if (type.equals(TextChannel.class)) {
+                return (T) guild.getTextChannelById(this.value);
+        } else if (type.equals(VoiceChannel.class)) {
+            return (T) guild.getVoiceChannelById(this.value);
+        } else if (type.equals(ThreadChannel.class)) {
+            return (T) guild.getThreadChannelById(this.value);
+        } else if (type.equals(StageChannel.class)) {
+            return  (T) guild.getStageChannelById(this.value);
+        } else {
+            throw new InvalidStateException(String.format("Channeltype '%s' is not supported", type.getName()));
+        }
     }
 
-    /**
-     * Get a Role by its .env keyword
-     * @param guildKeyword In the .env-file defined guild keyword
-     * @param channelKeyword In the .env-file defined channel keyword
-     * @return Role object
-     */
-    public static <T> T getChannelById(Class<T> type, EnvKey guildKeyword, EnvKey channelKeyword) {
-        long guildId = checkAndResolve(guildKeyword, Long.class);
-        long channelId = checkAndResolve(channelKeyword, Long.class);
-        return getChannelById(type, guildId, channelId);
+
+    public CompletableFuture<Message> getAsMessage(String guildId, String channelId ) {
+        return getAsMessage(Long.parseLong(guildId), Long.parseLong(channelId));
     }
 
-    public static CompletableFuture<Message> getMessageById(String guildId, String channelId, String messageId ) {
-        return getMessageById(Long.parseLong(guildId), Long.parseLong(channelId), Long.parseLong(messageId));
-    }
-    public static CompletableFuture<Message> getMessageById(long guildId, long channelId, long messageId) {
-        MessageChannel channel = getChannelById(TextChannel.class, guildId, channelId);
+    public CompletableFuture<Message> getAsMessage(long guildId, long channelId) {
+        MessageChannel channel = getAsChannel(TextChannel.class, guildId);
         if (channel == null) {
             log.error("Channel {} nicht gefunden!", channelId);
             return CompletableFuture.failedFuture(new IllegalArgumentException("Channel not found"));
         }
-        return channel.retrieveMessageById(messageId)
+        return channel.retrieveMessageById(this.value)
                 .submit()
                 .whenComplete((message, error) -> {
                     if (error != null) {
-                        log.error("retrieveMessageById failed for message '{}' in channel '{}': {}", messageId, channelId, error.getMessage());
+                        log.error("retrieveMessageById failed for message '{}' in channel '{}': {}", this.value, channelId, error.getMessage());
                     }
                 });
     }
 
-    public static Category getCategoryById(EnvKey categoryKeyword) {
-        long categoryId = checkAndResolve(categoryKeyword, Long.class);
-        return Client.getInstance().getClient().getCategoryById(categoryId);
+    public Category getAsCategory() {
+        return Client.getInstance().getClient().getCategoryById(this.value);
     }
 
-    public static String getString(EnvKey keyword){
-        return checkAndResolve(keyword, String.class);
-    }
-
-    public static ZoneId getZoneId(){
-        return ZoneId.of(checkAndResolve(EnvKey.TIMEZONE, String.class));
-    }
-
-    /**
-     * Checks the keyword for empty or null value, and resolves the key
-     * @param keyword the keyword to check and resolve
-     * @return Resolved value
-     * @param <T> return type of the resolved value
-     */
-    private static <T> T checkAndResolve(EnvKey keyword, Class<T> type) {
-        if (Objects.isNull(keyword.value) || Objects.equals(keyword.value, "")) {
-            throw new InvalidStateException("Keyword '{}' is empty!");
-        }
-
-
-        if (type == String.class) return type.cast(keyword.value);
-        if (type == Integer.class) return type.cast(Integer.parseInt(keyword.value));
-        if (type == Long.class)    return type.cast(Long.parseLong(keyword.value));
-        if (type == Boolean.class) return type.cast(Boolean.parseBoolean(keyword.value));
-        if (type == Double.class)  return type.cast(Double.parseDouble(keyword.value));
-
-        throw new IllegalArgumentException("Unsupported type: " + type.getName());
+    public ZoneId getAsZoneId(){
+        return ZoneId.of(this.value);
     }
 }

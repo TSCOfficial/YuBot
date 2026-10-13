@@ -222,6 +222,6 @@ public enum TicketType {
         this.selectDescription = selectDescription;
         this.embedDescription = embedDescription;
         this.group = group;
-        this.responsibleRoles = responsibleRoles.stream().map(EnvResolver::getRoleById).toList();
+        this.responsibleRoles = responsibleRoles.stream().map(EnvKey::getAsRole).toList();
     }
 }

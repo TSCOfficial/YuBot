@@ -48,7 +48,7 @@ public class TicketRepository {
         Timestamp updatedAt = resultSet.getTimestamp(Table.TicketColumn.UPDATED_AT.getColumn());
         boolean isReminderSent = resultSet.getBoolean(Table.TicketColumn.IS_REMINDER_SENT.getColumn());
 
-        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
 
 
         Member owner = guild.getMemberById(ownerId);
@@ -97,7 +97,7 @@ public class TicketRepository {
             TicketType type = TicketType.valueOf(typeName);
             TicketStatus status = TicketStatus.valueOf(resultSet.getString(Table.TicketColumn.STATUS.getColumn()));
 
-            Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
 
             Member owner = guild.getMemberById(user.getIdLong());
 
@@ -137,7 +137,7 @@ public class TicketRepository {
             TicketType type = TicketType.valueOf(typeName);
             TicketStatus status = TicketStatus.valueOf(resultSet.getString(Table.TicketColumn.STATUS.getColumn()));
 
-            Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
             Member owner = guild.getMemberById(ownerId);
 
             Ticket ticket = new Ticket(owner, type);

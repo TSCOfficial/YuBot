@@ -102,7 +102,7 @@ public class Ticket {
     private static final List<Role> ALLOW_DIRECT_FORCECLOSE_ROLES = Stream.of(
             EnvKey.ROLE_SERVERLEITUNG,
             EnvKey.ROLE_MODLEITUNG
-    ).map(EnvResolver::getRoleById).toList();
+    ).map(EnvKey::getAsRole).toList();
 
     /**
      * Create a Ticket object<br>

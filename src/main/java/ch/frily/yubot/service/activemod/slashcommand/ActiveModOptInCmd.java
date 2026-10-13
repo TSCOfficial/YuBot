@@ -31,7 +31,7 @@ public class ActiveModOptInCmd implements ISlashSubcommand {
     public List<Role> getAllowedRoles() {
         return Stream.of(
                 EnvKey.ROLE_MODERATOR
-        ).map(EnvResolver::getRoleById).toList();
+        ).map(EnvKey::getAsRole).toList();
     }
 
     @Override

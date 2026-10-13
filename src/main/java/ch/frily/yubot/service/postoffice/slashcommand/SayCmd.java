@@ -63,7 +63,7 @@ public class SayCmd implements ISlashSubcommand {
     public List<Role> getAllowedRoles() {
         return Stream.of(
                 EnvKey.ROLE_SERVERLEITUNG
-        ).map(EnvResolver::getRoleById).toList();
+        ).map(EnvKey::getAsRole).toList();
     }
 
     @Override

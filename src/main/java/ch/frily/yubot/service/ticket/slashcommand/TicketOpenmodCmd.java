@@ -43,7 +43,7 @@ public class TicketOpenmodCmd implements ISlashSubcommand {
         return Stream.of(
                 EnvKey.ROLE_SUPPORT,
                 EnvKey.ROLE_MODERATOR
-        ).map(EnvResolver::getRoleById).toList();
+        ).map(EnvKey::getAsRole).toList();
     }
 
     @Override

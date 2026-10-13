@@ -81,7 +81,7 @@ public class Client {
      * @return New JDA client
      */
     private JDA createClient() {
-        JDABuilder jdaBuilder = JDABuilder.createDefault(config.get(EnvKey.CRED_TOKEN.name()));
+        JDABuilder jdaBuilder = JDABuilder.createDefault(Client.getInstance().getConfig().get("CRED_TOKEN"));
         jdaBuilder.enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.MESSAGE_CONTENT);
         jdaBuilder.setStatus(OnlineStatus.ONLINE);
         jdaBuilder.setMemberCachePolicy(MemberCachePolicy.ALL);

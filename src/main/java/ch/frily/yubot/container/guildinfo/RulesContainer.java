@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.utils.FileUpload;
 
 public class RulesContainer extends Container {
 
-    private static final Guild GUILD = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+    private static final Guild GUILD = EnvKey.GUILD_YUSERVER.getAsGuild();
 
     public RulesContainer() {
         this.addComponent(MediaGallery.of(MediaGalleryItem.fromFile(

@@ -17,47 +17,11 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * Resolve Discord related IDs
+ * @deprecated Class will depreciate after deploying v2.0.0
  */
 @Slf4j
+@Deprecated
 public class EnvResolver {
-
-    /**
-     * Get a Guild by its integer ID
-     * @param guildId the ID of the guild
-     * @return Guild object
-     */
-    public static Guild getGuildById(long guildId) {
-        return Client.getInstance().getClient().getGuildById(guildId);
-    }
-
-    /**
-     * Get a Guild by its .env keyword
-     * @param keyword In the .env-file defined keyword
-     * @return Guild object
-     */
-    public static Guild getGuildById(EnvKey keyword) {
-        long guildId = checkAndResolve(keyword, Long.class);
-        return getGuildById(guildId);
-    }
-
-    /**
-     * Get a Role by its integer ID
-     * @param roleId the ID of the role
-     * @return Role object
-     */
-    public static Role getRoleById(long roleId) {
-        return Client.getInstance().getClient().getRoleById(roleId);
-    }
-
-    /**
-     * Get a Channel by its .env keyword
-     * @param keyword In the .env-file defined keyword
-     * @return Channel object
-     */
-    public static Role getRoleById(EnvKey keyword) {
-        long roleId = checkAndResolve(keyword, Long.class);
-        return getRoleById(roleId);
-    }
 
     /**
      * Get a Channel by its integer ID
@@ -65,7 +29,7 @@ public class EnvResolver {
      * @return  object
      */
     public static <T> T getChannelById(Class<T> type, long guildId, long channelId) {
-        Guild guild = getGuildById(guildId);
+        Guild guild = Client.getInstance().getClient().getGuildById(guildId);
 
         if (type.equals(TextChannel.class)) {
             return (T) guild.getTextChannelById(channelId);
@@ -126,7 +90,7 @@ public class EnvResolver {
      * @param <T> return type of the resolved value
      */
     private static <T> T checkAndResolve(EnvKey keyword, Class<T> type) {
-        if (Objects.equals(keyword.get(), "")) {
+        if (Objects.equals(keyword.getValue(), "")) {
             throw new InvalidStateException("Keyword is empty!");
         }
 

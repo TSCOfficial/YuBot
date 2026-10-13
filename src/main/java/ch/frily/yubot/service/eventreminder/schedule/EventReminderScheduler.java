@@ -27,7 +27,7 @@ public class EventReminderScheduler implements IScheduler {
 
     @Override
     public void execute() {
-        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
         List<ScheduledEvent> upcomingEvents = guild.getScheduledEvents().stream().filter(event -> {
             // remove already reminded events from list by returning false
             try {
@@ -55,9 +55,9 @@ public class EventReminderScheduler implements IScheduler {
     }
 
     private void sendReminder(ScheduledEvent event) {
-        TextChannel channel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_ANKUENDIGUNGEN);
+        TextChannel channel = EnvKey.CHANNEL_ANKUENDIGUNGEN.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
         StringBuilder reminderSB = new StringBuilder();
-        reminderSB.append(EnvResolver.getRoleById(EnvKey.ROLE_EVENTPING).getAsMention()).append("\n");
+        reminderSB.append(EnvKey.ROLE_EVENTPING.getAsRole().getAsMention()).append("\n");
         reminderSB.append(String.format("# __%s__ startet in <t:%d:R>", event.getName(), Util.toEpochSeconds(event.getStartTime().atZoneSameInstant(ZoneId.of("Europe/Zurich")).toLocalDateTime()))).append("\n");
         reminderSB.append(event.getDescription()).append("\n");
         if (event.getType() == ScheduledEvent.Type.STAGE_INSTANCE || event.getType() == ScheduledEvent.Type.VOICE) {

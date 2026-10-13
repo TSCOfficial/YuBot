@@ -1,14 +1,17 @@
 package ch.frily.yubot.service.profile.modal;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.profile.MessageHandling;
 import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.util.EnvResolver;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import org.jspecify.annotations.NonNull;
@@ -19,6 +22,7 @@ import java.util.Objects;
 /**
  * This modal allows a profile-user to edit a message sent from their profile-webhook
  */
+@Slf4j
 public class EditWebhookMessageModal extends Modal {
 
     private Message message;
@@ -59,6 +63,7 @@ public class EditWebhookMessageModal extends Modal {
 
         String editedMessage = messageValue.getAsString();
 
+        // todo event.getGuildChannel().asStandardGuildMessageChannel().get
         EnvResolver.getMessageById(Objects.requireNonNull(event.getGuild()).getId(), channelId, messageId)
                 .thenAccept(originalMessage -> {
                     MessageHandling.editMessage(originalMessage, editedMessage);

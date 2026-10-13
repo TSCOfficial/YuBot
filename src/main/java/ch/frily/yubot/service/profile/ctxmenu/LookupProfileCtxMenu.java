@@ -30,7 +30,7 @@ public class LookupProfileCtxMenu implements IMessageContextMenu {
     public List<Role> getAllowedRoles() {
         return Stream.of(
                 EnvKey.ROLE_YUTEAM
-        ).map(EnvResolver::getRoleById).toList();
+        ).map(EnvKey::getAsRole).toList();
     }
 
     @Override

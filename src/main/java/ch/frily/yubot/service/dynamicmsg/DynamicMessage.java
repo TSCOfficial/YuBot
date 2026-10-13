@@ -17,9 +17,7 @@ public record DynamicMessage(String name, Message message) {
      * @return a {@link CompletableFuture}, consisting of the {@link DynamicMessage}
      */
     public static CompletableFuture<DynamicMessage> retrieve(String registryName, long channelId, long messageId) {
-        long guildId = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getIdLong();
-
-        return EnvResolver.getMessageById(guildId, channelId, messageId)
+        return EnvResolver.getMessageById(EnvKey.GUILD_YUSERVER.getAsLong(), channelId, messageId)
                 .thenApply(Message -> new DynamicMessage(registryName, Message))
                 .exceptionally(ExceptionHandler::fail);
     }

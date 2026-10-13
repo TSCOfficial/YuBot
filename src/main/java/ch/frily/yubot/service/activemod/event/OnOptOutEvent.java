@@ -32,7 +32,7 @@ public class OnOptOutEvent implements IEvent<GuildMemberRoleRemoveEvent> {
     public <T extends Event> void execute(T event) throws SQLException, IOException {
         GuildMemberRoleRemoveEvent castEvent = (GuildMemberRoleRemoveEvent) event;
         if (Util.isTeamMember(castEvent.getMember())) {
-            if (castEvent.getRoles().contains(EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD))) {
+            if (castEvent.getRoles().contains(EnvKey.ROLE_ACTIVEMOD.getAsRole())) {
                 Closure.getInstance().triggerUpdate();
             }
 

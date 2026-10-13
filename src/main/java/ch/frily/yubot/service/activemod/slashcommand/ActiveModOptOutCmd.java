@@ -33,19 +33,19 @@ public class ActiveModOptOutCmd implements ISlashSubcommand {
     public List<Role> getAllowedRoles() {
         return Stream.of(
                 EnvKey.ROLE_MODERATOR
-        ).map(EnvResolver::getRoleById).toList();
+        ).map(EnvKey::getAsRole).toList();
     }
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) {
-        Role activeMod = EnvResolver.getRoleById(1513639704870912130L);
+        Role activeMod = EnvKey.ROLE_ACTIVEMOD.getAsRole();
         int activeModCount = Closure.getActiveMods().size() - 1;
         if (activeModCount == 0) {
             event.reply("**Bestätige dein Opt-out**\nDu bist der/die letzte aktive Moderator*in. Bitte bestätige dein Opt-out.\n-# Falls du bestätigst wird der Server sofort geschlossen.")
                     .addComponents(ActionRow.of(new ActiveModApproveOptOutBtn().build(), new ActiveModCancelOptOutBtn().build())).setEphemeral(true).queue();
             return;
         }
-        if (Objects.requireNonNull(event.getMember()).getRoles().stream().anyMatch(role -> role.getIdLong() == EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD).getIdLong())) {
+        if (Objects.requireNonNull(event.getMember()).getRoles().stream().anyMatch(role -> role.getIdLong() == EnvKey.ROLE_ACTIVEMOD.getAsLong())) {
             Objects.requireNonNull(event.getGuild()).removeRoleFromMember(event.getMember(), activeMod).submit().thenAccept(_ -> {
                 String countInfo = "Es sind nun **" + activeModCount + "** aktive Moderator\\*innen";
                 if (activeModCount == 1) {

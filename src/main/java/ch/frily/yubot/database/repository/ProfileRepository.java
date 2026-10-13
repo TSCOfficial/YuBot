@@ -31,7 +31,7 @@ public class ProfileRepository {
             String proxy = rs.getString(Table.ProfileColumn.PROXY.getColumn());
             int useCount = rs.getInt(Table.ProfileColumn.USE_COUNT.getColumn());
 
-            Member member = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getMemberById(memberId);
+            Member member = EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(memberId);
 
             return new Profile(profileId, member, name, isCurrentlyUsed, profilePicture, proxy, useCount);
         }

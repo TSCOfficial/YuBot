@@ -113,7 +113,7 @@ public class ProfilContainer extends Container {
                 }
             }
             // add new profile btn
-            if (Util.isPermitted(member, Stream.of(EnvKey.ROLE_DIDSYSTEM).map(EnvResolver::getRoleById).toList())) {
+            if (Util.isPermitted(member, Stream.of(EnvKey.ROLE_DIDSYSTEM).map(EnvKey::getAsRole).toList())) {
                 profileControl.add(new AddProfileBtn().build());
             }
 

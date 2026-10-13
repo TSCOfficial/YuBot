@@ -35,6 +35,6 @@ public class TicketReopenCmd implements ISlashSubcommand {
     public List<Role> getAllowedRoles() {
         return Stream.of(
                 EnvKey.ROLE_YUTEAM
-        ).map(EnvResolver::getRoleById).toList();
+        ).map(EnvKey::getAsRole).toList();
     }
 }

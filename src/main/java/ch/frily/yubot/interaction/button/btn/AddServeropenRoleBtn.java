@@ -30,10 +30,10 @@ public class AddServeropenRoleBtn extends Button {
 
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) {
-        if (Objects.requireNonNull(event.getMember()).getRoles().contains(EnvResolver.getRoleById(EnvKey.ROLE_EROEFFNUNGSPING))) {
-            throw new InvalidStateException("Du wirst bereits benachrichtigt.", String.format("Du besitzt die %s Rolle bereits.", EnvResolver.getRoleById(EnvKey.ROLE_EROEFFNUNGSPING).getAsMention()));
+        if (Objects.requireNonNull(event.getMember()).getRoles().contains(EnvKey.ROLE_EROEFFNUNGSPING.getAsRole())) {
+            throw new InvalidStateException("Du wirst bereits benachrichtigt.", String.format("Du besitzt die %s Rolle bereits.", EnvKey.ROLE_EROEFFNUNGSPING.getAsRole().getAsMention()));
         }
-        Role pingRole = EnvResolver.getRoleById(EnvKey.ROLE_EROEFFNUNGSPING);
+        Role pingRole = EnvKey.ROLE_EROEFFNUNGSPING.getAsRole();
         Objects.requireNonNull(event.getGuild()).addRoleToMember(event.getMember(), pingRole).queue();
         event.reply(String.format("""
                         Du wirst nun Benachrichtigt, sobald der Server öffnet!

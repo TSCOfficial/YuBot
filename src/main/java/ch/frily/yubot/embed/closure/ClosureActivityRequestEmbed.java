@@ -23,8 +23,8 @@ public class ClosureActivityRequestEmbed implements IEmbed {
 
     public ClosureActivityRequestEmbed(ActiveMod activeMod) {
         this.activeMod = activeMod;
-        this.epochTime = activeMod.lastActivityAt().atZone(EnvResolver.getZoneId()).toEpochSecond();
-        this.activeModRole = EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD);
+        this.epochTime = activeMod.lastActivityAt().atZone(EnvKey.TIMEZONE.getAsZoneId()).toEpochSecond();
+        this.activeModRole = EnvKey.ROLE_ACTIVEMOD.getAsRole();
         this.activeModCount = Closure.getActiveMods().size() - 1; // mod-count without this mod
     }
 

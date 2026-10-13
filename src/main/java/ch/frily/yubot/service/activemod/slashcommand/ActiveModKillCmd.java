@@ -31,7 +31,7 @@ public class ActiveModKillCmd implements ISlashSubcommand {
     public List<Role> getAllowedRoles() {
         return Stream.of(
                 EnvKey.ROLE_MODERATOR
-        ).map(EnvResolver::getRoleById).toList();
+        ).map(EnvKey::getAsRole).toList();
     }
 
     @Override
@@ -39,15 +39,15 @@ public class ActiveModKillCmd implements ISlashSubcommand {
         if (!Closure.isMod(event.getMember())) {
             throw new PermissionDeniedException("Nur Moderator*innen können diesen Befehl ausführen.");
         }
-        Role activeMod = EnvResolver.getRoleById(1513639704870912130L);
+        Role activeMod = EnvKey.ROLE_ACTIVEMOD.getAsRole();
 
         int activeModCount = Closure.getActiveMods().size();
         List<CompletableFuture<Void>> removeRoleFutures = Objects.requireNonNull(event.getGuild()).getMembersWithRoles(activeMod).stream().map(member -> event.getGuild().removeRoleFromMember(member, activeMod).submit()).toList();
         CompletableFuture<Void> allRoleFutures = CompletableFuture.allOf(removeRoleFutures.toArray(new CompletableFuture[0]));
 
         allRoleFutures.thenAccept(_ -> {
-            EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_ACTIVEMODERATION)
-                    .sendMessage(String.format("⚠️ Der Server wurde von %s gekillt.\n-# Allen ActiveMods (%d) wurde die Rolle entfernt und der Server geschlossen.", Objects.requireNonNull(event.getMember()).getAsMention(), activeModCount));
+            EnvKey.CHANNEL_ACTIVEMODERATION.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER)
+                    .sendMessage(String.format("⚠️ Der Server wurde von %s gekillt.\n-# Allen ActiveMods (%d) wurde die Rolle entfernt und der Server geschlossen.", Objects.requireNonNull(event.getMember()).getAsMention(), activeModCount)).queue();
             event.reply("✅ Alle aktiven Moderator*innen wurden entfernt und der Server wird nun geschlossen.").setEphemeral(true).queue();
         }).exceptionally(_ -> {
             throw new InvalidStateException("Fehler beim Entfernen der aktiven Moderator*innen.");

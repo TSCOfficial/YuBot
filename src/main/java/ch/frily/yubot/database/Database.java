@@ -1,5 +1,6 @@
 package ch.frily.yubot.database;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.EnvResolver;
@@ -32,8 +33,8 @@ public class Database {
     private Properties getProperties() {
         if (properties == null) {
             properties = new Properties();
-            properties.setProperty("user", EnvResolver.getString(EnvKey.CRED_DB_USERNAME));
-            properties.setProperty("password", EnvResolver.getString(EnvKey.CRED_DB_PASSWORD));
+            properties.setProperty("user", Client.getInstance().getConfig().get("CRED_DB_USERNAME"));
+            properties.setProperty("password", Client.getInstance().getConfig().get("CRED_DB_PASSWORD"));
         }
         return properties;
     }
@@ -45,7 +46,7 @@ public class Database {
     public Connection connect() {
         try {
             if (connection == null) {
-                connection = DriverManager.getConnection(EnvResolver.getString(EnvKey.CRED_DB_URL), getProperties());
+                connection = DriverManager.getConnection(Client.getInstance().getConfig().get("CRED_DB_URL"), getProperties());
             }
             return connection;
         } catch (SQLException e) {

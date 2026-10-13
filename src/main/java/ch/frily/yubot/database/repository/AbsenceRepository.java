@@ -79,7 +79,7 @@ public class AbsenceRepository {
             LocalDateTime updatedAt = rs.getTimestamp(Table.AbsenceColumn.UPDATED_AT.getColumn()).toLocalDateTime();
             AbsenceType absenceType = AbsenceType.valueOf(typeString);
 
-            Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
             Member member = guild.getMemberById(memberId);
             Absence absence = new Absence(id, member, startDateTime, endDateTime, absenceType, reason, sendNotice, createdAt, updatedAt);
             absences.add(absence);
@@ -110,7 +110,7 @@ public class AbsenceRepository {
             LocalDateTime updatedAt = rs.getTimestamp(Table.AbsenceColumn.UPDATED_AT.getColumn()).toLocalDateTime();
             AbsenceType absenceType = AbsenceType.valueOf(typeString);
 
-            Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
             Member member = guild.getMemberById(memberId);
             return new Absence(id, member, startDateTime, endDateTime, absenceType, reason, sendNotice, createdAt, updatedAt);
         }
@@ -145,7 +145,7 @@ public class AbsenceRepository {
             LocalDateTime updatedAt = rs.getTimestamp(Table.AbsenceColumn.UPDATED_AT.getColumn()).toLocalDateTime();
             AbsenceType absenceType = AbsenceType.valueOf(typeString);
 
-            Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
             Member member = guild.getMemberById(memberId);
             Absence absence = new Absence(id, member, startDateTime, endDateTime, absenceType, reason, sendNotice, createdAt, updatedAt);
 

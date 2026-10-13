@@ -39,12 +39,12 @@ public record ActiveMod(
             );
         }
 
-        Role activeMod = EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD);
+        Role activeMod = EnvKey.ROLE_ACTIVEMOD.getAsRole();
         if (member.getRoles().contains(activeMod)) {
             ActiveModRepository.updateModeratorActivity(member);
             return CompletableFuture.completedFuture("✅ Du hast deine Aktivität erfolgreich bestätigt.");
         }
-        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
         return guild.addRoleToMember(member, activeMod).submit().thenApply(_ -> {
 
             try {

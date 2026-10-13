@@ -51,6 +51,6 @@ public class TicketCloseRequestBtn extends Button {
     public List<Role> getAllowedRoles() {
         return Stream.of(
                 EnvKey.ROLE_YUTEAM
-        ).map(EnvResolver::getRoleById).toList();
+        ).map(EnvKey::getAsRole).toList();
     }
 }

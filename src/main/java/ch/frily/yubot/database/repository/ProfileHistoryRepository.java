@@ -46,7 +46,7 @@ public class ProfileHistoryRepository {
             String profileId = rs.getString(Table.ProfileHistoryColumn.PROFILE_ID.getColumn());
             LocalDateTime createdAt =  rs.getTimestamp(Table.ProfileHistoryColumn.CREATED_AT.getColumn()).toLocalDateTime();
 
-            Member parentAccount = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getMemberById(parentId);
+            Member parentAccount = EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(parentId);
             Profile profileRef = ProfileRepository.getProfileById(profileId);
 
             return new ProfileHistory(id, previousName, newName, profileRef, parentAccount, createdAt);

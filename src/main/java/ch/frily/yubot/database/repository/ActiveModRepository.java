@@ -32,7 +32,7 @@ public class ActiveModRepository {
 
             LocalDateTime activityRequestedAt = activityRequestedAtTimestamp == null ? null : activityRequestedAtTimestamp.toLocalDateTime();
 
-            Member moderator = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getMemberById(modId);
+            Member moderator = EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(modId);
             ActiveMod activeMod = new ActiveMod(moderator, lastActivityAt, activityRequestedAt, activityRequestMessageId, requestedAttentionMessageId);
             activeMods.add(activeMod);
         }
@@ -88,7 +88,7 @@ public class ActiveModRepository {
         if (!resultSet.next()) {
             return null;
         }
-        Member member = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getMemberById(resultSet.getLong(Table.ActiveModColumn.MODERATOR_ID.getColumn()));
+        Member member = EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(resultSet.getLong(Table.ActiveModColumn.MODERATOR_ID.getColumn()));
         LocalDateTime lastActivityAt = resultSet.getTimestamp(Table.ActiveModColumn.LAST_ACTIVITY_AT.getColumn()).toLocalDateTime();
         Timestamp activityRequestedAtTimestamp = resultSet.getTimestamp(Table.ActiveModColumn.ACTIVITY_REQUESTED_AT.getColumn());
         long activityRequestMessageId = resultSet.getLong(Table.ActiveModColumn.ACTIVITY_REQUEST_MESSAGE_ID.getColumn());
@@ -105,7 +105,7 @@ public class ActiveModRepository {
 
         List<ActiveMod> activeMods = new ArrayList<>();
         while (resultSet.next()) {
-            Member member = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getMemberById(resultSet.getLong(Table.ActiveModColumn.MODERATOR_ID.getColumn()));
+            Member member = EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(resultSet.getLong(Table.ActiveModColumn.MODERATOR_ID.getColumn()));
             LocalDateTime lastActivityAt = resultSet.getTimestamp(Table.ActiveModColumn.LAST_ACTIVITY_AT.getColumn()).toLocalDateTime();
             Timestamp activityRequestedAtTimestamp = resultSet.getTimestamp(Table.ActiveModColumn.ACTIVITY_REQUESTED_AT.getColumn());
             long activityRequestMessageId = resultSet.getLong(Table.ActiveModColumn.ACTIVITY_REQUEST_MESSAGE_ID.getColumn());

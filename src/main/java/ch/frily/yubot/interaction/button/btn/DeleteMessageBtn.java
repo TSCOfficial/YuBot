@@ -41,7 +41,7 @@ public class DeleteMessageBtn extends Button {
         Matcher matcher = pattern.matcher(event.getMessage().getContentRaw());
         if (matcher.find()) {
             String memberId = matcher.group().replace("<@", "").replace(">", "");
-            Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
             guild.retrieveMemberById(memberId).queue(member -> {
                 if (event.getMember() == null) { // member == null when not from a guild -> ignore
                     event.getMessage().delete().queue();

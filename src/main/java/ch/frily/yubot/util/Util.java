@@ -27,13 +27,13 @@ public class Util {
      */
     public static boolean isTeamMember(Member member) {
         Objects.requireNonNull(member);
-        Role teamRole = EnvResolver.getRoleById(EnvKey.ROLE_YUTEAM);
+        Role teamRole = EnvKey.ROLE_YUTEAM.getAsRole();
         return member.getRoles().contains(teamRole);
     }
 
     public static boolean isActiveMod(Member member) {
         Objects.requireNonNull(member);
-        Role activeModRole = EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD);
+        Role activeModRole = EnvKey.ROLE_ACTIVEMOD.getAsRole();
         return member.getRoles().contains(activeModRole);
     }
 
@@ -43,7 +43,7 @@ public class Util {
      * @return true | false : Returns true when the list is completed
      */
     public static List<Member> getUsersByRole(Role role) {
-        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
         if (guild == null || role == null) {
             return List.of();
         }
@@ -55,7 +55,7 @@ public class Util {
     }
 
     public static Member getMemberByUser(long userId) {
-        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
         return guild.getMemberById(userId);
     }
 
