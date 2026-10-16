@@ -5,6 +5,7 @@ import ch.frily.yubot.interaction.command.cmd.*;
 import ch.frily.yubot.interaction.command.cmd.activemod.ActiveModCmdGroup;
 import ch.frily.yubot.interaction.command.cmd.profile.ProfileCmdGroup;
 import ch.frily.yubot.interaction.command.cmd.send.SendCmdGroup;
+import ch.frily.yubot.interaction.command.cmd.stagemod.StageModCmdGroup;
 import ch.frily.yubot.interaction.command.cmd.ticket.TicketCmdGroup;
 import ch.frily.yubot.util.Util;
 import javassist.NotFoundException;
@@ -55,7 +56,8 @@ public class SlashCommandRegistry {
                 new TicketCmdGroup(),
                 new ActiveModCmdGroup(),
                 new SendCmdGroup(),
-                new ProfileCmdGroup()
+                new ProfileCmdGroup(),
+                new StageModCmdGroup()
         );
 
         slashCommands.forEach(cmd -> {
