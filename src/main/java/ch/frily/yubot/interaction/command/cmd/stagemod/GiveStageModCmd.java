@@ -34,7 +34,7 @@ public class GiveStageModCmd implements ISlashSubcommand {
         event.getGuild().getTextChannelById(1559970434168922234L).sendMessage(
                 String.format("%s ist nun teil der Stage-Moderation.", userOption.getAsMember().getAsMention())
         ).queue();
-        event.reply(String.format("%s wurde die <@&1559980125381070929>-Rolle entzogen.", userOption.getAsMember().getAsMention())).setEphemeral(true).queue();
+        event.reply(String.format("%s wurde die <@&1559970596362911804>-Rolle vergeben.", userOption.getAsMember().getAsMention())).setEphemeral(true).queue();
     }
 
     @Override

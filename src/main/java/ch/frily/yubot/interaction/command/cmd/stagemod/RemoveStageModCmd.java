@@ -30,8 +30,8 @@ public class RemoveStageModCmd implements ISlashSubcommand {
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
         OptionMapping userOption = Objects.requireNonNull(event.getOption("user"));
         Role stageModRole = Objects.requireNonNull(event.getGuild()).getRoleById(1559970596362911804L);
-        event.getGuild().addRoleToMember(userOption.getAsMember(), stageModRole).queue();
-        event.reply(String.format("%s wurde die <@&1559980125381070929>-Rolle entzogen.", userOption.getAsMember().getAsMention())).setEphemeral(true).queue();
+        event.getGuild().removeRoleFromMember(userOption.getAsMember(), stageModRole).queue();
+        event.reply(String.format("%s wurde die <@&1559970596362911804>-Rolle entzogen.", userOption.getAsMember().getAsMention())).setEphemeral(true).queue();
     }
 
     @Override
