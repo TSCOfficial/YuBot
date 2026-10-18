@@ -64,36 +64,54 @@ public class StartHereContainer extends Container {
 
         this.addTextDisplay(String.format("""
                 ## Communityfloor
-                Dieser Bereich gehört euch ˙ᵕ˙
+                Dieser Bereich gehört euch :head_shaking_vertically:\s
                 ⤷ Wenn der Server geöffnet ist könnt ihr hier über alle möglichen Themen schreiben und sprechen.
                 
-                %s ▸ hier könnt ihr miteinander schreiben
+                %s ▸ hier könnt ihr miteinander schreiben\s
+                <#1516878625524416512> ▸ hier könnt ihr euch gegenseitig nette Worte schreiben :heart_exclamation:\s
                 %s ▸ hier könnt ihr euch einander vorstellen
-                %s ▸ hier könnt ihr Yu Fanart aller Art reinschicken und bewundern ✏️
-                %s ▸ hier könnt ihr euch über Musik unterhalten 🎼
-                %s ▸ hier könnt ihr eure eigenen Songtexte und Ideen posten 🎵
-                %s ▸ hier könnt ihr euch über queere Themen austauschen und euch gegenseitig supporten ❤️
+                %s ▸ hier könnt ihr Yu Fanart aller Art reinschicken und bewundern :pencil2:
+                %s ▸ hier könnt ihr euch über Musik unterhalten :musical_score:
+                %s ▸ hier könnt ihr eure eigenen Songtexte und Ideen posten :musical_note:
+                <#1522310937284182132> ▸ hier könnt ihr zusammen je mit einem Wort eine lange Geschichte erzählen\s
+                <#1532092235124969612> ▸ hier könnt ihr Memes über Yu posten
+                %s ▸ hier könnt ihr euch über queere Themen austauschen und euch gegenseitig supporten :heart:
+                <#1528152637948559481> ▸ hier könnt ihr mit internationalen User\\*innen kommunizieren\s
+                <#1522320495544897746> ▸ hier könnt ihr andere User innen zitieren :speaking_head:\s
+                <#1522688395787108483> ▸ hier könnt ihr euch über Demos austauschen
+                <#1535033271954571457> ▸ hier könnt ihr Botbefehle nutzen
+                %s ▸ hier könnt ihr euch über Konzerte oder Festivals, auf denen ihr Yu sehen könnt, unterhalten
                 
                 ### ⪼ Foren
-                %s ▸ hier könnt ihr dem Serverteam feedback geben ✉️
+                <#1533195474121658510> ▸ hier könnt ihr über die unterschiedlichsten Themen diskutieren
+                %s ▸ hier könnt ihr dem Serverteam feedback geben :envelope:
                 %s ▸ hier könnt ihr euch als Konzertbegleitung für andere anbieten, oder nach solcher fragen und euch zusammentun
-                %s ▸ hier könnt ihr euch über Konzerte oder Festivals, auf denen ihr Yu sehen könnt, unterhalten
                 
                 ### ⪼ Voice Channels
                 Euch stehen mehrere Voice Channels zur Verfügung, einige davon haben eine Maximalanzahl an User\\*innen, damit diese nicht so unübersichtlich werden.
-                Zusätzlich gibt es die Möglichkeit "Join to create", mit der ihr selbst einen Voice Channel erstellen könnt, indem ihr dem Voice %s beitretet. Dort könnt ihr den Namen und die maximale Anzahl der User\\*innen einstellen. Außerdem können euch andere Yu Fans Anfragen schicken, um diesen Vc´s joinen zu können. So könnt ihr euch in kleineren Gruppen zusammentun. ☎️
+                Zusätzlich gibt es die Möglichkeit "Join to create", mit der ihr selbst einen Voice Channel erstellen könnt, indem ihr dem Voice %s beitretet. Dort könnt ihr den Namen und die maximale Anzahl der User\\*innen einstellen. Außerdem können euch andere Yu Fans Anfragen schicken, um diesen Vc´s joinen zu können. So könnt ihr euch in kleineren Gruppen zusammentun. :telephone:
                 
                 Nicht wundern wenn von Zeit zur Zeit mal ein\\*e Moderator\\*in oder ein\\*e Supporter\\*in dem Voicechat joint und nach dem rechten sieht.
                 """,
                 EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_LOBBY).getAsMention(),
+                // gegenseitiges Puschen
                 EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_STELLDICHVOR).getAsMention(),
                 EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_FANART).getAsMention(),
                 EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_MUSICDISCUSSION).getAsMention(),
                 EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_LYRICLAB).getAsMention(),
+                // kettenbrief game
+                // yu memes
                 EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_QUEERSPACE).getAsMention(),
+                // international
+                // zitate
+                // demos
+                // bot chat
+                EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_YUKONZERTFESTIVALS).getAsMention(),
+
+                // diskussionen
                 EnvResolver.getChannelById(ForumChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_FEEDBACK).getAsMention(),
                 EnvResolver.getChannelById(ForumChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_KONZERTBEGLEITUNG).getAsMention(),
-                EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_YUKONZERTFESTIVALS).getAsMention(),
+
                 EnvResolver.getChannelById(VoiceChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_JOINTOCREATE).getAsMention()
             ));
 
