@@ -1,4 +1,4 @@
-package ch.frily.yubot.interaction.button.btn;
+package ch.frily.yubot.service.postoffice.button;
 
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.PermissionDeniedException;

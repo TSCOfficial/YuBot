@@ -1,6 +1,7 @@
 package ch.frily.yubot.container;
 
 import ch.frily.yubot.interaction.ArgumentComponent;
+import ch.frily.yubot.service.postoffice.button.PaginationNavBtn;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
@@ -28,7 +29,7 @@ import java.util.Optional;
  *     navigation button it renders.</li>
  * </ul>
  * That split is what closes the render -> click -> render loop without
- * {@link ch.frily.yubot.interaction.button.btn.PaginationNavBtn} ever knowing which arguments a
+ * {@link PaginationNavBtn} ever knowing which arguments a
  * concrete container needs.
  *
  * @param page Zero based index of the page to render

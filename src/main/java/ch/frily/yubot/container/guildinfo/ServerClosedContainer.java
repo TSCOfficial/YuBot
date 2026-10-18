@@ -1,7 +1,7 @@
 package ch.frily.yubot.container.guildinfo;
 
 import ch.frily.yubot.container.Container;
-import ch.frily.yubot.interaction.button.btn.AddServeropenRoleBtn;
+import ch.frily.yubot.service.postoffice.button.AddServeropenRoleBtn;
 import ch.frily.yubot.util.EnvKey;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;

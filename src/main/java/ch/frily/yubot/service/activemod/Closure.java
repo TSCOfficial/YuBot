@@ -9,7 +9,7 @@ import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.service.dynamicmsg.DynamicMessageList;
 import ch.frily.yubot.service.activemod.button.ActiveModActivityProveBtn;
 import ch.frily.yubot.service.activemod.button.ActiveModOptOutBtn;
-import ch.frily.yubot.interaction.button.btn.DeleteMessageBtn;
+import ch.frily.yubot.service.postoffice.button.DeleteMessageBtn;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.Util;
 import lombok.Getter;

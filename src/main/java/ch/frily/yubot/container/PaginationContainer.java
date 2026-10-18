@@ -1,6 +1,6 @@
 package ch.frily.yubot.container;
 
-import ch.frily.yubot.interaction.button.btn.PaginationNavBtn;
+import ch.frily.yubot.service.postoffice.button.PaginationNavBtn;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
