@@ -1,4 +1,4 @@
-package ch.frily.yubot.service.eventreminder.schedule;
+package ch.frily.yubot.service.eventtool.schedule;
 
 import ch.frily.yubot.database.repository.EventReminderRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
