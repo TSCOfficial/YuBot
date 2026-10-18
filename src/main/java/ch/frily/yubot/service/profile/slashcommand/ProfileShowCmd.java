@@ -34,7 +34,8 @@ public class ProfileShowCmd implements ISlashSubcommand {
     @Override
     public List<OptionData> getOptions() {
         return List.of(
-                new OptionData(OptionType.STRING, "profile", "Eins deiner Profile welches du anschauen möchtest", false, true)
+                new OptionData(OptionType.STRING, "profile", "Eins deiner Profile welches du anschauen möchtest", false, true),
+                new OptionData(OptionType.USER, "user", "Profil einer anderen Person einsehen")
         );
     }
 
@@ -57,14 +58,18 @@ public class ProfileShowCmd implements ISlashSubcommand {
     @Override
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException {
         event.deferReply(true).queue();
-        Member member = event.getMember();
-        ProfilContainer container = new ProfilContainer(member);
+        Member initiator = event.getMember();
+        Member target = event.getOption("user") != null ? event.getOption("user").getAsMember() : null;
+        ProfilContainer container = new ProfilContainer(initiator);
 
-        ProfileRepository.getCurrentUserProfile(member).ifPresent(container::setProfile);
-        if (event.getOption("profile") != null) {
+        ProfileRepository.getCurrentUserProfile(initiator).ifPresent(container::setProfile);
+        if (target != null) {
+            container.setTarget(target);
+        } else if (event.getOption("profile") != null) {
             Profile selectedProfile = ProfileRepository.getProfileById(event.getOption("profile").getAsString());
             container.setProfile(selectedProfile);
         }
+
 
         container.buildAsync().thenAccept(builtContainer -> {
             MessageCreateData message = new MessageCreateBuilder()

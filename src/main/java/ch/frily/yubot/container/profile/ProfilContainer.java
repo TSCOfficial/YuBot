@@ -22,9 +22,13 @@ import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -34,6 +38,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -42,8 +47,34 @@ public class ProfilContainer extends Container {
     private static final String ACTIVE_TAG =
             "<:active1:1527044015927721984><:active2:1527044016942616748><:active3:1527044018276536403>";
 
+    private static final List<Role> PRONOUN_ROLES = Stream.of(
+            EnvKey.ROLE_ERIHM,
+            EnvKey.ROLE_ERSIE,
+            EnvKey.ROLE_SIEER,
+            EnvKey.ROLE_ERDEY,
+            EnvKey.ROLE_SIEIHR,
+            EnvKey.ROLE_SIEDEY,
+            EnvKey.ROLE_DEYDEREN,
+            EnvKey.ROLE_DEYER,
+            EnvKey.ROLE_DEYSIE,
+            EnvKey.ROLE_ES,
+            EnvKey.ROLE_ERES,
+            EnvKey.ROLE_SIEES,
+            EnvKey.ROLE_DEYES,
+            EnvKey.ROLE_ESER,
+            EnvKey.ROLE_ESSIE,
+            EnvKey.ROLE_ESDEY,
+            EnvKey.ROLE_ALLE,
+            EnvKey.ROLE_KEINE,
+            EnvKey.ROLE_ANDEREFRAGEN
+    ).map(EnvKey::getAsRole).toList();
+
     @Getter
-    private final Member member;
+    private final Member initiator;
+
+    @Getter
+    @Setter
+    private Member target;
 
     @Setter
     @Getter
@@ -52,8 +83,8 @@ public class ProfilContainer extends Container {
     @Getter
     private FileUpload profileBanner;
 
-    public ProfilContainer(Member member) {
-        this.member = member;
+    public ProfilContainer(Member initiator) {
+        this.initiator = initiator;
     }
 
     public CompletableFuture<ProfilContainer> buildAsync() {
@@ -70,80 +101,100 @@ public class ProfilContainer extends Container {
     }
 
     private void assembleContent() {
+        Member member = target != null ? target : initiator;
         addComponent(MediaGallery.of(MediaGalleryItem.fromFile(profileBanner)));
         try {
-            Optional<Profile> currentProfile = ProfileRepository.getCurrentUserProfile(member);
-            List<Profile> linkedProfiles = ProfileRepository.getProfilesFromAccount(member);
-            boolean profileIsAlreadyInUse = (profile != null && currentProfile.isPresent() && Objects.equals(currentProfile.get().profileId(), profile.profileId())) || (profile == null && !linkedProfiles.isEmpty() && currentProfile.isEmpty());
-
-            if (profile != null) {
-                String proxy = !profile.proxy().isBlank() ? " (" + profile.proxy() + ")" : "";
-                addFormatedText("# %s's Profil %s %s", profile.name(), proxy, profileIsAlreadyInUse ? ACTIVE_TAG : "");
+            if (target == null) {
+                assemblePrivateProfile(member);
             } else {
-                addFormatedText("# %s %s", member.getEffectiveName(), profileIsAlreadyInUse ? ACTIVE_TAG : "");
-                if (!linkedProfiles.isEmpty()) {
-                    addTextDisplay("-# Standardprofil");
-                }
+                assemblePublicProfile(member);
             }
-
-
-            if (profile != null) {
-                addTextDisplay("**Kontoeinstellungen**");
-            } else {
-                addTextDisplay("**Einstellungen**");
-            }
-            addTextDisplay(buildSettingsText());
-
-            UseProfileBtn useProfileBtn = new UseProfileBtn();
-            if (profileIsAlreadyInUse) {
-                useProfileBtn.disable(true);
-            } else if (profile != null) {
-                useProfileBtn.addArgument("p", profile.profileId());
-            }
-
-            List<Button> profileControl = new ArrayList<>();
-            // use & edit profile
-            if (!linkedProfiles.isEmpty()) {
-                profileControl.add(useProfileBtn.build());
-
-                if (profile != null) {
-                    EditProfileBtn editProfileBtn = new EditProfileBtn();
-                    editProfileBtn.addArgument("p", profile.profileId());
-                    profileControl.add(editProfileBtn.build());
-                }
-            }
-            // add new profile btn
-            if (Util.isPermitted(member, Stream.of(EnvKey.ROLE_DIDSYSTEM).map(EnvKey::getAsRole).toList())) {
-                profileControl.add(new AddProfileBtn().build());
-            }
-
-            if (!profileControl.isEmpty()) {
-                addLineSeparator(Separator.Spacing.SMALL);
-                addComponent(
-                        ActionRow.of(profileControl)
-                );
-            }
-
-            // profile select
-            if (!linkedProfiles.isEmpty()) {
-                ProfileUseSelect profileUseSelect = new ProfileUseSelect();
-                profileUseSelect.setMember(member);
-                profileUseSelect.setProfile(profile);
-
-                addComponent(
-                        ActionRow.of(
-                                profileUseSelect.build()
-                        )
-                );
-
-                if (linkedProfiles.size() >= ISelect.MAX_SELECT_OPTIONS - 1) { // -1 because of the default profile in the selection
-                    addFormatedText("-# Es können nur 25 Optionen angezeigt werden. Verwende </profile show:1542519831729934447> um ein spezifisches Profil anzusehen.");
-                }
-            }
-
 
         } catch (Exception e) {
             ExceptionHandler.handle(e);
+        }
+    }
+
+    private void assemblePublicProfile(Member member) {
+        List<Role> userPronouns = PRONOUN_ROLES.stream().filter(role -> member.getRoles().contains(role)).toList();
+        addFormatedText("# %s", member.getEffectiveName());
+
+        List<String> pronouns = userPronouns.stream().map(role -> {
+            return String.format("%s %s", role.getIcon().getEmoji(), role.getName()); // todo add mapping for pronoun Icons, can then be placec next to the name directly
+        }).toList();
+        addFormatedText("-# %s", String.join(", ", pronouns));
+    }
+
+    /**
+     * Defines the private part of a profile, which only the user themself can see.
+     */
+    private void assemblePrivateProfile(Member member) throws SQLException {
+        Optional<Profile> currentProfile = ProfileRepository.getCurrentUserProfile(member);
+        List<Profile> linkedProfiles = ProfileRepository.getProfilesFromAccount(member);
+        boolean profileIsAlreadyInUse = target == null && ((profile != null && currentProfile.isPresent() && Objects.equals(currentProfile.get().profileId(), profile.profileId())) || (profile == null && !linkedProfiles.isEmpty() && currentProfile.isEmpty()));
+
+        if (profile != null) {
+            String proxy = !profile.proxy().isBlank() ? " (" + profile.proxy() + ")" : "";
+            addFormatedText("# %s's Profil %s %s", profile.name(), proxy, profileIsAlreadyInUse ? ACTIVE_TAG : "");
+        } else {
+            addFormatedText("# %s %s", member.getEffectiveName(), profileIsAlreadyInUse ? ACTIVE_TAG : "");
+            if (target == null && !linkedProfiles.isEmpty()) {
+                addTextDisplay("-# Standardprofil");
+            }
+        }
+
+        if (profile != null) {
+            addTextDisplay("**Kontoeinstellungen**");
+        } else {
+            addTextDisplay("**Einstellungen**");
+        }
+        addTextDisplay(buildSettingsText());
+
+        UseProfileBtn useProfileBtn = new UseProfileBtn();
+        if (profileIsAlreadyInUse) {
+            useProfileBtn.disable(true);
+        } else if (profile != null) {
+            useProfileBtn.addArgument("p", profile.profileId());
+        }
+
+        List<Button> profileControl = new ArrayList<>();
+        // use & edit profile
+        if (!linkedProfiles.isEmpty()) {
+            profileControl.add(useProfileBtn.build());
+
+            if (profile != null) {
+                EditProfileBtn editProfileBtn = new EditProfileBtn();
+                editProfileBtn.addArgument("p", profile.profileId());
+                profileControl.add(editProfileBtn.build());
+            }
+        }
+        // add new profile btn
+        if (Util.isPermitted(initiator, Stream.of(EnvKey.ROLE_DIDSYSTEM).map(EnvKey::getAsRole).toList())) {
+            profileControl.add(new AddProfileBtn().build());
+        }
+
+        if (!profileControl.isEmpty()) {
+            addLineSeparator(Separator.Spacing.SMALL);
+            addComponent(
+                    ActionRow.of(profileControl)
+            );
+        }
+
+        // profile select
+        if (!linkedProfiles.isEmpty()) {
+            ProfileUseSelect profileUseSelect = new ProfileUseSelect();
+            profileUseSelect.setMember(initiator);
+            profileUseSelect.setProfile(profile);
+
+            addComponent(
+                    ActionRow.of(
+                            profileUseSelect.build()
+                    )
+            );
+
+            if (linkedProfiles.size() >= ISelect.MAX_SELECT_OPTIONS - 1) { // -1 because of the default profile in the selection
+                addFormatedText("-# Es können nur 25 Optionen angezeigt werden. Verwende </profile show:1542519831729934447> um ein spezifisches Profil anzusehen.");
+            }
         }
     }
 
@@ -169,7 +220,7 @@ public class ProfilContainer extends Container {
     }
 
     private Map<String, String> mapSettings() throws SQLException {
-        Settings settings = SettingRepository.getSettings(member);
+        Settings settings = SettingRepository.getSettings(initiator);
         if (settings == null) {
             return null;
         }
@@ -177,7 +228,7 @@ public class ProfilContainer extends Container {
         Map<String, String> mappedSettings = new HashMap<>();
         for (Setting setting : Setting.values()) {
             try {
-                Object rawValue = SettingRepository.getSetting(member, setting, setting.getDataType());
+                Object rawValue = SettingRepository.getSetting(initiator, setting, setting.getDataType());
                 if (rawValue == null) {
                     continue; // skip setting
                 }
@@ -201,6 +252,7 @@ public class ProfilContainer extends Container {
     }
 
     private CompletableFuture<FileUpload> buildProfileBanner() {
+        Member member = target != null ? target : initiator;
         CompletableFuture<BufferedImage> bufferedBanner = BannerResolver.resolveGlobalBanner(member);
         CompletableFuture<BufferedImage> bufferedProfilePicture = fetchProfilePicture();
 
@@ -233,6 +285,7 @@ public class ProfilContainer extends Container {
     }
 
     private String getProfilePicture(boolean forceMemberProfile) {
+        Member member = target != null ? target : initiator;
         try {
             if (!forceMemberProfile && profile != null && profile.profilePicture() != null && !profile.profilePicture().isBlank()) {
                 return new ImageProxy(profile.profilePicture()).getUrl(1024);
