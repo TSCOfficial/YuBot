@@ -85,7 +85,7 @@ public interface IEmbed {
         }
 
         // Fields
-        if (getFields().isEmpty()) {
+        if (!getFields().isEmpty()) {
             for (Field field : getFields()) {
                 if (Objects.equals(field.getName(), " ") && Objects.equals(field.getValue(), " ")) {
                     builder.addBlankField(field.isInline());
