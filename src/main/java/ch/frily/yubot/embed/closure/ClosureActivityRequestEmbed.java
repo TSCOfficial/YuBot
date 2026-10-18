@@ -2,11 +2,10 @@ package ch.frily.yubot.embed.closure;
 
 
 import ch.frily.yubot.embed.IEmbed;
-import ch.frily.yubot.feature.activemod.ActiveMod;
-import ch.frily.yubot.feature.activemod.Closure;
+import ch.frily.yubot.service.activemod.ActiveMod;
+import ch.frily.yubot.service.activemod.Closure;
 import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Role;
 
@@ -23,18 +22,18 @@ public class ClosureActivityRequestEmbed implements IEmbed {
 
     public ClosureActivityRequestEmbed(ActiveMod activeMod) {
         this.activeMod = activeMod;
-        this.epochTime = activeMod.lastActivityAt().atZone(EnvResolver.getZoneId()).toEpochSecond();
-        this.activeModRole = EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD);
+        this.epochTime = activeMod.lastActivityAt().atZone(EnvKey.TIMEZONE.getAsZoneId()).toEpochSecond();
+        this.activeModRole = EnvKey.ROLE_ACTIVEMOD.getAsRole();
         this.activeModCount = Closure.getActiveMods().size() - 1; // mod-count without this mod
     }
 
     @Override
     public String getDescription() {
-        boolean activeModSendInDm = false;
+        boolean activeModSendInDm;
         try {
-            activeModSendInDm = SettingRepository.getSettingsOrThrow(activeMod.member()).activeModSendInDm().equals("Via DM");
+            activeModSendInDm = SettingRepository.getSettingsOrThrow(activeMod.member()).activeModSendInDm();
         } catch (Exception e) {
-            // already false if no profile exist
+            activeModSendInDm = false;
         }
         StringBuilder builder = new StringBuilder();
         builder.append(String.format("## %s, bestätige deine Anwesenheit\n", activeMod.member().getEffectiveName()));

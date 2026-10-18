@@ -2,7 +2,6 @@ package ch.frily.yubot.container.guildinfo;
 
 import ch.frily.yubot.container.Container;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
@@ -13,7 +12,7 @@ import net.dv8tion.jda.api.utils.FileUpload;
 
 public class RulesContainer extends Container {
 
-    private static final Guild GUILD = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+    private static final Guild GUILD = EnvKey.GUILD_YUSERVER.getAsGuild();
 
     public RulesContainer() {
         this.addComponent(MediaGallery.of(MediaGalleryItem.fromFile(

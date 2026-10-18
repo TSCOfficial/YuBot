@@ -6,7 +6,6 @@ import com.cronutils.model.CronType;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
@@ -18,8 +17,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-@UtilityClass
 public class SchedulerRegistry {
+
+    private static SchedulerRegistry instance;
 
     private static final ScheduledExecutorService executor =
             Executors.newScheduledThreadPool(4);
@@ -27,20 +27,19 @@ public class SchedulerRegistry {
     private static final CronParser PARSER =
             new CronParser(CronDefinitionBuilder.instanceDefinitionFor(CronType.UNIX));
 
-    public static void registerAll() {
-        List<IScheduler> schedulers = List.of(
-                new ActiveModActivityScheduler(),
-                new CleanStorageScheduler(),
-                new AbsenceContainerScheduler(),
-                new TicketActivityScheduler(),
-                new EventReminderScheduler()
-        );
-
-        for (IScheduler scheduler : schedulers) {
-            scheduleNext(scheduler);
-            log.info("Registered scheduler: {} ({})",
-                    scheduler.getClass().getSimpleName(), scheduler.cronExpression());
+    public static SchedulerRegistry getInstance() {
+        if (instance == null) {
+            instance = new SchedulerRegistry();
         }
+        return instance;
+    }
+
+    public void register(List<IScheduler> schedulers) {
+        schedulers.forEach(scheduler -> {
+            scheduleNext(scheduler);
+            log.info("Registered scheduler: '{}' ({}).",
+                    scheduler.getClass().getSimpleName(), scheduler.cronExpression());
+        });
     }
 
     private static void scheduleNext(IScheduler scheduler) {

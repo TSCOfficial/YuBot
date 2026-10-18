@@ -18,6 +18,6 @@ public interface IUserContextMenu extends IContextMenu{
         return Command.Type.USER;
     }
 
-    void execute(@NotNull UserContextInteractionEvent event) throws SQLException, ClassNotFoundException;
+    void execute(@NotNull UserContextInteractionEvent event) throws SQLException;
 
 }

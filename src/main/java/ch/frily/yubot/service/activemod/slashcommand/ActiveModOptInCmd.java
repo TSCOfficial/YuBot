@@ -1,0 +1,51 @@
+package ch.frily.yubot.service.activemod.slashcommand;
+
+import ch.frily.yubot.exception.ExceptionHandler;
+import ch.frily.yubot.service.activemod.ActiveMod;
+import ch.frily.yubot.database.repository.SettingRepository;
+import ch.frily.yubot.interaction.command.ISlashSubcommand;
+import ch.frily.yubot.service.activemod.modal.SelectActiveModSendTypeModal;
+import ch.frily.yubot.util.EnvKey;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import org.jetbrains.annotations.NotNull;
+
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
+
+public class ActiveModOptInCmd implements ISlashSubcommand {
+    @Override
+    public String getName() {
+        return "opt-in";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Opt-in als aktive*r moderator*in";
+    }
+
+    @Override
+    public List<Role> getAllowedRoles() {
+        return Stream.of(
+                EnvKey.ROLE_MODERATOR
+        ).map(EnvKey::getAsRole).toList();
+    }
+
+    @Override
+    public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException {
+        if (Objects.isNull(SettingRepository.getSettings(event.getMember())) || Objects.isNull(SettingRepository.getSettings(event.getMember()).activeModSendInDm())) {
+            // If the user does not have set the activeModSendInDm
+            event.replyModal(new SelectActiveModSendTypeModal().build()).queue();
+            return;
+        }
+        event.deferReply(true).queue();
+
+        ActiveMod.registerModerator(event.getMember()).thenAccept(response -> {
+            event.getHook().sendMessage(response).setEphemeral(true).queue();
+        }).exceptionally(throwable -> {
+            return ExceptionHandler.fail(throwable, event);
+        });
+    }
+}

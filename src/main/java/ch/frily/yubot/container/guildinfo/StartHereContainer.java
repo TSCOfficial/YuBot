@@ -2,7 +2,6 @@ package ch.frily.yubot.container.guildinfo;
 
 import ch.frily.yubot.container.Container;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
@@ -12,7 +11,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 public class StartHereContainer extends Container {
     public StartHereContainer() {
 
-        this.addTextDisplay(String.format("# Willkommen bei %s!", EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getName()));
+        this.addTextDisplay(String.format("# Willkommen bei %s!", EnvKey.GUILD_YUSERVER.getAsGuild().getName()));
         this.addTextDisplay("""
                 Heyyy ihr Süßen und schön, dass ihr da seid! 🤞
                 Weirdos soll ein Safe Space sein, an dem ihr euch wohlfühlen und genauso sein könnt, wie ihr seid. Macht es euch gemütlich, lernt neue Menschen kennen und genießt gemeinsam die Zeit auf unserem Server!
@@ -36,7 +35,7 @@ public class StartHereContainer extends Container {
                 Fühlt ihr euch gerade nicht gut, braucht jemanden zum Reden oder möchtet euch mit einer Person aus unserem Awareness-Team austauschen, könnt ihr dort ein Awareness-Ticket öffnen. Unser Team ist immer gerne für euch da! ❤️
                 
                 Bei Fragen, Problemen oder wenn ihr einen möglichen Regelverstoß melden möchtet, könnt ihr stattdessen ein Support-Ticket erstellen. Nachdem ihr „Support“ ausgewählt habt, könnt ihr im nächsten Schritt das passende Thema für euer Anliegen wählen.
-                """, EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_SUPPORT).getAsMention()));
+                """, EnvKey.CHANNEL_SUPPORT.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER).getAsMention()));
 
         this.addInvisibleSeparator(Separator.Spacing.LARGE);
 
@@ -46,8 +45,8 @@ public class StartHereContainer extends Container {
                 
                 Sollte der Server zwischenzeitlich geschlossen sein, könnt ihr euch trotzdem in %s die Zeit vertreiben und gemeinsam versuchen, bis ins Unendliche zu zählen. 1️⃣6️⃣1️⃣
                 Bitte achtet auch dort weiterhin auf die geltenden Regeln.
-                """, EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_SERVERGESCHLOSSEN).getAsMention(),
-                EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_COUNTING).getAsMention()));
+                """, EnvKey.CHANNEL_SERVERGESCHLOSSEN.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER).getAsMention(),
+                EnvKey.CHANNEL_COUNTING.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER).getAsMention()));
 
         this.addInvisibleSeparator(Separator.Spacing.LARGE);
 
@@ -58,7 +57,7 @@ public class StartHereContainer extends Container {
                 Unsere größeren Events finden auf der %s statt. Dort könnt ihr beitreten, zuhören und gemeinsam an Events teilnehmen, die von einer Person aus unserem Team moderiert werden.
                 
                 Für kleinere Aktionen können außerdem zeitweise separate Text- oder Voice-Channels erstellt werden. Dort könnt ihr euch austauschen, mitmachen und gemeinsam eine schöne Zeit verbringen. ☎️
-                """, EnvResolver.getChannelById(StageChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_LIVESTAGE).getAsMention()));
+                """, EnvKey.CHANNEL_LIVESTAGE.getAsChannel(StageChannel.class, EnvKey.GUILD_YUSERVER).getAsMention()));
 
         this.addInvisibleSeparator(Separator.Spacing.LARGE);
 
@@ -89,7 +88,7 @@ public class StartHereContainer extends Container {
                 
                 ### ⪼ Voice Channels
                 Euch stehen mehrere Voice Channels zur Verfügung, einige davon haben eine Maximalanzahl an User\\*innen, damit diese nicht so unübersichtlich werden.
-                Zusätzlich gibt es die Möglichkeit "Join to create", mit der ihr selbst einen Voice Channel erstellen könnt, indem ihr dem Voice %s beitretet. Dort könnt ihr den Namen und die maximale Anzahl der User\\*innen einstellen. Außerdem können euch andere Yu Fans Anfragen schicken, um diesen Vc´s joinen zu können. So könnt ihr euch in kleineren Gruppen zusammentun. :telephone:
+                Zusätzlich gibt es die Möglichkeit "Join to create", mit der ihr selbst einen Voice Channel erstellen könnt, indem ihr dem Voice %s beitretet. Dort könnt ihr den Namen und die maximale Anzahl der User\\*innen einstellen. Außerdem können euch andere Yu Fans Anfragen schicken, um diesen Vc´s joinen zu können. So könnt ihr euch in kleineren Gruppen zusammentun. ☎️
                 
                 Nicht wundern wenn von Zeit zur Zeit mal ein\\*e Moderator\\*in oder ein\\*e Supporter\\*in dem Voicechat joint und nach dem rechten sieht.
                 """,

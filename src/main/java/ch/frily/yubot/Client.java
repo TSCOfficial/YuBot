@@ -1,19 +1,10 @@
 package ch.frily.yubot;
 
 import ch.frily.yubot.database.Database;
+import ch.frily.yubot.event.*;
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.interaction.button.ButtonRegistry;
-import ch.frily.yubot.interaction.contextmenu.ContextMenuRegistry;
-import ch.frily.yubot.interaction.modal.ModalRegistry;
-import ch.frily.yubot.interaction.select.SelectRegistry;
-import ch.frily.yubot.listeners.InteractionListener;
-import ch.frily.yubot.listeners.OnMessageReceived;
-import ch.frily.yubot.listeners.OnReadyListener;
-import ch.frily.yubot.listeners.GuildMemberUpdateListener;
-import ch.frily.yubot.interaction.command.SlashCommandRegistry;
-import ch.frily.yubot.scheduler.SchedulerRegistry;
+import ch.frily.yubot.service.ServiceRegistry;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -21,16 +12,12 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 public class Client {
@@ -66,7 +53,7 @@ public class Client {
      */
     public void setup() {
         try {
-            config = loadConfig();
+            config = Dotenv.configure().load();
 
             Connection conn = Database.getInstance().connect();
             if (conn != null) {
@@ -80,26 +67,8 @@ public class Client {
             client.awaitReady();
             log.info("Application started successfully!");
 
-            Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
             // Load actions
-            ContextMenuRegistry.getInstance().loadContextMenus();
-            SlashCommandRegistry.getInstance().loadCommands();
-            ButtonRegistry.getInstance().loadButtons();
-            ModalRegistry.getInstance().loadModals();
-            SelectRegistry.getInstance().loadSelects();
-
-            // Register actions
-            SchedulerRegistry.registerAll();
-            List<CommandData> slashcommand = SlashCommandRegistry.getInstance().prepareCommandsForRegistry();
-            List<CommandData> ctxcommand = ContextMenuRegistry.getInstance().prepareForRegistry();
-
-            ArrayList<CommandData> allCommands = new ArrayList<>();
-            allCommands.addAll(slashcommand);
-            allCommands.addAll(ctxcommand);
-
-            guild.updateCommands()
-                    .addCommands(allCommands)
-                    .queue();
+            ServiceRegistry.getInstance().load();
 
 
         } catch (Exception exception) {
@@ -112,33 +81,17 @@ public class Client {
      * @return New JDA client
      */
     private JDA createClient() {
-        JDABuilder jdaBuilder = JDABuilder.createDefault(config.get(EnvKey.CRED_TOKEN.name()));
+        JDABuilder jdaBuilder = JDABuilder.createDefault(Client.getInstance().getConfig().get("CRED_TOKEN"));
         jdaBuilder.enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.MESSAGE_CONTENT);
         jdaBuilder.setStatus(OnlineStatus.ONLINE);
         jdaBuilder.setMemberCachePolicy(MemberCachePolicy.ALL);
         jdaBuilder.enableCache(CacheFlag.ACTIVITY);
-        jdaBuilder.setActivity(Activity.listening("Yu"));
+        jdaBuilder.setActivity(Activity.customStatus(config.get("STATUS")));
+
 
         // Event listeners
-        jdaBuilder.addEventListeners(InteractionListener.getInstance());
-        jdaBuilder.addEventListeners(OnReadyListener.getInstance());
-        jdaBuilder.addEventListeners(GuildMemberUpdateListener.getInstance());
-        jdaBuilder.addEventListeners(OnMessageReceived.getInstance());
+        EventRegistry.getLISTENERS().forEach(jdaBuilder::addEventListeners);
+
         return jdaBuilder.build();
-    }
-
-    /**
-     * Load ..env-file configurations
-     * @return {@link Dotenv} config object
-     */
-    private Dotenv loadConfig(){
-        Dotenv dotenv = Dotenv.configure().load();
-
-        for (EnvKey key : EnvKey.values()) {
-            if (dotenv.get(key.name()) == null) {
-                throw new IllegalStateException(String.format("Missing key-configuration for '%s'", key.name()));
-            }
-        }
-        return dotenv;
     }
 }

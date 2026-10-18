@@ -1,7 +1,7 @@
 package ch.frily.yubot.embed.ticket;
 
 import ch.frily.yubot.embed.IEmbed;
-import ch.frily.yubot.feature.ticket.Ticket;
+import ch.frily.yubot.service.ticket.Ticket;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.Member;
 
@@ -22,7 +22,7 @@ public class TicketCloseRequestEmbed implements IEmbed {
 
     @Override
     public String getAuthorIconUrl() {
-        return initiator.getAvatarUrl();
+        return initiator.getEffectiveAvatarUrl();
     }
 
     @Override

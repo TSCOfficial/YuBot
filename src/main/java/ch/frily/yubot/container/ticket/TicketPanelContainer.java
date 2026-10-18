@@ -2,13 +2,12 @@ package ch.frily.yubot.container.ticket;
 
 import ch.frily.yubot.container.Container;
 import ch.frily.yubot.database.repository.ActiveModRepository;
-import ch.frily.yubot.feature.ticket.TicketManager;
-import ch.frily.yubot.feature.ticket.TicketType;
+import ch.frily.yubot.service.ticket.TicketService;
+import ch.frily.yubot.service.ticket.TicketType;
 import ch.frily.yubot.database.repository.TicketTypeControlRepository;
-import ch.frily.yubot.feature.ticket.TicketTypeGroup;
+import ch.frily.yubot.service.ticket.TicketTypeGroup;
 import ch.frily.yubot.util.Color;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
@@ -34,13 +33,13 @@ public class TicketPanelContainer extends Container {
         this.addTextDisplay("Wähle die passende Kategorie aus, drücke den dazugehörigen Button und wähle anschliessend die gewünschte Ticketart aus.");
         this.addTextDisplay(String.format(
                 "-# Falls du ein Vorschlag oder anderweitiges Feedback geben willst, kannst du dies gerne in %s schreiben.",
-                EnvResolver.getChannelById(ForumChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_FEEDBACK).getAsMention()
+                EnvKey.CHANNEL_FEEDBACK.getAsChannel(ForumChannel.class, EnvKey.GUILD_YUSERVER).getAsMention()
                 )
         );
 
         if (!isServerOpen) {
-            Channel serverClosedChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_SERVERGESCHLOSSEN);
-            Channel startHereChannel = EnvResolver.getChannelById(TextChannel.class, EnvKey.GUILD_YUSERVER, EnvKey.CHANNEL_STARTHERE);
+            Channel serverClosedChannel = EnvKey.CHANNEL_SERVERGESCHLOSSEN.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
+            Channel startHereChannel = EnvKey.CHANNEL_STARTHERE.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
             this.addTextDisplay(String.format("""
                     ### ⚠️ Server geschlossen
                     **Hinweis:** Der Server ist momentan geschlossen, du siehst also keine Communitychannels mehr. Das Ticketsystem ist aber weiterhin verfügbar.
@@ -70,7 +69,7 @@ public class TicketPanelContainer extends Container {
             this.addLineSeparator(Separator.Spacing.LARGE);
 
             this.addSection(
-                    TicketManager.getInstance().getButtonByTypeGroup(typeGroup).build(),
+                    TicketService.getInstance().getButtonByTypeGroup(typeGroup).build(),
                     TextDisplay.of(String.format("### %s", typeGroup.getLabel())),
                     TextDisplay.of(typeGroup.getDescription())
             );

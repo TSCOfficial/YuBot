@@ -2,10 +2,10 @@ package ch.frily.yubot.database.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
-import ch.frily.yubot.feature.absence.Absence;
-import ch.frily.yubot.feature.absence.AbsenceType;
+import ch.frily.yubot.exception.NotFoundException;
+import ch.frily.yubot.service.absence.Absence;
+import ch.frily.yubot.service.absence.AbsenceType;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -23,43 +23,39 @@ public class AbsenceRepository {
 
     /**
      * Get all absences grouped together for each day
-     * @return
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @return a map of all absences grouped by day
+     * @throws SQLException Database failure
      */
-    public static Map<LocalDate, List<Absence>> getAbsencesPerDay() throws SQLException, ClassNotFoundException {
+    public static Map<LocalDate, List<Absence>> getAbsencesPerDay() throws SQLException {
         return groupByDay(getAbsences());
     }
 
     /**
      * Get all absences grouped together for each day for a specific member
-     * @param forMember
-     * @return
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @param forMember the member to get the absences from
+     * @return a map of the absences of a member, grouped by day
+     * @throws SQLException Database failure
      */
-    public static Map<LocalDate, List<Absence>> getAbsencesPerDay(@Nullable Member forMember) throws SQLException, ClassNotFoundException {
+    public static Map<LocalDate, List<Absence>> getAbsencesPerDay(@Nullable Member forMember) throws SQLException {
         return groupByDay(getAbsences(forMember));
     }
 
     /**
      * Get all absences
-     * @return
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @return all raw, existing absences
+     * @throws SQLException Database failure
      */
-    public static List<Absence> getAbsences() throws SQLException, ClassNotFoundException {
+    public static List<Absence> getAbsences() throws SQLException {
         return getAbsences(null);
     }
 
     /**
      * Get all absences for a specific member
-     * @param forMember
-     * @return
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @param forMember the member to get the absences from
+     * @return raw absence list of a member
+     * @throws SQLException Database failure
      */
-    public static List<Absence> getAbsences(@Nullable Member forMember) throws SQLException, ClassNotFoundException {
+    public static List<Absence> getAbsences(@Nullable Member forMember) throws SQLException {
         List<Absence> absences = new ArrayList<>();
 
         DatabaseQuery query = new DatabaseQuery(Table.ABSENCE);
@@ -82,7 +78,7 @@ public class AbsenceRepository {
             LocalDateTime updatedAt = rs.getTimestamp(Table.AbsenceColumn.UPDATED_AT.getColumn()).toLocalDateTime();
             AbsenceType absenceType = AbsenceType.valueOf(typeString);
 
-            Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
             Member member = guild.getMemberById(memberId);
             Absence absence = new Absence(id, member, startDateTime, endDateTime, absenceType, reason, sendNotice, createdAt, updatedAt);
             absences.add(absence);
@@ -92,13 +88,12 @@ public class AbsenceRepository {
 
     /**
      * Get an absence by its id
-     * @param id
-     * @return
-     * @throws SQLException
-     * @throws ClassNotFoundException
-     * @throws NoSuchMethodException
+     * @param id the id of the absence to get
+     * @return the absence matching the given id
+     * @throws SQLException Database failure
+     * @throws ch.frily.yubot.exception.NotFoundException Absence not found
      */
-    public static Absence getAbsenceById(int id) throws SQLException, ClassNotFoundException, NullPointerException {
+    public static Absence getAbsenceById(int id) throws SQLException, NotFoundException {
         DatabaseQuery query = new DatabaseQuery(Table.ABSENCE);
         query.select();
         query.where(Table.AbsenceColumn.ID, DatabaseQuery.Operator.EQUALS, id);
@@ -114,15 +109,21 @@ public class AbsenceRepository {
             LocalDateTime updatedAt = rs.getTimestamp(Table.AbsenceColumn.UPDATED_AT.getColumn()).toLocalDateTime();
             AbsenceType absenceType = AbsenceType.valueOf(typeString);
 
-            Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
             Member member = guild.getMemberById(memberId);
-            Absence absence = new Absence(id, member, startDateTime, endDateTime, absenceType, reason, sendNotice, createdAt, updatedAt);
-            return absence;
+            return new Absence(id, member, startDateTime, endDateTime, absenceType, reason, sendNotice, createdAt, updatedAt);
         }
-        throw new NullPointerException("Abwesenheit nicht gefunden");
+        throw new NotFoundException("Abwesenheit nicht gefunden");
     }
 
-    public static List<Absence> getAbsencesByDateSpan(LocalDateTime startDateTimeSearch, LocalDateTime endDateTimeSearch) throws SQLException, ClassNotFoundException {
+    /**
+     * Get the absences for a given date span
+     * @param startDateTimeSearch when to start search span
+     * @param endDateTimeSearch when to end the search span
+     * @return a list of absences that start or end during the given search span
+     * @throws SQLException database failure
+     */
+    public static List<Absence> getAbsencesByDateSpan(LocalDateTime startDateTimeSearch, LocalDateTime endDateTimeSearch) throws SQLException {
         List<Absence> absences = new ArrayList<>();
 
         DatabaseQuery query = new DatabaseQuery(Table.ABSENCE);
@@ -143,12 +144,12 @@ public class AbsenceRepository {
             LocalDateTime updatedAt = rs.getTimestamp(Table.AbsenceColumn.UPDATED_AT.getColumn()).toLocalDateTime();
             AbsenceType absenceType = AbsenceType.valueOf(typeString);
 
-            Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
             Member member = guild.getMemberById(memberId);
             Absence absence = new Absence(id, member, startDateTime, endDateTime, absenceType, reason, sendNotice, createdAt, updatedAt);
 
             if (member == null) {
-                log.warn("Member with id {} not found. Deleteing record: {}", memberId, absence);
+                // delete absence record when the user has left the server
                 deleteAbsenceById(id);
                 continue;
             }
@@ -157,17 +158,16 @@ public class AbsenceRepository {
         return absences;
     }
 
-    public static List<Absence> getAbsencesByMemberAndDateSpan(Member member, LocalDateTime startDateTimeSearch, LocalDateTime endDateTimeSearch) throws SQLException, ClassNotFoundException {
+    public static List<Absence> getAbsencesByMemberAndDateSpan(Member member, LocalDateTime startDateTimeSearch, LocalDateTime endDateTimeSearch) throws SQLException {
         return getAbsencesByDateSpan(startDateTimeSearch, endDateTimeSearch).stream().filter(absence -> absence.member().getId().equals(member.getId())).toList();
     }
 
     /**
      * Create an absence
-     * @param absence
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @param absence the absence to create
+     * @throws SQLException Database failure
      */
-    private static void createAbsence(Absence absence) throws SQLException, ClassNotFoundException {
+    private static void createAbsence(Absence absence) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.ABSENCE);
         query.insert(Table.AbsenceColumn.MEMBER_ID, absence.member().getId());
         query.insert(Table.AbsenceColumn.START_DATETIME, absence.fromDateTime());
@@ -181,11 +181,10 @@ public class AbsenceRepository {
 
     /**
      * Update an absence
-     * @param absence
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @param absence the absence to update
+     * @throws SQLException Database failure
      */
-    private static void updateAbsence(Absence absence) throws SQLException, ClassNotFoundException {
+    private static void updateAbsence(Absence absence) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.ABSENCE);
         query.update(Table.AbsenceColumn.START_DATETIME, absence.fromDateTime());
         query.update(Table.AbsenceColumn.END_DATETIME, absence.toDateTime());
@@ -198,7 +197,12 @@ public class AbsenceRepository {
         query.executeQuery();
     }
 
-    public static void deleteAbsenceById(int absenceId) throws SQLException, ClassNotFoundException {
+    /**
+     * Delete an absence
+     * @param absenceId the id of the absence to delete
+     * @throws SQLException Database failure
+     */
+    public static void deleteAbsenceById(int absenceId) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.ABSENCE);
         query.delete();
         query.where(Table.AbsenceColumn.ID, DatabaseQuery.Operator.EQUALS, absenceId);
@@ -210,11 +214,10 @@ public class AbsenceRepository {
      * <p>
      *     Whether the given absence should be created or overwrite an existing one depends if the absence has an id
      * </p>
-     * @param absence
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @param absence the absence to upsert
+     * @throws SQLException Database failure
      */
-    public static void upsertAbsence(Absence absence) throws SQLException, ClassNotFoundException {
+    public static void upsertAbsence(Absence absence) throws SQLException {
         if (absence.id() == null) {
             createAbsence(absence);
         } else {

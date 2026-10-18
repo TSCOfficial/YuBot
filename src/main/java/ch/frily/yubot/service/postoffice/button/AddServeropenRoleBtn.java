@@ -1,0 +1,44 @@
+package ch.frily.yubot.service.postoffice.button;
+
+import ch.frily.yubot.exception.InvalidStateException;
+import ch.frily.yubot.interaction.button.Button;
+import ch.frily.yubot.util.EnvKey;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import org.jspecify.annotations.NonNull;
+
+import java.util.List;
+import java.util.Objects;
+
+public class AddServeropenRoleBtn extends Button {
+    @Override
+    public String getId() {
+        return "add-serveropen-role-btn";
+    }
+
+    @Override
+    public String getLabel() {
+        return "Benachrichtige mich!";
+    }
+
+    @Override
+    public ButtonStyle getStyle() {
+        return ButtonStyle.SUCCESS;
+    }
+
+    @Override
+    public void execute(@NonNull ButtonInteractionEvent event) {
+        if (Objects.requireNonNull(event.getMember()).getRoles().contains(EnvKey.ROLE_EROEFFNUNGSPING.getAsRole())) {
+            throw new InvalidStateException("Du wirst bereits benachrichtigt.", String.format("Du besitzt die %s Rolle bereits.", EnvKey.ROLE_EROEFFNUNGSPING.getAsRole().getAsMention()));
+        }
+        Role pingRole = EnvKey.ROLE_EROEFFNUNGSPING.getAsRole();
+        Objects.requireNonNull(event.getGuild()).addRoleToMember(event.getMember(), pingRole).queue();
+        event.reply(String.format("""
+                        Du wirst nun Benachrichtigt, sobald der Server öffnet!
+                        -# Auf wunsch kannst du die %s Rolle im <id:customize> wieder abwählen.
+                        """
+                , pingRole.getAsMention()
+        )).setEphemeral(true).setAllowedMentions(List.of()).queue();
+    }
+}

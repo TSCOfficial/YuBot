@@ -1,7 +1,6 @@
 package ch.frily.yubot.interaction.modal;
 
 import ch.frily.yubot.interaction.ArgumentComponent;
-import ch.frily.yubot.interaction.modal.modal.*;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 
@@ -15,7 +14,7 @@ public class ModalRegistry {
 
     private static ModalRegistry instance;
 
-    private Map<String, Modal> modals = new HashMap<>();
+    private final Map<String, Modal> modals = new HashMap<>();
 
     public static ModalRegistry getInstance(){
         if (instance == null) {
@@ -24,19 +23,10 @@ public class ModalRegistry {
         return instance;
     }
 
-    public void loadModals(){
-        List<Modal> rawModals = List.of(
-                new TypeSelectorModal(),
-                new AbsenceAddModal(),
-                new TicketSummaryModal(),
-                new SelectActiveModSendTypeModal(),
-                new AddProfileModal(),
-                new EditWebhookMessageModal()
-        );
-
-        rawModals.forEach(modal -> {
-            log.info("Loaded modal with id {}", modal.getId());
-            modals.put(modal.getId(), modal);
+    public void register(List<Modal> modals) {
+        modals.forEach(modal -> {
+            this.modals.put(modal.getId(), modal);
+            log.info("Loaded modal '{}'.", modal.getClass().getSimpleName());
         });
     }
 

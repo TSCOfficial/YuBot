@@ -6,7 +6,10 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
@@ -14,9 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface ISlashCommand {
-
-    // The maximum allowed choices for arguments
-    int MAX_CHOICES = 25;
 
     /**
      * Get the name of a slashcommand.
@@ -46,15 +46,15 @@ public interface ISlashCommand {
      */
     default List<OptionData> getOptions() {
         return List.of();
-    };
+    }
 
     /**
      * Get the autocompletion of a slashcommand.
      * @return a {@link Map} of a {@link String} & a {@link List}.
      */
-    default Map<String, List<Command.Choice>> getAutocomplete(CommandAutoCompleteInteractionEvent event) throws SQLException, ClassNotFoundException {
+    default Map<String, List<Command.Choice>> getAutocomplete(CommandAutoCompleteInteractionEvent event) throws SQLException {
         return Map.of();
-    };
+    }
 
     /**
      * Get the default permissions of a slashcommand
@@ -80,9 +80,25 @@ public interface ISlashCommand {
      * </code></pre>
      * <p>
      * If left empty, everyone can execute the command. (except defined otherwise in {@link #getDefaultPermissions()})
-     * @return
+     * ModalTopLevelComponent
      */
     default List<Role> getAllowedRoles() {
         return List.of();
+    }
+
+    /**
+     * Builds the {@link SlashCommandData Discord-Slashcommand}
+     * @return the {@link SlashCommandData} for Discord
+     */
+    default SlashCommandData build() {
+        SlashCommandData slashCommand = Commands.slash(getName(), getDescription());
+        if (!getOptions().isEmpty()) {
+            slashCommand.addOptions(getOptions());
+        }
+        if (!getDefaultPermissions().isEmpty()) {
+            slashCommand.setDefaultPermissions(DefaultMemberPermissions.enabledFor(getDefaultPermissions()));
+        }
+
+        return slashCommand;
     }
 }

@@ -1,9 +1,8 @@
 package ch.frily.yubot.container.guildinfo;
 
 import ch.frily.yubot.container.Container;
-import ch.frily.yubot.interaction.button.btn.AddServeropenRoleBtn;
+import ch.frily.yubot.service.postoffice.button.AddServeropenRoleBtn;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
@@ -16,7 +15,7 @@ public class ServerClosedContainer extends Container {
 
     public ServerClosedContainer(){
         this.addSection(
-                Thumbnail.fromUrl(EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER).getIconUrl()),
+                Thumbnail.fromUrl(EnvKey.GUILD_YUSERVER.getAsGuild().getIconUrl()),
                 TextDisplay.of("## 🔒 Server geschlossen"),
                 TextDisplay.of("Der Server ist momentan geschlossen. Während der Server geschlossen ist, hast du kein Zugriff auf Community channels.")
         );
@@ -40,7 +39,7 @@ public class ServerClosedContainer extends Container {
         this.addSection(
                 new AddServeropenRoleBtn().build(),
                 TextDisplay.of("**Willst du benachrichtigt werden, wenn der Server wieder öffnet?**"),
-                TextDisplay.of(String.format("Klicke auf den Button um die %s-Rolle zu erhalten.", EnvResolver.getRoleById(EnvKey.ROLE_EROEFFNUNGSPING).getAsMention()))
+                TextDisplay.of(String.format("Klicke auf den Button um die %s-Rolle zu erhalten.", EnvKey.ROLE_EROEFFNUNGSPING.getAsRole().getAsMention()))
         );
 
         this.addComponent(Separator.createDivider(Separator.Spacing.LARGE));

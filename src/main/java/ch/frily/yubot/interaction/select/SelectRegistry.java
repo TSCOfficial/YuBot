@@ -1,7 +1,5 @@
 package ch.frily.yubot.interaction.select;
 
-import ch.frily.yubot.interaction.select.select.ActiveModTrackingDetailSelect;
-import ch.frily.yubot.interaction.select.select.ProfileUseSelect;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
@@ -16,7 +14,7 @@ public class SelectRegistry {
 
     private static SelectRegistry instance;
 
-    private Map<String, ISelect> selects = new HashMap<>();
+    private final Map<String, ISelect> selects = new HashMap<>();
 
     public static SelectRegistry getInstance(){
         if (instance == null) {
@@ -25,19 +23,14 @@ public class SelectRegistry {
         return instance;
     }
 
-    public void loadSelects(){
-        List<ISelect> rawModals = List.of(
-                new ActiveModTrackingDetailSelect(),
-                new ProfileUseSelect()
-        );
-
-        rawModals.forEach(select -> {
-            log.info("Loaded select with id {}", select.getId());
-            selects.put(select.getId(), select);
+    public void register(List<ISelect> selects) {
+        selects.forEach(select -> {
+            log.info("Loaded select with id '{}'", select.getId());
+            this.selects.put(select.getId(), select);
         });
     }
 
-    public void dispatchSelectInteraction(GenericSelectMenuInteractionEvent<?, ?> event) throws SQLException, ClassNotFoundException, NullPointerException {
+    public void dispatchSelectInteraction(GenericSelectMenuInteractionEvent<?, ?> event) throws SQLException, NullPointerException {
         ISelect select = selects.get(event.getInteraction().getComponentId());
         if (select == null) {
             throw new NullPointerException(String.format("Select '%s' konnte nicht gefunden werden.", event.getId()));

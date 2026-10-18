@@ -1,0 +1,70 @@
+package ch.frily.yubot.service.absence;
+
+import ch.frily.yubot.event.IEvent;
+import ch.frily.yubot.interaction.button.Button;
+import ch.frily.yubot.interaction.modal.Modal;
+import ch.frily.yubot.interaction.select.ISelect;
+import ch.frily.yubot.scheduler.IScheduler;
+import ch.frily.yubot.service.Service;
+import ch.frily.yubot.service.absence.button.*;
+import ch.frily.yubot.service.absence.event.SendAbsenceNotice;
+import ch.frily.yubot.service.absence.modal.AbsenceAddModal;
+import ch.frily.yubot.service.absence.schedule.AbsenceContainerScheduler;
+import net.dv8tion.jda.api.events.Event;
+
+import java.util.List;
+
+public class AbsenceService extends Service {
+
+    private static AbsenceService instance;
+
+    public static AbsenceService getInstance() {
+        if (instance == null) {
+            instance = new AbsenceService();
+        }
+        return instance;
+    }
+
+    @Override
+    public String getName() {
+        return "Abwesenheitsmanagement";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Verwalte deine Abwesenheiten und schau wer wann abwesend ist.";
+    }
+
+    @Override
+    public List<Button> getButtons() {
+        return List.of(
+                new AbsenceAddBtn(),
+                new AbsenceApproveDeleteBtn(),
+                new AbsenceCancelDeleteBtn(),
+                new AbsenceDetailBtn(),
+                new AbsenceEditBtn(),
+                new AbsenceEditOwnBtn()
+        );
+    }
+
+    @Override
+    public List<Modal> getModals() {
+        return List.of(
+                new AbsenceAddModal()
+        );
+    }
+
+    @Override
+    public List<IScheduler> getSchedulers() {
+        return List.of(
+                new AbsenceContainerScheduler()
+        );
+    }
+
+    @Override
+    public List<IEvent<? extends Event>> getEvents() {
+        return List.of(
+                SendAbsenceNotice.getInstance()
+        );
+    }
+}

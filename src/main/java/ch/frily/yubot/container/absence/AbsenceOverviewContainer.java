@@ -5,13 +5,12 @@ import ch.frily.yubot.container.PaginationContainer;
 import ch.frily.yubot.container.PaginationItem;
 import ch.frily.yubot.container.StaticContainerRegistry;
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.feature.absence.Absence;
+import ch.frily.yubot.service.absence.Absence;
 import ch.frily.yubot.database.repository.AbsenceRepository;
-import ch.frily.yubot.interaction.button.btn.absence.AbsenceAddBtn;
-import ch.frily.yubot.interaction.button.btn.absence.AbsenceDetailBtn;
-import ch.frily.yubot.interaction.button.btn.absence.AbsenceEditOwnBtn;
+import ch.frily.yubot.service.absence.button.AbsenceAddBtn;
+import ch.frily.yubot.service.absence.button.AbsenceDetailBtn;
+import ch.frily.yubot.service.absence.button.AbsenceEditOwnBtn;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -33,9 +32,6 @@ import java.util.stream.Stream;
 @Slf4j
 public class AbsenceOverviewContainer extends PaginationContainer {
 
-    /** max componentcount may be filled before the overview gets truncated */
-    private static final int MAX_DISPLAYED_COMPONENTS = 30;
-
     /** Roles that are taken in account for when displaying the roles of an absenced member */
     private static final List<Role> DISPLAYABLE_ROLES = Stream.of(
             EnvKey.ROLE_OWNER,
@@ -44,10 +40,11 @@ public class AbsenceOverviewContainer extends PaginationContainer {
             EnvKey.ROLE_SUPPORT,
             EnvKey.ROLE_AWARENESS,
             EnvKey.ROLE_DEVELOPER,
+            EnvKey.ROLE_DESIGN,
             EnvKey.ROLE_EVENT,
             EnvKey.ROLE_DESIGN,
             EnvKey.ROLE_TWITCHMOD
-    ).map(EnvResolver::getRoleById).toList();
+    ).map(EnvKey::getAsRole).toList();
 
     /**
      * All absences split up into day-absences, grouped by the day they belong to
@@ -95,7 +92,7 @@ public class AbsenceOverviewContainer extends PaginationContainer {
     private void addDaySection(LocalDate day, List<Absence> absences) {
         PaginationItem daySection = new PaginationItem();
 
-        String todayTag = day.equals(LocalDate.now(EnvResolver.getZoneId())) ? "*(Heute)*" : "";
+        String todayTag = day.equals(LocalDate.now(EnvKey.TIMEZONE.getAsZoneId())) ? "*(Heute)*" : "";
 
         daySection.setTitle(String.format("""
                         ### %d. %s %d %s
@@ -149,11 +146,11 @@ public class AbsenceOverviewContainer extends PaginationContainer {
 
     /**
      * Get the team roles of a member to show what teams the member is part of
-     * @param member
-     * @return
+     * @param member the member to get the roles from
+     * @return a list of the members displayable roles
      */
     private List<Role> getTeamRoles(Member member) {
-        return member.getRoles().stream().filter(role -> DISPLAYABLE_ROLES.contains(role)).toList();
+        return member.getRoles().stream().filter(DISPLAYABLE_ROLES::contains).toList();
     }
 
     /**

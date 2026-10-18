@@ -1,8 +1,7 @@
 package ch.frily.yubot.database;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,9 +11,6 @@ import java.util.Properties;
 public class Database {
 
     private static Database instance;
-
-    // init database constants
-    private static final String DATABASE_DRIVER = "org.postgresql.Driver";
 
     // init connection object
     private Connection connection;
@@ -35,8 +31,8 @@ public class Database {
     private Properties getProperties() {
         if (properties == null) {
             properties = new Properties();
-            properties.setProperty("user", EnvResolver.getString(EnvKey.CRED_DB_USERNAME));
-            properties.setProperty("password", EnvResolver.getString(EnvKey.CRED_DB_PASSWORD));
+            properties.setProperty("user", Client.getInstance().getConfig().get("CRED_DB_USERNAME"));
+            properties.setProperty("password", Client.getInstance().getConfig().get("CRED_DB_PASSWORD"));
         }
         return properties;
     }
@@ -45,12 +41,15 @@ public class Database {
      * Connect to the database
      * @return The database connection
      */
-    public Connection connect() throws SQLException, ClassNotFoundException {
-        if (connection == null) {
-            Class.forName(DATABASE_DRIVER);
-            connection = DriverManager.getConnection(EnvResolver.getString(EnvKey.CRED_DB_URL), getProperties());
+    public Connection connect() {
+        try {
+            if (connection == null) {
+                connection = DriverManager.getConnection(Client.getInstance().getConfig().get("CRED_DB_URL"), getProperties());
+            }
+            return connection;
+        } catch (SQLException e) {
+            return ExceptionHandler.fail(e);
         }
-        return connection;
     }
 
     /**

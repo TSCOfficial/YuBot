@@ -1,0 +1,55 @@
+package ch.frily.yubot.service.activemod.slashcommand;
+
+import ch.frily.yubot.exception.InvalidStateException;
+import ch.frily.yubot.exception.PermissionDeniedException;
+import ch.frily.yubot.service.activemod.Closure;
+import ch.frily.yubot.interaction.command.ISlashSubcommand;
+import ch.frily.yubot.util.EnvKey;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
+
+public class ActiveModKillCmd implements ISlashSubcommand {
+    @Override
+    public String getName() {
+        return "kill";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Entferne alle aktive Moderator*innen und schliesse den Server";
+    }
+
+    @Override
+    public List<Role> getAllowedRoles() {
+        return Stream.of(
+                EnvKey.ROLE_MODERATOR
+        ).map(EnvKey::getAsRole).toList();
+    }
+
+    @Override
+    public void execute(@NotNull SlashCommandInteractionEvent event) {
+        if (!Closure.isMod(event.getMember())) {
+            throw new PermissionDeniedException("Nur Moderator*innen können diesen Befehl ausführen.");
+        }
+        Role activeMod = EnvKey.ROLE_ACTIVEMOD.getAsRole();
+
+        int activeModCount = Closure.getActiveMods().size();
+        List<CompletableFuture<Void>> removeRoleFutures = Objects.requireNonNull(event.getGuild()).getMembersWithRoles(activeMod).stream().map(member -> event.getGuild().removeRoleFromMember(member, activeMod).submit()).toList();
+        CompletableFuture<Void> allRoleFutures = CompletableFuture.allOf(removeRoleFutures.toArray(new CompletableFuture[0]));
+
+        allRoleFutures.thenAccept(_ -> {
+            EnvKey.CHANNEL_ACTIVEMODERATION.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER)
+                    .sendMessage(String.format("⚠️ Der Server wurde von %s gekillt.\n-# Allen ActiveMods (%d) wurde die Rolle entfernt und der Server geschlossen.", Objects.requireNonNull(event.getMember()).getAsMention(), activeModCount)).queue();
+            event.reply("✅ Alle aktiven Moderator*innen wurden entfernt und der Server wird nun geschlossen.").setEphemeral(true).queue();
+        }).exceptionally(_ -> {
+            throw new InvalidStateException("Fehler beim Entfernen der aktiven Moderator*innen.");
+        });
+    }
+}

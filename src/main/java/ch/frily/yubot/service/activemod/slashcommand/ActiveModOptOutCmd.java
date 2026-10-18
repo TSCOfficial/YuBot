@@ -1,0 +1,61 @@
+package ch.frily.yubot.service.activemod.slashcommand;
+
+import ch.frily.yubot.exception.InvalidStateException;
+import ch.frily.yubot.service.activemod.Closure;
+import ch.frily.yubot.service.activemod.button.ActiveModApproveOptOutBtn;
+import ch.frily.yubot.service.activemod.button.ActiveModCancelOptOutBtn;
+import ch.frily.yubot.interaction.command.ISlashSubcommand;
+import ch.frily.yubot.util.EnvKey;
+import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
+
+@Slf4j
+public class ActiveModOptOutCmd implements ISlashSubcommand {
+    @Override
+    public String getName() {
+        return "opt-out";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Opt-in als aktive*r moderator*in";
+    }
+
+    @Override
+    public List<Role> getAllowedRoles() {
+        return Stream.of(
+                EnvKey.ROLE_MODERATOR
+        ).map(EnvKey::getAsRole).toList();
+    }
+
+    @Override
+    public void execute(@NotNull SlashCommandInteractionEvent event) {
+        Role activeMod = EnvKey.ROLE_ACTIVEMOD.getAsRole();
+        int activeModCount = Closure.getActiveMods().size() - 1;
+        if (activeModCount == 0) {
+            event.reply("**Bestätige dein Opt-out**\nDu bist der/die letzte aktive Moderator*in. Bitte bestätige dein Opt-out.\n-# Falls du bestätigst wird der Server sofort geschlossen.")
+                    .addComponents(ActionRow.of(new ActiveModApproveOptOutBtn().build(), new ActiveModCancelOptOutBtn().build())).setEphemeral(true).queue();
+            return;
+        }
+        if (Objects.requireNonNull(event.getMember()).getRoles().stream().anyMatch(role -> role.getIdLong() == EnvKey.ROLE_ACTIVEMOD.getAsLong())) {
+            Objects.requireNonNull(event.getGuild()).removeRoleFromMember(event.getMember(), activeMod).submit().thenAccept(_ -> {
+                String countInfo = "Es sind nun **" + activeModCount + "** aktive Moderator\\*innen";
+                if (activeModCount == 1) {
+                    countInfo = "Es ist nun nurnoch **" + activeModCount + "** aktive\\*r Modderator\\*in";
+                }
+
+                event.reply("Opt-out erfolgreich." + countInfo).setEphemeral(true).queue();
+            });
+        } else {
+            throw new InvalidStateException("Du bist nicht als ActiveMod markiert.");
+        }
+
+    }
+}

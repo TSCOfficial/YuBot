@@ -1,7 +1,5 @@
 package ch.frily.yubot.exception;
 
-import org.slf4j.event.Level;
-
 /**
  * Thrown when a user tries to perform an action they are not allowed to.
  * The hint explains who is allowed to perform the action.

@@ -5,10 +5,10 @@ import ch.frily.yubot.container.PaginationContainer;
 import ch.frily.yubot.container.PaginationItem;
 import ch.frily.yubot.container.StaticContainerRegistry;
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.feature.absence.Absence;
+import ch.frily.yubot.service.absence.Absence;
 import ch.frily.yubot.database.repository.AbsenceRepository;
-import ch.frily.yubot.interaction.button.btn.absence.AbsenceAddBtn;
-import ch.frily.yubot.interaction.button.btn.absence.AbsenceEditBtn;
+import ch.frily.yubot.service.absence.button.AbsenceAddBtn;
+import ch.frily.yubot.service.absence.button.AbsenceEditBtn;
 import ch.frily.yubot.util.Util;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.section.Section;
@@ -36,8 +36,7 @@ public class AbsenceEditOwnContainer extends PaginationContainer {
             }
 
             List<Absence> absences = AbsenceRepository.getAbsences(member);
-            absences.stream()
-                    .forEach(this::addSectionText);
+            absences.forEach(this::addSectionText);
 
             if (absences.isEmpty()) {
                 PaginationItem noAbsences = new PaginationItem();

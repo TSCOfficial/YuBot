@@ -3,15 +3,15 @@ package ch.frily.yubot.container.profile;
 import ch.frily.yubot.container.Container;
 import ch.frily.yubot.database.repository.ProfileRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.feature.profile.Profile;
-import ch.frily.yubot.feature.setting.Settings;
+import ch.frily.yubot.service.profile.Profile;
+import ch.frily.yubot.service.profile.Settings;
 import ch.frily.yubot.database.repository.SettingRepository;
-import ch.frily.yubot.feature.setting.Setting;
-import ch.frily.yubot.interaction.button.btn.profile.AddProfileBtn;
-import ch.frily.yubot.interaction.button.btn.profile.EditProfileBtn;
-import ch.frily.yubot.interaction.button.btn.profile.UseProfileBtn;
+import ch.frily.yubot.service.profile.Setting;
+import ch.frily.yubot.service.profile.button.AddProfileBtn;
+import ch.frily.yubot.service.profile.button.EditProfileBtn;
+import ch.frily.yubot.service.profile.button.UseProfileBtn;
 import ch.frily.yubot.interaction.select.ISelect;
-import ch.frily.yubot.interaction.select.select.ProfileUseSelect;
+import ch.frily.yubot.service.profile.select.ProfileUseSelect;
 import ch.frily.yubot.util.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -74,8 +74,7 @@ public class ProfilContainer extends Container {
         try {
             Optional<Profile> currentProfile = ProfileRepository.getCurrentUserProfile(member);
             List<Profile> linkedProfiles = ProfileRepository.getProfilesFromAccount(member);
-            log.info("profile: {}", profile);
-            boolean profileIsAlreadyInUse = profile != null && currentProfile.isPresent() && Objects.equals(currentProfile.get().profileId(), profile.profileId());
+            boolean profileIsAlreadyInUse = (profile != null && currentProfile.isPresent() && Objects.equals(currentProfile.get().profileId(), profile.profileId())) || (profile == null && !linkedProfiles.isEmpty() && currentProfile.isEmpty());
 
             if (profile != null) {
                 String proxy = !profile.proxy().isBlank() ? " (" + profile.proxy() + ")" : "";
@@ -114,7 +113,7 @@ public class ProfilContainer extends Container {
                 }
             }
             // add new profile btn
-            if (Util.isPermitted(member, Stream.of(EnvKey.ROLE_DIDSYSTEM).map(EnvResolver::getRoleById).toList())) {
+            if (Util.isPermitted(member, Stream.of(EnvKey.ROLE_DIDSYSTEM).map(EnvKey::getAsRole).toList())) {
                 profileControl.add(new AddProfileBtn().build());
             }
 
@@ -152,7 +151,7 @@ public class ProfilContainer extends Container {
         Map<String, String> settings;
         try {
             settings = mapSettings();
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             return ExceptionHandler.fail(e);
         }
 
@@ -169,7 +168,7 @@ public class ProfilContainer extends Container {
         return settingsSB.toString();
     }
 
-    private Map<String, String> mapSettings() throws SQLException, ClassNotFoundException {
+    private Map<String, String> mapSettings() throws SQLException {
         Settings settings = SettingRepository.getSettings(member);
         if (settings == null) {
             return null;

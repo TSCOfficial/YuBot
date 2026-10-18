@@ -3,11 +3,9 @@ package ch.frily.yubot.interaction;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.util.Randomizer;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.interactions.ICustomIdInteraction;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Represents a component capable of handling arguments.
@@ -28,7 +26,7 @@ public abstract class ArgumentComponent {
      *     my-btn-id?arg1=value1&arg2=value2
      * </code></pre></p>
      * To retrieve and dispatch the component, use {@link #getId()} to find the correct component class.
-     * @return
+     * @return identificator with the raw componentID and the parameters
      */
     public String getFullIdentification(){
         StringBuilder id = new StringBuilder(getId());
@@ -45,7 +43,7 @@ public abstract class ArgumentComponent {
                     id, id.length(), MAX_COMPONENT_ID_LENGTH));
         }
         return id.toString();
-    };
+    }
 
     public void addArgument(String key, String value){
         arguments.put(key, value);
@@ -68,12 +66,9 @@ public abstract class ArgumentComponent {
 
     /**
      * Get an argument from the component ID
-     * <p>
-     *     Use {@link ComponentInteraction#getCustomId() getCustomId()} or {@link ComponentInteraction#getComponentId() getComponentId()} to be able to get the arguments
-     * </p>
-     * @param componentId
-     * @param key
-     * @return
+     * @param componentId the component ID (Use {@link ComponentInteraction#getCustomId() getCustomId()} or {@link ComponentInteraction#getComponentId() getComponentId()})
+     * @param key the key to get the argument value from
+     * @return the arguments value
      * @throws IllegalStateException if the argument could not be found
      */
     public String getArgument(String componentId, String key){
@@ -88,7 +83,7 @@ public abstract class ArgumentComponent {
      * Get every argument of a component ID as key-value pairs
      * <p>
      * Values are only split at their first <code>=</code>, so a value may contain that character itself.
-     * @param componentId
+     * @param componentId the component ID (Use {@link ComponentInteraction#getCustomId() getCustomId()} or {@link ComponentInteraction#getComponentId() getComponentId()})
      * @return The arguments, empty when the ID carries none
      */
     public static Map<String, String> parseArguments(String componentId){
@@ -113,7 +108,7 @@ public abstract class ArgumentComponent {
      * The ? defines the beginning of the arguments (as key-value)<br>
      * The # defines the end of the arguments and serves as an uniqueifier
      * </p>
-     * @param componentId
+     * @param componentId the component ID (Use {@link ComponentInteraction#getCustomId() getCustomId()} or {@link ComponentInteraction#getComponentId() getComponentId()})
      * @return The raw argument string, empty when the ID carries no arguments
      */
     private static String extractArgs(String componentId){

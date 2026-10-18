@@ -2,24 +2,21 @@ package ch.frily.yubot.interaction.contextmenu;
 
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.PermissionDeniedException;
-import ch.frily.yubot.interaction.contextmenu.ctxmenu.DeleteWebhookMsgCtxMenu;
-import ch.frily.yubot.interaction.contextmenu.ctxmenu.EditWebhookMsgCtxMenu;
-import ch.frily.yubot.interaction.contextmenu.ctxmenu.LookupProfileCtxMenu;
-import ch.frily.yubot.interaction.contextmenu.ctxmenu.ModticketCtxMenu;
 import ch.frily.yubot.util.Util;
 import javassist.NotFoundException;
+import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.events.interaction.command.GenericContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ContextMenuRegistry {
 
@@ -34,31 +31,11 @@ public class ContextMenuRegistry {
         return instance;
     }
 
-    public void loadContextMenus(){
-        List<IContextMenu> contextMenus = List.of(
-                new ModticketCtxMenu(),
-                new LookupProfileCtxMenu(),
-                new EditWebhookMsgCtxMenu(),
-                new DeleteWebhookMsgCtxMenu()
-        );
-
-        contextMenus.forEach(ctxMenu -> this.contextMenus.put(ctxMenu.getName(), ctxMenu));
-    }
-
-    /**
-     * Prepare the context menus for the registry
-     * @return list of prepared context menus
-     */
-    public List<CommandData> prepareForRegistry(){
-        return contextMenus.values().stream().map(this::buildContextMenu).toList();
-    }
-
-    private CommandData buildContextMenu(IContextMenu contextMenu){
-        CommandData commandData = Commands.context(contextMenu.getType(), contextMenu.getName());
-        if (!contextMenu.getDefaultPermissions().isEmpty()) {
-            commandData.setDefaultPermissions(DefaultMemberPermissions.enabledFor(contextMenu.getDefaultPermissions()));
-        }
-        return commandData;
+    public List<CommandData> register(List<IContextMenu> contextMenus){
+        contextMenus.forEach(contextMenu -> {
+            this.contextMenus.put(contextMenu.getName(), contextMenu);
+        });
+        return contextMenus.stream().map(IContextMenu::build).toList();
     }
 
     /**
@@ -67,7 +44,7 @@ public class ContextMenuRegistry {
      * Handles both {@link Command.Type#USER USER} and {@link Command.Type#MESSAGE MESSAGE} context menus.
      * @param event the generic context interaction event fired by discord
      */
-    public void dispatchInteractionEvent(GenericContextInteractionEvent<?> event) throws NotFoundException, SQLException, ClassNotFoundException {
+    public void dispatchInteractionEvent(@NotNull GenericContextInteractionEvent<?> event) throws NotFoundException, SQLException {
         IContextMenu contextMenu = contextMenus.get(event.getName());
 
         if (contextMenu == null) {
@@ -75,8 +52,8 @@ public class ContextMenuRegistry {
         }
 
         // Check if user is allowed to execute command
-        if (!Util.isAdministrator(event.getMember()) && !contextMenu.getAllowedRoles().isEmpty() && contextMenu.getAllowedRoles().stream().noneMatch(role -> event.getMember().getRoles().contains(role))) {
-            throw new PermissionDeniedException(String.format("Nur Mitglieder\\*innen mit einer der folgenden Rollen können dieses Kontextmenü ausführen: %s", String.join(", ", contextMenu.getAllowedRoles().stream().map(role -> role.getAsMention()).toList())));
+        if (!Util.isAdministrator(Objects.requireNonNull(event.getMember())) && !contextMenu.getAllowedRoles().isEmpty() && contextMenu.getAllowedRoles().stream().noneMatch(role -> event.getMember().getRoles().contains(role))) {
+            throw new PermissionDeniedException(String.format("Nur Mitglieder\\*innen mit einer der folgenden Rollen können dieses Kontextmenü ausführen: %s", String.join(", ", contextMenu.getAllowedRoles().stream().map(IMentionable::getAsMention).toList())));
         }
 
         if (contextMenu instanceof IUserContextMenu userContextMenu && event instanceof UserContextInteractionEvent userEvent) {

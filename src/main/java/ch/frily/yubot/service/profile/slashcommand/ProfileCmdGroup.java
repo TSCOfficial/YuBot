@@ -1,0 +1,28 @@
+package ch.frily.yubot.service.profile.slashcommand;
+
+import ch.frily.yubot.interaction.command.ISlashCommandGroup;
+import ch.frily.yubot.interaction.command.ISlashSubcommand;
+
+import java.util.List;
+
+public class ProfileCmdGroup implements ISlashCommandGroup {
+    @Override
+    public String getName() {
+        return "profile";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Verwalte dein(e) Profil(e).";
+    }
+
+    @Override
+    public List<ISlashSubcommand> getSubcommands() {
+        return List.of(
+            new ProfileShowCmd(),
+            new ProfileSettingCmd(),
+            new ProfileUseCmd(),
+            new ProfileListCmd()
+        );
+    }
+}

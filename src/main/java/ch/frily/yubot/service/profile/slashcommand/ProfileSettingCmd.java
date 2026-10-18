@@ -1,0 +1,209 @@
+package ch.frily.yubot.service.profile.slashcommand;
+
+import ch.frily.yubot.Client;
+import ch.frily.yubot.database.repository.SettingRepository;
+import ch.frily.yubot.exception.ExceptionHandler;
+import ch.frily.yubot.exception.InvalidStateException;
+import ch.frily.yubot.service.profile.Setting;
+import ch.frily.yubot.service.profile.SettingOption;
+import ch.frily.yubot.interaction.command.ISlashSubcommand;
+import ch.frily.yubot.util.Util;
+import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.requests.ErrorResponse;
+import org.jspecify.annotations.NonNull;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+/**
+ * Command to control the profile settings.
+ * <p>
+ *     It uses the enum of {@link Setting} to get the options, the possible arguments (as autocomplete) and such.
+ * </p>
+ * @author Aliz frily
+ */
+@Slf4j
+public class ProfileSettingCmd implements ISlashSubcommand {
+
+    @Override
+    public String getName() {
+        return "setting";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Ändere deine Profileinstellungen";
+    }
+
+    @Override
+    public List<OptionData> getOptions() {
+        return Arrays.stream(Setting.values()).map(setting -> new OptionData(
+                OptionType.STRING,
+                setting.getLabel(),
+                setting.getDescription(),
+                false,
+                !setting.getAutocompleteOptions().isEmpty()
+        )).toList();
+    }
+
+    @Override
+    public Map<String, List<Command.Choice>> getAutocomplete(CommandAutoCompleteInteractionEvent event) {
+        return Arrays.stream(Setting.values())
+                .filter(setting -> !setting.getAutocompleteOptions().isEmpty())
+                .filter(setting -> Util.isPermitted(Objects.requireNonNull(event.getMember()), setting.getAllowedRoles()))
+                .collect(Collectors.toMap(Setting::getLabel, setting -> setting.getAutocompleteOptions().stream().map(autocompleteOption -> {
+                    if (autocompleteOption.value() instanceof String || autocompleteOption.value() instanceof Boolean) {
+                        return new Command.Choice(autocompleteOption.label(), String.valueOf(autocompleteOption.value()));
+                    } else if (autocompleteOption.value() instanceof Integer) {
+                        return new Command.Choice(autocompleteOption.label(), Integer.parseInt(autocompleteOption.value().toString()));
+                    }  else {
+                        throw new InvalidStateException(String.format("The autocomplete option %s does not have a compatible type: %s. Should be String, Int or Long", autocompleteOption.label(), autocompleteOption.value().getClass()));
+                    }
+                }).toList()));
+    }
+
+    @Override
+    public void execute(@NonNull SlashCommandInteractionEvent event) {
+        List<OptionMapping> options = Arrays.stream(Setting.values()).map(setting -> {
+            return event.getOption(setting.getLabel());
+        }).filter(Objects::nonNull).toList();
+
+        StringBuilder modifiedSettingsSB = new StringBuilder();
+        StringBuilder failedSettingsSB = new StringBuilder();
+        for (OptionMapping option : options) {
+            try {
+                Setting setting = Setting.getSettingByLabel(option.getName());
+                if (!Util.isPermitted(Objects.requireNonNull(event.getMember()), setting.getAllowedRoles())) {
+                    failedSettingsSB.append(String.format("- `%s`: Du bist nicht berechtigt diese Einstellung zu ändern.\n", setting.getLabel()));
+                }
+                if (validateInput(option, setting)) {
+                    Optional<String> specificFailure = runSettingSpecificValidation(setting, option, event);
+                    if (specificFailure.isPresent()) {
+                        failedSettingsSB.append(specificFailure.get());
+                    } else {
+                        if (!setting.getAutocompleteOptions().isEmpty()) {
+                            SettingOption<?> resolvedOption = setting.getOptionByLabel(option.getAsString(), setting.getDataType());
+                            SettingRepository.upsertSetting(event.getMember(), setting, resolvedOption.value());
+                        } else {
+                            if (setting.getMinLength() > option.getAsString().length()) {
+                                failedSettingsSB.append(String.format("- `%s`: __%s__ ist zu kurz (%d) und muss mindestens %d Zeichen lang sein.\n", setting.getLabel(), option.getAsString(), option.getAsString().length(), setting.getMinLength()));
+                                continue;
+                            }
+                            if (setting.getMaxLength() < option.getAsString().length()) {
+                                failedSettingsSB.append(String.format("- `%s`: __%s__ ist zu lang (%d) und darf maximal %d Zeichen lang sein.\n", setting.getLabel(), option.getAsString(), option.getAsString().length(), setting.getMaxLength()));
+                                continue;
+                            }
+                            SettingRepository.upsertSetting(event.getMember(), setting, option.getAsString());
+                        }
+                        modifiedSettingsSB.append(String.format("- `%s`: geändert auf __%s__.\n", setting.getLabel(), option.getAsString()));
+                    }
+                } else {
+                    failedSettingsSB.append(String.format("- `%s`: __%s__ ist keine gültige Option.\n", setting.getLabel(), option.getAsString()));
+                }
+            } catch (Exception e) {
+                ExceptionHandler.handle(e, event);
+            }
+        }
+
+        StringBuilder resultStringSB = new StringBuilder();
+        if (modifiedSettingsSB.toString().isBlank()) {
+            resultStringSB.append("❌ **Es wurden keine Einstellungen geändert.**\n-# Du hast keine Optionen angewählt oder die angegebenen Werte sind ungültig.");
+        } else {
+            log.info("Einstellungen erfolgreich gespeichert: {} ({})", modifiedSettingsSB, modifiedSettingsSB.length());
+            resultStringSB.append(String.format("""
+                    ✅ **Einstellungen erfolgreich gespeichert:**
+                    %s
+                    """, modifiedSettingsSB)
+            );
+        }
+        log.info("Folgende Einstellungen konnten nicht gespeichert werden: {} ({})", failedSettingsSB, failedSettingsSB.length());
+        if (!failedSettingsSB.toString().isBlank()) {
+            resultStringSB.append(String.format("""
+                            \n
+                            
+                            ⚠️ **Folgende Einstellungen konnten nicht gespeichert werden:**
+                            %s
+                            """, failedSettingsSB)
+            );
+        }
+        event.reply(resultStringSB.toString()).setEphemeral(true).queue();
+    }
+
+    /**
+     * Checks if the input is a valid value for the given setting, to prevent false input due to the autocomplete feature
+     * <p>
+     *     Autocomplete options are only allowed for non-boolean settings, so the method can handle any input as a string
+     * </p>
+     * @param inputOption the input to validate
+     * @param setting the setting that the input gets validated for
+     * @return whether the input is valid (true) or not (false)
+     */
+    private boolean validateInput(OptionMapping inputOption, Setting setting){
+        if (setting.getDataType() == Boolean.class){
+            return true;
+        }
+        List<SettingOption> autocompleteOptions = setting.getAutocompleteOptions();
+        if(autocompleteOptions.isEmpty()){
+            return true;
+        }
+        if (inputOption.getType() == OptionType.STRING) {
+            return autocompleteOptions.stream().anyMatch(option -> option.value().equals(inputOption.getAsString()));
+        } else if (inputOption.getType() == OptionType.INTEGER) { // integer
+            return autocompleteOptions.stream().anyMatch(option -> option.value().equals(inputOption.getAsInt()));
+        } else if (inputOption.getType() == OptionType.BOOLEAN) {
+            return autocompleteOptions.stream().anyMatch(option -> option.value().equals(inputOption.getAsBoolean()));
+        }
+        return false;
+    }
+
+    /**
+     * Zentraler Dispatcher für settingspezifische Validierungen.
+     * Neue Validierung hinzufügen = neuer case, keine zusätzliche Verschachtelung.
+     *
+     * @return leeres Optional wenn gültig/erfolgreich, sonst die fertige Fehlermeldung für die Ausgabe
+     */
+    public Optional<String> runSettingSpecificValidation(Setting setting, OptionMapping option, SlashCommandInteractionEvent event) {
+        return switch (setting) {
+            case ACTIVEMOD_SEND_IN_DM -> {
+                if (setting.getOptionByLabel(option.getAsString(), Boolean.class).value() == true) {
+                    if (!validateActiveModSendIn(event)) {
+                        yield Optional.of(String.format(
+                                "- `%s` konnte nicht auf __%s__ gesetzt werden.\n> -# Deine Datenschutzeinstellungen erlauben keine DMs oder du hast den Bot blockiert.\n",
+                                setting.getLabel(), option.getAsString()));
+                    }
+                }
+                yield Optional.empty();
+            }
+            default -> Optional.empty();
+        };
+    }
+
+    /**
+     * Prüft, ob dem User eine DM gesendet werden kann.
+     * @return true wenn erfolgreich zugestellt, false wenn nicht (z. B. DMs blockiert)
+     */
+    private boolean validateActiveModSendIn(SlashCommandInteractionEvent event) {
+        try {
+            PrivateChannel privateChannel = Objects.requireNonNull(event.getMember()).getUser().openPrivateChannel().complete();
+            privateChannel.sendMessage("ℹ️ Du erhälst absofort die ActiveMod-Nachrichten via DM.").complete();
+            return true;
+        } catch (ErrorResponseException ere) {
+            if (ere.getErrorResponse() == ErrorResponse.CANNOT_SEND_TO_USER || ere.getErrorCode() == Client.NO_MUTUAL_GUILD_EXCEPTION) {
+                return false;
+            }
+            ExceptionHandler.handle(ere, event);
+            return false;
+        } catch (NullPointerException npe) {
+            ExceptionHandler.handle(npe, event);
+            return false;
+        }
+    }
+}

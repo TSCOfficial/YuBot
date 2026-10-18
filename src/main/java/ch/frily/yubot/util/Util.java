@@ -9,44 +9,41 @@ import net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
-import net.dv8tion.jda.api.utils.concurrent.Task;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Objects;
 
 public class Util {
 
     /**
      * Check if a member has the {@link EnvKey#ROLE_YUTEAM} role
-     * @param member
+     * @param member the member to check
      * @return True if they have the role, false if not
      */
     public static boolean isTeamMember(Member member) {
-        Role teamRole = EnvResolver.getRoleById(EnvKey.ROLE_YUTEAM);
+        Objects.requireNonNull(member);
+        Role teamRole = EnvKey.ROLE_YUTEAM.getAsRole();
         return member.getRoles().contains(teamRole);
     }
 
     public static boolean isActiveMod(Member member) {
-        Role activeModRole = EnvResolver.getRoleById(EnvKey.ROLE_ACTIVEMOD);
+        Objects.requireNonNull(member);
+        Role activeModRole = EnvKey.ROLE_ACTIVEMOD.getAsRole();
         return member.getRoles().contains(activeModRole);
     }
 
     /**
      * Find members that have a given role<br>
-     * @param role
+     * @param role the role to get the members from
      * @return true | false : Returns true when the list is completed
      */
     public static List<Member> getUsersByRole(Role role) {
-        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
         if (guild == null || role == null) {
             return List.of();
         }
@@ -58,7 +55,7 @@ public class Util {
     }
 
     public static Member getMemberByUser(long userId) {
-        Guild guild = EnvResolver.getGuildById(EnvKey.GUILD_YUSERVER);
+        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
         return guild.getMemberById(userId);
     }
 
@@ -144,7 +141,7 @@ public class Util {
     }
 
     public static long toEpochSeconds(LocalDateTime dateTime) {
-        return dateTime.atZone(EnvResolver.getZoneId()).toEpochSecond();
+        return dateTime.atZone(EnvKey.TIMEZONE.getAsZoneId()).toEpochSecond();
     }
 
     /**

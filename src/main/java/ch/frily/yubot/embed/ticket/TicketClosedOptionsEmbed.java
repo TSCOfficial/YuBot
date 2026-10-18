@@ -1,7 +1,7 @@
 package ch.frily.yubot.embed.ticket;
 
 import ch.frily.yubot.embed.IEmbed;
-import ch.frily.yubot.feature.ticket.Ticket;
+import ch.frily.yubot.service.ticket.Ticket;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.Member;
 
@@ -27,7 +27,7 @@ public class TicketClosedOptionsEmbed implements IEmbed {
     @Override
     public String getAuthorName() {
         if (initiator == null) {
-            return null;
+            return IEmbed.super.getAuthorName();
         }
         return initiator.getEffectiveName();
     }
@@ -35,7 +35,7 @@ public class TicketClosedOptionsEmbed implements IEmbed {
     @Override
     public String getAuthorIconUrl() {
         if (initiator == null) {
-            return null;
+            return IEmbed.super.getAuthorIconUrl();
         }
         return initiator.getEffectiveAvatarUrl();
     }

@@ -3,17 +3,14 @@ package ch.frily.yubot.database.repository;
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.NotFoundException;
-import ch.frily.yubot.feature.profile.Profile;
-import ch.frily.yubot.feature.profile.ProfileHistory;
-import ch.frily.yubot.feature.profile.ProfileMessage;
-import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
+import ch.frily.yubot.service.profile.Profile;
+import ch.frily.yubot.service.profile.ProfileMessage;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * The profile history saves the changes made to the names of any profiles
@@ -23,7 +20,7 @@ import java.time.LocalDateTime;
  */
 public class ProfileMessageRepository {
 
-    public static void create(ProfileMessage profileMessage) throws SQLException, ClassNotFoundException {
+    public static void create(ProfileMessage profileMessage) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE_MESSAGE);
         query.insert(Table.ProfileMessageColumn.PROFILE_ID, profileMessage.profile().profileId());
         query.insert(Table.ProfileMessageColumn.MESSAGE_ID, profileMessage.message().getId());
@@ -34,12 +31,11 @@ public class ProfileMessageRepository {
 
     /**
      * Gets the {@link ProfileMessage} using the channel & message ID
-     * @param message
-     * @return
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @param message the original {@link Message}
+     * @return the {@link ProfileMessage}-record
+     * @throws SQLException Database failure
      */
-    public static ProfileMessage get(Message message) throws SQLException, ClassNotFoundException {
+    public static ProfileMessage get(Message message) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE_MESSAGE);
         query.where(Table.ProfileMessageColumn.CHANNEL_ID, DatabaseQuery.Operator.EQUALS, message.getChannel().getId());
         query.where(Table.ProfileMessageColumn.MESSAGE_ID, DatabaseQuery.Operator.EQUALS, message.getId());
@@ -58,15 +54,12 @@ public class ProfileMessageRepository {
 
     /**
      * Checks whether the member is the owner of a given message
-     * @return
+     * @return whether the given member is the owner of that message
      */
-    public static boolean isOwner(Member member, Message message) throws SQLException, ClassNotFoundException {
+    public static boolean isOwner(Member member, Message message) throws SQLException {
+        Objects.requireNonNull(member);
         Profile profile = get(message).profile();
 
-        if (member.getId().equals(profile.parentAccount().getId())) {
-            return true;
-        } else {
-            return false;
-        }
+        return member.getId().equals(profile.parentAccount().getId());
     }
 }

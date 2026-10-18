@@ -150,7 +150,7 @@ public class MentalHealthHelpContainer extends Container {
                 Polizei: 117
                 Feuerwehr: 128
                 Rettungsdienst: 144
-                Vergiftung: 145 
+                Vergiftung: 145
                 """);
         this.addSection(
                 Button.link("https://www.143.ch/", "Dargebotene Hand"),
