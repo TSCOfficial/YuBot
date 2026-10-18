@@ -28,6 +28,7 @@ public class ActiveModActivityScheduler implements IScheduler {
 
     @Override
     public void execute() throws SQLException {
+        Closure.syncDatabaseMods();
         List<ActiveMod> outdatedActiveMods = ActiveModRepository.getModerators().stream().filter(activeMod -> {
             try {
                 ActiveModTrackingRepository.upsertActiveMod(activeMod.member());

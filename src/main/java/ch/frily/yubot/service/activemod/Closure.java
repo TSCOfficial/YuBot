@@ -186,7 +186,7 @@ public class Closure {
     /**
      * Add missing mods and remove still saved active-mods
      */
-    private static void syncDatabaseMods() throws SQLException {
+    public static void syncDatabaseMods() throws SQLException {
         // All mods based on the database data
         List<ActiveMod> currentModsInDatabase = ActiveModRepository.getModerators();
 
@@ -357,6 +357,7 @@ public class Closure {
 
             log.info("active mod size: {}", getActiveMods().size());
             long requestMessageId = moderator.activityRequestMessageId();
+            log.info(moderator.member().getEffectiveName());
             guild.removeRoleFromMember(moderator.member(), EnvKey.ROLE_ACTIVEMOD.getAsRole()).queue(_ -> {
                 log.info("active mod size after removing: {}", getActiveMods().size());
                 // Send close message in modchat when no other mods are active
