@@ -11,7 +11,6 @@ import ch.frily.yubot.service.activemod.button.ActiveModOptInBtn;
 import ch.frily.yubot.service.activemod.button.ActiveModOptOutBtn;
 import ch.frily.yubot.service.activemod.button.ActiveModShowStatisticBtn;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.mediagallery.MediaGallery;

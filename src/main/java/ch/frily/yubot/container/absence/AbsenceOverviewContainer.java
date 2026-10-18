@@ -11,7 +11,6 @@ import ch.frily.yubot.service.absence.button.AbsenceAddBtn;
 import ch.frily.yubot.service.absence.button.AbsenceDetailBtn;
 import ch.frily.yubot.service.absence.button.AbsenceEditOwnBtn;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -92,7 +91,7 @@ public class AbsenceOverviewContainer extends PaginationContainer {
     private void addDaySection(LocalDate day, List<Absence> absences) {
         PaginationItem daySection = new PaginationItem();
 
-        String todayTag = day.equals(LocalDate.now(EnvResolver.getZoneId())) ? "*(Heute)*" : "";
+        String todayTag = day.equals(LocalDate.now(EnvKey.TIMEZONE.getAsZoneId())) ? "*(Heute)*" : "";
 
         daySection.setTitle(String.format("""
                         ### %d. %s %d %s

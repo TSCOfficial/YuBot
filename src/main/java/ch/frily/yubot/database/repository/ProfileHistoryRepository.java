@@ -6,7 +6,6 @@ import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.service.profile.Profile;
 import ch.frily.yubot.service.profile.ProfileHistory;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.entities.Member;
 
 import java.sql.ResultSet;

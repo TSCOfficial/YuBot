@@ -5,7 +5,6 @@ import ch.frily.yubot.service.activemod.Closure;
 import ch.frily.yubot.service.dynamicmsg.DynamicMessageList;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
 import net.dv8tion.jda.api.events.Event;
 

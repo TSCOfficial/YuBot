@@ -6,7 +6,6 @@ import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.scheduler.IScheduler;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;

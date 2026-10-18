@@ -6,12 +6,12 @@ import ch.frily.yubot.service.ticket.TicketType;
 import ch.frily.yubot.database.repository.TicketTypeControlRepository;
 import ch.frily.yubot.service.ticket.TicketTypeGroup;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -101,9 +101,9 @@ public class TeamlistEmbed implements IEmbed {
         if (!mappedTypes.isEmpty()) {
             fields.add(new Field(
                     "Wir suchen Teammitglieder*innen ✨",
-                    String.format("In %s suchen wir noch Teammitglieder. Bewerbe dich in <#%s>",
+                    String.format("In %s suchen wir noch Teammitglieder. Bewerbe dich in %s",
                             mappedTypes.stream().map(Role::getAsMention).collect(Collectors.joining(", ")),
-                            EnvResolver.getString(EnvKey.CHANNEL_SUPPORT)), false
+                            EnvKey.CHANNEL_SUPPORT.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER).getAsMention()), false
             ));
         }
 

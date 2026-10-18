@@ -3,7 +3,6 @@ package ch.frily.yubot.service.game.event;
 import ch.frily.yubot.event.IEvent;
 import ch.frily.yubot.service.game.WordChainGameService;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -26,7 +25,7 @@ public class WordInputEvent implements IEvent<MessageReceivedEvent> {
     public <T extends Event> void execute(T event) {
         MessageReceivedEvent castEvent = (MessageReceivedEvent) event;
 
-        if (castEvent.getChannel().getId().equals(EnvResolver.getString(EnvKey.CHANNEL_KETTENBRIEF))) {
+        if (castEvent.getChannel().getId().equals(EnvKey.CHANNEL_KETTENBRIEF.getValue())) {
             WordChainGameService.handleWord(castEvent);
         }
     }

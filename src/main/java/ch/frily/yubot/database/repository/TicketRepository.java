@@ -7,7 +7,6 @@ import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.service.ticket.TicketStatus;
 import ch.frily.yubot.service.ticket.TicketType;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;

@@ -4,16 +4,17 @@ import ch.frily.yubot.embed.ticket.TicketCloseRejectedEmbed;
 import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.interaction.button.Button;
-import ch.frily.yubot.util.EnvResolver;
+import ch.frily.yubot.util.EnvKey;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -56,7 +57,9 @@ public class TicketCloseRequestRejectBtn extends Button {
                 .setComponents(event.getMessage().getComponentTree().asDisabled())
                 .queue();
 
-        CompletableFuture<Message> welcomeMessage = EnvResolver.getMessageById(Objects.requireNonNull(event.getGuild()).getIdLong(), ticket.getChannel().getIdLong(), ticket.getWelcomeMessageId());
+        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+        TextChannel channel = guild.getTextChannelById(ticket.getChannel().getIdLong());
+        CompletableFuture<Message> welcomeMessage = channel.retrieveMessageById(ticket.getWelcomeMessageId()).submit();
         welcomeMessage.thenAccept(message -> {
           message.editMessageComponents(message.getComponentTree().asEnabled()).queue();
         });

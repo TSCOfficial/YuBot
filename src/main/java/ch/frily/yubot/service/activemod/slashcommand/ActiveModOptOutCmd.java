@@ -6,7 +6,6 @@ import ch.frily.yubot.service.activemod.button.ActiveModApproveOptOutBtn;
 import ch.frily.yubot.service.activemod.button.ActiveModCancelOptOutBtn;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.Role;

@@ -2,7 +2,6 @@ package ch.frily.yubot.service.profile;
 
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Role;
 

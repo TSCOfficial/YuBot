@@ -2,7 +2,6 @@ package ch.frily.yubot.service.dynamicmsg;
 
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.entities.Message;
 
 import java.util.concurrent.CompletableFuture;
@@ -17,7 +16,7 @@ public record DynamicMessage(String name, Message message) {
      * @return a {@link CompletableFuture}, consisting of the {@link DynamicMessage}
      */
     public static CompletableFuture<DynamicMessage> retrieve(String registryName, long channelId, long messageId) {
-        return EnvResolver.getMessageById(EnvKey.GUILD_YUSERVER.getAsLong(), channelId, messageId)
+        return EnvKey.GUILD_YUSERVER.getAsGuild().getTextChannelById(channelId).retrieveMessageById(messageId).submit()
                 .thenApply(Message -> new DynamicMessage(registryName, Message))
                 .exceptionally(ExceptionHandler::fail);
     }

@@ -7,7 +7,6 @@ import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.service.ticket.TicketType;
 import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.api.components.container.Container;

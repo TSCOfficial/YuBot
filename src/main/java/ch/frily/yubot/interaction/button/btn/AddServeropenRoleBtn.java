@@ -3,7 +3,6 @@ package ch.frily.yubot.interaction.button.btn;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;

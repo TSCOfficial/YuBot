@@ -5,7 +5,6 @@ import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.activemod.ActiveMod;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.entities.Member;
 
 import java.sql.ResultSet;

@@ -16,7 +16,6 @@ import ch.frily.yubot.interaction.modal.ModalRegistry;
 import ch.frily.yubot.interaction.select.SelectRegistry;
 import ch.frily.yubot.scheduler.SchedulerRegistry;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;

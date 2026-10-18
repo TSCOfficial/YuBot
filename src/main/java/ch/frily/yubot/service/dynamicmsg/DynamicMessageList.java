@@ -9,7 +9,6 @@ import ch.frily.yubot.embed.teamlist.TeamlistEmbed;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import lombok.Getter;
 import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.entities.Guild;
@@ -202,7 +201,7 @@ public enum DynamicMessageList {
     private void sendNewMessage(DynamicMessageRepository.DynamicMessageReference reference, ContainerContext context) {
         try {
             Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
-            MessageChannel channel = (MessageChannel) guild.getGuildChannelById(reference.channelId()); // todo TEST IF CASTING WORKS!!!
+            MessageChannel channel = (MessageChannel) guild.getGuildChannelById(reference.channelId());
 
             if (channel == null) {
                 ExceptionHandler.handle(new IllegalStateException(

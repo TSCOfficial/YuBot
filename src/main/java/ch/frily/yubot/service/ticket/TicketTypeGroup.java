@@ -1,7 +1,6 @@
 package ch.frily.yubot.service.ticket;
 
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import lombok.Getter;
 
 /**

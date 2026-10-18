@@ -2,8 +2,6 @@ package ch.frily.yubot.database;
 
 import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

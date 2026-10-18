@@ -7,7 +7,6 @@ import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.service.ticket.TicketType;
 import ch.frily.yubot.interaction.contextmenu.IUserContextMenu;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;

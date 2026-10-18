@@ -1,5 +1,6 @@
 package ch.frily.yubot.database;
 
+import ch.frily.yubot.service.ticket.Ticket;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +26,7 @@ public enum Table {
     /**
      * Common interface
      */
-    public interface Column { // todo check if replaceable by @Getter?
+    public interface Column {
         String getColumn();
     }
 
@@ -44,7 +45,7 @@ public enum Table {
         STATUS("status"),
         UPDATED_AT("updated_at"),
         IS_REMINDER_SENT("is_reminder_sent");
-        private final String column; // todo define second field: datatype, so that building an object can be automatized over any table
+        private final String column;
     }
 
     // TICKET CONTROL

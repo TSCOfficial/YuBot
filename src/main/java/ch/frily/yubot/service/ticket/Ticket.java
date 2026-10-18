@@ -12,7 +12,6 @@ import ch.frily.yubot.service.ticket.button.TicketCloseRequestBtn;
 import ch.frily.yubot.service.ticket.button.TicketCloseRequestRejectBtn;
 import ch.frily.yubot.service.ticket.button.TicketDeleteBtn;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
 import dev.omardiaa.transcript.jda.exception.TranscriberPermissionException;
 import dev.omardiaa.transcript.jda.model.JDATranscript;

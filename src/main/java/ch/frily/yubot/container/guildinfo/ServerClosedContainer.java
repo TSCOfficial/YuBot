@@ -3,7 +3,6 @@ package ch.frily.yubot.container.guildinfo;
 import ch.frily.yubot.container.Container;
 import ch.frily.yubot.interaction.button.btn.AddServeropenRoleBtn;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;

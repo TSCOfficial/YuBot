@@ -3,7 +3,6 @@ package ch.frily.yubot.service.activemod.slashcommand;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.interaction.command.ISlashCommand;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.ChannelType;

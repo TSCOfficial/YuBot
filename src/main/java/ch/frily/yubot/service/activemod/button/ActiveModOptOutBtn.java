@@ -5,7 +5,6 @@ import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.service.activemod.Closure;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;

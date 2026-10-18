@@ -32,8 +32,6 @@ public class ActiveModTrackingDetailSelect implements IStringSelect {
     @Nullable
     private Member selectedMember;
 
-    // TODO add member to be able to remove them from the list when they are already beeing displayed
-
     @Override
     public String getId() {
         return "active-mod-tracking-detail-select";

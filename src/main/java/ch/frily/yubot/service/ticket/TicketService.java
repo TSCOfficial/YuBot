@@ -21,7 +21,6 @@ import ch.frily.yubot.service.ticket.modal.TicketTypeSelectorModal;
 import ch.frily.yubot.scheduler.IScheduler;
 import ch.frily.yubot.service.ticket.schedule.TicketActivityScheduler;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.Member;
@@ -138,7 +137,7 @@ public class TicketService extends Service {
 
         Ticket ticket = new Ticket(ticketOwner, type);
 
-        Category ticketCategory = EnvResolver.getCategoryById(EnvKey.CATEGORY_TICKETS);
+        Category ticketCategory = EnvKey.CATEGORY_TICKETS.getAsCategory();
         ActionRow actionrow = ActionRow.of(List.of(
                 new TicketCloseRequestBtn().build()
         ));
@@ -186,7 +185,7 @@ public class TicketService extends Service {
      * @return True if its a Ticketchannel / False if not
      */
     public boolean isTicketchannel(TextChannel channel) throws SQLException {
-        if (channel.getParentCategory() == null || channel.getParentCategory().getIdLong() != EnvResolver.getCategoryById(EnvKey.CATEGORY_TICKETS).getIdLong()) {
+        if (channel.getParentCategory() == null || channel.getParentCategory().getIdLong() != EnvKey.CATEGORY_TICKETS.getAsCategory().getIdLong()) {
             return false;
         }
         TicketRepository.getTicketById(channel.getIdLong());

@@ -6,7 +6,6 @@ import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.service.absence.Absence;
 import ch.frily.yubot.service.absence.AbsenceType;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;

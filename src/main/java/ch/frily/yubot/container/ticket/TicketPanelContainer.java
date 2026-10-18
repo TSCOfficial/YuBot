@@ -8,7 +8,6 @@ import ch.frily.yubot.database.repository.TicketTypeControlRepository;
 import ch.frily.yubot.service.ticket.TicketTypeGroup;
 import ch.frily.yubot.util.Color;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;

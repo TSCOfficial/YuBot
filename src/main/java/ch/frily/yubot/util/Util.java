@@ -141,7 +141,7 @@ public class Util {
     }
 
     public static long toEpochSeconds(LocalDateTime dateTime) {
-        return dateTime.atZone(EnvResolver.getZoneId()).toEpochSecond();
+        return dateTime.atZone(EnvKey.TIMEZONE.getAsZoneId()).toEpochSecond();
     }
 
     /**

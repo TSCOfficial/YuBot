@@ -6,8 +6,10 @@ import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.service.ticket.button.TicketCloseRequestAcceptBtn;
 import ch.frily.yubot.service.ticket.button.TicketCloseRequestRejectBtn;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
-import ch.frily.yubot.util.EnvResolver;
+import ch.frily.yubot.util.EnvKey;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -57,7 +59,9 @@ public class TicketCloseCmd implements ISlashSubcommand {
             event.replyEmbeds(requestEmbed.build()).setComponents(actionRow).queue();
 
             // Disable welcome message component
-            EnvResolver.getMessageById(Objects.requireNonNull(event.getGuild()).getIdLong(), ticket.getChannel().getIdLong(), ticket.getWelcomeMessageId()).thenAccept(message -> {
+            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+            TextChannel channel = guild.getTextChannelById(ticket.getChannel().getIdLong());
+            channel.retrieveMessageById(ticket.getWelcomeMessageId()).submit().thenAccept(message -> {
                 message.editMessageComponents(message.getComponentTree().asDisabled()).queue();
             });
         }

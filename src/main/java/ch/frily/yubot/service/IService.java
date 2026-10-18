@@ -1,5 +1,6 @@
 package ch.frily.yubot.service;
 
+import ch.frily.yubot.embed.IEmbed;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.command.ISlashCommand;
 import ch.frily.yubot.interaction.command.ISlashCommandGroup;

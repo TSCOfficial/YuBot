@@ -11,7 +11,6 @@ import ch.frily.yubot.service.activemod.button.ActiveModActivityProveBtn;
 import ch.frily.yubot.service.activemod.button.ActiveModOptOutBtn;
 import ch.frily.yubot.interaction.button.btn.DeleteMessageBtn;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import ch.frily.yubot.util.Util;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -168,7 +167,7 @@ public class Closure {
     private void kickMembersFromVoice() {
         Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
         guild.getVoiceStates().forEach(voiceState -> {
-            if (Objects.requireNonNull(voiceState.getChannel()).getParentCategory() == null || voiceState.getChannel().getParentCategory() != EnvResolver.getCategoryById(EnvKey.CATEGORY_TEAMBEREICH) ) {
+            if (Objects.requireNonNull(voiceState.getChannel()).getParentCategory() == null || voiceState.getChannel().getParentCategory() != EnvKey.CATEGORY_TEAMBEREICH.getAsCategory()) {
                 guild.moveVoiceMember(voiceState.getMember(), null).queue();
             }
         });
@@ -373,7 +372,7 @@ public class Closure {
     }
 
     private static void editIgnoredRequestActivityMsg(MessageChannel channel, ActiveMod moderator) {
-        long epochTime = moderator.lastActivityAt().atZone(EnvResolver.getZoneId()).toEpochSecond();
+        long epochTime = moderator.lastActivityAt().atZone(EnvKey.TIMEZONE.getAsZoneId()).toEpochSecond();
 
         channel.retrieveMessageById(moderator.activityRequestMessageId()).queue(message -> {
             message.editMessage(

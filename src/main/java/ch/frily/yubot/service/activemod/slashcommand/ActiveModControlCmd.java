@@ -4,7 +4,6 @@ import ch.frily.yubot.database.repository.ActiveModControlRepository;
 import ch.frily.yubot.service.dynamicmsg.DynamicMessageList;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.util.EnvKey;
-import ch.frily.yubot.util.EnvResolver;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
