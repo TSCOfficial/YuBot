@@ -53,7 +53,7 @@ public class Client {
      */
     public void setup() {
         try {
-            config = loadConfig();
+            config = Dotenv.configure().load();
 
             Connection conn = Database.getInstance().connect();
             if (conn != null) {
@@ -86,27 +86,12 @@ public class Client {
         jdaBuilder.setStatus(OnlineStatus.ONLINE);
         jdaBuilder.setMemberCachePolicy(MemberCachePolicy.ALL);
         jdaBuilder.enableCache(CacheFlag.ACTIVITY);
-        jdaBuilder.setActivity(Activity.listening("Yu"));
+        jdaBuilder.setActivity(Activity.customStatus(config.get("STATUS")));
 
 
         // Event listeners
         EventRegistry.getLISTENERS().forEach(jdaBuilder::addEventListeners);
 
         return jdaBuilder.build();
-    }
-
-    /**
-     * Load ..env-file configurations
-     * @return {@link Dotenv} config object
-     */
-    private Dotenv loadConfig(){
-        Dotenv dotenv = Dotenv.configure().load();
-
-        for (EnvKey key : EnvKey.values()) {
-            if (dotenv.get(key.name()) == null) {
-                throw new IllegalStateException(String.format("Missing key-configuration for '%s'", key.name()));
-            }
-        }
-        return dotenv;
     }
 }
