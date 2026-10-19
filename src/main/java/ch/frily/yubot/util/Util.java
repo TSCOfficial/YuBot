@@ -21,11 +21,15 @@ import java.util.Objects;
 public class Util {
 
     /**
-     * Check if a member has the {@link EnvKey#ROLE_YUTEAM} role
+     * Check if a member is a team-member
+     * <p>
+     *     This checks if they have the team-role or is Administrator
+     * </p>
      * @param member the member to check
      * @return True if they have the role, false if not
      */
     public static boolean isTeamMember(Member member) {
+        if (isAdministrator(member)) return true;
         Objects.requireNonNull(member);
         Role teamRole = EnvKey.ROLE_YUTEAM.getAsRole();
         return member.getRoles().contains(teamRole);
