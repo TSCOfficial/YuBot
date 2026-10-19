@@ -47,27 +47,27 @@ public class ProfilContainer extends Container {
     private static final String ACTIVE_TAG =
             "<:active1:1527044015927721984><:active2:1527044016942616748><:active3:1527044018276536403>";
 
-    private static final List<Role> PRONOUN_ROLES = Stream.of(
-            EnvKey.ROLE_ERIHM,
-            EnvKey.ROLE_ERSIE,
-            EnvKey.ROLE_SIEER,
-            EnvKey.ROLE_ERDEY,
-            EnvKey.ROLE_SIEIHR,
-            EnvKey.ROLE_SIEDEY,
-            EnvKey.ROLE_DEYDEREN,
-            EnvKey.ROLE_DEYER,
-            EnvKey.ROLE_DEYSIE,
-            EnvKey.ROLE_ES,
-            EnvKey.ROLE_ERES,
-            EnvKey.ROLE_SIEES,
-            EnvKey.ROLE_DEYES,
-            EnvKey.ROLE_ESER,
-            EnvKey.ROLE_ESSIE,
-            EnvKey.ROLE_ESDEY,
-            EnvKey.ROLE_ALLE,
-            EnvKey.ROLE_KEINE,
-            EnvKey.ROLE_ANDEREFRAGEN
-    ).map(EnvKey::getAsRole).toList();
+    private static final Map<Role, Emoji> PRONOUN_ROLES = Map.ofEntries(
+            Map.entry(EnvKey.ROLE_ERIHM, EnvKey.EMOJI_PRONOMEN_ERIHM),
+            Map.entry(EnvKey.ROLE_ERSIE, EnvKey.EMOJI_PRONOMEN_ERSIE),
+            Map.entry(EnvKey.ROLE_SIEER, EnvKey.EMOJI_PRONOMEN_SIEER),
+            Map.entry(EnvKey.ROLE_ERDEY, EnvKey.EMOJI_PRONOMEN_ERDEY),
+            Map.entry(EnvKey.ROLE_SIEIHR, EnvKey.EMOJI_PRONOMEN_SIEIHR),
+            Map.entry(EnvKey.ROLE_SIEDEY, EnvKey.EMOJI_PRONOMEN_SIEDEY),
+            Map.entry(EnvKey.ROLE_DEYDEREN, EnvKey.EMOJI_PRONOMEN_DEYDEREN),
+            Map.entry(EnvKey.ROLE_DEYER, EnvKey.EMOJI_PRONOMEN_DEYER),
+            Map.entry(EnvKey.ROLE_DEYSIE, EnvKey.EMOJI_PRONOMEN_DEYSIE),
+            Map.entry(EnvKey.ROLE_ES, EnvKey.EMOJI_PRONOMEN_ES),
+            Map.entry(EnvKey.ROLE_ERES, EnvKey.EMOJI_PRONOMEN_ERES),
+            Map.entry(EnvKey.ROLE_SIEES, EnvKey.EMOJI_PRONOMEN_SIEES),
+            Map.entry(EnvKey.ROLE_DEYES, EnvKey.EMOJI_PRONOMEN_DEYES),
+            Map.entry(EnvKey.ROLE_ESER, EnvKey.EMOJI_PRONOMEN_ESER),
+            Map.entry(EnvKey.ROLE_ESSIE, EnvKey.EMOJI_PRONOMEN_ESSIE),
+            Map.entry(EnvKey.ROLE_ESDEY, EnvKey.EMOJI_PRONOMEN_ESDEY),
+            Map.entry(EnvKey.ROLE_ALLE, EnvKey.EMOJI_PRONOMEN_ALLE),
+            Map.entry(EnvKey.ROLE_KEINE, EnvKey.EMOJI_PRONOMEN_KEINE),
+            Map.entry(EnvKey.ROLE_ANDEREFRAGEN, EnvKey.EMOJI_PRONOMEN_ANDEREFRAGEN)
+    );
 
     @Getter
     private final Member initiator;
