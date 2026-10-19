@@ -1,6 +1,7 @@
 package ch.frily.yubot.util;
 
 import ch.frily.yubot.Client;
+import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.InvalidStateException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -11,10 +12,12 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 
 import java.time.ZoneId;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 public enum EnvKey {

@@ -5,6 +5,7 @@ import ch.frily.yubot.database.repository.ProfileMessageRepository;
 import ch.frily.yubot.database.repository.ProfileRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.InvalidStateException;
+import ch.frily.yubot.util.EnvKey;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
@@ -12,8 +13,13 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.managers.WebhookManager;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction;
+import net.dv8tion.jda.api.utils.AttachedFile;
+import net.dv8tion.jda.api.utils.FileProxy;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.ImageProxy;
 
+import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
@@ -68,10 +74,16 @@ public class MessageHandling {
                             if (originalMsgRef != null &&originalMsgRef.getType() == MessageReference.MessageReferenceType.DEFAULT) {
                                 String shortenedReplyMsg = sanitizeMessage(originalMsgRef.getMessage().getContentRaw());
                                 String repliedToMember = "";
+                                log.info(String.valueOf(originalMsgRef.getMessage().getMember()));
                                 if (originalMsgRef.getMessage().getMember() != null) {
                                     repliedToMember = String.format("**%s** ", originalMsgRef.getMessage().getMember().getEffectiveName());
                                 }
-                                messageContentSB.append(String.format("> -# %s%s [[anzeigen]](%s)\n",repliedToMember, shortenedReplyMsg, originalMsgRef.getMessage().getJumpUrl()));
+
+                                String attachmentIcon = "";
+                                if (!originalMsgRef.getMessage().getAttachments().isEmpty()) {
+                                    attachmentIcon = "<:image:1561701687302033418>";
+                                }
+                                messageContentSB.append(String.format("> -# %s%s %s[[anzeigen]](%s)\n",repliedToMember, shortenedReplyMsg, attachmentIcon, originalMsgRef.getMessage().getJumpUrl()));
                             }
 
                             String originalMsgString = originalMessage.getContentRaw();
@@ -79,7 +91,16 @@ public class MessageHandling {
                                 originalMsgString = originalMsgString.replace(profile.proxy(), ""); // remove proxy chars from message
                             }
                             messageContentSB.append(originalMsgString);
-                            webhook.sendMessage(messageContentSB.toString()).setAllowedMentions(List.of()).queue( msg -> {
+                            WebhookMessageCreateAction<Message> messageCreateAction = webhook.sendMessage(messageContentSB.toString());
+                            messageCreateAction.setAllowedMentions(List.of());
+                            // collects and adds message attachmentsfile test
+                            if (!originalMessage.getAttachments().isEmpty()) {
+                                List<FileUpload> files = originalMessage.getAttachments().stream().map(attachment -> {
+                                    return attachment.getProxy().downloadAsFileUpload(attachment.getFileName());
+                                }).toList();
+                                messageCreateAction.setFiles(files);
+                            }
+                            messageCreateAction.queue( msg -> {
                                 ProfileMessage profileMsg = new ProfileMessage(msg, profile, originalMessage.getChannel());
                                 try {
                                     ProfileMessageRepository.create(profileMsg);
@@ -117,14 +138,12 @@ public class MessageHandling {
 
         return getChannelWebhook(webhookContainer).thenCompose(optionalWebhook -> {
             if (optionalWebhook.isPresent()) {
-                log.info("existing webhook: {}", optionalWebhook.get());
                 return CompletableFuture.completedFuture(optionalWebhook.get());
             }
 
             return webhookContainer.createWebhook(WEBHOOK_NAME)
                     .submit()
                     .thenApply(newWebhook -> {
-                        log.info("new webhook: {}", newWebhook);
                         return newWebhook;
                     });
         });
@@ -181,19 +200,13 @@ public class MessageHandling {
         if (message.length() > 70) {
             return message.substring(0, 70) + "...";
         }
-        log.info(message);
         message = message.replaceAll("(?s)```(?:[a-zA-Z0-9_+-]*\\n)?(.*?)```", "`$1`");
-        log.info(message);
 
         message = message.replaceAll("(?m)^>+\\h*", "");
-        log.info(message);
         message = message.replaceAll("(?m)^-#+\\h*", "");
-        log.info(message);
         message = message.replaceAll("(?m)^#{1,3}(?!#)\\h+(.*)$", "**$1**");
-        log.info(message);
 
         message = message.replaceAll("\\s*\\n\\s*", "").trim();
-        log.info(message);
 
         return message;
     }

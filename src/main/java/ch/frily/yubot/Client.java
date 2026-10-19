@@ -85,7 +85,7 @@ public class Client {
         jdaBuilder.enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.MESSAGE_CONTENT);
         jdaBuilder.setStatus(OnlineStatus.ONLINE);
         jdaBuilder.setMemberCachePolicy(MemberCachePolicy.ALL);
-        jdaBuilder.enableCache(CacheFlag.ACTIVITY);
+        jdaBuilder.enableCache(CacheFlag.ACTIVITY, CacheFlag.EMOJI);
         jdaBuilder.setActivity(Activity.customStatus(config.get("STATUS")));
 
 
