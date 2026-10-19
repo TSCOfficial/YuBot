@@ -25,6 +25,12 @@ public record ActiveMod(
         @Nullable Long activityRequestMessageId,
         @Nullable Long requestedAttentionMessageId) {
 
+    /**
+     * Gives the moderator the active-mod role or updates their activity if they already have the activemod-role.
+     * @param member The active-moderator
+     * @return A completed future with either
+     * @throws SQLException
+     */
     public static CompletableFuture<String> registerModerator(Member member) throws SQLException {
         if (!ActiveModControlRepository.isOptInAllowed()) {
             return CompletableFuture.failedFuture(
@@ -32,7 +38,6 @@ public record ActiveMod(
             );
         }
         if (member.getOnlineStatus() == OnlineStatus.OFFLINE) {
-            log.info("is offline");
             return CompletableFuture.failedFuture(
                     new InvalidStateException("Du musst als <:status_online:1543868572609159239> Online, <:status_idle:1543868571443265557> Idle oder <:status_dnd:1543868569513623683> Do not disturb markiert sein, um Opt-in zu sein.", "Wenn du <:statusoffline:1543871842186567750> offline bist, sehen dich die Leute nicht.")
             );

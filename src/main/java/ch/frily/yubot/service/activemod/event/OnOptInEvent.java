@@ -5,12 +5,15 @@ import ch.frily.yubot.service.activemod.Closure;
 import ch.frily.yubot.service.dynamicmsg.DynamicMessageList;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.Util;
+import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 
 import java.io.IOException;
 import java.sql.SQLException;
 
+@Slf4j
 public class OnOptInEvent implements IEvent<GuildMemberRoleAddEvent> {
 
     private static OnOptInEvent instance;
