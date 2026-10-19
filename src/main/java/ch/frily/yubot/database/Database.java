@@ -2,12 +2,15 @@ package ch.frily.yubot.database;
 
 import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.ExceptionHandler;
+import lombok.extern.slf4j.Slf4j;
+import org.postgresql.util.PSQLException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+@Slf4j
 public class Database {
 
     private static Database instance;
@@ -43,7 +46,7 @@ public class Database {
      */
     public Connection connect() {
         try {
-            if (connection == null) {
+            if (connection == null || connection.isClosed()) {
                 connection = DriverManager.getConnection(Client.getInstance().getConfig().get("CRED_DB_URL"), getProperties());
             }
             return connection;
