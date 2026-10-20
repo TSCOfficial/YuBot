@@ -237,12 +237,11 @@ public class AbsenceAddModal extends Modal {
 
     private void absenceTimeIsValid(Member member, Absence originalAbsence, Absence absenceToValidate, LocalDateTime startDateTime, LocalDateTime endDateTime, boolean bypassStartTimeCheck) throws SQLException {
         List<Absence> otherAbsences = new java.util.ArrayList<>(AbsenceRepository.getAbsencesByMemberAndDateSpan(member, startDateTime, endDateTime));
-        Objects.requireNonNull(originalAbsence);
         Objects.requireNonNull(absenceToValidate);
 
         otherAbsences.removeIf(currentAbsence -> currentAbsence.id().equals(absenceToValidate.id()));
 
-        if (originalAbsence.fromDateTime().isAfter(absenceToValidate.fromDateTime())){
+        if (originalAbsence != null && originalAbsence.fromDateTime().isAfter(absenceToValidate.fromDateTime())){
             throw new InvalidStateException("Ungültige Zeitangabe.", "Die Startzeit darf nicht weiter in die Vergangenheit gesetzt werden.");
         }
 
