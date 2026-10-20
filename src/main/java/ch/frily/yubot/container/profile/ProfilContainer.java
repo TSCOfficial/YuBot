@@ -39,6 +39,8 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -48,25 +50,25 @@ public class ProfilContainer extends Container {
             "<:active1:1527044015927721984><:active2:1527044016942616748><:active3:1527044018276536403>";
 
     private static final Map<Role, Emoji> PRONOUN_ROLES = Map.ofEntries(
-            Map.entry(EnvKey.ROLE_ERIHM, EnvKey.EMOJI_PRONOMEN_ERIHM),
-            Map.entry(EnvKey.ROLE_ERSIE, EnvKey.EMOJI_PRONOMEN_ERSIE),
-            Map.entry(EnvKey.ROLE_SIEER, EnvKey.EMOJI_PRONOMEN_SIEER),
-            Map.entry(EnvKey.ROLE_ERDEY, EnvKey.EMOJI_PRONOMEN_ERDEY),
-            Map.entry(EnvKey.ROLE_SIEIHR, EnvKey.EMOJI_PRONOMEN_SIEIHR),
-            Map.entry(EnvKey.ROLE_SIEDEY, EnvKey.EMOJI_PRONOMEN_SIEDEY),
-            Map.entry(EnvKey.ROLE_DEYDEREN, EnvKey.EMOJI_PRONOMEN_DEYDEREN),
-            Map.entry(EnvKey.ROLE_DEYER, EnvKey.EMOJI_PRONOMEN_DEYER),
-            Map.entry(EnvKey.ROLE_DEYSIE, EnvKey.EMOJI_PRONOMEN_DEYSIE),
-            Map.entry(EnvKey.ROLE_ES, EnvKey.EMOJI_PRONOMEN_ES),
-            Map.entry(EnvKey.ROLE_ERES, EnvKey.EMOJI_PRONOMEN_ERES),
-            Map.entry(EnvKey.ROLE_SIEES, EnvKey.EMOJI_PRONOMEN_SIEES),
-            Map.entry(EnvKey.ROLE_DEYES, EnvKey.EMOJI_PRONOMEN_DEYES),
-            Map.entry(EnvKey.ROLE_ESER, EnvKey.EMOJI_PRONOMEN_ESER),
-            Map.entry(EnvKey.ROLE_ESSIE, EnvKey.EMOJI_PRONOMEN_ESSIE),
-            Map.entry(EnvKey.ROLE_ESDEY, EnvKey.EMOJI_PRONOMEN_ESDEY),
-            Map.entry(EnvKey.ROLE_ALLE, EnvKey.EMOJI_PRONOMEN_ALLE),
-            Map.entry(EnvKey.ROLE_KEINE, EnvKey.EMOJI_PRONOMEN_KEINE),
-            Map.entry(EnvKey.ROLE_ANDEREFRAGEN, EnvKey.EMOJI_PRONOMEN_ANDEREFRAGEN)
+            Map.entry(EnvKey.ROLE_ERIHM.getAsRole(), EnvKey.EMOJI_PRONOMEN_ERIHM.getAsEmoji()),
+            Map.entry(EnvKey.ROLE_ERSIE.getAsRole(), EnvKey.EMOJI_PRONOMEN_ERSIE.getAsEmoji()),
+            Map.entry(EnvKey.ROLE_SIEER.getAsRole(), EnvKey.EMOJI_PRONOMEN_SIEER.getAsEmoji()),
+            Map.entry(EnvKey.ROLE_ERDEY.getAsRole(), EnvKey.EMOJI_PRONOMEN_ERDEY.getAsEmoji()),
+            Map.entry(EnvKey.ROLE_SIEIHR.getAsRole(), EnvKey.EMOJI_PRONOMEN_SIEIHR.getAsEmoji()),
+            Map.entry(EnvKey.ROLE_SIEDEY.getAsRole(), EnvKey.EMOJI_PRONOMEN_SIEDEY.getAsEmoji()),
+            Map.entry(EnvKey.ROLE_DEYDEREN.getAsRole(), EnvKey.EMOJI_PRONOMEN_DEYDEREN.getAsEmoji()),
+            Map.entry(EnvKey.ROLE_DEYER.getAsRole(), EnvKey.EMOJI_PRONOMEN_DEYER.getAsEmoji()),
+            Map.entry(EnvKey.ROLE_DEYSIE.getAsRole(), EnvKey.EMOJI_PRONOMEN_DEYSIE.getAsEmoji()),
+            Map.entry(EnvKey.ROLE_ES.getAsRole(), EnvKey.EMOJI_PRONOMEN_ES.getAsEmoji()),
+            Map.entry(EnvKey.ROLE_ERES.getAsRole(), EnvKey.EMOJI_PRONOMEN_ERES.getAsEmoji()),
+            Map.entry(EnvKey.ROLE_SIEES.getAsRole(), EnvKey.EMOJI_PRONOMEN_SIEES.getAsEmoji()),
+            Map.entry(EnvKey.ROLE_DEYES.getAsRole(), EnvKey.EMOJI_PRONOMEN_DEYES.getAsEmoji()),
+            Map.entry(EnvKey.ROLE_ESER.getAsRole(), EnvKey.EMOJI_PRONOMEN_ESER.getAsEmoji()),
+            Map.entry(EnvKey.ROLE_ESSIE.getAsRole(), EnvKey.EMOJI_PRONOMEN_ESSIE.getAsEmoji()),
+            Map.entry(EnvKey.ROLE_ESDEY.getAsRole(), EnvKey.EMOJI_PRONOMEN_ESDEY.getAsEmoji()),
+            Map.entry(EnvKey.ROLE_ALLE.getAsRole(), EnvKey.EMOJI_PRONOMEN_ALLE.getAsEmoji()),
+            Map.entry(EnvKey.ROLE_KEINE.getAsRole(), EnvKey.EMOJI_PRONOMEN_KEINE.getAsEmoji()),
+            Map.entry(EnvKey.ROLE_ANDEREFRAGEN.getAsRole(), EnvKey.EMOJI_PRONOMEN_ANDEREFRAGEN.getAsEmoji())
     );
 
     @Getter
@@ -116,13 +118,12 @@ public class ProfilContainer extends Container {
     }
 
     private void assemblePublicProfile(Member member) {
-        List<Role> userPronouns = PRONOUN_ROLES.stream().filter(role -> member.getRoles().contains(role)).toList();
-        addFormatedText("# %s", member.getEffectiveName());
+        Map<Role, Emoji> userPronouns = PRONOUN_ROLES.entrySet().stream().filter(entry -> member.getRoles().contains(entry.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        List<String> pronouns = userPronouns.stream().map(role -> {
-            return String.format("%s %s", role.getIcon().getEmoji(), role.getName()); // todo add mapping for pronoun Icons, can then be placec next to the name directly
+        List<String> pronouns = userPronouns.entrySet().stream().map(entry -> {
+            return entry.getValue().getFormatted();
         }).toList();
-        addFormatedText("-# %s", String.join(", ", pronouns));
+        addFormatedText("-# %s %s", member.getEffectiveName(), String.join(", ", pronouns));
     }
 
     /**

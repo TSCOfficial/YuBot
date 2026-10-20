@@ -14,6 +14,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.reflections.Reflections.log;
+
 /**
  * Everything a {@link StaticContainerRegistry} entry needs to build its container.
  * <p>
@@ -51,6 +53,7 @@ public record ContainerContext(
 
     public ContainerContext {
         args = Map.copyOf(args);
+        log.info("ContainerContext created with args: {}", args);
     }
 
     /**

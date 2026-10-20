@@ -183,7 +183,9 @@ public enum EnvKey {
         } else if (type.equals(ThreadChannel.class)) {
             return (T) guild.getThreadChannelById(this.value);
         } else if (type.equals(StageChannel.class)) {
-            return  (T) guild.getStageChannelById(this.value);
+            return (T) guild.getStageChannelById(this.value);
+        } else if (type.equals(ForumChannel.class)) {
+            return (T) guild.getForumChannelById(this.value);
         } else {
             throw new InvalidStateException(String.format("Channeltype '%s' is not supported", type.getName()));
         }

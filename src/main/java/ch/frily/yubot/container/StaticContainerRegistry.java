@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
+import static org.reflections.Reflections.log;
+
 /**
  * This is a list of Embeds that can be used statically via the send embed command
  * <p>
@@ -60,6 +62,7 @@ public enum StaticContainerRegistry {
     }
 
     public List<Container> getContainer(ContainerContext context) {
+        log.info("get containers with ctx: {}", context);
         return containerFactory.apply(context);
     }
 

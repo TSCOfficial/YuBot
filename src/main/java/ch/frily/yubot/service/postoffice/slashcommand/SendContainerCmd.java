@@ -5,6 +5,7 @@ import ch.frily.yubot.container.StaticContainerRegistry;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.service.dynamicmsg.DynamicMessageList;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -14,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+@Slf4j
 public class SendContainerCmd implements ISlashSubcommand {
     @Override
     public String getName() {
@@ -38,16 +40,19 @@ public class SendContainerCmd implements ISlashSubcommand {
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) {
+        log.info("executing send");
         String containerValue = event.getOption("container").getAsString();
+        log.info("get containers");
         List<Container> containers = StaticContainerRegistry.valueOf(containerValue)
                 .getContainer(ContainerContext.of(event));
 
+        log.info("executing send on container");
         try {
             event.getChannel()
                     .sendMessageComponents(containers).useComponentsV2()
                     .setAllowedMentions(List.of()).queue(ThrowingConsumer.wrap(event, message -> {
                         DynamicMessageList dynamicMessage = DynamicMessageList.fromRegistryName(containerValue);
-
+                        log.info("Dynamic message: {}", dynamicMessage);
                         if (dynamicMessage != null) {
                             dynamicMessage.remember(message);
                         }
@@ -57,7 +62,9 @@ public class SendContainerCmd implements ISlashSubcommand {
                                 .queue();
                     }));
         } catch (Exception e) {
+            log.info("Exception");
             containers.forEach(container -> {
+                log.info("container: {}", container);
                 event.getChannel().sendMessageComponents(container).useComponentsV2().queue();
             });
 
