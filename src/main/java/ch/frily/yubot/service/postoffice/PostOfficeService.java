@@ -3,12 +3,17 @@ package ch.frily.yubot.service.postoffice;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.command.ISlashCommand;
 import ch.frily.yubot.interaction.command.ISlashCommandGroup;
+import ch.frily.yubot.scheduler.IScheduler;
 import ch.frily.yubot.service.Service;
 import ch.frily.yubot.service.postoffice.button.AddServeropenRoleBtn;
 import ch.frily.yubot.service.postoffice.button.DeleteMessageBtn;
 import ch.frily.yubot.service.postoffice.button.PaginationNavBtn;
+import ch.frily.yubot.service.postoffice.schedule.StatusOverwriteSchedule;
 import ch.frily.yubot.service.postoffice.slashcommand.SayCmd;
 import ch.frily.yubot.service.postoffice.slashcommand.SendCmdGroup;
+import ch.frily.yubot.service.postoffice.slashcommand.StatusCmdGroup;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -18,6 +23,12 @@ import java.util.List;
 public class PostOfficeService extends Service {
 
     private static PostOfficeService instance;
+
+    /** Status that overwrites the predefined status from env*/
+    @Setter
+    @Getter
+    private String ephemeralStatus;
+
     public static PostOfficeService getInstance() {
         if (instance == null) {
             instance = new PostOfficeService();
@@ -38,7 +49,8 @@ public class PostOfficeService extends Service {
     @Override
     public List<ISlashCommandGroup> getSlashCommandGroups() {
         return List.of(
-                new SendCmdGroup()
+                new SendCmdGroup(),
+                new StatusCmdGroup()
         );
     }
 
@@ -55,6 +67,14 @@ public class PostOfficeService extends Service {
                 new AddServeropenRoleBtn(),
                 new DeleteMessageBtn(),
                 new PaginationNavBtn()
+        );
+    }
+
+
+    @Override
+    public List<IScheduler> getSchedulers() {
+        return List.of(
+                StatusOverwriteSchedule.getInstance()
         );
     }
 }

@@ -7,6 +7,7 @@ import ch.frily.yubot.service.ServiceRegistry;
 import ch.frily.yubot.util.EnvKey;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -69,7 +70,6 @@ public class Client {
 
             // Load actions
             ServiceRegistry.getInstance().load();
-
 
         } catch (Exception exception) {
             ExceptionHandler.handle(exception);
