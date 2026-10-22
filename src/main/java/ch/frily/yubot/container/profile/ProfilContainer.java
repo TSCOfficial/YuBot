@@ -71,12 +71,12 @@ public class ProfilContainer extends Container {
             Map.entry(EnvKey.ROLE_ANDEREFRAGEN.getAsRole(), EnvKey.EMOJI_PRONOMEN_ANDEREFRAGEN.getAsEmoji())
     );
 
+    /** Whether the profile is owned by the person viewing the profile details */
     @Getter
-    private final Member initiator;
+    private boolean isOwnProfile = false;
 
     @Getter
-    @Setter
-    private Member target;
+    private final Member target;
 
     @Setter
     @Getter
@@ -85,8 +85,14 @@ public class ProfilContainer extends Container {
     @Getter
     private FileUpload profileBanner;
 
-    public ProfilContainer(Member initiator) {
-        this.initiator = initiator;
+    public ProfilContainer(Member initiator, Member target) {
+        if (target == null) {
+            target = initiator;
+        }
+        if (initiator == target) {
+            this.isOwnProfile = true;
+        }
+        this.target = target;
     }
 
     public CompletableFuture<ProfilContainer> buildAsync() {
@@ -102,14 +108,13 @@ public class ProfilContainer extends Container {
                 });
     }
 
-    private void assembleContent() {
-        Member member = target != null ? target : initiator;
+    private void assembleContent() {;
         addComponent(MediaGallery.of(MediaGalleryItem.fromFile(profileBanner)));
         try {
-            if (target == null) {
-                assemblePrivateProfile(member);
+            if (isOwnProfile) {
+                assemblePrivateProfile();
             } else {
-                assemblePublicProfile(member);
+                assemblePublicProfile();
             }
 
         } catch (Exception e) {
@@ -117,29 +122,24 @@ public class ProfilContainer extends Container {
         }
     }
 
-    private void assemblePublicProfile(Member member) {
-        Map<Role, Emoji> userPronouns = PRONOUN_ROLES.entrySet().stream().filter(entry -> member.getRoles().contains(entry.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    private void assemblePublicProfile() {
 
-        List<String> pronouns = userPronouns.entrySet().stream().map(entry -> {
-            return entry.getValue().getFormatted();
-        }).toList();
-        addFormatedText("-# %s %s", member.getEffectiveName(), String.join(", ", pronouns));
     }
 
     /**
      * Defines the private part of a profile, which only the user themself can see.
      */
-    private void assemblePrivateProfile(Member member) throws SQLException {
-        Optional<Profile> currentProfile = ProfileRepository.getCurrentUserProfile(member);
-        List<Profile> linkedProfiles = ProfileRepository.getProfilesFromAccount(member);
-        boolean profileIsAlreadyInUse = target == null && ((profile != null && currentProfile.isPresent() && Objects.equals(currentProfile.get().profileId(), profile.profileId())) || (profile == null && !linkedProfiles.isEmpty() && currentProfile.isEmpty()));
+    private void assemblePrivateProfile() throws SQLException {
+        Optional<Profile> currentProfile = ProfileRepository.getCurrentUserProfile(target);
+        List<Profile> linkedProfiles = ProfileRepository.getProfilesFromAccount(target);
+        boolean profileIsAlreadyInUse = (profile != null && currentProfile.isPresent() && Objects.equals(currentProfile.get().profileId(), profile.profileId())) || (profile == null && !linkedProfiles.isEmpty() && currentProfile.isEmpty());
 
         if (profile != null) {
             String proxy = !profile.proxy().isBlank() ? " (" + profile.proxy() + ")" : "";
-            addFormatedText("# %s's Profil %s %s", profile.name(), proxy, profileIsAlreadyInUse ? ACTIVE_TAG : "");
+            addFormatedText("# %s's Profil %s %s%s", profile.name(), proxy, getMemberPronouns(), profileIsAlreadyInUse ? ACTIVE_TAG : "");
         } else {
-            addFormatedText("# %s %s", member.getEffectiveName(), profileIsAlreadyInUse ? ACTIVE_TAG : "");
-            if (target == null && !linkedProfiles.isEmpty()) {
+            addFormatedText("# %s %s%s", target.getEffectiveName(), getMemberPronouns(), profileIsAlreadyInUse ? ACTIVE_TAG : "");
+            if (!linkedProfiles.isEmpty()) {
                 addTextDisplay("-# Standardprofil");
             }
         }
@@ -170,7 +170,7 @@ public class ProfilContainer extends Container {
             }
         }
         // add new profile btn
-        if (Util.isPermitted(initiator, Stream.of(EnvKey.ROLE_DIDSYSTEM).map(EnvKey::getAsRole).toList())) {
+        if (Util.isPermitted(target, Stream.of(EnvKey.ROLE_DIDSYSTEM).map(EnvKey::getAsRole).toList())) {
             profileControl.add(new AddProfileBtn().build());
         }
 
@@ -184,7 +184,7 @@ public class ProfilContainer extends Container {
         // profile select
         if (!linkedProfiles.isEmpty()) {
             ProfileUseSelect profileUseSelect = new ProfileUseSelect();
-            profileUseSelect.setMember(initiator);
+            profileUseSelect.setMember(target);
             profileUseSelect.setProfile(profile);
 
             addComponent(
@@ -197,6 +197,19 @@ public class ProfilContainer extends Container {
                 addFormatedText("-# Es können nur 25 Optionen angezeigt werden. Verwende </profile show:1542519831729934447> um ein spezifisches Profil anzusehen.");
             }
         }
+    }
+
+    private String getMemberPronouns() {
+        log.info("Getting member pronouns for {}", target);
+        Map<Role, Emoji> userPronouns = PRONOUN_ROLES.entrySet().stream().filter(entry -> target.getRoles().contains(entry.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        log.info("Member pronouns: {}", userPronouns);
+        List<String> pronouns = userPronouns.entrySet().stream().map(entry -> {
+            return entry.getValue().getFormatted();
+        }).toList();
+        if (pronouns.isEmpty()) {
+            return " ";
+        }
+        return String.join(" ", pronouns);
     }
 
     private String buildSettingsText() {
@@ -221,7 +234,7 @@ public class ProfilContainer extends Container {
     }
 
     private Map<String, String> mapSettings() throws SQLException {
-        Settings settings = SettingRepository.getSettings(initiator);
+        Settings settings = SettingRepository.getSettings(target);
         if (settings == null) {
             return null;
         }
@@ -229,7 +242,7 @@ public class ProfilContainer extends Container {
         Map<String, String> mappedSettings = new HashMap<>();
         for (Setting setting : Setting.values()) {
             try {
-                Object rawValue = SettingRepository.getSetting(initiator, setting, setting.getDataType());
+                Object rawValue = SettingRepository.getSetting(target, setting, setting.getDataType());
                 if (rawValue == null) {
                     continue; // skip setting
                 }
@@ -253,8 +266,7 @@ public class ProfilContainer extends Container {
     }
 
     private CompletableFuture<FileUpload> buildProfileBanner() {
-        Member member = target != null ? target : initiator;
-        CompletableFuture<BufferedImage> bufferedBanner = BannerResolver.resolveGlobalBanner(member);
+        CompletableFuture<BufferedImage> bufferedBanner = BannerResolver.resolveGlobalBanner(target);
         CompletableFuture<BufferedImage> bufferedProfilePicture = fetchProfilePicture();
 
         return bufferedBanner.thenCombine(bufferedProfilePicture, (banner, profilePicture) -> {
@@ -286,12 +298,11 @@ public class ProfilContainer extends Container {
     }
 
     private String getProfilePicture(boolean forceMemberProfile) {
-        Member member = target != null ? target : initiator;
         try {
             if (!forceMemberProfile && profile != null && profile.profilePicture() != null && !profile.profilePicture().isBlank()) {
                 return new ImageProxy(profile.profilePicture()).getUrl(1024);
             }
-            return member.getEffectiveAvatar(ImageFormat.PNG).getUrl(1024);
+            return target.getEffectiveAvatar(ImageFormat.PNG).getUrl(1024);
         } catch (Exception e) {
             return ExceptionHandler.fail(e);
         }

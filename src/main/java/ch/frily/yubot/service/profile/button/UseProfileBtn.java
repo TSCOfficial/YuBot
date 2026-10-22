@@ -45,7 +45,7 @@ public class UseProfileBtn extends Button {
             // ignore missing argument (sets to default profile)
         }
 
-        ProfilContainer newProfileView = new ProfilContainer(event.getMember());
+        ProfilContainer newProfileView = new ProfilContainer(event.getMember(), event.getMember());
         String reply;
         if (profileId == null) {
             ProfileRepository.unselectProfiles(event.getMember());

@@ -69,7 +69,7 @@ public class ProfileUseSelect implements IStringSelect {
     public void execute(@NonNull StringSelectInteractionEvent event) throws SQLException {
         String selectedValue = event.getSelectedOptions().getFirst().getValue();
 
-        ProfilContainer profileContainer = new ProfilContainer(event.getMember());
+        ProfilContainer profileContainer = new ProfilContainer(event.getMember(), event.getMember());
 
         if (!selectedValue.equals(DEFAULT_ACCOUNT_KEY)) {
             Profile selectedProfile = ProfileRepository.getProfileById(selectedValue);

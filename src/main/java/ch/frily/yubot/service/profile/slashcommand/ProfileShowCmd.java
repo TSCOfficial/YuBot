@@ -60,12 +60,10 @@ public class ProfileShowCmd implements ISlashSubcommand {
         event.deferReply(true).queue();
         Member initiator = event.getMember();
         Member target = event.getOption("user") != null ? event.getOption("user").getAsMember() : null;
-        ProfilContainer container = new ProfilContainer(initiator);
+        ProfilContainer container = new ProfilContainer(initiator, target);
 
         ProfileRepository.getCurrentUserProfile(initiator).ifPresent(container::setProfile);
-        if (target != null) {
-            container.setTarget(target);
-        } else if (event.getOption("profile") != null) {
+        if (event.getOption("profile") != null) {
             Profile selectedProfile = ProfileRepository.getProfileById(event.getOption("profile").getAsString());
             container.setProfile(selectedProfile);
         }
