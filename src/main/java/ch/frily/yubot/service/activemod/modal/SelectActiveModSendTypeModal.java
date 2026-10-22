@@ -5,7 +5,7 @@ import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.activemod.ActiveMod;
 import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.service.profile.Setting;
-import ch.frily.yubot.service.profile.SettingOption;
+import ch.frily.yubot.service.profile.SettingChoice;
 import ch.frily.yubot.interaction.modal.Modal;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
@@ -44,7 +44,7 @@ public class SelectActiveModSendTypeModal extends Modal {
     @Override
     public List<ModalTopLevelComponent> getComponents() {
         RadioGroup.Builder builder = RadioGroup.create("type-selector");
-        Setting.ACTIVEMOD_SEND_IN_DM.getAutocompleteOptions().forEach(option -> builder.addOption(option.label(), String.valueOf(option.value()), option.description()));
+        Setting.ACTIVEMOD_SEND_IN_DM.getAutocompleteChoices().forEach(option -> builder.addOption(option.label(), String.valueOf(option.value()), option.description()));
         return List.of(
                 TextDisplay.of("""
                         Wähle aus wo du die ActiveMod-Nachrichten erhalten möchtest.
@@ -76,7 +76,7 @@ public class SelectActiveModSendTypeModal extends Modal {
         } else {
             SettingRepository.upsertSetting(event.getMember(), Setting.ACTIVEMOD_SEND_IN_DM, false);
         }
-        SettingOption<Boolean> selectedSetting = Setting.ACTIVEMOD_SEND_IN_DM.getOptionByValue(!couldntSetToDMs.get() && sendInDM); // get the option if it could be sent, else get overwrite (via Server)
+        SettingChoice<Boolean> selectedSetting = Setting.ACTIVEMOD_SEND_IN_DM.getOptionByValue(!couldntSetToDMs.get() && sendInDM); // get the option if it could be sent, else get overwrite (via Server)
         ActiveMod.registerModerator(event.getMember()).thenAccept(responseText -> {
             StringBuilder replySB = new StringBuilder();
             replySB.append(couldntSetToDMs.get() ? "⚠️ " : "✅ ");

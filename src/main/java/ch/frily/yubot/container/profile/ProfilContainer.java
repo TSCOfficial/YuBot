@@ -24,12 +24,10 @@ import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -39,8 +37,6 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -275,7 +271,7 @@ public class ProfilContainer extends Container {
                 }
 
                 String settingValue;
-                if (!setting.getAutocompleteOptions().isEmpty()) {
+                if (!setting.getAutocompleteChoices().isEmpty()) {
                     settingValue = setting.getOptionByValue(rawValue).label();
                 } else {
                     // custom text gets concat with " "

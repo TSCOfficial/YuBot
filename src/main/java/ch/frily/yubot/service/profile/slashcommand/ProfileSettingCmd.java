@@ -5,7 +5,7 @@ import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.service.profile.Setting;
-import ch.frily.yubot.service.profile.SettingOption;
+import ch.frily.yubot.service.profile.SettingChoice;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
@@ -50,23 +50,27 @@ public class ProfileSettingCmd implements ISlashSubcommand {
                 setting.getLabel(),
                 setting.getDescription(),
                 false,
-                !setting.getAutocompleteOptions().isEmpty()
+                !setting.getAutocompleteChoices().isEmpty()
         )).toList();
     }
 
     @Override
     public List<ISlashSubcommand> getSubcommands() {
+        Arrays.stream(Setting.values()).map(setting -> {
+            new ProfileSettingFactory(setting);
+        })
+
         return List.of(
-                new SubcmdTest()
+
         );
     }
 
     @Override
     public Map<String, List<Command.Choice>> getAutocomplete(CommandAutoCompleteInteractionEvent event) {
         return Arrays.stream(Setting.values())
-                .filter(setting -> !setting.getAutocompleteOptions().isEmpty())
+                .filter(setting -> !setting.getAutocompleteChoices().isEmpty())
                 .filter(setting -> Util.isPermitted(Objects.requireNonNull(event.getMember()), setting.getAllowedRoles()))
-                .collect(Collectors.toMap(Setting::getLabel, setting -> setting.getAutocompleteOptions().stream().map(autocompleteOption -> {
+                .collect(Collectors.toMap(Setting::getLabel, setting -> setting.getAutocompleteChoices().stream().map(autocompleteOption -> {
                     if (autocompleteOption.value() instanceof String || autocompleteOption.value() instanceof Boolean) {
                         return new Command.Choice(autocompleteOption.label(), String.valueOf(autocompleteOption.value()));
                     } else if (autocompleteOption.value() instanceof Integer) {
@@ -96,8 +100,8 @@ public class ProfileSettingCmd implements ISlashSubcommand {
                     if (specificFailure.isPresent()) {
                         failedSettingsSB.append(specificFailure.get());
                     } else {
-                        if (!setting.getAutocompleteOptions().isEmpty()) {
-                            SettingOption<?> resolvedOption = setting.getOptionByLabel(option.getAsString(), setting.getDataType());
+                        if (!setting.getAutocompleteChoices().isEmpty()) {
+                            SettingChoice<?> resolvedOption = setting.getOptionByLabel(option.getAsString(), setting.getDataType());
                             SettingRepository.upsertSetting(event.getMember(), setting, resolvedOption.value());
                         } else {
                             if (setting.getMinLength() > option.getAsString().length()) {
@@ -157,7 +161,7 @@ public class ProfileSettingCmd implements ISlashSubcommand {
         if (setting.getDataType() == Boolean.class){
             return true;
         }
-        List<SettingOption> autocompleteOptions = setting.getAutocompleteOptions();
+        List<SettingChoice> autocompleteOptions = setting.getAutocompleteChoices();
         if(autocompleteOptions.isEmpty()){
             return true;
         }
