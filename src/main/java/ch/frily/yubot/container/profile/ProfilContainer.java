@@ -71,6 +71,12 @@ public class ProfilContainer extends Container {
             Map.entry(EnvKey.ROLE_ANDEREFRAGEN.getAsRole(), EnvKey.EMOJI_PRONOMEN_ANDEREFRAGEN.getAsEmoji())
     );
 
+    private static final List<Role> DM_ROLES = Stream.of(
+            EnvKey.ROLE_DMOFFEN,
+            EnvKey.ROLE_DMFRAGEN,
+            EnvKey.ROLE_DM_GESCHLOSSEN
+    ).map(EnvKey::getAsRole).toList();
+
     /** Whether the profile is owned by the person viewing the profile details */
     @Getter
     private boolean isOwnProfile = false;
@@ -123,7 +129,11 @@ public class ProfilContainer extends Container {
     }
 
     private void assemblePublicProfile() {
+        addFormatedText("# %s %s", target.getEffectiveName(), getMemberPronouns());
 
+        if (getMemberDMStatus() != null) {
+            addFormatedText("-# %s", getMemberDMStatus());
+        }
     }
 
     /**
@@ -210,6 +220,10 @@ public class ProfilContainer extends Container {
             return " ";
         }
         return String.join(" ", pronouns);
+    }
+
+    private String getMemberDMStatus() {
+        return target.getRoles().stream().filter(DM_ROLES::contains).findFirst().map(Role::getName).orElse(null);
     }
 
     private String buildSettingsText() {
