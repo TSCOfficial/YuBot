@@ -133,6 +133,58 @@ public enum EnvKey {
     EMOJI_PRONOMEN_KEINE("1557055712293691422"),
     EMOJI_PRONOMEN_ANDEREFRAGEN("1557055479648092281"),
 
+    EMOJI_COLOR_BLAUTUERKIS("<:blau_tuerkis:1558097741891240017>"),
+    EMOJI_COLOR_BLAUPETROL("<:blau_petrol:1558097740632690779>"),
+    EMOJI_COLOR_BLAUKORNBLUME("<:blau_kornblume:1558097738720219197>"),
+    EMOJI_COLOR_BLAUINDIGO("<:blau_indigo:1558097735041683456>"),
+    EMOJI_COLOR_BLAUEISBLAU("<:blau_eisblau:1558097733754032239>"),
+    EMOJI_COLOR_BLAUBLAU("<:blau_blau:1558097726066139136>"),
+    EMOJI_COLOR_BLAUAZUR("<:blau_azur:1558097724383961128>"),
+    EMOJI_COLOR_BLAUAQUA("<:blau_aqua:1558097720080601150>"),
+
+    EMOJI_COLOR_GELBZITRONE("<:gelb_zitrone:1558097600572301453>"),
+    EMOJI_COLOR_GELBVANILLE("<:gelb_vanille:1558097598894575687>"),
+    EMOJI_COLOR_GELBSENF("<:gelb_senf:1558097597166657627>"),
+    EMOJI_COLOR_GELBGOLD("<:gelb_gold:1558097595266637845>"),
+    EMOJI_COLOR_GELBGELB("<:gelb_gelb:1558097593559683102>"),
+
+    EMOJI_COLOR_GRUENSMARAGD("<:gruen_smaragd:1558097248905207828>"),
+    EMOJI_COLOR_GRUENSEEGRUEN("<:gruen_seegruen:1558097247630004306>"),
+    EMOJI_COLOR_GRUENPISTAZIE("<:gruen_pistazie:1558097246417850368>"),
+    EMOJI_COLOR_GRUENOLIVGRUEN("<:gruen_olivgruen:1558097245130334268>"),
+    EMOJI_COLOR_GRUENMINZE("<:gruen_minze:1558097243620245554>"),
+    EMOJI_COLOR_GRUENLINDGRUEN("<:gruen_lindgruen:1558097242001510481>"),
+    EMOJI_COLOR_GRUENKLEEGRUEN("<:gruen_kleegruen:1558097239719677993>"),
+    EMOJI_COLOR_GRUENHELLGRUEN("<:gruen_hellgruen:1558097238402801744>"),
+    EMOJI_COLOR_GRUENGRUEN("<:gruen_gruen:1558097237030993971>"),
+
+    EMOJI_COLOR_PINKZARTROSA("<:pink_zartrosa:1558097055673614387>"),
+    EMOJI_COLOR_PINKROSEQUARZ("<:pink_rosequarz:1558097054574575697>"),
+    EMOJI_COLOR_PINKROSA("<:pink_rosa:1558097053362561145>"),
+    EMOJI_COLOR_PINKPINK("<:pink_pink:1558097049231171595>"),
+    EMOJI_COLOR_PINKMAGENTA("<:pink_magenta:1558097047083810857>"),
+    EMOJI_COLOR_PINKFUCHSIA("<:pink_fuchsia:1558097045611618414>"),
+    EMOJI_COLOR_PINKFLAMINGO("<:pink_flamingo:1558097043656810507>"),
+
+    EMOJI_COLOR_ROTSCHARLACH("<:rot_scharlach:1558096817244217475>"),
+    EMOJI_COLOR_ROTROTORANGE("<:rot_rotorange:1558096816011219025>"),
+    EMOJI_COLOR_ROTROT("<:rot_rot:1558096813809074176>"),
+    EMOJI_COLOR_ROTORANGE("<:rot_orange:1558096812202786866>"),
+    EMOJI_COLOR_ROTMANDARINE("<:rot_mandarine:1558096810629660763>"),
+    EMOJI_COLOR_ROTKUPFER("<:rot_kupfer:1558096808750751794>"),
+    EMOJI_COLOR_ROTKORALLE("<:rot_korall:1558096806137827459>"),
+    EMOJI_COLOR_ROTAPRIKOSE("<:rot_aprkiose:1558096804292198471>"),
+
+    EMOJI_COLOR_VIOLETTVIOLETT("<:violett_violett:1558096476549423175>"),
+    EMOJI_COLOR_VIOLETTVEILCHEN("<:violett_veilchen:1558096475160842260>"),
+    EMOJI_COLOR_VIOLETTPFLAUME("<:violett_pflaume:1558096473885773854>"),
+    EMOJI_COLOR_VIOLETTORCHIDEE("<:violett_orchidee:1558096472296390727>"),
+    EMOJI_COLOR_VIOLETTLILA("<:violett_lila:1558096470698098778>"),
+    EMOJI_COLOR_VIOLETTLAVENDER("<:violett_lavendel:1558096469624627262>"),
+    EMOJI_COLOR_VIOLETTFLIEDER("<:violett_flieder:1558096468236042261>"),
+    EMOJI_COLOR_VIOLETTDUNKELMAGENTA("<:violett_dunkelmagenta:1558096466180964384>"),
+    EMOJI_COLOR_VIOLETTBROMBEERE("<:violett_brombeere:1558096463207079957>"),
+
     TIMEZONE("Europe/Berlin");
 
     @Getter
@@ -220,11 +272,19 @@ public enum EnvKey {
     }
 
     /**
-     * Get a guild emoji
+     * Get an emoji
+     * <p>
+     *     If the value is an ID, it will be retrieved from the guild. If the value is a formatted emoji, it will be created from the formatted string.
+     * </p>
      * @return
      */
     public Emoji getAsEmoji() {
-        return EnvKey.GUILD_YUSERVER.getAsGuild().getEmojiById(this.value);
+        Emoji emoji = EnvKey.GUILD_YUSERVER.getAsGuild().getEmojiById(this.value);
+
+        if (emoji == null) {
+            emoji = Emoji.fromFormatted(this.value);
+        }
+        return emoji;
     }
 
     public ZoneId getAsZoneId(){

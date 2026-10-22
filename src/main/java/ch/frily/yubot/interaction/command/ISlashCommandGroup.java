@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
 import java.util.List;
 
@@ -27,8 +28,11 @@ public interface ISlashCommandGroup {
 
         getSubcommands().forEach(sub -> {
             SubcommandData subData = new SubcommandData(sub.getName(), sub.getDescription());
-            if (!sub.getOptions().isEmpty()) subData.addOptions(sub.getOptions());
+            if (!sub.getOptions().isEmpty()) {
+                subData.addOptions(sub.getOptions());
+            }
             slashCommand.addSubcommands(subData);
+
         });
 
         return slashCommand;

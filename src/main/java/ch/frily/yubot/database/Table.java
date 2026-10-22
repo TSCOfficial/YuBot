@@ -122,7 +122,8 @@ public enum Table {
     public enum SettingColumn implements Column {
         MEMBER_ID("member_id"),
         ACTIVEMOD_SEND_IN_DM("activemod_send_in_dm"),
-        ABSENCE_NOTICE("absence_notice");
+        ABSENCE_NOTICE("absence_notice"),
+        ACTIVEMOD_COLOR("activemod_color");
         private final String column;
     }
 
