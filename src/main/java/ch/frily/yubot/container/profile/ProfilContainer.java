@@ -8,6 +8,7 @@ import ch.frily.yubot.service.profile.Settings;
 import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.service.profile.Setting;
 import ch.frily.yubot.service.profile.button.AddProfileBtn;
+import ch.frily.yubot.service.profile.button.DeleteProfileBtn;
 import ch.frily.yubot.service.profile.button.EditProfileBtn;
 import ch.frily.yubot.service.profile.button.UseProfileBtn;
 import ch.frily.yubot.interaction.select.ISelect;
@@ -169,20 +170,29 @@ public class ProfilContainer extends Container {
         }
 
         List<Button> profileControl = new ArrayList<>();
-        // use & edit profile
+
+        // use profile
         if (!linkedProfiles.isEmpty()) {
             profileControl.add(useProfileBtn.build());
-
-            if (profile != null) {
-                EditProfileBtn editProfileBtn = new EditProfileBtn();
-                editProfileBtn.addArgument("p", profile.profileId());
-                profileControl.add(editProfileBtn.build());
-            }
         }
         // add new profile btn
         if (Util.isPermitted(target, Stream.of(EnvKey.ROLE_DIDSYSTEM).map(EnvKey::getAsRole).toList())) {
             profileControl.add(new AddProfileBtn().build());
         }
+        // edit & delete profile
+        if (!linkedProfiles.isEmpty()) {
+
+            if (profile != null) {
+                EditProfileBtn editProfileBtn = new EditProfileBtn();
+                editProfileBtn.addArgument("p", profile.profileId());
+                profileControl.add(editProfileBtn.build());
+
+                DeleteProfileBtn deleteProfileBtn = new DeleteProfileBtn();
+                deleteProfileBtn.addArgument("p", profile.profileId());
+                profileControl.add(deleteProfileBtn.build());
+            }
+        }
+
 
         if (!profileControl.isEmpty()) {
             addLineSeparator(Separator.Spacing.SMALL);

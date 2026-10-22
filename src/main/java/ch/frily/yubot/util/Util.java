@@ -17,6 +17,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 public class Util {
 
@@ -199,5 +200,21 @@ public class Util {
 
     public static GuildChannel resolveThreadParent(ThreadChannel thread) {
         return thread.getParentChannel();
+    }
+
+    /**
+     * Extracts UTF-16 text from a given input string
+     * <p>
+     *     Keeps a-Z, 0-9 & punctuation<br>
+     *     Discards emojis, non-UTF-16 characters etc
+     * </p>
+     * @param text The input string to extract text from.
+     * @return The extracted text and Markdown escaped
+     */
+    public static String extractText(String text) {
+        Pattern pattern = Pattern.compile("[^\\p{L}\\p{N}\\-\\s\\*]");
+        if (text == null || text.isBlank()) return text;
+        String roleName = pattern.matcher(text).replaceAll("").trim();
+        return Util.escapeMarkdown(roleName);
     }
 }

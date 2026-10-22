@@ -157,4 +157,15 @@ public class ProfileRepository {
             ProfileHistoryRepository.create(oldProfile, newProfile);
         }
     }
+
+    public static void deleteProfile(Profile profile) throws SQLException {
+        deleteProfileById(profile.profileId());
+    }
+
+    public static void deleteProfileById(String profileId) throws SQLException {
+        DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
+        query.where(Table.ProfileColumn.ID, DatabaseQuery.Operator.EQUALS, profileId);
+        query.delete();
+        query.executeQuery();
+    }
 }

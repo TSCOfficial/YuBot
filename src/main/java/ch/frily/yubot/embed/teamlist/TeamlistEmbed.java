@@ -43,8 +43,6 @@ public class TeamlistEmbed implements IEmbed {
             EnvKey.ROLE_DESIGN
     ).map(EnvKey::getAsRole).toList();
 
-    private static final Pattern ROLE_NAME_PATTERN = Pattern.compile("[^\\p{L}\\p{N}\\-\\s\\*]");
-
     @Override
     public String getTitle() {
         Role teamRole = EnvKey.ROLE_YUTEAM.getAsRole();
@@ -124,7 +122,7 @@ public class TeamlistEmbed implements IEmbed {
         }
 
         return new Field(
-                String.format("%s *(%s)*", extractText(role.getName()), userCount),
+                String.format("%s *(%s)*", Util.extractText(role.getName()), userCount),
                 getRoleMention(role) + "\n" + userList,
                 true
         );
@@ -149,11 +147,5 @@ public class TeamlistEmbed implements IEmbed {
             return "`Role nicht gefunden`";
         }
         return role.getAsMention();
-    }
-
-    private static String extractText(String input) {
-        if (input == null || input.isBlank()) return input;
-        String roleName = ROLE_NAME_PATTERN.matcher(input).replaceAll("").trim();
-        return Util.escapeMarkdown(roleName);
     }
 }

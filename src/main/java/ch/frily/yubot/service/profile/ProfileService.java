@@ -3,6 +3,7 @@ package ch.frily.yubot.service.profile;
 import ch.frily.yubot.event.IEvent;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.service.profile.button.AddProfileBtn;
+import ch.frily.yubot.service.profile.button.DeleteProfileBtn;
 import ch.frily.yubot.service.profile.button.EditProfileBtn;
 import ch.frily.yubot.service.profile.button.UseProfileBtn;
 import ch.frily.yubot.interaction.command.ISlashCommandGroup;
@@ -11,6 +12,7 @@ import ch.frily.yubot.service.profile.ctxmenu.EditWebhookMsgCtxMenu;
 import ch.frily.yubot.service.profile.ctxmenu.LookupProfileCtxMenu;
 import ch.frily.yubot.service.profile.event.MessageReceivedEvent;
 import ch.frily.yubot.service.profile.modal.AddProfileModal;
+import ch.frily.yubot.service.profile.modal.DeleteProfileModal;
 import ch.frily.yubot.service.profile.modal.EditWebhookMessageModal;
 import ch.frily.yubot.service.profile.select.ProfileUseSelect;
 import ch.frily.yubot.service.profile.slashcommand.ProfileCmdGroup;
@@ -55,7 +57,8 @@ public class ProfileService extends Service {
         return List.of(
                 new AddProfileBtn(),
                 new EditProfileBtn(),
-                new UseProfileBtn()
+                new UseProfileBtn(),
+                new DeleteProfileBtn()
         );
     }
 
@@ -63,7 +66,8 @@ public class ProfileService extends Service {
     public List<Modal> getModals() {
         return List.of(
                 new AddProfileModal(),
-                new EditWebhookMessageModal()
+                new EditWebhookMessageModal(),
+                new DeleteProfileModal()
         );
     }
 
