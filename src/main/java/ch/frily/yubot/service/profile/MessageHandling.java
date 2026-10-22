@@ -101,7 +101,7 @@ public class MessageHandling {
                                 messageCreateAction.setFiles(files);
                             }
                             messageCreateAction.queue( msg -> {
-                                ProfileMessage profileMsg = new ProfileMessage(msg, profile, originalMessage.getChannel(), msg.getMember());
+                                ProfileMessage profileMsg = new ProfileMessage(msg, profile, originalMessage.getChannel(), originalMessage.getMember());
                                 try {
                                     ProfileMessageRepository.create(profileMsg);
                                 } catch (Exception e) {
