@@ -47,7 +47,7 @@ public class ProfileShowCmd implements ISlashSubcommand {
             return Map.of();
         } else {
             List<Command.Choice> choices = existingProfiles.stream().map(profile -> {
-                String proxy = !profile.proxy().isBlank() ? " (" + profile.proxy() + ")" : "";
+                String proxy = profile.proxy() != null ? " (" + profile.proxy() + ")" : "";
                 String isInUse = profile.isCurrentlyUsed() ? "🟢 " : "";
                 return new Command.Choice(isInUse + profile.name() + proxy, profile.profileId());
             }).toList();

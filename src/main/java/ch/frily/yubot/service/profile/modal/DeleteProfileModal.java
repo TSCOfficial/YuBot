@@ -49,7 +49,7 @@ public class DeleteProfileModal extends Modal {
         TextInput.Builder inputBuilder = TextInput.create("approve-delete", TextInputStyle.SHORT);
         inputBuilder.setRequired(true);
         inputBuilder.setRequiredRange(7, 7);
-        inputBuilder.setPlaceholder(Util.extractText(profile.name()));
+        inputBuilder.setPlaceholder("Löschen");
 
         return List.of(
                 TextDisplay.of(String.format("## %s löschen?", profile.name())),

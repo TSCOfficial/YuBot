@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ProfileUseCmd implements ISlashSubcommand {
     private static final String DEFAULT_ACCOUNT_KEY = "default-account";
@@ -45,7 +46,7 @@ public class ProfileUseCmd implements ISlashSubcommand {
         } else {
             List<Command.Choice> choices = new ArrayList<>();
             existingProfiles.forEach(profile -> {
-                String proxy = !profile.proxy().isBlank() ? " (" + profile.proxy() + ")" : "";
+                String proxy = Objects.nonNull(profile.proxy()) ? " (" + profile.proxy() + ")" : "";
                 String isInUse = profile.isCurrentlyUsed() ? "🟢 " : "";
                 choices.add(new Command.Choice(isInUse + profile.name() + proxy, profile.profileId()));
             });

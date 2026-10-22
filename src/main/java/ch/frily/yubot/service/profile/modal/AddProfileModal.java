@@ -62,14 +62,14 @@ public class AddProfileModal extends Modal {
         proxy.setRequiredRange(1, 6);
         proxy.setPlaceholder("prx");
 
-        if (profile != null && !profile.proxy().isBlank()) {
+        if (Objects.nonNull(profile) && Objects.nonNull(profile.proxy())) {
             proxy.setValue(profile.proxy());
         }
 
         TextInput.Builder profilepicture = TextInput.create("profilepicture-url", TextInputStyle.SHORT);
         profilepicture.setRequired(false);
         profilepicture.setPlaceholder("https://domain.org/exampleimage/xy.png");
-        if (profile != null && !profile.profilePicture().isBlank()) {
+        if (Objects.nonNull(profile) && Objects.nonNull(profile.profilePicture())) {
             profilepicture.setValue(profile.profilePicture());
         }
 
@@ -104,13 +104,13 @@ public class AddProfileModal extends Modal {
         String id = isEditMode ? profile.profileId() : UUID.randomUUID().toString();
         String profilename = profilenameValue.getAsString().trim();
         String proxy = null;
-        if (Objects.nonNull(event.getValue("proxy"))) {
+        if (Objects.nonNull(event.getValue("proxy")) && !event.getValue("proxy").getAsString().isBlank()) {
             proxy = event.getValue("proxy").getAsString().trim();
             validateProxy(event.getMember(), proxy, profile);
         }
 
         String imageUrl = null;
-        if (Objects.nonNull(event.getValue("profilepicture-url"))) {
+        if (Objects.nonNull(event.getValue("profilepicture-url")) && !event.getValue("profilepicture-url").getAsString().isBlank()) {
             imageUrl = event.getValue("profilepicture-url").getAsString().trim();
             validateUrl(imageUrl);
         }
@@ -181,6 +181,9 @@ public class AddProfileModal extends Modal {
         if (!proxy.isBlank()) {
             List<Profile> linkedProfiles = ProfileRepository.getProfilesFromAccount(member);
             List<Profile> conflictingProfile = linkedProfiles.stream().filter(profile -> {
+                if (Objects.isNull(profile.proxy())) {
+                    return false;
+                }
                 if (editingProfile != null) {
                     return profile.proxy().equals(proxy) && !profile.profileId().equals(editingProfile.profileId());
                 }

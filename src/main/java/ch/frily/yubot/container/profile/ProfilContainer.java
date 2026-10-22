@@ -146,12 +146,15 @@ public class ProfilContainer extends Container {
         boolean profileIsAlreadyInUse = (profile != null && currentProfile.isPresent() && Objects.equals(currentProfile.get().profileId(), profile.profileId())) || (profile == null && !linkedProfiles.isEmpty() && currentProfile.isEmpty());
 
         if (profile != null) {
-            String proxy = !profile.proxy().isBlank() ? " (" + profile.proxy() + ")" : "";
-            addFormatedText("# %s's Profil %s %s%s", profile.name(), proxy, getMemberPronouns(), profileIsAlreadyInUse ? ACTIVE_TAG : "");
+            String proxy = Objects.nonNull(profile.proxy()) ? " (" + profile.proxy() + ")" : "";
+            addFormatedText("# %s's Profil %s %s", profile.name(), proxy, profileIsAlreadyInUse ? ACTIVE_TAG : "");
         } else {
             addFormatedText("# %s %s%s", target.getEffectiveName(), getMemberPronouns(), profileIsAlreadyInUse ? ACTIVE_TAG : "");
             if (!linkedProfiles.isEmpty()) {
                 addTextDisplay("-# Standardprofil");
+            }
+            if (getMemberDMStatus() != null) {
+                addFormatedText("-# %s", getMemberDMStatus());
             }
         }
 

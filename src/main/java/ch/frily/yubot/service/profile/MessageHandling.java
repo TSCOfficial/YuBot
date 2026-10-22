@@ -52,7 +52,7 @@ public class MessageHandling {
                 var iconRef = new Object() {
                     Icon icon;
                 };
-                if (!profile.profilePicture().isBlank()) {
+                if (Objects.nonNull(profile.profilePicture())) {
                     try {
                         iconRef.icon = new ImageProxy(profile.profilePicture()).downloadAsIcon().get();
                     } catch (InterruptedException | ExecutionException _) {
@@ -173,7 +173,7 @@ public class MessageHandling {
         List<Profile> existingProfiles = ProfileRepository.getProfilesFromAccount(member);
 
         existingProfiles = existingProfiles.stream().filter(profile -> {
-            if (profile.proxy().isBlank()) {
+            if (Objects.isNull(profile.proxy())) {
                 return false;
             }
             return originalMessage.getContentRaw().startsWith(profile.proxy() + " ");

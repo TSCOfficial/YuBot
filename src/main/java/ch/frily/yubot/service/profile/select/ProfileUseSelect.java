@@ -15,6 +15,7 @@ import org.jspecify.annotations.NonNull;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 public class ProfileUseSelect implements IStringSelect {
@@ -45,7 +46,7 @@ public class ProfileUseSelect implements IStringSelect {
 
             List<SelectOption> options = new ArrayList<>();
             profiles.forEach(profile -> {
-                String proxy = !profile.proxy().isBlank() ? " (" + profile.proxy() + ")" : "";
+                String proxy = Objects.nonNull(profile.proxy()) ? " (" + profile.proxy() + ")" : "";
                 String isInUse = profile.isCurrentlyUsed() ? "🟢 " : "";
                 options.add(SelectOption.of(isInUse + profile.name() + proxy, profile.profileId()));
             });
