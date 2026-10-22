@@ -16,6 +16,12 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Represents a simple slash command.
+ * <p>
+ *     <code>/command</code>
+ * </p>
+ */
 public interface ISlashCommand {
 
     /**
@@ -69,7 +75,7 @@ public interface ISlashCommand {
     /**
      * Get the allowed roles of a slashcommand.
      * <p>
-     * Allowed roles are roles that a user needs to execute the command. (The user needs to have at least one of these roles)
+     * Allowed roles are roles that a user needs to have (at least one) to be able to execute the command.
      * <p>
      * <b>How to define roles using {@link EnvKey}:</b>
      * <pre><code>
@@ -80,7 +86,6 @@ public interface ISlashCommand {
      * </code></pre>
      * <p>
      * If left empty, everyone can execute the command. (except defined otherwise in {@link #getDefaultPermissions()})
-     * ModalTopLevelComponent
      */
     default List<Role> getAllowedRoles() {
         return List.of();

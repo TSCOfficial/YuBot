@@ -42,8 +42,17 @@ public class SlashCommandRegistry {
     public List<SlashCommandData> registerGroups(List<ISlashCommandGroup> commandGroups) {
         commandGroups.forEach(group -> {
             List<String> registeredCmdNames = group.getSubcommands().stream().map(cmd -> {
-                subcommands.put(group.getName() + " " + cmd.getName(), cmd);
-                return "'" + cmd.getName() + "'";
+                if (cmd.getSubcommands().isEmpty()) {
+                    subcommands.put(group.getName() + " " + cmd.getName(), cmd);
+                    return "'" + cmd.getName() + "'";
+                } else {
+                    List<String> registeredSubcmdNames = cmd.getSubcommands().stream().map(subcmd -> {
+                        subcommands.put(group.getName() + " " + cmd.getName() + " " + subcmd.getName(), subcmd);
+                        return "'" + subcmd.getName() + "'";
+                    }).toList();
+                    return "'" + cmd.getName() + "' [with subcommands " + String.join(", ", registeredSubcmdNames) + "]";
+                }
+
             }).toList();
             log.info("Registered slashcommand-group '{}' with subcommands {}.", group.getName(), String.join(", ", registeredCmdNames));
         });

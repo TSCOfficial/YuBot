@@ -55,6 +55,13 @@ public class ProfileSettingCmd implements ISlashSubcommand {
     }
 
     @Override
+    public List<ISlashSubcommand> getSubcommands() {
+        return List.of(
+                new SubcmdTest()
+        );
+    }
+
+    @Override
     public Map<String, List<Command.Choice>> getAutocomplete(CommandAutoCompleteInteractionEvent event) {
         return Arrays.stream(Setting.values())
                 .filter(setting -> !setting.getAutocompleteOptions().isEmpty())
