@@ -159,7 +159,8 @@ public enum Table {
     public enum ProfileMessageColumn implements Column {
         MESSAGE_ID("message_id"),
         PROFILE_ID("profile_id"),
-        CHANNEL_ID("channel_id");
+        CHANNEL_ID("channel_id"),
+        MEMBER_ID("member_id");
        private final String column;
     }
 

@@ -31,7 +31,7 @@ public class EditWebhookMsgCtxMenu implements IMessageContextMenu {
         }
 
         if (!isOwner) {
-            throw new PermissionDeniedException("Nur das Konto welches diese Nachricht verfasst hat kann die Nachricht bearbeiten");
+            throw new PermissionDeniedException("Nur das Konto, welches diese Nachricht verfasst hat, kann die Nachricht bearbeiten");
         }
 
         EditWebhookMessageModal modal = new EditWebhookMessageModal();

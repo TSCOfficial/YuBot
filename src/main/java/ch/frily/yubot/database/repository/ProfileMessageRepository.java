@@ -1,10 +1,12 @@
 package ch.frily.yubot.database.repository;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.service.profile.Profile;
 import ch.frily.yubot.service.profile.ProfileMessage;
+import ch.frily.yubot.util.EnvKey;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 
@@ -25,6 +27,7 @@ public class ProfileMessageRepository {
         query.insert(Table.ProfileMessageColumn.PROFILE_ID, profileMessage.profile().profileId());
         query.insert(Table.ProfileMessageColumn.MESSAGE_ID, profileMessage.message().getId());
         query.insert(Table.ProfileMessageColumn.CHANNEL_ID, profileMessage.channel().getId());
+        query.insert(Table.ProfileMessageColumn.MEMBER_ID, profileMessage.member().getId());
 
         query.executeQuery();
     }
@@ -44,10 +47,19 @@ public class ProfileMessageRepository {
 
         if (rs.next()) {
             String profileId = rs.getString(Table.ProfileMessageColumn.PROFILE_ID.getColumn());
+            String memberId = rs.getString(Table.ProfileMessageColumn.MEMBER_ID.getColumn());
 
-            Profile profileRef = ProfileRepository.getProfileById(profileId);
+            Profile profileRef = null;
+            if (profileId != null) {
+                profileRef = ProfileRepository.getProfileById(profileId);
+            }
 
-            return new ProfileMessage(message, profileRef, message.getChannel());
+            Member memberRef = null;
+            if (memberId != null) {
+                memberRef = EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(memberId);
+            }
+
+            return new ProfileMessage(message, profileRef, message.getChannel(), memberRef);
         }
         throw new NotFoundException(String.format("Webhook-Nachricht mit ID '%s/%s' nicht gefunden.", message.getChannel().getId(),  message.getId()));
     }
@@ -58,8 +70,8 @@ public class ProfileMessageRepository {
      */
     public static boolean isOwner(Member member, Message message) throws SQLException {
         Objects.requireNonNull(member);
-        Profile profile = get(message).profile();
+        Member messageOwner = get(message).member();
 
-        return member.getId().equals(profile.parentAccount().getId());
+        return member.getId().equals(messageOwner.getId());
     }
 }
