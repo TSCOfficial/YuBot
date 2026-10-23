@@ -1,22 +1,22 @@
 package ch.frily.yubot.service.profile.slashcommand;
 
+import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.service.profile.Setting;
 import ch.frily.yubot.service.profile.SettingContext;
 import ch.frily.yubot.service.profile.SettingChoice;
+import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -66,10 +66,15 @@ public class ProfileSettingFactory implements ISlashSubcommand {
 
     @Override
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
-        OptionMapping optionMapping = Objects.requireNonNull(event.getOption(option.getName()));
-        String value = optionMapping.getAsString();
-        SettingContext context = new SettingContext(setting, event);
-        onSubmit.apply(context);
+        log.info("Executing Profile Setting Factory");
+        if (Util.isPermitted(event.getMember(), this.allowedRoles)) {
+            String selectedValue = event.getOption(this.option.getName()).getAsString();
+            SettingContext context = new SettingContext<>(setting, event, setting.getChoiceByLabel(selectedValue).value());
+            onSubmit.apply(context);
+        } else {
+            throw new PermissionDeniedException(String.format("Diese Einstellung ist nur für %s verfügbar.", this.getAllowedRoles().stream().map(Role::getName).collect(Collectors.joining(", "))));
+        }
+
     }
 
     @Override
@@ -83,7 +88,7 @@ public class ProfileSettingFactory implements ISlashSubcommand {
     }
 
     @Override
-    public Map<String, List<Command.Choice>> getAutocomplete(CommandAutoCompleteInteractionEvent event) throws SQLException {
+    public Map<String, List<Command.Choice>> getAutocomplete(CommandAutoCompleteInteractionEvent event) {
         if (!autocompleteChoices.isEmpty()) {
             List<Command.Choice> choices = autocompleteChoices.stream().map(choice -> {
                 return new Command.Choice(choice.label(), String.valueOf(choice.value()));

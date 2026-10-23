@@ -5,6 +5,7 @@ import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.service.profile.modal.ProfileSettingActivemodColorModal;
 import ch.frily.yubot.util.EnvKey;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -13,20 +14,21 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Function;
 
+@Slf4j
 public enum Setting {
     ACTIVEMOD_SEND_IN_DM(
             "aktivitätsbestätigungsanfrage",
             "Entscheide wo deine ActiveMod-Nachrichten gesendet werden.",
             Table.SettingColumn.ACTIVEMOD_SEND_IN_DM,
             List.of(EnvKey.ROLE_MODERATOR),
-            new OptionData(OptionType.STRING, "via", "Wähle das Medium aus, worüber die Nachricht versendet werden soll"),
+            new OptionData(OptionType.STRING, "via", "Wähle das Medium aus, worüber die Nachricht versendet werden soll", true, true),
             List.of(
                     new SettingChoice<>("Server", false, "Sendet die Nachricht in #active-moderation (standard)"),
                     new SettingChoice<>("DM", true, "Sendet die Nachrichten per DM")
             ),
             (ctx) -> {
                 try {
-                    SettingRepository.upsertSetting(ctx.event().getMember(), ctx.setting(), ctx.event().getOption("via").getAsString());
+                    SettingRepository.upsertSetting(ctx.event().getMember(), ctx.setting(), ctx.value());
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
@@ -36,10 +38,10 @@ public enum Setting {
     ),
     ABSENCE_NOTICE(
             "abwesenheitsmeldung",
-            "Nachricht welche bei @Erwähnungen während deiner Absenz gesendet wird.",
+            "Passe die Nachricht an, welche bei @Erwähnungen während deiner Absenz gesendet wird.",
             Table.SettingColumn.ABSENCE_NOTICE,
             List.of(EnvKey.ROLE_YUTEAM, EnvKey.ROLE_TWITCHMOD),
-            new OptionData(OptionType.STRING, "text", "Wähle den Text der gesendet werden soll"),
+            new OptionData(OptionType.STRING, "text", "Wähle den Text der gesendet werden soll", true),
             (ctx) -> {
                 try {
                     SettingRepository.upsertSetting(ctx.event().getMember(), ctx.setting(), ctx.event().getOption("text").getAsString());
@@ -134,8 +136,22 @@ public enum Setting {
         return Arrays.stream(Setting.values()).filter(setting -> setting.getLabel().equals(label)).findFirst().orElse(null);
     }
 
-    public SettingChoice getChoiceByValue(Object value){
-        return this.autocompleteChoices.stream().filter(choice -> String.valueOf(choice.value()).equals(value)).findFirst().orElse(null);
+    /**
+     * Get the {@link SettingChoice} by {@link SettingChoice#label()}
+     * @param label The laben of the SettingChoice
+     * @return
+     */
+    public SettingChoice getChoiceByLabel(String label){
+        return this.autocompleteChoices.stream().filter(choice -> String.valueOf(choice.value()).equals(label)).findFirst().orElse(null);
+    }
+
+    /**
+     * Get the {@link SettingChoice} by {@link SettingChoice#value()}
+     * @param value The selected value
+     * @return
+     */
+    public <T> SettingChoice<T> getChoiceByValue(T value){
+        return this.autocompleteChoices.stream().filter(choice -> choice.value().equals(value)).findFirst().orElse(null);
     }
 }
 

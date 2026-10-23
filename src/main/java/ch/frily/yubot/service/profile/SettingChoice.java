@@ -5,7 +5,10 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import javax.annotation.Nullable;
 
 /**
- * Maps the settings to all required generic utilities
+ * Provides autocomplete choices for the settings
+ * <p>
+ *     While {@link #value} being the value that is stored to the database
+ * </p>
  */
 public record SettingChoice<T>(String label, T value, @Nullable String description){
 
