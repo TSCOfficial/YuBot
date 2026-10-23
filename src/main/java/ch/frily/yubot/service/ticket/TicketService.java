@@ -10,11 +10,13 @@ import ch.frily.yubot.service.Service;
 import ch.frily.yubot.service.ticket.button.*;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.command.ISlashCommandGroup;
+import ch.frily.yubot.service.ticket.ctxmenu.ModticketMsgCtxMenu;
+import ch.frily.yubot.service.ticket.ctxmenu.ModticketUserCtxMenu;
 import ch.frily.yubot.service.ticket.event.TicketMessageReceivedEvent;
 import ch.frily.yubot.service.ticket.event.TicketOwnerLeftGuildEvent;
+import ch.frily.yubot.service.ticket.modal.ModTicketSelectorModal;
 import ch.frily.yubot.service.ticket.slashcommand.TicketCmdGroup;
 import ch.frily.yubot.interaction.contextmenu.IContextMenu;
-import ch.frily.yubot.service.ticket.ctxmenu.ModticketCtxMenu;
 import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.service.ticket.modal.TicketSummaryModal;
 import ch.frily.yubot.service.ticket.modal.TicketTypeSelectorModal;
@@ -42,7 +44,8 @@ public class TicketService extends Service {
     private static TicketService instance;
 
     /** Permissions for the ticketowner and supportteam */
-    protected static final List<Permission> USER_PERMISSION = List.of(Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND, Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_ATTACH_FILES, Permission.USE_APPLICATION_COMMANDS);
+    public static final List<Permission> USER_PERMISSION = List.of(Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND, Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_ATTACH_FILES, Permission.USE_APPLICATION_COMMANDS);
+    public static final List<Permission> TEAM_PERMISSION = List.of(Permission.MESSAGE_MENTION_EVERYONE, Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND, Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_ATTACH_FILES, Permission.USE_APPLICATION_COMMANDS);
 
     /** Maximum ticket count per Person over all categories */
     private static final int MAX_TICKET_COUNT = 5;
@@ -90,7 +93,8 @@ public class TicketService extends Service {
     public List<Modal> getModals() {
         return List.of(
                 new TicketSummaryModal(),
-                new TicketTypeSelectorModal()
+                new TicketTypeSelectorModal(),
+                new ModTicketSelectorModal()
         );
     }
 
@@ -104,7 +108,8 @@ public class TicketService extends Service {
     @Override
     public List<IContextMenu> getContextMenus() {
         return List.of(
-                new ModticketCtxMenu()
+                new ModticketUserCtxMenu(),
+                new ModticketMsgCtxMenu()
         );
     }
 
@@ -117,6 +122,9 @@ public class TicketService extends Service {
     }
 
     public void createTicket(TicketType type, Member ticketOwner, Consumer<TextChannel> onCreated) throws SQLException {
+        createTicket(type, type.getResponsibleRoles(), ticketOwner, onCreated);
+    }
+    public void createTicket(TicketType type, List<Role> responsibleRoles, Member ticketOwner, Consumer<TextChannel> onCreated) throws SQLException {
         List<TextChannel> openedTickets = TicketRepository.getTicketsByUser(ticketOwner.getUser()).stream().map(Ticket::getChannel).toList();
         if (openedTickets.size() >= MAX_TICKET_COUNT) {
             throw new PermissionDeniedException(String.format("""
@@ -150,20 +158,21 @@ public class TicketService extends Service {
                 .queue(textChannel -> {
                     // Ticket team permissions
                     TextChannelManager ticketManager = textChannel.getManager();
-                    ticket.getType().getResponsibleRoles().forEach(role -> {
-                        ticketManager.putRolePermissionOverride(role.getIdLong(), USER_PERMISSION, null);
+                    responsibleRoles.forEach(role -> {
+                        ticketManager.putRolePermissionOverride(role.getIdLong(), TEAM_PERMISSION, null);
                     });
                     ticketManager.queue();
 
 
                     // Ticket content
                     ticket.setChannel(textChannel);
-                    String roleMentions = " - " + type.getResponsibleRoles().stream().map(Role::getAsMention).collect(Collectors.joining(", "));
+                    String roleMentions = " - " + responsibleRoles.stream().map(Role::getAsMention).collect(Collectors.joining(", "));
                     if (ticket.getType() == TicketType.MODTICKET) {
                         roleMentions = "";
                     }
                     textChannel.sendMessage(ticketOwner.getAsMention() + roleMentions)
                             .addEmbeds(embed.build()).setComponents(actionrow).queue(ThrowingConsumer.wrap(null, message -> {
+                                textChannel.pinMessageById(message.getIdLong()).queue(); // todo delete message, add feature after the 30.10.2026
                                 ticket.setWelcomeMessageId(message.getIdLong());
                                 TicketRepository.createTicket(ticket);
 
