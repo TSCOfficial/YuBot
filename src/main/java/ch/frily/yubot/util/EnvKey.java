@@ -279,12 +279,11 @@ public enum EnvKey {
      * @return
      */
     public Emoji getAsEmoji() {
-        Emoji emoji = EnvKey.GUILD_YUSERVER.getAsGuild().getEmojiById(this.value);
-
-        if (emoji == null) {
-            emoji = Emoji.fromFormatted(this.value);
+        try {
+            return EnvKey.GUILD_YUSERVER.getAsGuild().getEmojiById(this.value);
+        } catch (NumberFormatException e) {
+            return Emoji.fromFormatted(this.value);
         }
-        return emoji;
     }
 
     public ZoneId getAsZoneId(){

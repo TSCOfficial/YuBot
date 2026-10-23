@@ -14,6 +14,7 @@ import ch.frily.yubot.service.profile.event.MessageReceivedEvent;
 import ch.frily.yubot.service.profile.modal.AddProfileModal;
 import ch.frily.yubot.service.profile.modal.DeleteProfileModal;
 import ch.frily.yubot.service.profile.modal.EditWebhookMessageModal;
+import ch.frily.yubot.service.profile.modal.ProfileSettingActivemodColorModal;
 import ch.frily.yubot.service.profile.select.ProfileUseSelect;
 import ch.frily.yubot.service.profile.slashcommand.ProfileCmdGroup;
 import ch.frily.yubot.interaction.contextmenu.IContextMenu;
@@ -67,7 +68,8 @@ public class ProfileService extends Service {
         return List.of(
                 new AddProfileModal(),
                 new EditWebhookMessageModal(),
-                new DeleteProfileModal()
+                new DeleteProfileModal(),
+                new ProfileSettingActivemodColorModal()
         );
     }
 
