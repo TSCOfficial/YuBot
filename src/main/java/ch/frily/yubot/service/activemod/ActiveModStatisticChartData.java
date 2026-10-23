@@ -1,5 +1,6 @@
 package ch.frily.yubot.service.activemod;
 
+import java.awt.*;
 import java.util.List;
 
 /**
@@ -9,5 +10,5 @@ import java.util.List;
  * @param xData
  * @param yData
  */
-public record ActiveModStatisticChartData(String label, boolean suppress, List<String> xData, List<Double> yData) {
+public record ActiveModStatisticChartData(String label, boolean suppress, Color color, List<String> xData, List<Double> yData) {
 }

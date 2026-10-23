@@ -59,39 +59,43 @@ public class ProfileSettingActivemodColorModal extends Modal {
         String replyMessage = String.format("✅ Die Einstellung **%s** wurde auf %s `%s` festgelegt.", setting.getLabel(), selectedOption.getEmoji(), selectedOption.getLabel());
         event.reply(replyMessage).setEphemeral(true).queue();
     }
-    
-    private List<SelectOption> getOptions() {
+
+    /**
+     * Selectable colors as SelectOption
+     * @return
+     */
+    public static List<SelectOption> getOptions() {
         return List.of(
-                SelectOption.of("Blau / Petrol", EnvKey.EMOJI_COLOR_BLAUPETROL.name()).withEmoji(EnvKey.EMOJI_COLOR_BLAUPETROL.getAsEmoji()),
-                SelectOption.of("Blau / Kornblume", EnvKey.EMOJI_COLOR_BLAUKORNBLUME.name()).withEmoji(EnvKey.EMOJI_COLOR_BLAUKORNBLUME.getAsEmoji()),
-                SelectOption.of("Blau / Azur", EnvKey.EMOJI_COLOR_BLAUAZUR.name()).withEmoji(EnvKey.EMOJI_COLOR_BLAUAZUR.getAsEmoji()),
-                SelectOption.of("Blau / Aqua", EnvKey.EMOJI_COLOR_BLAUAQUA.name()).withEmoji(EnvKey.EMOJI_COLOR_BLAUAQUA.getAsEmoji()),
+                SelectOption.of("Blau / Petrol", EnvKey.COLOR_BLAUPETROL.name()).withEmoji(EnvKey.EMOJI_COLOR_BLAUPETROL.getAsEmoji()),
+                SelectOption.of("Blau / Kornblume", EnvKey.COLOR_BLAUKORNBLUME.name()).withEmoji(EnvKey.EMOJI_COLOR_BLAUKORNBLUME.getAsEmoji()),
+                SelectOption.of("Blau / Azur", EnvKey.COLOR_BLAUAZUR.name()).withEmoji(EnvKey.EMOJI_COLOR_BLAUAZUR.getAsEmoji()),
+                SelectOption.of("Blau / Aqua", EnvKey.COLOR_BLAUAQUA.name()).withEmoji(EnvKey.EMOJI_COLOR_BLAUAQUA.getAsEmoji()),
 
-                SelectOption.of("Gelb / Zitrone", EnvKey.EMOJI_COLOR_GELBZITRONE.name()).withEmoji(EnvKey.EMOJI_COLOR_GELBZITRONE.getAsEmoji()),
-                SelectOption.of("Gelb / Vanille", EnvKey.EMOJI_COLOR_GELBVANILLE.name()).withEmoji(EnvKey.EMOJI_COLOR_GELBVANILLE.getAsEmoji()),
-                SelectOption.of("Gelb / Senf", EnvKey.EMOJI_COLOR_GELBSENF.name()).withEmoji(EnvKey.EMOJI_COLOR_GELBSENF.getAsEmoji()),
-                SelectOption.of("Gelb / Gold", EnvKey.EMOJI_COLOR_GELBGOLD.name()).withEmoji(EnvKey.EMOJI_COLOR_GELBGOLD.getAsEmoji()),
+                SelectOption.of("Gelb / Zitrone", EnvKey.COLOR_GELBZITRONE.name()).withEmoji(EnvKey.EMOJI_COLOR_GELBZITRONE.getAsEmoji()),
+                SelectOption.of("Gelb / Vanille", EnvKey.COLOR_GELBVANILLE.name()).withEmoji(EnvKey.EMOJI_COLOR_GELBVANILLE.getAsEmoji()),
+                SelectOption.of("Gelb / Senf", EnvKey.COLOR_GELBSENF.name()).withEmoji(EnvKey.EMOJI_COLOR_GELBSENF.getAsEmoji()),
+                SelectOption.of("Gelb / Gold", EnvKey.COLOR_GELBGOLD.name()).withEmoji(EnvKey.EMOJI_COLOR_GELBGOLD.getAsEmoji()),
 
-                SelectOption.of("Grün / Smaragd", EnvKey.EMOJI_COLOR_GRUENSMARAGD.name()).withEmoji(EnvKey.EMOJI_COLOR_GRUENSMARAGD.getAsEmoji()),
-                SelectOption.of("Grün / Olivgrün", EnvKey.EMOJI_COLOR_GRUENOLIVGRUEN.name()).withEmoji(EnvKey.EMOJI_COLOR_GRUENOLIVGRUEN.getAsEmoji()),
-                SelectOption.of("Grün / Lindgrün", EnvKey.EMOJI_COLOR_GRUENLINDGRUEN.name()).withEmoji(EnvKey.EMOJI_COLOR_GRUENLINDGRUEN.getAsEmoji()),
-                SelectOption.of("Grün / Kleegrün", EnvKey.EMOJI_COLOR_GRUENKLEEGRUEN.name()).withEmoji(EnvKey.EMOJI_COLOR_GRUENKLEEGRUEN.getAsEmoji()),
+                SelectOption.of("Grün / Smaragd", EnvKey.COLOR_GRUENSMARAGD.name()).withEmoji(EnvKey.EMOJI_COLOR_GRUENSMARAGD.getAsEmoji()),
+                SelectOption.of("Grün / Olivgrün", EnvKey.COLOR_GRUENOLIVGRUEN.name()).withEmoji(EnvKey.EMOJI_COLOR_GRUENOLIVGRUEN.getAsEmoji()),
+                SelectOption.of("Grün / Lindgrün", EnvKey.COLOR_GRUENLINDGRUEN.name()).withEmoji(EnvKey.EMOJI_COLOR_GRUENLINDGRUEN.getAsEmoji()),
+                SelectOption.of("Grün / Kleegrün", EnvKey.COLOR_GRUENKLEEGRUEN.name()).withEmoji(EnvKey.EMOJI_COLOR_GRUENKLEEGRUEN.getAsEmoji()),
 
-                SelectOption.of("Pink / Rosa", EnvKey.EMOJI_COLOR_PINKROSA.name()).withEmoji(EnvKey.EMOJI_COLOR_PINKROSA.getAsEmoji()),
-                SelectOption.of("Pink / Pink", EnvKey.EMOJI_COLOR_PINKPINK.name()).withEmoji(EnvKey.EMOJI_COLOR_PINKPINK.getAsEmoji()),
-                SelectOption.of("Pink / Fuchsia", EnvKey.EMOJI_COLOR_PINKFUCHSIA.name()).withEmoji(EnvKey.EMOJI_COLOR_PINKFUCHSIA.getAsEmoji()),
-                SelectOption.of("Pink / Flamingo", EnvKey.EMOJI_COLOR_PINKFLAMINGO.name()).withEmoji(EnvKey.EMOJI_COLOR_PINKFLAMINGO.getAsEmoji()),
+                SelectOption.of("Pink / Rosa", EnvKey.COLOR_PINKROSA.name()).withEmoji(EnvKey.EMOJI_COLOR_PINKROSA.getAsEmoji()),
+                SelectOption.of("Pink / Pink", EnvKey.COLOR_PINKPINK.name()).withEmoji(EnvKey.EMOJI_COLOR_PINKPINK.getAsEmoji()),
+                SelectOption.of("Pink / Fuchsia", EnvKey.COLOR_PINKFUCHSIA.name()).withEmoji(EnvKey.EMOJI_COLOR_PINKFUCHSIA.getAsEmoji()),
+                SelectOption.of("Pink / Flamingo", EnvKey.COLOR_PINKFLAMINGO.name()).withEmoji(EnvKey.EMOJI_COLOR_PINKFLAMINGO.getAsEmoji()),
 
-                SelectOption.of("Rot / Scharlach", EnvKey.EMOJI_COLOR_ROTSCHARLACH.name()).withEmoji(EnvKey.EMOJI_COLOR_ROTSCHARLACH.getAsEmoji()),
-                SelectOption.of("Rot / Mandarine", EnvKey.EMOJI_COLOR_ROTMANDARINE.name()).withEmoji(EnvKey.EMOJI_COLOR_ROTMANDARINE.getAsEmoji()),
-                SelectOption.of("Rot / Kupfer", EnvKey.EMOJI_COLOR_ROTKUPFER.name()).withEmoji(EnvKey.EMOJI_COLOR_ROTKUPFER.getAsEmoji()),
-                SelectOption.of("Rot / Koralle", EnvKey.EMOJI_COLOR_ROTKORALLE.name()).withEmoji(EnvKey.EMOJI_COLOR_ROTKORALLE.getAsEmoji()),
-                SelectOption.of("Rot / Aprikose", EnvKey.EMOJI_COLOR_ROTAPRIKOSE.name()).withEmoji(EnvKey.EMOJI_COLOR_ROTAPRIKOSE.getAsEmoji()),
+                SelectOption.of("Rot / Scharlach", EnvKey.COLOR_ROTSCHARLACH.name()).withEmoji(EnvKey.EMOJI_COLOR_ROTSCHARLACH.getAsEmoji()),
+                SelectOption.of("Rot / Mandarine", EnvKey.COLOR_ROTMANDARINE.name()).withEmoji(EnvKey.EMOJI_COLOR_ROTMANDARINE.getAsEmoji()),
+                SelectOption.of("Rot / Kupfer", EnvKey.COLOR_ROTKUPFER.name()).withEmoji(EnvKey.EMOJI_COLOR_ROTKUPFER.getAsEmoji()),
+                SelectOption.of("Rot / Koralle", EnvKey.COLOR_ROTKORALLE.name()).withEmoji(EnvKey.EMOJI_COLOR_ROTKORALLE.getAsEmoji()),
+                SelectOption.of("Rot / Aprikose", EnvKey.COLOR_ROTAPRIKOSE.name()).withEmoji(EnvKey.EMOJI_COLOR_ROTAPRIKOSE.getAsEmoji()),
 
-                SelectOption.of("Violett / Veilchen", EnvKey.EMOJI_COLOR_VIOLETTVEILCHEN.name()).withEmoji(EnvKey.EMOJI_COLOR_VIOLETTVEILCHEN.getAsEmoji()),
-                SelectOption.of("Violett / Orchidee", EnvKey.EMOJI_COLOR_VIOLETTORCHIDEE.name()).withEmoji(EnvKey.EMOJI_COLOR_VIOLETTORCHIDEE.getAsEmoji()),
-                SelectOption.of("Violett / Lavendel", EnvKey.EMOJI_COLOR_VIOLETTLAVENDER.name()).withEmoji(EnvKey.EMOJI_COLOR_VIOLETTLAVENDER.getAsEmoji()),
-                SelectOption.of("Violett / Brombeere", EnvKey.EMOJI_COLOR_VIOLETTBROMBEERE.name()).withEmoji(EnvKey.EMOJI_COLOR_VIOLETTBROMBEERE.getAsEmoji())
+                SelectOption.of("Violett / Veilchen", EnvKey.COLOR_VIOLETTVEILCHEN.name()).withEmoji(EnvKey.EMOJI_COLOR_VIOLETTVEILCHEN.getAsEmoji()),
+                SelectOption.of("Violett / Orchidee", EnvKey.COLOR_VIOLETTORCHIDEE.name()).withEmoji(EnvKey.EMOJI_COLOR_VIOLETTORCHIDEE.getAsEmoji()),
+                SelectOption.of("Violett / Lavendel", EnvKey.COLOR_VIOLETTLAVENDER.name()).withEmoji(EnvKey.EMOJI_COLOR_VIOLETTLAVENDER.getAsEmoji()),
+                SelectOption.of("Violett / Brombeere", EnvKey.COLOR_VIOLETTBROMBEERE.name()).withEmoji(EnvKey.EMOJI_COLOR_VIOLETTBROMBEERE.getAsEmoji())
         );
     }
 }

@@ -5,13 +5,18 @@ import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.service.profile.Settings;
 import ch.frily.yubot.service.profile.Setting;
+import ch.frily.yubot.util.EnvKey;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -34,7 +39,13 @@ public class SettingRepository {
         if (rs.next()) {
             Boolean activeModSendInDm = rs.getBoolean(Table.SettingColumn.ACTIVEMOD_SEND_IN_DM.getColumn());
             String absenceNotice = rs.getString(Table.SettingColumn.ABSENCE_NOTICE.getColumn());
-            return new Settings(member, activeModSendInDm, absenceNotice);
+            String activemodColorString = rs.getString(Table.SettingColumn.ACTIVEMOD_COLOR.getColumn());
+            Color  activemodColor = null;
+            if (activemodColorString != null) {
+                activemodColor = EnvKey.valueOf(activemodColorString).getAsColor();
+            }
+
+            return new Settings(member, activeModSendInDm, absenceNotice, activemodColor);
         }
         return null;
     }
@@ -59,7 +70,7 @@ public class SettingRepository {
      * Get the value of a given setting from a user
      * @param member the member to get the setting from
      * @param setting the setting to get from the member
-     * @return the string value or null if the setting is not found
+     * @return the value or null if the setting is not found
      * @throws SQLException Database failure
      */
     public static <T> T getSetting(Member member, Setting setting, Class<T> dataType) throws SQLException {
@@ -72,6 +83,21 @@ public class SettingRepository {
             return rs.getObject(setting.getDbColumn().getColumn(), dataType);
         }
         return null;
+    }
+
+    public static <T> Map<Member, T> getSettings(Setting setting, Class<T> dataType) throws SQLException {
+        DatabaseQuery query = new DatabaseQuery(Table.SETTING);
+        query.select(Table.SettingColumn.MEMBER_ID, setting.getDbColumn());
+        ResultSet rs = query.executeDataQuery();
+
+        Map<Member, T> map = new HashMap<>();
+        while (rs.next()) {
+            String memberId = rs.getString(Table.SettingColumn.MEMBER_ID.getColumn());
+            Member member = EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(memberId);
+            T settingValue = rs.getObject(setting.getDbColumn().getColumn(), dataType);
+            map.put(member, settingValue);
+        }
+        return map;
     }
 
     public static void upsertSetting(Member member, Setting setting, Object value) throws SQLException {

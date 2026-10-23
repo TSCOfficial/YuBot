@@ -1,18 +1,30 @@
 package ch.frily.yubot.service.activemod;
 
+import ch.frily.yubot.database.repository.SettingRepository;
+import ch.frily.yubot.exception.ExceptionHandler;
+import ch.frily.yubot.service.profile.Setting;
+import ch.frily.yubot.service.profile.modal.ProfileSettingActivemodColorModal;
+import ch.frily.yubot.util.EnvKey;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.utils.FileUpload;
 import org.knowm.xchart.*;
 
 import ch.frily.yubot.util.Color;
+import org.knowm.xchart.style.CategoryStyler;
+import org.knowm.xchart.style.Styler;
+import org.knowm.xchart.style.markers.SeriesMarkers;
 
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -71,7 +83,35 @@ public final class ActiveModStatisticChart {
                 log.info("Highlighting member {}", highlightMember.getEffectiveName());
                 suppress.set(false);
             }
-            chartData.add(new ActiveModStatisticChartData(member.getEffectiveName(), suppress.get(), months, activeMinutes));
+            java.awt.Color color = null;
+            try {
+                String colorName = SettingRepository.getSetting(member, Setting.ACTIVEMOD_GRAPH_COLOR, String.class);
+                if (colorName != null) {
+                    log.info("Found saved Color {}", colorName);
+                    color = EnvKey.valueOf(colorName).getAsColor();
+                }
+
+                // Take a random color that no member is already using
+                if (color == null) {
+                    Map<Member, String> activeSettings = SettingRepository.getSettings(Setting.ACTIVEMOD_GRAPH_COLOR, String.class);
+                    List<String> usedColors = activeSettings.values().stream().toList();
+                    List<SelectOption> restColors = ProfileSettingActivemodColorModal.getOptions().stream().filter(selectOption -> {
+                        return !usedColors.contains(selectOption.getValue());
+                    }).toList();
+
+                    String colorKey = restColors.getFirst().getValue();
+                    log.info("Setting color to {}", colorKey);
+                    color = EnvKey.valueOf(colorKey).getAsColor();
+
+                    // save this color to DB
+                    SettingRepository.upsertSetting(member, Setting.ACTIVEMOD_GRAPH_COLOR, colorKey);
+                }
+            } catch (SQLException e) {
+                ExceptionHandler.handle(e);
+            }
+
+
+            chartData.add(new ActiveModStatisticChartData(member.getEffectiveName(), suppress.get(), color, months, activeMinutes));
 
             if (highlightMember != null) {
                 suppress.set(true);
@@ -87,35 +127,80 @@ public final class ActiveModStatisticChart {
      * @param yAxisTitle y-axis title
      * @return a chart statistic
      */
-    private ActiveModStatisticChart generateLineChart(List<ActiveModStatisticChartData> lineChartData, String title, String xAxisTitle, String yAxisTitle) {
+    private ActiveModStatisticChart generateLineChart(List<ActiveModStatisticChartData> lineChartData,
+                                                      String title, String xAxisTitle, String yAxisTitle) {
         CategoryChart chart = new CategoryChartBuilder()
                 .width(1200)
-                .height(400)
+                .height(500)                       // etwas höher -> Linien haben mehr Luft
                 .title(title)
-                .xAxisTitle(xAxisTitle) // active mods
-                .yAxisTitle(yAxisTitle) // hours
+                .xAxisTitle(xAxisTitle)
+                .yAxisTitle(yAxisTitle)
                 .build();
 
-        chart.getStyler().setLegendVisible(true);
-        chart.getStyler().setLegendBackgroundColor(new Color("242429").get());
-        chart.getStyler().setChartBackgroundColor(new Color("242429").get());
-        chart.getStyler().setPlotBackgroundColor(new Color("242429").get());
-        chart.getStyler().setChartFontColor(Color.LIGHT_GRAY);
-        chart.getStyler().setAxisTickLabelsColor(Color.LIGHT_GRAY);
-        chart.getStyler().setPlotGridLinesColor(new Color("3b3b41").get());
-        chart.getStyler().setMarkerSize(0);
-        chart.getStyler().setDefaultSeriesRenderStyle(CategorySeries.CategorySeriesRenderStyle.Line);
-        chart.getStyler().setOverlapped(true);
-        chart.getStyler().setPlotContentSize(1.0);
+        java.awt.Color background = new Color("242429").get();
+        java.awt.Color gridColor  = new Color("3b3b41").get();
+        java.awt.Color textColor  = new java.awt.Color(0xD0D0D5);
 
-        if (lineChartData.stream().anyMatch(ActiveModStatisticChartData::suppress)) {
-            chart.getStyler().setLegendVisible(false);
-        }
+        Font baseFont = new Font("DejaVu Sans", Font.PLAIN, 12);   // hat viele Sonderzeichen
 
-        lineChartData.forEach(data -> {
+        CategoryStyler styler = chart.getStyler();
+
+        // Hintergrund & Rahmen
+        styler.setChartBackgroundColor(background);
+        styler.setPlotBackgroundColor(background);
+        styler.setPlotBorderVisible(false);
+        styler.setChartPadding(15);
+
+        // Schrift
+        styler.setChartFontColor(textColor);
+        styler.setAxisTickLabelsColor(textColor);
+        styler.setChartTitleFont(baseFont.deriveFont(Font.BOLD, 16f));
+        styler.setAxisTitleFont(baseFont.deriveFont(Font.PLAIN, 12f));
+        styler.setAxisTickLabelsFont(baseFont);
+        styler.setChartTitleBoxVisible(false);
+
+        // Gitter: nur horizontal, dezent gestrichelt
+        styler.setPlotGridLinesColor(gridColor);
+        styler.setPlotGridVerticalLinesVisible(false);
+        styler.setPlotGridLinesStroke(new BasicStroke(1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
+                0f, new float[]{4f, 4f}, 0f));
+        styler.setAxisTickMarksColor(gridColor);
+
+        // Achsen
+        styler.setYAxisMin(0.0);
+        styler.setYAxisDecimalPattern("#");
+
+        // Linien
+        styler.setDefaultSeriesRenderStyle(CategorySeries.CategorySeriesRenderStyle.Line);
+        styler.setOverlapped(true);   // <- wieder einfügen
+        styler.setMarkerSize(6);                       // kleine Punkte zeigen die echten Monatswerte
+        styler.setPlotContentSize(1.0);
+
+        // Legende: rechts, ohne Rahmen, mit Linienlänge
+        styler.setLegendVisible(lineChartData.stream().noneMatch(ActiveModStatisticChartData::suppress));
+        styler.setLegendPosition(Styler.LegendPosition.OutsideE);
+        styler.setLegendBackgroundColor(background);
+        styler.setLegendBorderColor(background);
+        styler.setLegendFont(baseFont);
+        styler.setLegendSeriesLineLength(18);
+        styler.setLegendPadding(10);
+
+        // Legende nach letztem Wert sortieren (höchster oben) – ändert nur die Reihenfolge
+        List<ActiveModStatisticChartData> sorted = lineChartData.stream()
+                .sorted(Comparator.comparingDouble(ActiveModStatisticChart::lastValue).reversed())
+                .toList();
+
+        sorted.forEach(data -> {
             CategorySeries series = chart.addSeries(data.label(), data.xData(), data.yData());
+            series.setLineWidth(2.5f);
+            series.setMarker(SeriesMarkers.CIRCLE);
+
             if (data.suppress()) {
                 series.setLineColor(new java.awt.Color(200, 200, 200, 100));
+                series.setMarkerColor(new java.awt.Color(200, 200, 200, 100));
+            } else {
+                series.setLineColor(data.color());
+                series.setMarkerColor(data.color());
             }
         });
 
@@ -126,6 +211,11 @@ public final class ActiveModStatisticChart {
         } catch (IOException e) {
             throw new RuntimeException("ActiveMod-Chart konnte nicht generiert werden", e);
         }
+    }
+
+    private static double lastValue(ActiveModStatisticChartData d) {
+        List<? extends Number> y = d.yData();
+        return y.isEmpty() ? 0 : y.get(y.size() - 1).doubleValue();
     }
 
     private FileUpload toFile(String fileName) {
