@@ -140,9 +140,7 @@ public enum Setting {
      * @return
      */
     public SettingChoice getChoiceByLabel(String label){
-        log.info("Getting Choice by Label: {}", label);
         return this.autocompleteChoices.stream().filter(choice -> {
-            log.info("checking label: {}", choice.label());
             return String.valueOf(choice.label()).equals(label);
         }).findFirst().orElse(null);
     }
@@ -153,10 +151,8 @@ public enum Setting {
      * @return
      */
     public <T> SettingChoice<T> getChoiceByValue(T value){
-        log.info("Getting Choice by Value: '{}' with type {}", value, value.getClass().getSimpleName());
         return this.autocompleteChoices.stream().filter(choice -> {
-            log.info("checking value: '{}' with type {}", choice.value(), choice.value().getClass().getSimpleName());
-            return choice.value().equals(String.valueOf(value));
+            return String.valueOf(choice.value()).equals(String.valueOf(value));
         }).findFirst().orElse(null);
     }
 }

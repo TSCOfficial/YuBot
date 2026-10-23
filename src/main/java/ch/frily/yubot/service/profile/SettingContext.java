@@ -5,6 +5,8 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
+import javax.annotation.Nullable;
+
 /**
  *
  * @param setting the setting to modify the value from
@@ -15,6 +17,11 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 public record SettingContext<T>(
         Setting setting,
         SlashCommandInteractionEvent event,
-        String value
+        @Nullable String value
 ) {
+    public SettingContext(
+            Setting setting,
+            SlashCommandInteractionEvent event) {
+        this(setting, event, null);
+    }
 }

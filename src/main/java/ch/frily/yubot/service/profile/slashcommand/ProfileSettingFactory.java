@@ -70,12 +70,21 @@ public class ProfileSettingFactory implements ISlashSubcommand {
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
         log.info("Executing Profile Setting Factory");
         if (Util.isPermitted(event.getMember(), this.allowedRoles)) {
-            String selectedValue = event.getOption(this.option.getName()).getAsString();
-            log.info("Selected Value: {}", selectedValue);
-            SettingContext context = new SettingContext<>(setting, event, selectedValue);
-            onSubmit.accept(context);
-            String replyMessage = String.format("✅ Die Einstellung **%s** wurde auf `%s` festgelegt.", setting.getLabel(), context.value());
-            event.reply(replyMessage).setEphemeral(true).queue();
+            if (this.option != null) {
+                String inputValue = event.getOption(this.option.getName()).getAsString();
+                log.info("Selected Value: {}", inputValue);
+                SettingContext context = new SettingContext<>(setting, event, inputValue);
+                onSubmit.accept(context);
+                if (!this.autocompleteChoices.isEmpty()) {
+                    inputValue = setting.getChoiceByValue(context.value()).label();
+                }
+                String replyMessage = String.format("✅ Die Einstellung **%s** wurde auf `%s` festgelegt.", setting.getLabel(), inputValue);
+                event.reply(replyMessage).setEphemeral(true).queue();
+            } else {
+                SettingContext context = new SettingContext<>(setting, event);
+                onSubmit.accept(context);
+            }
+
         } else {
             throw new PermissionDeniedException(String.format("Diese Einstellung ist nur für %s verfügbar.", this.getAllowedRoles().stream().map(Role::getName).collect(Collectors.joining(", "))));
         }
