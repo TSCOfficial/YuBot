@@ -11,12 +11,14 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -36,7 +38,7 @@ public class ProfileSettingFactory implements ISlashSubcommand {
     private List<SettingChoice> autocompleteChoices;
     private Setting setting;
     private List<Role> allowedRoles;
-    private Function<SettingContext, String> onSubmit;
+    private Consumer<SettingContext> onSubmit;
 
     /**
      * Define the setting for which the command should be build
@@ -69,8 +71,11 @@ public class ProfileSettingFactory implements ISlashSubcommand {
         log.info("Executing Profile Setting Factory");
         if (Util.isPermitted(event.getMember(), this.allowedRoles)) {
             String selectedValue = event.getOption(this.option.getName()).getAsString();
-            SettingContext context = new SettingContext<>(setting, event, setting.getChoiceByLabel(selectedValue).value());
-            onSubmit.apply(context);
+            log.info("Selected Value: {}", selectedValue);
+            SettingContext context = new SettingContext<>(setting, event, selectedValue);
+            onSubmit.accept(context);
+            String replyMessage = String.format("✅ Die Einstellung **%s** wurde auf `%s` festgelegt.", setting.getLabel(), context.value());
+            event.reply(replyMessage).setEphemeral(true).queue();
         } else {
             throw new PermissionDeniedException(String.format("Diese Einstellung ist nur für %s verfügbar.", this.getAllowedRoles().stream().map(Role::getName).collect(Collectors.joining(", "))));
         }

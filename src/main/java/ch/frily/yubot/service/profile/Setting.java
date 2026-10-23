@@ -12,7 +12,9 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.sql.SQLException;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 @Slf4j
 public enum Setting {
@@ -28,12 +30,11 @@ public enum Setting {
             ),
             (ctx) -> {
                 try {
-                    SettingRepository.upsertSetting(ctx.event().getMember(), ctx.setting(), ctx.value());
+
+                    SettingRepository.upsertSetting(ctx.event().getMember(), ctx.setting(), Boolean.valueOf(ctx.value()));
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
-
-                return "setting gespeichert";
             }
     ),
     ABSENCE_NOTICE(
@@ -48,8 +49,6 @@ public enum Setting {
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
-
-                return "setting gespeichert";
             }
     ),
     ACTIVEMOD_GRAPH_COLOR(
@@ -59,7 +58,6 @@ public enum Setting {
             List.of(EnvKey.ROLE_MODERATOR),
             (ctx) -> {
                 ctx.event().replyModal(new ProfileSettingActivemodColorModal().build()).queue();
-                return "modal gesendet";
             }
     );
 
@@ -81,7 +79,7 @@ public enum Setting {
     final List<SettingChoice> autocompleteChoices = new ArrayList<>();
     /** Minimal allowed characters for a string*/
     @Getter
-    final Function<SettingContext, String> onSubmit;
+    final Consumer<SettingContext> onSubmit;
 
         /**
          * Define a Setting without options
@@ -90,7 +88,7 @@ public enum Setting {
          * @param dbColumn database column to be able to resolve for generic actions
          * @param <T> the datatype of the given setting
          */
-    <T> Setting(String label, String description, Table.Column dbColumn, List<EnvKey> allowedRoles, Function<SettingContext, String> onSubmit){
+    <T> Setting(String label, String description, Table.Column dbColumn, List<EnvKey> allowedRoles, Consumer<SettingContext> onSubmit){
         this.label = label;
         this.description = description;
         this.dbColumn = dbColumn;
@@ -105,7 +103,7 @@ public enum Setting {
      * @param dbColumn database column to be able to resolve for generic actions
      * @param <T> the datatype of the given setting
      */
-    <T> Setting(String label, String description, Table.Column dbColumn, List<EnvKey> allowedRoles, OptionData option, Function<SettingContext, String> onSubmit){
+    <T> Setting(String label, String description, Table.Column dbColumn, List<EnvKey> allowedRoles, OptionData option, Consumer<SettingContext> onSubmit){
         this.label = label;
         this.description = description;
         this.dbColumn = dbColumn;
@@ -122,7 +120,7 @@ public enum Setting {
      * @param choices Autocomplete choices for that setting
      * @param <T> the datatype of the setting
      */
-    <T> Setting(String label, String description, Table.Column dbColumn, List<EnvKey> allowedRoles, OptionData option, List<SettingChoice> choices, Function<SettingContext, String> onSubmit){
+    <T> Setting(String label, String description, Table.Column dbColumn, List<EnvKey> allowedRoles, OptionData option, List<SettingChoice> choices, Consumer<SettingContext> onSubmit){
         this.label = label;
         this.description = description;
         this.dbColumn = dbColumn;
@@ -142,7 +140,11 @@ public enum Setting {
      * @return
      */
     public SettingChoice getChoiceByLabel(String label){
-        return this.autocompleteChoices.stream().filter(choice -> String.valueOf(choice.value()).equals(label)).findFirst().orElse(null);
+        log.info("Getting Choice by Label: {}", label);
+        return this.autocompleteChoices.stream().filter(choice -> {
+            log.info("checking label: {}", choice.label());
+            return String.valueOf(choice.label()).equals(label);
+        }).findFirst().orElse(null);
     }
 
     /**
@@ -151,7 +153,11 @@ public enum Setting {
      * @return
      */
     public <T> SettingChoice<T> getChoiceByValue(T value){
-        return this.autocompleteChoices.stream().filter(choice -> choice.value().equals(value)).findFirst().orElse(null);
+        log.info("Getting Choice by Value: '{}' with type {}", value, value.getClass().getSimpleName());
+        return this.autocompleteChoices.stream().filter(choice -> {
+            log.info("checking value: '{}' with type {}", choice.value(), choice.value().getClass().getSimpleName());
+            return choice.value().equals(String.valueOf(value));
+        }).findFirst().orElse(null);
     }
 }
 
