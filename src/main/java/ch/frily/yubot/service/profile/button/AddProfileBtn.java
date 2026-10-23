@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jspecify.annotations.NonNull;
 
+import java.sql.SQLException;
+
 public class AddProfileBtn extends Button {
 
     @Override
@@ -24,7 +26,7 @@ public class AddProfileBtn extends Button {
     }
 
     @Override
-    public void execute(@NonNull ButtonInteractionEvent event) {
+    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException {
         event.replyModal(new AddProfileModal().build()).queue();
     }
 }

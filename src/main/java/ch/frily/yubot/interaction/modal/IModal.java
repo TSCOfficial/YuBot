@@ -15,7 +15,7 @@ public interface IModal {
      * Component tree with Label & component
      * @return a list of the {@link ModalTopLevelComponent} children
      */
-    List<ModalTopLevelComponent> getComponents();
+    List<ModalTopLevelComponent> getComponents() throws SQLException;
 
     void execute(@NotNull ModalInteractionEvent event) throws SQLException, NullPointerException;
 }

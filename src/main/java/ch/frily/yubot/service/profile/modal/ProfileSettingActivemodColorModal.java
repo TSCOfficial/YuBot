@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -19,6 +20,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class ProfileSettingActivemodColorModal extends Modal {
@@ -33,13 +35,21 @@ public class ProfileSettingActivemodColorModal extends Modal {
     }
 
     @Override
-    public List<ModalTopLevelComponent> getComponents() {
+    public List<ModalTopLevelComponent> getComponents() throws SQLException {
         StringSelectMenu.Builder selectBuilder = StringSelectMenu.create("activemod-color-select");
         selectBuilder.setMinValues(1);
         selectBuilder.setMaxValues(1);
         selectBuilder.setRequired(true);
         selectBuilder.setPlaceholder("Farbe auswählen");
-        selectBuilder.addOptions(Setting.ACTIVEMOD_GRAPH_COLOR.getChoices().stream().map(SettingChoice::toSelectOption).toArray(SelectOption[]::new));
+
+        Map<Member, String> activeSettings = SettingRepository.getSettings(Setting.ACTIVEMOD_GRAPH_COLOR, String.class);
+        List<String> usedColors = activeSettings.values().stream().toList();
+        List<SelectOption> allColors = Setting.ACTIVEMOD_GRAPH_COLOR.getChoices().stream().map(SettingChoice::toSelectOption).toList();
+        List<SelectOption> restColors = allColors.stream().filter(selectOption -> {
+            return !usedColors.contains(selectOption.getValue());
+        }).toList();
+
+        selectBuilder.addOptions(restColors);
 
         return List.of(
             Label.of(

@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jspecify.annotations.NonNull;
 
+import java.sql.SQLException;
+
 public class AbsenceAddBtn extends Button {
 
     @Override
@@ -24,7 +26,7 @@ public class AbsenceAddBtn extends Button {
     }
 
     @Override
-    public void execute(@NonNull ButtonInteractionEvent event) {
+    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException {
         AbsenceAddModal addAbence = new AbsenceAddModal();
         addAbence.setMember(event.getMember());
         event.replyModal(addAbence.build()).queue();

@@ -2,6 +2,7 @@ package ch.frily.yubot.service.profile;
 
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.database.repository.SettingRepository;
+import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.profile.modal.ProfileSettingActivemodColorModal;
 import ch.frily.yubot.util.EnvKey;
 import lombok.Getter;
@@ -91,7 +92,11 @@ public enum Setting {
                     new SettingChoice<>("Violett / Brombeere", EnvKey.COLOR_VIOLETTBROMBEERE.name(), EnvKey.EMOJI_COLOR_VIOLETTBROMBEERE.getAsEmoji())
             ),
             (ctx) -> {
-                ctx.event().replyModal(new ProfileSettingActivemodColorModal().build()).queue();
+                try {
+                    ctx.event().replyModal(new ProfileSettingActivemodColorModal().build()).queue();
+                } catch (Exception e) {
+                    ExceptionHandler.handle(e, ctx.event());
+                }
             },
             (ctx) -> {
                 SettingChoice choice = ctx.setting().getChoiceByValue(ctx.value());

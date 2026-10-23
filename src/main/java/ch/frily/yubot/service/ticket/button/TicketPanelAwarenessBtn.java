@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.SQLException;
+
 public class TicketPanelAwarenessBtn extends Button {
 
     private static TicketPanelAwarenessBtn instance;
@@ -34,7 +36,7 @@ public class TicketPanelAwarenessBtn extends Button {
     }
 
     @Override
-    public void execute(@NotNull ButtonInteractionEvent event) {
+    public void execute(@NotNull ButtonInteractionEvent event) throws SQLException {
         TicketTypeSelectorModal modal = new TicketTypeSelectorModal();
         modal.setTypeGroup(TicketTypeGroup.AWARENESS);
         event.replyModal(modal.build()).queue();
