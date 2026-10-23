@@ -2,6 +2,7 @@ package ch.frily.yubot.service.profile;
 
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.database.repository.SettingRepository;
+import ch.frily.yubot.service.profile.modal.ProfileSettingActivemodColorModal;
 import ch.frily.yubot.util.EnvKey;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Role;
@@ -25,7 +26,7 @@ public enum Setting {
             ),
             (ctx) -> {
                 try {
-                    SettingRepository.upsertSetting(ctx.member(), ctx.setting(), ctx.value());
+                    SettingRepository.upsertSetting(ctx.event().getMember(), ctx.setting(), ctx.event().getOption("via").getAsString());
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
@@ -41,7 +42,7 @@ public enum Setting {
             new OptionData(OptionType.STRING, "text", "Wähle den Text der gesendet werden soll"),
             (ctx) -> {
                 try {
-                    SettingRepository.upsertSetting(ctx.member(), ctx.setting(), ctx.value());
+                    SettingRepository.upsertSetting(ctx.event().getMember(), ctx.setting(), ctx.event().getOption("text").getAsString());
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
@@ -55,13 +56,8 @@ public enum Setting {
             Table.SettingColumn.ACTIVEMOD_COLOR,
             List.of(EnvKey.ROLE_MODERATOR),
             (ctx) -> {
-                try {
-                    SettingRepository.upsertSetting(ctx.member(), ctx.setting(), ctx.value());
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-
-                return "setting gespeichert";
+                ctx.event().replyModal(new ProfileSettingActivemodColorModal().build()).queue();
+                return "modal gesendet";
             }
     );
 
@@ -136,6 +132,10 @@ public enum Setting {
 
     public static Setting getSettingByLabel(String label){
         return Arrays.stream(Setting.values()).filter(setting -> setting.getLabel().equals(label)).findFirst().orElse(null);
+    }
+
+    public SettingChoice getChoiceByValue(Object value){
+        return this.autocompleteChoices.stream().filter(choice -> String.valueOf(choice.value()).equals(value)).findFirst().orElse(null);
     }
 }
 

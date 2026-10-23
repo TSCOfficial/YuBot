@@ -76,7 +76,7 @@ public class SelectActiveModSendTypeModal extends Modal {
         } else {
             SettingRepository.upsertSetting(event.getMember(), Setting.ACTIVEMOD_SEND_IN_DM, false);
         }
-        SettingChoice<Boolean> selectedSetting = Setting.ACTIVEMOD_SEND_IN_DM.getOptionByValue(!couldntSetToDMs.get() && sendInDM); // get the option if it could be sent, else get overwrite (via Server)
+        SettingChoice<Boolean> selectedSetting = Setting.ACTIVEMOD_SEND_IN_DM.getChoiceByValue(!couldntSetToDMs.get() && sendInDM); // get the option if it could be sent, else get overwrite (via Server)
         ActiveMod.registerModerator(event.getMember()).thenAccept(responseText -> {
             StringBuilder replySB = new StringBuilder();
             replySB.append(couldntSetToDMs.get() ? "⚠️ " : "✅ ");

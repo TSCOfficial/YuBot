@@ -262,30 +262,31 @@ public class ProfilContainer extends Container {
             return null;
         }
 
-        Map<String, String> mappedSettings = new HashMap<>();
-        for (Setting setting : Setting.values()) {
-            try {
-                Object rawValue = SettingRepository.getSetting(target, setting, setting.getDataType());
-                if (rawValue == null) {
-                    continue; // skip setting
-                }
-
-                String settingValue;
-                if (!setting.getAutocompleteChoices().isEmpty()) {
-                    settingValue = setting.getOptionByValue(rawValue).label();
-                } else {
-                    // custom text gets concat with " "
-                    String rawText = String.valueOf(rawValue);
-                    settingValue = rawText.isBlank() ? rawText : String.format("\"%s\"", rawText);
-                }
-
-                mappedSettings.put(setting.getLabel(), settingValue);
-            } catch (Exception e) {
-                ExceptionHandler.fail(e);
-            }
-        }
-
-        return mappedSettings;
+//        Map<String, String> mappedSettings = new HashMap<>();
+//        for (Setting setting : Setting.values()) {
+//            try {
+//                Object rawValue = SettingRepository.getSetting(target, setting, setting.getDataType());
+//                if (rawValue == null) {
+//                    continue; // skip setting
+//                }
+//
+//                String settingValue;
+//                if (!setting.getAutocompleteChoices().isEmpty()) {
+//                    settingValue = setting.getOptionByValue(rawValue).label();
+//                } else {
+//                    // custom text gets concat with " "
+//                    String rawText = String.valueOf(rawValue);
+//                    settingValue = rawText.isBlank() ? rawText : String.format("\"%s\"", rawText);
+//                }
+//
+//                mappedSettings.put(setting.getLabel(), settingValue);
+//            } catch (Exception e) {
+//                ExceptionHandler.fail(e);
+//            }
+//        }
+//
+//        return mappedSettings;
+        return null;
     }
 
     private CompletableFuture<FileUpload> buildProfileBanner() {

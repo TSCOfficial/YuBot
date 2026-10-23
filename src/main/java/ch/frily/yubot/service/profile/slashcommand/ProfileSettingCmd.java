@@ -44,41 +44,10 @@ public class ProfileSettingCmd implements ISlashSubcommand {
     }
 
     @Override
-    public List<OptionData> getOptions() {
-        return Arrays.stream(Setting.values()).map(setting -> new OptionData(
-                OptionType.STRING,
-                setting.getLabel(),
-                setting.getDescription(),
-                false,
-                !setting.getAutocompleteChoices().isEmpty()
-        )).toList();
-    }
-
-    @Override
     public List<ISlashSubcommand> getSubcommands() {
-        Arrays.stream(Setting.values()).map(setting -> {
-            new ProfileSettingFactory(setting);
-        })
-
-        return List.of(
-
-        );
-    }
-
-    @Override
-    public Map<String, List<Command.Choice>> getAutocomplete(CommandAutoCompleteInteractionEvent event) {
-        return Arrays.stream(Setting.values())
-                .filter(setting -> !setting.getAutocompleteChoices().isEmpty())
-                .filter(setting -> Util.isPermitted(Objects.requireNonNull(event.getMember()), setting.getAllowedRoles()))
-                .collect(Collectors.toMap(Setting::getLabel, setting -> setting.getAutocompleteChoices().stream().map(autocompleteOption -> {
-                    if (autocompleteOption.value() instanceof String || autocompleteOption.value() instanceof Boolean) {
-                        return new Command.Choice(autocompleteOption.label(), String.valueOf(autocompleteOption.value()));
-                    } else if (autocompleteOption.value() instanceof Integer) {
-                        return new Command.Choice(autocompleteOption.label(), Integer.parseInt(autocompleteOption.value().toString()));
-                    }  else {
-                        throw new InvalidStateException(String.format("The autocomplete option %s does not have a compatible type: %s. Should be String, Int or Long", autocompleteOption.label(), autocompleteOption.value().getClass()));
-                    }
-                }).toList()));
+        return Arrays.stream(Setting.values()).map(setting -> {
+            return new ProfileSettingFactory().setSetting(setting);
+        }).toList();
     }
 
     @Override
@@ -96,26 +65,26 @@ public class ProfileSettingCmd implements ISlashSubcommand {
                     failedSettingsSB.append(String.format("- `%s`: Du bist nicht berechtigt diese Einstellung zu ändern.\n", setting.getLabel()));
                 }
                 if (validateInput(option, setting)) {
-                    Optional<String> specificFailure = runSettingSpecificValidation(setting, option, event);
-                    if (specificFailure.isPresent()) {
-                        failedSettingsSB.append(specificFailure.get());
-                    } else {
-                        if (!setting.getAutocompleteChoices().isEmpty()) {
-                            SettingChoice<?> resolvedOption = setting.getOptionByLabel(option.getAsString(), setting.getDataType());
-                            SettingRepository.upsertSetting(event.getMember(), setting, resolvedOption.value());
-                        } else {
-                            if (setting.getMinLength() > option.getAsString().length()) {
-                                failedSettingsSB.append(String.format("- `%s`: __%s__ ist zu kurz (%d) und muss mindestens %d Zeichen lang sein.\n", setting.getLabel(), option.getAsString(), option.getAsString().length(), setting.getMinLength()));
-                                continue;
-                            }
-                            if (setting.getMaxLength() < option.getAsString().length()) {
-                                failedSettingsSB.append(String.format("- `%s`: __%s__ ist zu lang (%d) und darf maximal %d Zeichen lang sein.\n", setting.getLabel(), option.getAsString(), option.getAsString().length(), setting.getMaxLength()));
-                                continue;
-                            }
-                            SettingRepository.upsertSetting(event.getMember(), setting, option.getAsString());
-                        }
-                        modifiedSettingsSB.append(String.format("- `%s`: geändert auf __%s__.\n", setting.getLabel(), option.getAsString()));
-                    }
+//                    Optional<String> specificFailure = runSettingSpecificValidation(setting, option, event);
+//                    if (specificFailure.isPresent()) {
+//                        failedSettingsSB.append(specificFailure.get());
+//                    } else {
+//                        if (!setting.getAutocompleteChoices().isEmpty()) {
+//                            SettingChoice<?> resolvedOption = setting.getOptionByLabel(option.getAsString(), setting.getDataType());
+//                            SettingRepository.upsertSetting(event.getMember(), setting, resolvedOption.value());
+//                        } else {
+//                            if (setting.getMinLength() > option.getAsString().length()) {
+//                                failedSettingsSB.append(String.format("- `%s`: __%s__ ist zu kurz (%d) und muss mindestens %d Zeichen lang sein.\n", setting.getLabel(), option.getAsString(), option.getAsString().length(), setting.getMinLength()));
+//                                continue;
+//                            }
+//                            if (setting.getMaxLength() < option.getAsString().length()) {
+//                                failedSettingsSB.append(String.format("- `%s`: __%s__ ist zu lang (%d) und darf maximal %d Zeichen lang sein.\n", setting.getLabel(), option.getAsString(), option.getAsString().length(), setting.getMaxLength()));
+//                                continue;
+//                            }
+//                            SettingRepository.upsertSetting(event.getMember(), setting, option.getAsString());
+//                        }
+//                        modifiedSettingsSB.append(String.format("- `%s`: geändert auf __%s__.\n", setting.getLabel(), option.getAsString()));
+//                    }
                 } else {
                     failedSettingsSB.append(String.format("- `%s`: __%s__ ist keine gültige Option.\n", setting.getLabel(), option.getAsString()));
                 }
@@ -158,9 +127,9 @@ public class ProfileSettingCmd implements ISlashSubcommand {
      * @return whether the input is valid (true) or not (false)
      */
     private boolean validateInput(OptionMapping inputOption, Setting setting){
-        if (setting.getDataType() == Boolean.class){
-            return true;
-        }
+//        if (setting.getDataType() == Boolean.class){
+//            return true;
+//        }
         List<SettingChoice> autocompleteOptions = setting.getAutocompleteChoices();
         if(autocompleteOptions.isEmpty()){
             return true;
@@ -175,27 +144,27 @@ public class ProfileSettingCmd implements ISlashSubcommand {
         return false;
     }
 
-    /**
-     * Zentraler Dispatcher für settingspezifische Validierungen.
-     * Neue Validierung hinzufügen = neuer case, keine zusätzliche Verschachtelung.
-     *
-     * @return leeres Optional wenn gültig/erfolgreich, sonst die fertige Fehlermeldung für die Ausgabe
-     */
-    public Optional<String> runSettingSpecificValidation(Setting setting, OptionMapping option, SlashCommandInteractionEvent event) {
-        return switch (setting) {
-            case ACTIVEMOD_SEND_IN_DM -> {
-                if (setting.getOptionByLabel(option.getAsString(), Boolean.class).value() == true) {
-                    if (!validateActiveModSendIn(event)) {
-                        yield Optional.of(String.format(
-                                "- `%s` konnte nicht auf __%s__ gesetzt werden.\n> -# Deine Datenschutzeinstellungen erlauben keine DMs oder du hast den Bot blockiert.\n",
-                                setting.getLabel(), option.getAsString()));
-                    }
-                }
-                yield Optional.empty();
-            }
-            default -> Optional.empty();
-        };
-    }
+//    /**
+//     * Zentraler Dispatcher für settingspezifische Validierungen.
+//     * Neue Validierung hinzufügen = neuer case, keine zusätzliche Verschachtelung.
+//     *
+//     * @return leeres Optional wenn gültig/erfolgreich, sonst die fertige Fehlermeldung für die Ausgabe
+//     */
+//    public Optional<String> runSettingSpecificValidation(Setting setting, OptionMapping option, SlashCommandInteractionEvent event) {
+//        return switch (setting) {
+//            case ACTIVEMOD_SEND_IN_DM -> {
+//                if (setting.getOptionByLabel(option.getAsString(), Boolean.class).value() == true) {
+//                    if (!validateActiveModSendIn(event)) {
+//                        yield Optional.of(String.format(
+//                                "- `%s` konnte nicht auf __%s__ gesetzt werden.\n> -# Deine Datenschutzeinstellungen erlauben keine DMs oder du hast den Bot blockiert.\n",
+//                                setting.getLabel(), option.getAsString()));
+//                    }
+//                }
+//                yield Optional.empty();
+//            }
+//            default -> Optional.empty();
+//        };
+//    }
 
     /**
      * Prüft, ob dem User eine DM gesendet werden kann.

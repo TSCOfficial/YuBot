@@ -4,6 +4,7 @@ import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.service.profile.Setting;
 import ch.frily.yubot.service.profile.SettingContext;
 import ch.frily.yubot.service.profile.SettingChoice;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -19,17 +20,30 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Generate a setting-command
+ * <p>
+ *     This takes the arguments of the setting to generate a subcommand.<br>
+ *     This can also be used to execute a modal
+ * </p>
+ */
+@Slf4j
 public class ProfileSettingFactory implements ISlashSubcommand {
 
-    private final String name;
-    private final String description;
-    private final OptionData option;
-    private final List<SettingChoice> autocompleteChoices;
-    private final Setting setting;
-    private final List<Role> allowedRoles;
-    private final Function<SettingContext, String> onSubmit;
+    private String name = "default";
+    private String description = "default";
+    private OptionData option;
+    private List<SettingChoice> autocompleteChoices;
+    private Setting setting;
+    private List<Role> allowedRoles;
+    private Function<SettingContext, String> onSubmit;
 
-    public ProfileSettingFactory(Setting setting) {
+    /**
+     * Define the setting for which the command should be build
+     * @param setting
+     * @return This instance, for chaining
+     */
+    public ISlashSubcommand setSetting(Setting setting) {
         this.setting = setting;
         this.name = setting.getLabel();
         this.description = setting.getDescription();
@@ -37,6 +51,7 @@ public class ProfileSettingFactory implements ISlashSubcommand {
         this.autocompleteChoices = setting.getAutocompleteChoices();
         this.allowedRoles = setting.getAllowedRoles();
         this.onSubmit = setting.getOnSubmit();
+        return this;
     }
 
     @Override
@@ -53,22 +68,32 @@ public class ProfileSettingFactory implements ISlashSubcommand {
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
         OptionMapping optionMapping = Objects.requireNonNull(event.getOption(option.getName()));
         String value = optionMapping.getAsString();
-        SettingContext context = new SettingContext(event.getMember(), setting, value);
+        SettingContext context = new SettingContext(setting, event);
         onSubmit.apply(context);
     }
 
     @Override
     public List<OptionData> getOptions() {
-        return List.of(option);
+        if (option != null) {
+            return List.of(option);
+        } else {
+            return List.of();
+        }
+
     }
 
     @Override
     public Map<String, List<Command.Choice>> getAutocomplete(CommandAutoCompleteInteractionEvent event) throws SQLException {
-        List<Command.Choice> choices = autocompleteChoices.stream().map(choice -> {
-            return new Command.Choice(choice.label(), String.valueOf(choice.value()));
-        }).toList();
+        if (!autocompleteChoices.isEmpty()) {
+            List<Command.Choice> choices = autocompleteChoices.stream().map(choice -> {
+                return new Command.Choice(choice.label(), String.valueOf(choice.value()));
+            }).toList();
 
-        return Map.of(option.getName(), choices);
+            return Map.of(option.getName(), choices);
+        } else {
+            return Map.of();
+        }
+
     }
 
     @Override
