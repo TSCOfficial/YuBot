@@ -38,7 +38,7 @@ public class EventReminderScheduler implements IScheduler {
                 LocalDateTime now = LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MINUTES);
                 if (event.getStatus().equals(ScheduledEvent.Status.SCHEDULED) && (!startTime.isBefore(now) && !startTime.isAfter(now.plusHours(2)))) {
                     try {
-                        return EventReminderRepository.reminderAlreadySent(event.getId());
+                        return !EventReminderRepository.reminderAlreadySent(event.getId());
 
                     } catch (NotFoundException e) {
                         return true;
@@ -54,6 +54,7 @@ public class EventReminderScheduler implements IScheduler {
     }
 
     private void sendReminder(ScheduledEvent event) {
+        log.info("Sending reminder for event {}", event.getId());
         TextChannel channel = EnvKey.CHANNEL_ANKUENDIGUNGEN.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
         StringBuilder reminderSB = new StringBuilder();
         reminderSB.append(EnvKey.ROLE_EVENTPING.getAsRole().getAsMention()).append("\n");
