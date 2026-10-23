@@ -1,27 +1,21 @@
 package ch.frily.yubot.service.profile.slashcommand;
 
 import ch.frily.yubot.Client;
-import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.service.profile.Setting;
 import ch.frily.yubot.service.profile.SettingChoice;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
-import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jspecify.annotations.NonNull;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Command to control the profile settings.
@@ -130,7 +124,7 @@ public class ProfileSettingCmd implements ISlashSubcommand {
 //        if (setting.getDataType() == Boolean.class){
 //            return true;
 //        }
-        List<SettingChoice> autocompleteOptions = setting.getAutocompleteChoices();
+        List<SettingChoice> autocompleteOptions = setting.getChoices();
         if(autocompleteOptions.isEmpty()){
             return true;
         }

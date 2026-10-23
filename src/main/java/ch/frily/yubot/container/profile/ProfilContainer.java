@@ -3,10 +3,8 @@ package ch.frily.yubot.container.profile;
 import ch.frily.yubot.container.Container;
 import ch.frily.yubot.database.repository.ProfileRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.service.profile.Profile;
-import ch.frily.yubot.service.profile.Settings;
+import ch.frily.yubot.service.profile.*;
 import ch.frily.yubot.database.repository.SettingRepository;
-import ch.frily.yubot.service.profile.Setting;
 import ch.frily.yubot.service.profile.button.AddProfileBtn;
 import ch.frily.yubot.service.profile.button.DeleteProfileBtn;
 import ch.frily.yubot.service.profile.button.EditProfileBtn;
@@ -262,31 +260,33 @@ public class ProfilContainer extends Container {
             return null;
         }
 
-//        Map<String, String> mappedSettings = new HashMap<>();
-//        for (Setting setting : Setting.values()) {
-//            try {
-//                Object rawValue = SettingRepository.getSetting(target, setting, setting.getDataType());
-//                if (rawValue == null) {
-//                    continue; // skip setting
-//                }
-//
-//                String settingValue;
-//                if (!setting.getAutocompleteChoices().isEmpty()) {
-//                    settingValue = setting.getOptionByValue(rawValue).label();
-//                } else {
-//                    // custom text gets concat with " "
-//                    String rawText = String.valueOf(rawValue);
-//                    settingValue = rawText.isBlank() ? rawText : String.format("\"%s\"", rawText);
-//                }
-//
-//                mappedSettings.put(setting.getLabel(), settingValue);
-//            } catch (Exception e) {
-//                ExceptionHandler.fail(e);
-//            }
-//        }
-//
-//        return mappedSettings;
-        return null;
+        Map<String, String> mappedSettings = new HashMap<>();
+        for (Setting setting : Setting.values()) {
+            try {
+                Object rawValue = SettingRepository.getSetting(target, setting, setting.getDataType());
+                if (rawValue == null) {
+                    continue; // skip setting
+                }
+
+                String settingValue;
+                if (!setting.getChoices().isEmpty() && setting.getOption() != null) {
+                    settingValue = setting.getChoiceByValue(rawValue).label();
+                } else if (setting.getChoices().isEmpty() && setting.getOption() != null) {
+                    // custom text gets concat with " "
+                    String rawText = String.valueOf(rawValue);
+                    settingValue = rawText.isBlank() ? rawText : String.format("\"%s\"", rawText);
+                } else {
+                    SettingOnDisplayCtx displayCtx = new SettingOnDisplayCtx(setting, String.valueOf(rawValue));
+                    settingValue = setting.getOnDisplay().apply(displayCtx);
+                }
+
+                mappedSettings.put(setting.getLabel(), settingValue);
+            } catch (Exception e) {
+                ExceptionHandler.fail(e);
+            }
+        }
+
+        return mappedSettings;
     }
 
     private CompletableFuture<FileUpload> buildProfileBanner() {

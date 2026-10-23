@@ -3,7 +3,7 @@ package ch.frily.yubot.service.profile.slashcommand;
 import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.service.profile.Setting;
-import ch.frily.yubot.service.profile.SettingContext;
+import ch.frily.yubot.service.profile.SettingOnSubmitCtx;
 import ch.frily.yubot.service.profile.SettingChoice;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jspecify.annotations.NonNull;
 
@@ -19,7 +18,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -38,7 +36,7 @@ public class ProfileSettingFactory implements ISlashSubcommand {
     private List<SettingChoice> autocompleteChoices;
     private Setting setting;
     private List<Role> allowedRoles;
-    private Consumer<SettingContext> onSubmit;
+    private Consumer<SettingOnSubmitCtx> onSubmit;
 
     /**
      * Define the setting for which the command should be build
@@ -50,7 +48,7 @@ public class ProfileSettingFactory implements ISlashSubcommand {
         this.name = setting.getLabel();
         this.description = setting.getDescription();
         this.option = setting.getOption();
-        this.autocompleteChoices = setting.getAutocompleteChoices();
+        this.autocompleteChoices = setting.getChoices();
         this.allowedRoles = setting.getAllowedRoles();
         this.onSubmit = setting.getOnSubmit();
         return this;
@@ -73,7 +71,7 @@ public class ProfileSettingFactory implements ISlashSubcommand {
             if (this.option != null) {
                 String inputValue = event.getOption(this.option.getName()).getAsString();
                 log.info("Selected Value: {}", inputValue);
-                SettingContext context = new SettingContext<>(setting, event, inputValue);
+                SettingOnSubmitCtx context = new SettingOnSubmitCtx<>(setting, event, inputValue);
                 onSubmit.accept(context);
                 if (!this.autocompleteChoices.isEmpty()) {
                     inputValue = setting.getChoiceByValue(context.value()).label();
@@ -81,7 +79,7 @@ public class ProfileSettingFactory implements ISlashSubcommand {
                 String replyMessage = String.format("✅ Die Einstellung **%s** wurde auf `%s` festgelegt.", setting.getLabel(), inputValue);
                 event.reply(replyMessage).setEphemeral(true).queue();
             } else {
-                SettingContext context = new SettingContext<>(setting, event);
+                SettingOnSubmitCtx context = new SettingOnSubmitCtx<>(setting, event);
                 onSubmit.accept(context);
             }
 

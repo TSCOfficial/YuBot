@@ -3,6 +3,7 @@ package ch.frily.yubot.service.activemod;
 import ch.frily.yubot.database.repository.SettingRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.profile.Setting;
+import ch.frily.yubot.service.profile.SettingChoice;
 import ch.frily.yubot.service.profile.modal.ProfileSettingActivemodColorModal;
 import ch.frily.yubot.util.EnvKey;
 import lombok.extern.slf4j.Slf4j;
@@ -95,7 +96,8 @@ public final class ActiveModStatisticChart {
                 if (color == null) {
                     Map<Member, String> activeSettings = SettingRepository.getSettings(Setting.ACTIVEMOD_GRAPH_COLOR, String.class);
                     List<String> usedColors = activeSettings.values().stream().toList();
-                    List<SelectOption> restColors = ProfileSettingActivemodColorModal.getOptions().stream().filter(selectOption -> {
+                    List<SelectOption> allColors = Setting.ACTIVEMOD_GRAPH_COLOR.getChoices().stream().map(SettingChoice::toSelectOption).toList();
+                    List<SelectOption> restColors = allColors.stream().filter(selectOption -> {
                         return !usedColors.contains(selectOption.getValue());
                     }).toList();
 

@@ -44,7 +44,7 @@ public class SelectActiveModSendTypeModal extends Modal {
     @Override
     public List<ModalTopLevelComponent> getComponents() {
         RadioGroup.Builder builder = RadioGroup.create("type-selector");
-        Setting.ACTIVEMOD_SEND_IN_DM.getAutocompleteChoices().forEach(option -> builder.addOption(option.label(), String.valueOf(option.value()), option.description()));
+        Setting.ACTIVEMOD_SEND_IN_DM.getChoices().forEach(option -> builder.addOption(option.label(), String.valueOf(option.value()), option.description()));
         return List.of(
                 TextDisplay.of("""
                         Wähle aus wo du die ActiveMod-Nachrichten erhalten möchtest.
