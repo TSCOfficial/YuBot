@@ -21,13 +21,14 @@ import java.util.Objects;
 public class EventReminderScheduler implements IScheduler {
     @Override
     public String cronExpression() {
-        return "* * * * *"; // 0/15
+        return "0/15 * * * *";
     }
 
     @Override
     public void execute() {
         Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
         List<ScheduledEvent> upcomingEvents = guild.getScheduledEvents().stream().filter(event -> {
+            log.info("Processing event: {}", event.getName());
             // remove already reminded events from list by returning false
             try {
                 if (event.getStatus() != ScheduledEvent.Status.SCHEDULED) {
@@ -38,9 +39,12 @@ public class EventReminderScheduler implements IScheduler {
                 LocalDateTime now = LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MINUTES);
                 if (event.getStatus().equals(ScheduledEvent.Status.SCHEDULED) && (!startTime.isBefore(now) && !startTime.isAfter(now.plusHours(2)))) {
                     try {
-                        return !EventReminderRepository.reminderAlreadySent(event.getId());
+                        boolean isSent = EventReminderRepository.reminderAlreadySent(event.getId());
+                        log.info("reminder already sent: {}", isSent);
+                        return !isSent;
 
                     } catch (NotFoundException e) {
+                        log.info("Event reminder not found, sending reminder");
                         return true;
                     }
                 }
