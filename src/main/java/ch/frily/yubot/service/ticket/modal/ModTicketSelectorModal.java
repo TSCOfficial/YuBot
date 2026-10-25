@@ -86,7 +86,7 @@ public class ModTicketSelectorModal extends Modal {
         if (message != null) {
             CheckboxGroup.Builder checkboxGroupBuilder = CheckboxGroup.create("message-prove");
             checkboxGroupBuilder.addOption("Nachricht als Beweis hinterlegen", "use");
-            checkboxGroupBuilder.addOption("Nachricht als Beweis hinterlegen und Löschen", "use-delete");
+            checkboxGroupBuilder.addOption("Nachricht als Beweis hinterlegen und löschen", "use-delete");
             checkboxGroupBuilder.setMaxValues(1);
             checkboxGroupBuilder.setRequired(false);
             components.add(Label.of("Beweismittel", checkboxGroupBuilder.build()));
