@@ -20,6 +20,7 @@ public class ModticketMsgCtxMenu implements IMessageContextMenu {
         ModTicketSelectorModal modal = new ModTicketSelectorModal();
         modal.addArgument("target", Objects.requireNonNull(event.getTarget().getMember()).getId());
         modal.setMessage(event.getTarget());
+        modal.setInitiator(event.getMember());
         event.replyModal(modal.build()).queue();
     }
 

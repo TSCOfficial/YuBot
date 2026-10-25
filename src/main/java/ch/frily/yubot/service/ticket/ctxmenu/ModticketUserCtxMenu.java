@@ -16,6 +16,7 @@ public class ModticketUserCtxMenu implements IUserContextMenu {
     public void execute(@NonNull UserContextInteractionEvent event) throws SQLException {
         ModTicketSelectorModal modal = new ModTicketSelectorModal();
         modal.addArgument("target", event.getTargetMember().getId());
+        modal.setInitiator(event.getMember());
         event.replyModal(modal.build()).queue();
     }
 

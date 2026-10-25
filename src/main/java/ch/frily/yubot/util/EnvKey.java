@@ -190,6 +190,8 @@ public enum EnvKey {
     EMOJI_COLOR_VIOLETTBROMBEERE("<:violett_brombeere:1558096463207079957>"),
     COLOR_VIOLETTBROMBEERE("#8E1AC3"),
 
+    EMOJI_SPINNER("<a:spinner:1564000414746157056>"),
+
     TIMEZONE("Europe/Berlin");
 
     @Getter
