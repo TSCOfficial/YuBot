@@ -7,9 +7,20 @@ import java.util.function.Consumer;
 
 /**
  * For Consumers, use this Wrapper class to catch and handle exceptions.
- * <p></p>
- * When using async methods, exceptions can't be caught by the normal exception handler defined in {@link ch.frily.yubot.event.InteractionListener}
- * or (at latest) in {@link ch.frily.yubot.Client}.
+ * <p>
+ *     When using async methods, exceptions can't be caught by the normal {@link ExceptionHandler}. To avoid silent exceptions, use:
+ *     <pre><code>
+ *         ThrowingConsumer.wrap(event, _ -> {
+ *             // you code...
+ *         }
+ *     </code></pre>
+ *     This also workings with using async method return values
+ *     <pre><code>
+ *         event.reply(...).queue(ThrowingConsumer.wrap(event, message -> {
+ *             // use queue's message variable
+ *         }
+ *     </code></pre>
+ * </p>
  * @param <T>
  */
 @FunctionalInterface
