@@ -7,7 +7,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+import static org.reflections.Reflections.log;
+
 public class DatabaseQuery {
+    // Table schema
+    private final String schema;
+
 	// Query table
     private final String table;
 	
@@ -129,6 +134,7 @@ public class DatabaseQuery {
      */
     public DatabaseQuery(Table table) {
         this.table = table.getTable();
+        this.schema = table.getSchema();
     }
 
     /**
@@ -221,11 +227,15 @@ public class DatabaseQuery {
 
 
     /**
-     * Execute the database query for architectural purposes
+     * Execute the database query for architectural purposes2
      * @return The database results
      */
     public ResultSet executeDataQuery() throws SQLException {
         Connection conn = Database.getInstance().connect();
+        //log.info("executing on table {} from schema {}", table, schema);
+//        if (schema != null && !schema.isBlank()) { // todo check
+//            conn.setSchema(schema);
+//        }
         PreparedStatement stmt = conn.prepareStatement(buildSQL());
         setParameters(stmt);
         return stmt.executeQuery();

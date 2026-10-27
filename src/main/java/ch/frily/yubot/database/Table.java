@@ -7,20 +7,20 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum Table {
-    TICKET("ticket", TicketColumn.class),
-    TICKET_TYPE_CONTROL("ticket_type_control", TicketTypeControlColumn.class),
-    ACTIVE_MOD("active_mod", ActiveModColumn.class),
-    ACTIVE_MOD_TRACKING("active_mod_tracking", ActiveModTrackingColumn.class),
-    ACTIVE_MOD_CONTROL("active_mod_control", ActiveModControlColumn.class),
-    DYNAMIC_MESSAGE("dynamic_message", DynamicMessageColumn.class),
-    ABSENCE("absence", AbsenceColumn.class),
-    SETTING("setting", SettingColumn.class),
-    PROFILE("profile", ProfileColumn.class),
-    PROFILE_HISTORY("profile_history", ProfileHistoryColumn.class),
-    PROFILE_MESSAGE("profile_message", ProfileMessageColumn.class),
-    EVENT_REMINDER("event_reminder", EventReminderColumn.class);
+    TICKET("ticket", "ticketsystem", TicketColumn.class),
+    TICKET_TYPE_CONTROL("ticket_type_control", "ticketsystem", TicketTypeControlColumn.class),
+    ACTIVE_MOD("active_mod", "activemod", ActiveModColumn.class),
+    ACTIVE_MOD_TRACKING("active_mod_tracking", "activemod", ActiveModTrackingColumn.class),
+    ACTIVE_MOD_CONTROL("active_mod_control", "activemod", ActiveModControlColumn.class),
+    DYNAMIC_MESSAGE("dynamic_message", "public", DynamicMessageColumn.class),
+    ABSENCE("absence", "public", AbsenceColumn.class),
+    SETTING("setting", "profile", SettingColumn.class),
+    PROFILE("profile", "profile", ProfileColumn.class),
+    PROFILE_MESSAGE("profile_message", "profile", ProfileMessageColumn.class),
+    EVENT_REMINDER("event_reminder", "public", EventReminderColumn.class);
 
     private final String table;
+    private final String schema;
     private final Class<? extends Column> columnClass;
 
     /**

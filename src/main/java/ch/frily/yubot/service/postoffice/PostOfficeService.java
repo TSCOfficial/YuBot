@@ -12,6 +12,7 @@ import ch.frily.yubot.service.postoffice.schedule.StatusOverwriteSchedule;
 import ch.frily.yubot.service.postoffice.slashcommand.SayCmd;
 import ch.frily.yubot.service.postoffice.slashcommand.SendCmdGroup;
 import ch.frily.yubot.service.postoffice.slashcommand.StatusCmdGroup;
+import ch.frily.yubot.service.postoffice.slashcommand.SystestCmd;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -57,7 +58,8 @@ public class PostOfficeService extends Service {
     @Override
     public List<ISlashCommand> getSlashCommands() {
         return List.of(
-                new SayCmd()
+                new SayCmd(),
+                new SystestCmd()
         );
     }
 

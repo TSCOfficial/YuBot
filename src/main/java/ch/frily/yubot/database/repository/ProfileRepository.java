@@ -114,8 +114,6 @@ public class ProfileRepository {
     }
 
     public static void updateProfile(Profile profile)  throws SQLException {
-        recordToHistory(profile);
-
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE);
         query.where(Table.ProfileColumn.ID, DatabaseQuery.Operator.EQUALS, profile.profileId());
         query.update(Table.ProfileColumn.NAME, profile.name());
@@ -148,14 +146,6 @@ public class ProfileRepository {
 
     public static List<Profile> orderByUsage(List<Profile> profiles) {
         return profiles.stream().sorted(Comparator.comparingInt(Profile::useCount)).toList().reversed();
-    }
-
-    private static void recordToHistory(Profile newProfile) throws SQLException {
-        Profile oldProfile = getProfileById(newProfile.profileId());
-
-        if (!oldProfile.name().equals(newProfile.name())) {
-            ProfileHistoryRepository.create(oldProfile, newProfile);
-        }
     }
 
     public static void deleteProfile(Profile profile) throws SQLException {
