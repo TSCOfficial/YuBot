@@ -1,7 +1,6 @@
 package ch.frily.yubot.util;
 
 import ch.frily.yubot.Client;
-import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.InvalidStateException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +9,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
-import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 
@@ -18,12 +16,17 @@ import java.awt.Color;
 import java.time.ZoneId;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @Slf4j
 public enum EnvKey {
+    //
+    // GUILDS
+    //
     GUILD_YUSERVER("1045025807065698314"),
 
+    //
+    // ROLES
+    //
     ROLE_OWNER("1045025807065698320"),
     ROLE_SERVERLEITUNG("1433146444977803325"),
     ROLE_DEVLEITUNG("1433145883016564756"),
@@ -75,6 +78,21 @@ public enum EnvKey {
     ROLE_DMFRAGEN("1515033685982838916"),
     ROLE_DM_GESCHLOSSEN("1515033546660773918"),
 
+    //
+    // CATEGORIES
+    //
+    CATEGORY_TICKETSUPPORT("1437589747634798672"),
+    CATEGORY_TICKETAWARENESS("1564606163809734666"),
+    CATEGORY_TICKETBEWERBUNG("1564606422841426000"),
+    CATEGORY_ANSAGEN("1435264781828362330"),
+    CATEGORY_LIVEVENTS("1435265311094870118"),
+    CATEGORY_COMMUNITYFLOOR("1435265631183437895"),
+    CATEGORY_VOICE("1470272362401235045"),
+    CATEGORY_TEAMBEREICH("1435266533159866406"),
+
+    //
+    // CHANNELS
+    //
     CHANNEL_ANKUENDIGUNGEN("1516862980707450932"),
     CHANNEL_DASTEAM("1511987896389996675"),
     CHANNEL_SERVERGESCHLOSSEN("1513791699170627625"),
@@ -107,13 +125,9 @@ public enum EnvKey {
     CHANNEL_ACTIVEMODERATION("1541846281528545370"),
     CHANNEL_VOICECHECK("1520419294540730448"),
 
-    CATEGORY_TICKETS("1437589747634798672"),
-    CATEGORY_ANSAGEN("1435264781828362330"),
-    CATEGORY_LIVEVENTS("1435265311094870118"),
-    CATEGORY_COMMUNITYFLOOR("1435265631183437895"),
-    CATEGORY_VOICE("1470272362401235045"),
-    CATEGORY_TEAMBEREICH("1435266533159866406"),
-
+    //
+    // EMOJIS
+    //
     EMOJI_PRONOMEN_ERIHM("1557055355404689418"),
     EMOJI_PRONOMEN_ERSIE("1557055458710126653"),
     EMOJI_PRONOMEN_SIEER("1557055460883046480"),
@@ -134,6 +148,7 @@ public enum EnvKey {
     EMOJI_PRONOMEN_KEINE("1557055712293691422"),
     EMOJI_PRONOMEN_ANDEREFRAGEN("1557055479648092281"),
 
+    // The following emojis & colors are together, because the emoji is a visual representation of the given color
     EMOJI_COLOR_BLAUPETROL("<:blau_petrol:1558097740632690779>"),
     COLOR_BLAUPETROL("#00A3B3"),
     EMOJI_COLOR_BLAUKORNBLUME("<:blau_kornblume:1558097738720219197>"),
@@ -192,6 +207,9 @@ public enum EnvKey {
 
     EMOJI_SPINNER("<a:spinner:1564000414746157056>"),
 
+    //
+    // DIVERS
+    //
     TIMEZONE("Europe/Berlin");
 
     @Getter

@@ -139,7 +139,7 @@ public class ModTicketSelectorModal extends Modal {
                                     ticketChannel.sendMessage("""
                                     > **Als Beweis hinterlegte Nachricht:**
                                     %s
-                                    """.formatted(originalMsg.getContentRaw())).queue();
+                                    """.formatted(originalMsg.getContentRaw())).setAllowedMentions(List.of()).queue();
                                 }
                                 if (proveOptionValue.contains("delete")) {
                                     actionMsg = " und gelöscht";

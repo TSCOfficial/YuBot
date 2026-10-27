@@ -145,7 +145,7 @@ public class TicketService extends Service {
 
         Ticket ticket = new Ticket(ticketOwner, type);
 
-        Category ticketCategory = EnvKey.CATEGORY_TICKETS.getAsCategory();
+        Category ticketCategory = type.getGroup() != null ? type.getGroup().getChannelCategory() : EnvKey.CATEGORY_TICKETSUPPORT.getAsCategory();
         ActionRow actionrow = ActionRow.of(List.of(
                 new TicketCloseRequestBtn().build()
         ));
@@ -198,7 +198,7 @@ public class TicketService extends Service {
      * @return True if its a Ticketchannel / False if not
      */
     public boolean isTicketchannel(TextChannel channel) throws SQLException {
-        if (channel.getParentCategory() == null || channel.getParentCategory().getIdLong() != EnvKey.CATEGORY_TICKETS.getAsCategory().getIdLong()) {
+        if (channel.getParentCategory() == null || channel.getParentCategory().getIdLong() != EnvKey.CATEGORY_TICKETSUPPORT.getAsCategory().getIdLong()) {
             return false;
         }
         TicketRepository.getTicketById(channel.getIdLong());
