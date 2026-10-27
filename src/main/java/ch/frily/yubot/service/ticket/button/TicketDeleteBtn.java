@@ -50,15 +50,7 @@ public class TicketDeleteBtn extends Button {
         Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
 
         if (ticket.getType().getGroup() == TicketTypeGroup.BEWERBUNG) {
-            ticket.generateTranscript().thenAccept(ThrowingConsumer.wrap(event, fileUpload -> {
-                fileUpload.setName("transkript-" + ticket.getNameWithoutStatus() + ".html");
-                TextChannel logChannel = EnvKey.CHANNEL_TICKETLOGS.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
-                List<Container> containers = new TicketTranscriptContainer(event.getMember(), ticket, fileUpload, null).build();
-                logChannel.sendMessageComponents(containers).useComponentsV2().addFiles(fileUpload).setAllowedMentions(List.of()).queue(ThrowingConsumer.wrap(event, _ -> {
-                    event.getHook().editOriginal("Ticket wird gelöscht.").queue();
-                    ticket.delete();
-                }));
-            }));
+            ticket.archive(event.getMember());
             return;
         }
 

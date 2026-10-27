@@ -34,6 +34,7 @@ public enum Table {
     @Getter
     @RequiredArgsConstructor
     public enum TicketColumn implements Column {
+        ID("id"),
         OWNER_ID("owner_id"),
         ASSIGNEE_ID("assignee_id"),
         CHANNEL_ID("channel_id"),
@@ -43,8 +44,12 @@ public enum Table {
         IS_REQUEST_PENDING("is_request_pending"),
         CLOSE_REQUEST_COUNT("close_request_count"),
         STATUS("status"),
+        CREATED_AT("created_at"),
         UPDATED_AT("updated_at"),
-        IS_REMINDER_SENT("is_reminder_sent");
+        ARCHIVED_AT("archived_at"),
+        IS_REMINDER_SENT("is_reminder_sent"),
+        SUMMARY("summary"),
+        ARCHIVE_MESSAGE_ID("archive_message_id");
         private final String column;
     }
 

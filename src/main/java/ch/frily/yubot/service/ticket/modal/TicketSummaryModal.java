@@ -50,7 +50,7 @@ public class TicketSummaryModal extends Modal {
         boolean isRequired = ticket.getType() == TicketType.MODTICKET;
         summaryInput.setRequired(isRequired);
 
-        String summaryOptionalInfo = "Zusammenfassungen sind optional, werden aber empfohlen.";
+        String summaryOptionalInfo = "Zusammenfassungen sind optional, werden aber für die Archivierung empfohlen.";
         if (isRequired) {
             summaryOptionalInfo = "Zusammenfassungen für ModTickets sind pflicht.";
         }
@@ -67,27 +67,15 @@ public class TicketSummaryModal extends Modal {
 
     @Override
     public void execute(@NonNull ModalInteractionEvent event) throws SQLException, NullPointerException {
-        event.deferReply(true).queue();
-        ModalMapping summary = event.getValue("summary");
-        String summaryText;
-        if (summary != null && !summary.getAsString().isBlank()) {
-            summaryText = summary.getAsString().replace("\n", "\n> ");
-        } else {
-            summaryText = null;
-        }
-
         long ticketId = Long.parseLong(this.getArgument(event.getModalId(), "ticket_id"));
         Ticket ticket = TicketRepository.getTicketById(ticketId);
 
-        ticket.generateTranscript().thenAccept(ThrowingConsumer.wrap(event, fileUpload -> {
-            fileUpload.setName("transkript-" + ticket.getNameWithoutStatus() + ".html");
-            TextChannel logChannel = EnvKey.CHANNEL_TICKETLOGS.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
-            List<Container> containers = new TicketTranscriptContainer(event.getMember(), ticket, fileUpload, summaryText).build();
-            logChannel.sendMessageComponents(containers).useComponentsV2().addFiles(fileUpload).setAllowedMentions(List.of()).queue(ThrowingConsumer.wrap(event, _ -> {
-                event.getHook().editOriginal("Ticket wird gelöscht.").queue(ThrowingConsumer.wrap(event, _ -> {
-                    ticket.delete();
-                }));
-            }));
-        }));
+        event.deferReply(true).queue();
+        ModalMapping summary = event.getValue("summary");
+        if (summary != null && !summary.getAsString().isBlank()) {
+            ticket.setSummary(summary.getAsString().replace("\n", "\n> "));
+        }
+
+        ticket.archive(event.getMember());
     }
 }
