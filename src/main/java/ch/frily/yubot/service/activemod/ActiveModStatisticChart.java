@@ -81,14 +81,12 @@ public final class ActiveModStatisticChart {
                     .toList();
 
             if (member.equals(highlightMember)) {
-                log.info("Highlighting member {}", highlightMember.getEffectiveName());
                 suppress.set(false);
             }
             java.awt.Color color = null;
             try {
                 String colorName = SettingRepository.getSetting(member, Setting.ACTIVEMOD_GRAPH_COLOR, String.class);
                 if (colorName != null) {
-                    log.info("Found saved Color {}", colorName);
                     color = EnvKey.valueOf(colorName).getAsColor();
                 }
 
@@ -102,7 +100,6 @@ public final class ActiveModStatisticChart {
                     }).toList();
 
                     String colorKey = restColors.getFirst().getValue();
-                    log.info("Setting color to {}", colorKey);
                     color = EnvKey.valueOf(colorKey).getAsColor();
 
                     // save this color to DB
