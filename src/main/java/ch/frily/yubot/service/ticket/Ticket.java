@@ -2,6 +2,7 @@ package ch.frily.yubot.service.ticket;
 
 import ch.frily.yubot.Client;
 import ch.frily.yubot.container.ticket.TicketTranscriptContainer;
+import ch.frily.yubot.database.repository.TicketMemberRepository;
 import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.embed.ticket.TicketCloseRequestEmbed;
 import ch.frily.yubot.embed.ticket.TicketClosedOptionsEmbed;
@@ -433,14 +434,29 @@ public class Ticket {
     }
 
     /**
+     * Add a participant to this ticket
+     * <p>
+     *     This does not influence the ticket access. It only marks the user as a participant.
+     * </p>
+     * <p>
+     *     See also: {@link #addTicketAccess(Member, IPermissionHolder)}
+     * </p>
+     * @param member the member to be added as a participent
+     * @throws SQLException
+     */
+    public void addParticipant(Member member) throws SQLException {
+        TicketMemberRepository.addMemberToTicket(this, member);
+    }
+
+    /**
      * Add a member to this ticket
      * @param initiator the member that initiates the toggle (usually a team-member)
      * @param permissionHolder the user or role to toggle
      * @throws PermissionDeniedException if the initator is missing permissions to execute this action
      * @throws InvalidStateException if the user/role is already added/removed, the ticket owner tries to be removed or the ticket is already closed
      */
-    public void addMember(Member initiator, IPermissionHolder permissionHolder) throws PermissionDeniedException, InvalidStateException {
-        toggleAdditionalMember(initiator, permissionHolder, true);
+    public void addTicketAccess(Member initiator, IPermissionHolder permissionHolder) throws PermissionDeniedException, InvalidStateException {
+        toggleTicketAccess(initiator, permissionHolder, true);
     }
 
     /**
@@ -450,23 +466,23 @@ public class Ticket {
      * @throws PermissionDeniedException if the initator is missing permissions to execute this action
      * @throws InvalidStateException if the user/role is already added/removed, the ticket owner tries to be removed or the ticket is already closed
      */
-    public void removeMember(Member initiator, IPermissionHolder permissionHolder) throws PermissionDeniedException, InvalidStateException {
-        toggleAdditionalMember(initiator, permissionHolder, false);
+    public void removeTicketAccess(Member initiator, IPermissionHolder permissionHolder) throws PermissionDeniedException, InvalidStateException {
+        toggleTicketAccess(initiator, permissionHolder, false);
     }
 
     /**
      * Add/remove a user or role from the ticket
      * @param initiator the member that initiates the toggle (usually a team-member)
      * @param permissionHolder the user or role to toggle
-     * @param addMember whether to add (true) or remove (false) the user/role
+     * @param isAdding whether to add (true) or remove (false) the user/role
      * @throws PermissionDeniedException if the initator is missing permissions to execute this action
      * @throws InvalidStateException if the user/role is already added/removed, the ticket owner tries to be removed or the ticket is already closed
      */
-    private void toggleAdditionalMember(Member initiator, IPermissionHolder permissionHolder, boolean addMember) throws PermissionDeniedException, InvalidStateException {
+    private void toggleTicketAccess(Member initiator, IPermissionHolder permissionHolder, boolean isAdding) throws PermissionDeniedException, InvalidStateException {
         if (Util.isTeamMember(initiator)){
             if (status != TicketStatus.CLOSED) {
 
-                if (addMember) {
+                if (isAdding) {
                     if (getPermissionOverrides().contains(permissionHolder)) {
                         throw new InvalidStateException("Diese Person kann nicht hinzugefügt werden.", "Diese befindet sich bereits in diesem Ticket.");
                     }

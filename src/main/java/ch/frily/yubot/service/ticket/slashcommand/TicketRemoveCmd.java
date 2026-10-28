@@ -32,7 +32,7 @@ public class TicketRemoveCmd implements ISlashSubcommand {
         Ticket ticket = TicketRepository.getTicketByChannelId(event.getChannelIdLong());
         IMentionable mentionable = userRoleOption.getAsMentionable();
         IPermissionHolder permissionHolder = (IPermissionHolder) mentionable;
-        ticket.removeMember(event.getMember(), permissionHolder);
+        ticket.removeTicketAccess(event.getMember(), permissionHolder);
 
         event.reply(String.format("✅ %s wurde erfolgreich entfernt.", userRoleOption.getAsMentionable().getAsMention())).queue();
     }

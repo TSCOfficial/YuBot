@@ -35,7 +35,7 @@ public class TicketAddCmd implements ISlashSubcommand {
 
         Ticket ticket = TicketRepository.getTicketByChannelId(event.getChannelIdLong());
 
-        ticket.addMember(event.getMember(), permissionHolder);
+        ticket.addTicketAccess(event.getMember(), permissionHolder);
 
         StringBuilder reply = new StringBuilder();
         reply.append(String.format("✅ %s wurde erfolgreich hinzugefügt.", userRoleOption.getAsMentionable().getAsMention()));

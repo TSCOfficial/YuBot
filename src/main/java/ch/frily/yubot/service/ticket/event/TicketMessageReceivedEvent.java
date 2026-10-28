@@ -35,6 +35,8 @@ public class TicketMessageReceivedEvent implements IEvent<MessageReceivedEvent> 
                 && TicketService.getInstance().isTicketchannel(castEvent.getChannel().asTextChannel())) {
             Ticket ticket = TicketRepository.getTicketByChannelId(castEvent.getChannel().getIdLong());
 
+            ticket.addParticipant(castEvent.getMember());
+
             // ticket claim function
             if (Util.isTeamMember(castEvent.getMember())) {
                 ticket.claim(castEvent.getMember());

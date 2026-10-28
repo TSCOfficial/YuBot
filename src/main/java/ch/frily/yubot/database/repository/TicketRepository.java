@@ -62,7 +62,10 @@ public class TicketRepository {
         ticket.setRequestPending(isRequestPending);
         ticket.setCloseRequestCount(closeRequestCount);
         ticket.setStatus(status);
-        ticket.setUpdatedAt(updatedAt.toLocalDateTime());
+        if (updatedAt != null) {
+            ticket.setUpdatedAt(updatedAt.toLocalDateTime());
+        }
+
         ticket.setReminderSent(isReminderSent);
 
         ticket.setWelcomeMessageId(welcomeMessageId);

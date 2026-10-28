@@ -1,6 +1,5 @@
 package ch.frily.yubot.database;
 
-import ch.frily.yubot.service.ticket.Ticket;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -10,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public enum Table {
     // todo DEVNOTE - Update notice: The schemas MUST stay on public, till the finished update to the server. Else, data which was added in between tests will habe other data!
     TICKET("ticket", "public", TicketColumn.class),
+    TICKET_PARTICIPANT("ticket_participant", "public", TicketParticipantColumn.class),
     TICKET_TYPE_CONTROL("ticket_type_control", "public", TicketTypeControlColumn.class),
     ACTIVE_MOD("active_mod", "public", ActiveModColumn.class),
     ACTIVE_MOD_TRACKING("active_mod_tracking", "public", ActiveModTrackingColumn.class),
@@ -57,6 +57,15 @@ public enum Table {
         IS_REMINDER_SENT("is_reminder_sent"),
         SUMMARY("summary"),
         ARCHIVE_MESSAGE_ID("archive_message_id");
+        private final String column;
+    }
+
+    // TICKET MEMBER
+    @Getter
+    @RequiredArgsConstructor
+    public enum TicketParticipantColumn implements Column {
+        TICKET_ID("ticket_id"),
+        MEMBER_ID("member_id");
         private final String column;
     }
 
