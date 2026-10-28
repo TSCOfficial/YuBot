@@ -232,10 +232,6 @@ public class DatabaseQuery {
      */
     public ResultSet executeDataQuery() throws SQLException {
         Connection conn = Database.getInstance().connect();
-        //log.info("executing on table {} from schema {}", table, schema);
-//        if (schema != null && !schema.isBlank()) { // todo check
-//            conn.setSchema(schema);
-//        }
         PreparedStatement stmt = conn.prepareStatement(buildSQL());
         setParameters(stmt);
         return stmt.executeQuery();
