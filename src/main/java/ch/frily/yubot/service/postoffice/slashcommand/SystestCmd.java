@@ -1,5 +1,6 @@
 package ch.frily.yubot.service.postoffice.slashcommand;
 
+import ch.frily.yubot.database.Database;
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.interaction.command.ISlashCommand;
@@ -7,9 +8,13 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.jspecify.annotations.NonNull;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+
+import static org.reflections.Reflections.log;
 
 public class SystestCmd implements ISlashCommand {
     @Override
@@ -29,13 +34,11 @@ public class SystestCmd implements ISlashCommand {
 
     @Override
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
-//        DatabaseQuery query = new DatabaseQuery(Table.TEST);
-//        query.select();
-//
-//        ResultSet rs = query.executeDataQuery();
-//
-//        while (rs.next()) {
-//            System.out.println(rs.getString(1));
-//        }
+        DatabaseQuery query = new DatabaseQuery(Table.TEST);
+
+        ResultSet rs = query.select().executeDataQuery();
+        while (rs.next()) {
+            log.info(rs.getString(1));
+        }
     }
 }

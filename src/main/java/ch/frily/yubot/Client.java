@@ -18,7 +18,11 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import static org.reflections.Reflections.log;
 
 @Slf4j
 public class Client {
@@ -59,6 +63,16 @@ public class Client {
             Connection conn = Database.getInstance().connect();
             if (conn != null) {
                 log.info("Database connected!");
+
+                PreparedStatement stmt = conn.prepareStatement("""
+                SELECT current_user, current_schemas(true), current_setting('search_path')
+                """);
+                ResultSet rs = stmt.executeQuery();
+                while (rs.next()) {
+                    log.info(rs.getString(1));
+                    log.info(rs.getString(2));
+                    log.info(rs.getString(3));
+                }
             } else {
                 throw new SQLException("Database could not be reached!");
             }

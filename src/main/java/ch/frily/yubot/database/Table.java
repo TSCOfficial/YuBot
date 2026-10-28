@@ -3,24 +3,31 @@ package ch.frily.yubot.database;
 import ch.frily.yubot.service.ticket.Ticket;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 @Getter
 @RequiredArgsConstructor
 public enum Table {
-    TICKET("ticket", "ticketsystem", TicketColumn.class),
-    TICKET_TYPE_CONTROL("ticket_type_control", "ticketsystem", TicketTypeControlColumn.class),
-    ACTIVE_MOD("active_mod", "activemod", ActiveModColumn.class),
-    ACTIVE_MOD_TRACKING("active_mod_tracking", "activemod", ActiveModTrackingColumn.class),
-    ACTIVE_MOD_CONTROL("active_mod_control", "activemod", ActiveModControlColumn.class),
+    // todo DEVNOTE - Update notice: The schemas MUST stay on public, till the finished update to the server. Else, data which was added in between tests will habe other data!
+    TICKET("ticket", "public", TicketColumn.class),
+    TICKET_TYPE_CONTROL("ticket_type_control", "public", TicketTypeControlColumn.class),
+    ACTIVE_MOD("active_mod", "public", ActiveModColumn.class),
+    ACTIVE_MOD_TRACKING("active_mod_tracking", "public", ActiveModTrackingColumn.class),
+    ACTIVE_MOD_CONTROL("active_mod_control", "public", ActiveModControlColumn.class),
     DYNAMIC_MESSAGE("dynamic_message", "public", DynamicMessageColumn.class),
     ABSENCE("absence", "public", AbsenceColumn.class),
-    SETTING("setting", "profile", SettingColumn.class),
-    PROFILE("profile", "profile", ProfileColumn.class),
-    PROFILE_MESSAGE("profile_message", "profile", ProfileMessageColumn.class),
+    SETTING("setting", "public", SettingColumn.class),
+    PROFILE("profile", "public", ProfileColumn.class),
+    PROFILE_MESSAGE("profile_message", "public", ProfileMessageColumn.class),
     EVENT_REMINDER("event_reminder", "public", EventReminderColumn.class);
 
+    @NotNull
     private final String table;
+
+    @NotNull
     private final String schema;
+
+    @NotNull
     private final Class<? extends Column> columnClass;
 
     /**
