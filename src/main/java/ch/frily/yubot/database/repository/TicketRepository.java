@@ -118,7 +118,10 @@ public class TicketRepository {
             ticket.setStatus(status);
             ticket.setReminderSent(isReminderSent);
             ticket.setWelcomeMessageId(welcomeMessageId);
-            ticket.setCreatedAt(createdAt.toLocalDateTime());
+            if (createdAt != null) { // todo remove when setting not null on db
+                ticket.setCreatedAt(createdAt.toLocalDateTime());
+            }
+
 
             if (Objects.nonNull(updatedAt)) {
                 ticket.setUpdatedAt(updatedAt.toLocalDateTime());

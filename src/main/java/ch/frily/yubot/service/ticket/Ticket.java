@@ -438,11 +438,9 @@ public class Ticket {
      * <p>
      *     This does not influence the ticket access. It only marks the user as a participant.
      * </p>
-     * <p>
-     *     See also: {@link #addTicketAccess(Member, IPermissionHolder)}
-     * </p>
      * @param member the member to be added as a participent
-     * @throws SQLException
+     * @throws SQLException Database connection error
+     * @see #addTicketAccess(Member, IPermissionHolder)
      */
     public void addParticipant(Member member) throws SQLException {
         TicketMemberRepository.addMemberToTicket(this, member);
