@@ -28,7 +28,7 @@ public class TicketOpenEmbed implements IEmbed {
 
     @Override
     public String getDescription() {
-        return "Willkommen **" + ticket.getOwner().getUser().getGlobalName() + "**!" +
+        return "Willkommen **" + ticket.getOwner().getEffectiveName() + "**!" +
                 "\n" +
                 ticket.getType().getEmbedDescription() +
                 "\n" +
