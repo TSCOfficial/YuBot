@@ -1,7 +1,5 @@
 package ch.frily.yubot.service.ticket.button;
 
-import ch.frily.yubot.container.ticket.TicketTranscriptContainer;
-import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.service.ticket.TicketTypeGroup;
@@ -10,9 +8,7 @@ import ch.frily.yubot.service.ticket.modal.TicketSummaryModal;
 import ch.frily.yubot.util.EnvKey;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -47,7 +43,7 @@ public class TicketDeleteBtn extends Button {
     @Override
     public void execute(@NotNull ButtonInteractionEvent event) throws SQLException {
 
-        Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
+        Ticket ticket = TicketRepository.getTicketByChannelId(event.getChannelIdLong());
 
         if (ticket.getType().getGroup() == TicketTypeGroup.BEWERBUNG) {
             ticket.archive(event.getMember());

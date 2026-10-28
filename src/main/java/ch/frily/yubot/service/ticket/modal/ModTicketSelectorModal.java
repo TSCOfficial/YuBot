@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -155,7 +154,7 @@ public class ModTicketSelectorModal extends Modal {
                         }
                     });
 
-            Ticket ticket = TicketRepository.getTicketById(ticketChannel.getIdLong());
+            Ticket ticket = TicketRepository.getTicketByChannelId(ticketChannel.getIdLong());
             ticket.claim(event.getMember());
 
 

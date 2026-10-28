@@ -25,7 +25,7 @@ public class TicketReopenCmd implements ISlashSubcommand {
 
     @Override
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException {
-        Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
+        Ticket ticket = TicketRepository.getTicketByChannelId(event.getChannelIdLong());
 
         ticket.reopen(event.getMember(), event);
     }

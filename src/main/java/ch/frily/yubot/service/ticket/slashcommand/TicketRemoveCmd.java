@@ -29,7 +29,7 @@ public class TicketRemoveCmd implements ISlashSubcommand {
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException {
         OptionMapping userRoleOption = Objects.requireNonNull(event.getOption("user-role"));
-        Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
+        Ticket ticket = TicketRepository.getTicketByChannelId(event.getChannelIdLong());
         IMentionable mentionable = userRoleOption.getAsMentionable();
         IPermissionHolder permissionHolder = (IPermissionHolder) mentionable;
         ticket.removeMember(event.getMember(), permissionHolder);

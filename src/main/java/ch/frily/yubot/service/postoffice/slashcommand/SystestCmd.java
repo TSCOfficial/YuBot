@@ -34,11 +34,6 @@ public class SystestCmd implements ISlashCommand {
 
     @Override
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
-        DatabaseQuery query = new DatabaseQuery(Table.TEST);
-
-        ResultSet rs = query.select().executeDataQuery();
-        while (rs.next()) {
-            log.info(rs.getString(1));
-        }
+        event.reply("no content").queue();
     }
 }

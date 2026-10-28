@@ -41,7 +41,7 @@ public class TicketCloseCmd implements ISlashSubcommand {
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
         OptionMapping forceOption = event.getOption("force");
-        Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
+        Ticket ticket = TicketRepository.getTicketByChannelId(event.getChannelIdLong());
 
         if (Objects.nonNull(forceOption) && forceOption.getAsBoolean()) {
             ticket.forceClose(event);
