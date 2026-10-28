@@ -23,6 +23,7 @@ import ch.frily.yubot.service.ticket.modal.TicketTypeSelectorModal;
 import ch.frily.yubot.scheduler.IScheduler;
 import ch.frily.yubot.service.ticket.schedule.TicketActivityScheduler;
 import ch.frily.yubot.util.EnvKey;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.Member;
@@ -34,11 +35,13 @@ import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.managers.channel.concrete.TextChannelManager;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class TicketService extends Service {
 
     private static TicketService instance;
@@ -82,7 +85,7 @@ public class TicketService extends Service {
                 new TicketCloseRequestBtn(),
                 new TicketCloseRequestRejectBtn(),
                 new TicketConfirmOpenBtn(),
-                new TicketDeleteBtn(),
+                new TicketArchiveBtn(),
                 new TicketPanelSupportBtn(),
                 new TicketPanelAwarenessBtn(),
                 new TicketPanelBewerbungBtn()
@@ -163,13 +166,15 @@ public class TicketService extends Service {
                     });
                     ticketManager.queue();
 
-
                     // Ticket content
                     ticket.setChannel(textChannel);
+                    ticket.setName(getNameWithoutStatus(textChannel.getName()));
+
                     String roleMentions = " - " + responsibleRoles.stream().map(Role::getAsMention).collect(Collectors.joining(", "));
                     if (ticket.getType() == TicketType.MODTICKET) {
                         roleMentions = "";
                     }
+
                     textChannel.sendMessage(ticketOwner.getAsMention() + roleMentions)
                             .addEmbeds(embed.build()).setComponents(actionrow).queue(ThrowingConsumer.wrap(null, message -> {
                                 textChannel.pinMessageById(message.getIdLong()).queue(); // todo delete message, add feature after the 30.10.2026
@@ -185,12 +190,28 @@ public class TicketService extends Service {
         String status = TicketStatus.NEW.getIcon();
         String typeId = type.getId();
         String username = owner.getUser().getEffectiveName();
-        if (owner.getUser().getEffectiveName().length() > 26) {
-            username = owner.getUser().getEffectiveName().substring(0, 26); // take only 25 chars of user's name
+        if (owner.getUser().getEffectiveName().length() > 20) {
+            username = owner.getUser().getEffectiveName().substring(0, 20); // take only 25 chars of user's name
         }
 
         int randInt = ThreadLocalRandom.current().nextInt(100000, 999999);
         return status + typeId + "-" + username  + "-" + randInt;
+    }
+
+    public String getNameWithoutStatus(String originalName){
+        List<String> statusIcons = Arrays.stream(TicketStatus.values())
+                .map(TicketStatus::getIcon)
+                .toList();
+
+        for (String icon : statusIcons) {
+            if (originalName.startsWith(icon)) {
+                originalName = originalName.substring(icon.length());
+                break;
+            }
+        }
+
+        log.info("Ticket name: {}", originalName);
+        return originalName;
     }
 
     /**

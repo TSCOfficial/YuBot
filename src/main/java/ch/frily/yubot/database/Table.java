@@ -42,6 +42,7 @@ public enum Table {
     @RequiredArgsConstructor
     public enum TicketColumn implements Column {
         ID("id"),
+        NAME("name"),
         OWNER_ID("owner_id"),
         ASSIGNEE_ID("assignee_id"),
         CHANNEL_ID("channel_id"),

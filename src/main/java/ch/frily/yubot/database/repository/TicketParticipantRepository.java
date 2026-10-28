@@ -11,9 +11,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TicketMemberRepository {
+public class TicketParticipantRepository {
 
-    public static List<Member> getMembersFromTicket(Ticket ticket) throws SQLException {
+    /**
+     * Get every member that participated in a ticket
+     * @param ticket
+     * @return a list of members that participated in the ticket, or empty list if none were found
+     * @throws SQLException
+     */
+    public static List<Member> getParticipantsFromTicket(Ticket ticket) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET_PARTICIPANT);
         query.select(Table.TicketParticipantColumn.MEMBER_ID);
         query.where(Table.TicketParticipantColumn.TICKET_ID, DatabaseQuery.Operator.EQUALS, ticket.getId());
@@ -38,7 +44,7 @@ public class TicketMemberRepository {
         return rs.next();
     }
 
-    public static void addMemberToTicket(Ticket ticket, Member member) throws SQLException {
+    public static void addParticipantToTicket(Ticket ticket, Member member) throws SQLException {
         if (!memberIsParticipant(ticket, member)) {
             DatabaseQuery query = new DatabaseQuery(Table.TICKET_PARTICIPANT);
             query.insert(Table.TicketParticipantColumn.TICKET_ID, ticket.getId());

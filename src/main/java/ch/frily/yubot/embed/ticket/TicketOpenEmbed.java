@@ -38,6 +38,6 @@ public class TicketOpenEmbed implements IEmbed {
 
     @Override
     public String getFooterText() {
-        return ticket.getNameWithoutStatus();
+        return ticket.getName();
     }
 }

@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Slf4j
-public class TicketDeleteBtn extends Button {
+public class TicketArchiveBtn extends Button {
     @Override
     public String getId() {
         return "ticket-delete-btn";
@@ -27,7 +27,7 @@ public class TicketDeleteBtn extends Button {
 
     @Override
     public String getLabel() {
-        return "Löschen";
+        return "Archivieren & Löschen";
     }
 
     @Override
@@ -37,7 +37,7 @@ public class TicketDeleteBtn extends Button {
 
     @Override
     public EmojiUnion getEmoji() {
-        return Emoji.fromFormatted("🗑️");
+        return Emoji.fromFormatted("📦");
     }
 
     @Override

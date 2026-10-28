@@ -1,5 +1,6 @@
 package ch.frily.yubot.service.ticket.slashcommand;
 
+import ch.frily.yubot.container.ticket.TicketSearchContainer;
 import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.service.ticket.Ticket;
@@ -8,6 +9,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jspecify.annotations.NonNull;
@@ -43,9 +45,12 @@ public class TicketSearchOwnerSubCmd implements ISlashSubcommand {
 
     @Override
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
-        User owner = Objects.requireNonNull(event.getOption("user")).getAsUser();
-        List<Ticket> ownedTickets = TicketRepository.getTicketsByUser(owner);
+        OptionMapping ownerMapping = Objects.requireNonNull(event.getOption("user"));
+        User userOwner = ownerMapping.getAsUser();
+        Member memberOwner = ownerMapping.getAsMember();
+        List<Ticket> ownedTickets = TicketRepository.getTicketsByUser(userOwner);
 
-        event.reply("Tickets von " + owner.getEffectiveName() + ": " + ownedTickets.size()).queue();
+        TicketSearchContainer container = new TicketSearchContainer(ownedTickets, memberOwner, true);
+        event.replyComponents(container.build()).useComponentsV2().queue();
     }
 }

@@ -71,6 +71,6 @@ public class TicketClosedOptionsEmbed implements IEmbed {
 
     @Override
     public String getFooterText() {
-        return ticket.getNameWithoutStatus();
+        return ticket.getName();
     }
 }
