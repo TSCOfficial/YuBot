@@ -201,7 +201,7 @@ public class TicketService extends Service {
         if (channel.getParentCategory() == null || channel.getParentCategory().getIdLong() != EnvKey.CATEGORY_TICKETSUPPORT.getAsCategory().getIdLong()) {
             return false;
         }
-        TicketRepository.getTicketById(channel.getIdLong());
+        TicketRepository.getTicketByChannelId(channel.getIdLong());
         return true;
     }
 

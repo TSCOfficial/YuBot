@@ -52,7 +52,7 @@ public class TicketOpenmodCmd implements ISlashSubcommand {
         TicketService.getInstance().createTicket(TicketType.MODTICKET, Objects.requireNonNull(memberOption.getAsMember()), ThrowingConsumer.wrap(event, channel -> {
             event.getHook().editOriginal(String.format("Modticket wurde erstellt: %s", channel.getAsMention())).queue();
 
-            Ticket ticket = TicketRepository.getTicketById(channel.getIdLong());
+            Ticket ticket = TicketRepository.getTicketByChannelId(channel.getIdLong());
             ticket.claim(event.getMember());
         }));
     }

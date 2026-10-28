@@ -1,20 +1,15 @@
 package ch.frily.yubot.service.ticket.modal;
 
-import ch.frily.yubot.container.ticket.TicketTranscriptContainer;
-import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.service.ticket.TicketType;
 import ch.frily.yubot.interaction.modal.Modal;
-import ch.frily.yubot.util.EnvKey;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
-import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import org.jspecify.annotations.NonNull;
@@ -68,7 +63,7 @@ public class TicketSummaryModal extends Modal {
     @Override
     public void execute(@NonNull ModalInteractionEvent event) throws SQLException, NullPointerException {
         long ticketId = Long.parseLong(this.getArgument(event.getModalId(), "ticket_id"));
-        Ticket ticket = TicketRepository.getTicketById(ticketId);
+        Ticket ticket = TicketRepository.getTicketByChannelId(ticketId);
 
         event.deferReply(true).queue();
         ModalMapping summary = event.getValue("summary");

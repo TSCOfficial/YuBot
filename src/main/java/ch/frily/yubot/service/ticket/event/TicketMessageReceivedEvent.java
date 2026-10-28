@@ -33,7 +33,7 @@ public class TicketMessageReceivedEvent implements IEvent<MessageReceivedEvent> 
         MessageReceivedEvent castEvent = (MessageReceivedEvent) event;
         if (castEvent.getChannel() instanceof TextChannel
                 && TicketService.getInstance().isTicketchannel(castEvent.getChannel().asTextChannel())) {
-            Ticket ticket = TicketRepository.getTicketById(castEvent.getChannel().getIdLong());
+            Ticket ticket = TicketRepository.getTicketByChannelId(castEvent.getChannel().getIdLong());
 
             // ticket claim function
             if (Util.isTeamMember(castEvent.getMember())) {

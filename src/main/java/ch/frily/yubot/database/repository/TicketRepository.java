@@ -24,21 +24,21 @@ public class TicketRepository {
 
     /**
      * Fetch a Ticket from the database.
-     * @param id Ticket id (represented by the Ticket-Channel-ID)
+     * @param channelId the Ticket-Channel-ID
      * @return The instance of this Ticket
      */
-    public static Ticket getTicketById(long id) throws SQLException, IllegalStateException {
+    public static Ticket getTicketByChannelId(long channelId) throws SQLException, IllegalStateException {
         ResultSet resultSet = new DatabaseQuery(Table.TICKET)
                 .select()
-                .where(Table.TicketColumn.CHANNEL_ID, DatabaseQuery.Operator.EQUALS, id).executeDataQuery();
+                .where(Table.TicketColumn.CHANNEL_ID, DatabaseQuery.Operator.EQUALS, channelId).executeDataQuery();
 
         if (!resultSet.next()) {
-            throw new InvalidStateException("Ticket mit ID " + id + " nicht gefunden.");
+            throw new InvalidStateException("Ticket mit ID " + channelId + " nicht gefunden.");
         }
 
+        int id = resultSet.getInt(Table.TicketColumn.ID.getColumn());
         long ownerId = resultSet.getLong(Table.TicketColumn.OWNER_ID.getColumn());
         long assigneeId = resultSet.getLong(Table.TicketColumn.ASSIGNEE_ID.getColumn());
-        long channelId = resultSet.getLong(Table.TicketColumn.CHANNEL_ID.getColumn());
         String typeName = resultSet.getString(Table.TicketColumn.TYPE.getColumn());
         Timestamp lastActivityAt = resultSet.getTimestamp(Table.TicketColumn.LAST_ACTIVITY_AT.getColumn());
         long welcomeMessageId = resultSet.getLong(Table.TicketColumn.WELCOME_MESSAGE_ID.getColumn());
@@ -50,12 +50,12 @@ public class TicketRepository {
 
         Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
 
-
         Member owner = guild.getMemberById(ownerId);
         TicketType type = TicketType.valueOf(typeName);
         TicketStatus status = TicketStatus.valueOf(statusName);
 
         Ticket ticket = new Ticket(owner, type);
+        ticket.setId(id);
         ticket.setAssignee(guild.getMemberById(assigneeId));
         ticket.setChannel(guild.getTextChannelById(channelId));
         ticket.setLastActivityAt(lastActivityAt.toLocalDateTime());
@@ -202,6 +202,8 @@ public class TicketRepository {
      * @throws SQLException
      */
     public static void updateTicket(Ticket ticket) throws SQLException { // todo check silent update error - ticket update doesnt seem to work at all?
+        log.info("updating ticket with id {}", ticket.getId());
+        log.info("updating status to {}", ticket.getStatus());
         DatabaseQuery query = new DatabaseQuery(Table.TICKET);
 
         if (ticket.getAssignee() != null) {

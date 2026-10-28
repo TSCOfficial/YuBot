@@ -266,7 +266,7 @@ public class DatabaseQuery {
      */
     private String buildSelect() {
         String fields = selectFields.isEmpty() ? "*" : String.join(", ", selectFields);
-        String sql = "SELECT " + fields + " FROM " + table;
+        String sql = "SELECT " + fields + " FROM " + schema + "." + table;
 
         if (!joins.isEmpty()) {
             sql += " " + String.join(" ", joins);
@@ -291,7 +291,7 @@ public class DatabaseQuery {
     private String buildInsert() {
         String columns = String.join(", ", updateFields.keySet());
         String queryString = String.join(", ", Collections.nCopies(updateFields.size(), "?"));
-        return "INSERT INTO " + table + " (" + columns + ") VALUES (" + queryString + ")";
+        return "INSERT INTO " + schema + "." + table + " (" + columns + ") VALUES (" + queryString + ")";
     }
 
     /**
@@ -302,7 +302,7 @@ public class DatabaseQuery {
         String setPart = String.join(", ",
                 updateFields.keySet().stream().map(key -> key + " = ?").toList()
         );
-        String sql = "UPDATE " + table + " SET " + setPart;
+        String sql = "UPDATE " + schema + "." + table + " SET " + setPart;
         if (!whereClauses.isEmpty()) {
             sql += " WHERE " + String.join(" AND ", whereClauses);
         }
@@ -314,7 +314,7 @@ public class DatabaseQuery {
      * @return The delete query
      */
     private String buildDelete() {
-        String sql = "DELETE FROM " + table;
+        String sql = "DELETE FROM " + schema + "." + table;
         if (!whereClauses.isEmpty()) {
             sql += " WHERE " + String.join(" AND ", whereClauses);
         }

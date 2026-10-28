@@ -40,7 +40,7 @@ public class TicketCloseRequestAcceptBtn extends Button {
 
     @Override
     public void execute(@NotNull ButtonInteractionEvent event) throws SQLException {
-        Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
+        Ticket ticket = TicketRepository.getTicketByChannelId(event.getChannelIdLong());
         ticket.acceptCloseRequest(event);
 
         TicketCloseAcceptedEmbed acceptedEmbed = new TicketCloseAcceptedEmbed();

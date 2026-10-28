@@ -33,7 +33,7 @@ public class TicketAddCmd implements ISlashSubcommand {
         IMentionable mentionable = userRoleOption.getAsMentionable();
         IPermissionHolder permissionHolder = (IPermissionHolder) mentionable;
 
-        Ticket ticket = TicketRepository.getTicketById(event.getChannelIdLong());
+        Ticket ticket = TicketRepository.getTicketByChannelId(event.getChannelIdLong());
 
         ticket.addMember(event.getMember(), permissionHolder);
 
