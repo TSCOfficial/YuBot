@@ -68,9 +68,9 @@ public class TicketTypeSelectorModal extends Modal {
         List<Ticket> openedTickets = TicketRepository.getTicketsByUser(Objects.requireNonNull(event.getMember()).getUser());
         openedTickets = openedTickets.stream().filter(ticket -> !ticket.getStatus().equals(TicketStatus.CLOSED) && ticket.getType().equals(ticketType)).toList();
         if (!openedTickets.isEmpty()) {
-            String text = String.format("Du besitzt bereits ein Ticket mit dieser Art: %s", openedTickets.getFirst().getChannel().getAsMention());
+            String text = String.format("Du besitzt bereits ein Ticket dieser Art: %s", openedTickets.getFirst().getChannel().getAsMention());
             if (openedTickets.size() > 1) {
-                text = String.format("Du besitzt bereits Tickets mit dieser Art: %s", openedTickets.stream().map(ticket -> ticket.getChannel().getAsMention()).collect(Collectors.joining(", ")));
+                text = String.format("Du besitzt bereits Tickets dieser Art: %s", openedTickets.stream().map(ticket -> ticket.getChannel().getAsMention()).collect(Collectors.joining(", ")));
             }
             TicketConfirmOpenBtn confirmOpenBtn = new TicketConfirmOpenBtn();
             confirmOpenBtn.addArgument("type", ticketType.name());

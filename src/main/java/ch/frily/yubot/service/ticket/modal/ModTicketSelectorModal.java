@@ -115,7 +115,7 @@ public class ModTicketSelectorModal extends Modal {
                     roles.stream().map(Role::getAsMention).collect(Collectors.joining(", ")));
 
             String loadingProveNotice = "";
-            if (Objects.nonNull(proveOption)) {
+            if (Objects.nonNull(proveOption) && !proveOption.getAsStringList().isEmpty()) {
                 loadingProveNotice = String.format("""
                         %s Beweismittel wird geladen...
                         """, EnvKey.EMOJI_SPINNER.getAsEmoji());
@@ -130,7 +130,7 @@ public class ModTicketSelectorModal extends Modal {
             ).setAllowedMentions(List.of())
                     .queue(_ -> {
                         // execute message-prove and update callback message
-                        if (Objects.nonNull(proveOption)) {
+                        if (Objects.nonNull(proveOption) && !proveOption.getAsStringList().isEmpty()) {
                             event.getChannel().retrieveMessageById(getArgument(event.getCustomId(), "msg")).queue(originalMsg -> {
                                 String proveOptionValue = proveOption.getAsStringList().getFirst();
                                 String actionMsg = "";
@@ -156,8 +156,6 @@ public class ModTicketSelectorModal extends Modal {
 
             Ticket ticket = TicketRepository.getTicketByChannelId(ticketChannel.getIdLong());
             ticket.claim(event.getMember());
-
-
         }));
     }
 

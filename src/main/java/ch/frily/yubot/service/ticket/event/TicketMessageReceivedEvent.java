@@ -5,6 +5,7 @@ import ch.frily.yubot.event.IEvent;
 import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.service.ticket.TicketService;
 import ch.frily.yubot.util.Util;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -12,6 +13,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 
+@Slf4j
 public class TicketMessageReceivedEvent implements IEvent<MessageReceivedEvent> {
 
     private static TicketMessageReceivedEvent instance;
@@ -44,10 +46,8 @@ public class TicketMessageReceivedEvent implements IEvent<MessageReceivedEvent> 
                 ticket.claim(castEvent.getMember());
             }
 
-            // ticket owner activity
-            if (ticket.isOwner(castEvent.getMember())) {
-                TicketRepository.updateTicketLastActivityAt(ticket);
-            }
+            // ticket activity
+            TicketRepository.updateTicketLastActivityAt(ticket);
         }
     }
 }

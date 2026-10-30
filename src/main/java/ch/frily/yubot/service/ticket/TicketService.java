@@ -4,6 +4,7 @@ import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.database.repository.TicketTypeControlRepository;
 import ch.frily.yubot.embed.ticket.TicketOpenEmbed;
 import ch.frily.yubot.event.IEvent;
+import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.service.Service;
@@ -161,6 +162,7 @@ public class TicketService extends Service {
                 .queue(textChannel -> {
                     // Ticket team permissions
                     TextChannelManager ticketManager = textChannel.getManager();
+                    ticketManager.putRolePermissionOverride(EnvKey.ROLE_EVERYONE.getAsRole().getIdLong(), null, List.of(Permission.VIEW_CHANNEL));
                     responsibleRoles.forEach(role -> {
                         ticketManager.putRolePermissionOverride(role.getIdLong(), TEAM_PERMISSION, null);
                     });
@@ -219,10 +221,11 @@ public class TicketService extends Service {
      * @return True if its a Ticketchannel / False if not
      */
     public boolean isTicketchannel(TextChannel channel) throws SQLException {
-        if (channel.getParentCategory() == null || channel.getParentCategory().getIdLong() != EnvKey.CATEGORY_TICKETSUPPORT.getAsCategory().getIdLong()) {
+        try {
+            TicketRepository.getTicketByChannelId(channel.getIdLong());
+        } catch (NotFoundException e) {
             return false;
         }
-        TicketRepository.getTicketByChannelId(channel.getIdLong());
         return true;
     }
 

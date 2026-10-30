@@ -48,7 +48,7 @@ public class Ticket {
     // minimal inactivity of the ticket-owner till ticket can be force-closed [in days]
     private static final int MIN_INACTIVITY_DURATION = 3;
 
-    // The maximal duration that a ticket-owner can go without sending the first message
+    /** The maximal duration that a ticket-owner can go without sending a message [in hours] */
     @Getter
     private static final int MAX_OWNER_NOREPLY_DURATION = 36;
 
@@ -147,7 +147,6 @@ public class Ticket {
     public Ticket(Member owner, TicketType type){
         this.owner = owner;
         this.type = type;
-        this.lastActivityAt = LocalDateTime.now();
         this.status = TicketStatus.NEW;
         this.isReminderSent = false;
     }
@@ -380,7 +379,7 @@ public class Ticket {
 
     /**
      * Claims a ticket to assign it to someone
-     * @param member the member who claims the ticket (usually a team-member)
+     * @param member the member who claims the ticket (usually a team-member), if it's the ticket owner, the claim silently rejects it
      */
     public void claim(Member member) throws SQLException {
         if (assignee == null && this.isNewTicket() && !isOwner(member)){
