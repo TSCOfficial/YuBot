@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
@@ -129,8 +130,10 @@ public class TicketService extends Service {
         createTicket(type, type.getResponsibleRoles(), ticketOwner, onCreated);
     }
     public void createTicket(TicketType type, List<Role> responsibleRoles, Member ticketOwner, Consumer<TextChannel> onCreated) throws SQLException {
-        List<TextChannel> openedTickets = TicketRepository.getTicketsByUser(ticketOwner.getUser()).stream().map(Ticket::getChannel).toList();
-        if (openedTickets.size() >= MAX_TICKET_COUNT) {
+        List<TextChannel> openedTickets = TicketRepository.getTicketsByUser(ticketOwner.getUser()).stream()
+                .filter(ticket -> !ticket.getType().equals(TicketType.MODTICKET))
+                .map(Ticket::getChannel).toList();
+        if (openedTickets.size() >= MAX_TICKET_COUNT && !type.equals(TicketType.MODTICKET)) {
             throw new PermissionDeniedException(String.format("""
                     Du hast bereits zu viele Tickets offen *(%d)*!
                     
@@ -179,7 +182,10 @@ public class TicketService extends Service {
 
                     textChannel.sendMessage(ticketOwner.getAsMention() + roleMentions)
                             .addEmbeds(embed.build()).setComponents(actionrow).queue(ThrowingConsumer.wrap(null, message -> {
-                                textChannel.pinMessageById(message.getIdLong()).queue(); // todo delete message, add feature after the 30.10.2026
+                                textChannel.pinMessageById(message.getIdLong()).queue( _ -> {
+                                    // delete "pinned a message to this channel"-message
+                                    textChannel.deleteMessageById(textChannel.getLatestMessageId()).queue();
+                                });
                                 ticket.setWelcomeMessageId(message.getIdLong());
                                 TicketRepository.createTicket(ticket);
 
