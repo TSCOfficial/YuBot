@@ -20,8 +20,7 @@ public class TicketCmdGroup implements ISlashCommandGroup {
     public List<ISlashSubcommand> getSubcommands() {
         return List.of(
                 new TicketCloseCmd(),
-                new TicketAddCmd(),
-                new TicketRemoveCmd(),
+                new TicketAccessSubCmdGroup(),
                 new TicketTypeControlCmd(),
                 new TicketOpenmodCmd(),
                 new TicketReopenCmd(),

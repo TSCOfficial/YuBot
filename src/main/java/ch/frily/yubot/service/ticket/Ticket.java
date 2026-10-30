@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
+import net.dv8tion.jda.api.managers.channel.concrete.TextChannelManager;
 import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.sql.SQLException;
@@ -37,6 +38,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
+
+import static ch.frily.yubot.service.ticket.TicketService.TEAM_PERMISSION;
 import static ch.frily.yubot.service.ticket.TicketService.USER_PERMISSION;
 
 @Slf4j
@@ -430,51 +433,87 @@ public class Ticket {
 
     /**
      * Add a member to this ticket
-     * @param initiator the member that initiates the toggle (usually a team-member)
-     * @param permissionHolder the user or role to toggle
+     * @param initiator the member that initiates the adding (usually a team-member)
+     * @param permissionHolders the users or roles to add
      * @throws PermissionDeniedException if the initator is missing permissions to execute this action
-     * @throws InvalidStateException if the user/role is already added/removed, the ticket owner tries to be removed or the ticket is already closed
+     * @throws InvalidStateException if the user/role is already added or the ticket is already closed
      */
-    public void addTicketAccess(Member initiator, IPermissionHolder permissionHolder) throws PermissionDeniedException, InvalidStateException {
-        toggleTicketAccess(initiator, permissionHolder, true);
+    @Deprecated
+    public void addTicketAccess(Member initiator, List<? extends IPermissionHolder> permissionHolders) throws PermissionDeniedException, InvalidStateException {
+        toggleTicketAccess(initiator, permissionHolders, true);
+    }
+
+    public void addMemberAccess(Member initiator, List<Member> members) throws PermissionDeniedException, InvalidStateException {
+        TextChannelManager manager = getChannel().getManager();
+        members.forEach(member -> {
+            List<Permission> permissions = USER_PERMISSION;
+            if (Util.isTeamMember(member)) {
+                permissions = TEAM_PERMISSION;
+            }
+            manager.putMemberPermissionOverride(member.getIdLong(), permissions, null);
+        });
+
+        manager.queue();
+    }
+
+    /**
+     * Remove users and/or roles from a ticket
+     * @param initiator
+     * @param holders the members and/or roles to remove
+     * @throws PermissionDeniedException
+     * @throws InvalidStateException
+     */
+    public void removePermissionHolder(Member initiator, List<? extends IPermissionHolder> holders) throws PermissionDeniedException, InvalidStateException {
+        TextChannelManager manager = getChannel().getManager();
+        holders.forEach(holder -> {
+            manager.removePermissionOverride(holder);
+        });
+        manager.queue();
     }
 
     /**
      * Remove member from this ticket
-     * @param initiator the member that initiates the toggle (usually a team-member)
-     * @param permissionHolder the user or role to toggle
+     * @param initiator the member that initiates the removing (usually a team-member)
+     * @param permissionHolders the users or roles to remove
      * @throws PermissionDeniedException if the initator is missing permissions to execute this action
-     * @throws InvalidStateException if the user/role is already added/removed, the ticket owner tries to be removed or the ticket is already closed
+     * @throws InvalidStateException if the user/role is already removed, the ticket owner tries to be removed or the ticket is already closed
      */
-    public void removeTicketAccess(Member initiator, IPermissionHolder permissionHolder) throws PermissionDeniedException, InvalidStateException {
-        toggleTicketAccess(initiator, permissionHolder, false);
+    @Deprecated
+    public void removeTicketAccess(Member initiator, List<? extends IPermissionHolder> permissionHolders) throws PermissionDeniedException, InvalidStateException {
+        toggleTicketAccess(initiator, permissionHolders, false);
     }
 
     /**
      * Add/remove a user or role from the ticket
      * @param initiator the member that initiates the toggle (usually a team-member)
-     * @param permissionHolder the user or role to toggle
+     * @param permissionHolders the users or roles to toggle
      * @param isAdding whether to add (true) or remove (false) the user/role
      * @throws PermissionDeniedException if the initator is missing permissions to execute this action
      * @throws InvalidStateException if the user/role is already added/removed, the ticket owner tries to be removed or the ticket is already closed
      */
-    private void toggleTicketAccess(Member initiator, IPermissionHolder permissionHolder, boolean isAdding) throws PermissionDeniedException, InvalidStateException {
+    @Deprecated
+    private void toggleTicketAccess(Member initiator, List<? extends IPermissionHolder> permissionHolders, boolean isAdding) throws PermissionDeniedException, InvalidStateException {
         if (Util.isTeamMember(initiator)){
             if (status != TicketStatus.CLOSED) {
 
                 if (isAdding) {
-                    if (getPermissionOverrides().contains(permissionHolder)) {
-                        throw new InvalidStateException("Diese Person kann nicht hinzugefügt werden.", "Diese befindet sich bereits in diesem Ticket.");
-                    }
-                    channel.getManager().putPermissionOverride(permissionHolder, USER_PERMISSION, List.of()).queue();
+                    TextChannelManager manager = channel.getManager();
+                    permissionHolders.forEach(holder -> {
+                        List<Permission> permissions = USER_PERMISSION;
+                        log.info("{} is instance of Member: {}", holder.getClass().getSimpleName(), permissionHolders instanceof Member);
+                        if (permissionHolders instanceof Member permissionMember) {
+                            if (Util.isTeamMember(permissionMember)) {
+                                permissions = TEAM_PERMISSION;
+                            }
+                        }
+                        manager.putPermissionOverride(holder, permissions, List.of()).queue();
+                    });
+
                 } else {
-                    if (!getPermissionOverrides().contains(permissionHolder)) {
-                        throw new InvalidStateException("Diese Person kann nicht entfernt werden.", "Diese befindet sich nicht im Ticket.");
-                    }
-                    if (permissionHolder == owner) {
-                        throw new InvalidStateException("Diese Person kann nicht entfernt werden.", "Der/Die Ticketinhaber\\*in kann nicht entfernt werden.");
-                    }
-                    channel.getManager().removePermissionOverride(permissionHolder).queue();
+//                    if (permissionHolders.contains(owner)) {
+//                        throw new InvalidStateException("Diese Person kann nicht entfernt werden.", "Der/Die Ticketinhaber\\*in kann nicht entfernt werden.");
+//                    }
+//                    channel.getManager().removePermissionOverride(permissionHolder).queue();
                 }
                 return;
             }
