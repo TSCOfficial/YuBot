@@ -382,7 +382,7 @@ public class Ticket {
      * @param member the member who claims the ticket (usually a team-member), if it's the ticket owner, the claim silently rejects it
      */
     public void claim(Member member) throws SQLException {
-        if (assignee == null && this.isNewTicket() && !isOwner(member)){
+        if (assignee == null && !isOwner(member)){
             this.assignee = member;
 
             this.updateStatus(TicketStatus.CLAIMED);
@@ -398,7 +398,8 @@ public class Ticket {
         }
 
         if (Util.isTeamMember(Objects.requireNonNull(event.getMember()))) {
-            updateStatus(TicketStatus.CLAIMED);
+            log.info("reclaimed");
+            claim(member);
 
             channel.getManager().putPermissionOverride(owner, USER_PERMISSION, null).queue();
 

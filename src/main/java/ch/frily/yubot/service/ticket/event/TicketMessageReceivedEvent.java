@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Objects;
 
 @Slf4j
 public class TicketMessageReceivedEvent implements IEvent<MessageReceivedEvent> {
@@ -42,7 +43,7 @@ public class TicketMessageReceivedEvent implements IEvent<MessageReceivedEvent> 
             }
 
             // ticket claim function
-            if (Util.isTeamMember(castEvent.getMember())) {
+            if (Util.isTeamMember(castEvent.getMember()) && Objects.isNull(ticket.getAssignee())) {
                 ticket.claim(castEvent.getMember());
             }
 
