@@ -6,6 +6,7 @@ import ch.frily.yubot.service.ticket.TicketService;
 import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.service.ticket.TicketType;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
+import ch.frily.yubot.service.ticket.modal.ModTicketSelectorModal;
 import ch.frily.yubot.util.EnvKey;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -47,13 +48,11 @@ public class TicketOpenmodCmd implements ISlashSubcommand {
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) throws SQLException {
-        event.deferReply(true).queue();
         OptionMapping memberOption = Objects.requireNonNull(event.getOption("user"));
-        TicketService.getInstance().createTicket(TicketType.MODTICKET, Objects.requireNonNull(memberOption.getAsMember()), ThrowingConsumer.wrap(event, channel -> {
-            event.getHook().editOriginal(String.format("Modticket wurde erstellt: %s", channel.getAsMention())).queue();
 
-            Ticket ticket = TicketRepository.getTicketByChannelId(channel.getIdLong());
-            ticket.claim(event.getMember());
-        }));
+        ModTicketSelectorModal modal = new ModTicketSelectorModal();
+        modal.addArgument("target", memberOption.getAsMember().getId());
+        modal.setInitiator(event.getMember());
+        event.replyModal(modal.build()).queue();
     }
 }

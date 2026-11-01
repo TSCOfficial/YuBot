@@ -48,7 +48,7 @@ public class TicketSearchNameSubCmd implements ISlashSubcommand {
         String searchQuery = searchQueryMapping.getAsString();
 
         Map<String, String> ctxArguments = Map.of(
-                "q", searchQuery,
+                "q", searchQuery.toLowerCase(),
                 "search", TicketSearchSubCmdGroup.SearchType.NAME.name()
         );
 
