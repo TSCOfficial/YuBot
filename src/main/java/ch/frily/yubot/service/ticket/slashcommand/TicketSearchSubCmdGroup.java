@@ -7,6 +7,13 @@ import net.dv8tion.jda.api.entities.Role;
 import java.util.List;
 
 public class TicketSearchSubCmdGroup implements ISlashSubcommand {
+
+    public enum SearchType {
+        OWNER,
+        PARTICIPANT,
+        NAME
+    }
+
     @Override
     public String getName() {
         return "search";
@@ -21,7 +28,8 @@ public class TicketSearchSubCmdGroup implements ISlashSubcommand {
     public List<ISlashSubcommand> getSubcommands() {
         return List.of(
                 new TicketSearchOwnerSubCmd(),
-                new TicketSearchParticipantSubCmd()
+                new TicketSearchParticipantSubCmd(),
+                new TicketSearchNameSubCmd()
         );
     }
 }

@@ -52,11 +52,11 @@ public class TicketSearchOwnerSubCmd implements ISlashSubcommand {
 
         Map<String, String> ctxArguments = Map.of(
                 "target", memberOwner.getId(),
-                "owned", "true"
+                "search", TicketSearchSubCmdGroup.SearchType.OWNER.name()
         );
 
         ContainerContext ctx = new ContainerContext(0, event, ctxArguments);
         TicketSearchContainer container = new TicketSearchContainer(ctx);
-        event.replyComponents(container.build()).setAllowedMentions(List.of()).useComponentsV2().queue();
+        event.replyComponents(container.build()).setAllowedMentions(List.of()).useComponentsV2().setEphemeral(true).queue();
     }
 }

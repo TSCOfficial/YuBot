@@ -157,6 +157,74 @@ public class TicketRepository {
         return tickets;
     }
 
+    public static List<Ticket> getTicketsWithMatchingName(String searchQuery) throws SQLException {
+        log.info("Searching for tickets with matching name: {}", searchQuery);
+        DatabaseQuery query = new DatabaseQuery(Table.TICKET);
+        query.select()
+            .where(Table.TicketColumn.NAME, DatabaseQuery.Operator.LIKE, "%" + searchQuery + "%");
+
+        ResultSet rs = query.executeDataQuery();
+        List<Ticket> tickets = new java.util.ArrayList<>();
+        while (rs.next()) {
+            int id = rs.getInt(Table.TicketColumn.ID.getColumn());
+            String name = rs.getString(Table.TicketColumn.NAME.getColumn());
+            long ownerId = rs.getLong(Table.TicketColumn.OWNER_ID.getColumn());
+            long assigneeId = rs.getLong(Table.TicketColumn.ASSIGNEE_ID.getColumn());
+            long channelId = rs.getLong(Table.TicketColumn.CHANNEL_ID.getColumn());
+            TicketType type = TicketType.valueOf(rs.getString(Table.TicketColumn.TYPE.getColumn()));
+            Timestamp lastActivityAt = rs.getTimestamp(Table.TicketColumn.LAST_ACTIVITY_AT.getColumn());
+            long welcomeMessageId = rs.getLong(Table.TicketColumn.WELCOME_MESSAGE_ID.getColumn());
+            boolean isRequestPending = rs.getBoolean(Table.TicketColumn.IS_REQUEST_PENDING.getColumn());
+            int closeRequestCount = rs.getInt(Table.TicketColumn.CLOSE_REQUEST_COUNT.getColumn());
+            boolean isReminderSent = rs.getBoolean(Table.TicketColumn.IS_REMINDER_SENT.getColumn());
+            TicketStatus status = TicketStatus.valueOf(rs.getString(Table.TicketColumn.STATUS.getColumn()));
+            String summary =  rs.getString(Table.TicketColumn.SUMMARY.getColumn());
+            Timestamp createdAt = rs.getTimestamp(Table.TicketColumn.CREATED_AT.getColumn());
+            Timestamp updatedAt = rs.getTimestamp(Table.TicketColumn.UPDATED_AT.getColumn());
+            Timestamp archivedAt = rs.getTimestamp(Table.TicketColumn.ARCHIVED_AT.getColumn());
+            String archiveMessageId = rs.getString(Table.TicketColumn.ARCHIVE_MESSAGE_ID.getColumn());
+
+
+            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+            Member owner = guild.getMemberById(ownerId);
+
+            Ticket ticket = new Ticket(owner, type);
+            ticket.setId(id);
+            ticket.setName(name);
+            ticket.setAssignee(guild.getMemberById(assigneeId));
+            ticket.setChannel(guild.getTextChannelById(channelId));
+            if (lastActivityAt != null) {
+                ticket.setLastActivityAt(lastActivityAt.toLocalDateTime());
+            }
+            ticket.setRequestPending(isRequestPending);
+            ticket.setCloseRequestCount(closeRequestCount);
+            ticket.setStatus(status);
+            ticket.setReminderSent(isReminderSent);
+            ticket.setWelcomeMessageId(welcomeMessageId);
+            if (createdAt != null) { // todo remove when setting not null on db
+                ticket.setCreatedAt(createdAt.toLocalDateTime());
+            }
+
+
+            if (Objects.nonNull(updatedAt)) {
+                ticket.setUpdatedAt(updatedAt.toLocalDateTime());
+            }
+            if (Objects.nonNull(archivedAt)) {
+                ticket.setArchivedAt(archivedAt.toLocalDateTime());
+            }
+            if (Objects.nonNull(archiveMessageId)) {
+                ticket.setArchiveMessageId(archiveMessageId);
+            }
+            ticket.setSummary(summary);
+
+            List<Member> participants = TicketParticipantRepository.getParticipantsFromTicket(ticket);
+            ticket.setParticipants(participants);
+
+            tickets.add(ticket);
+        }
+        return tickets;
+    }
+
     public static List<Ticket> getTickets() throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET);
         query.select();
