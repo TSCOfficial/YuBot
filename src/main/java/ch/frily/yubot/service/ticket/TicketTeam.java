@@ -2,10 +2,13 @@ package ch.frily.yubot.service.ticket;
 
 import ch.frily.yubot.util.EnvKey;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Role;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Stream;
 
+@Slf4j
 public enum TicketTeam {
     SUPPORT_TEAM(
             "\uD83D\uDD29 Supporter*innen",
@@ -78,15 +81,7 @@ public enum TicketTeam {
             "\uD83E\uDE9B Organisation",
             "Leitungen & Stellvertretungen aller Fachbereiche",
             List.of(
-                    EnvKey.ROLE_SUPPORTLEITUNG.getAsRole(),
-                    EnvKey.ROLE_STVSUPPORTLEITUNG.getAsRole(),
-                    EnvKey.ROLE_MODLEITUNG.getAsRole(),
-                    EnvKey.ROLE_STVMODLEITUNG.getAsRole(),
-                    EnvKey.ROLE_EVENTLEITUNG.getAsRole(),
-                    EnvKey.ROLE_STVEVENTLEITUNG.getAsRole(),
-                    EnvKey.ROLE_AWARENESSLEITUNG.getAsRole(),
-                    EnvKey.ROLE_STVAWARENESSLEITUNG.getAsRole(),
-                    EnvKey.ROLE_DEVLEITUNG.getAsRole()
+                    EnvKey.ROLE_ORGA.getAsRole()
             )
     ),
     SERVER_LEITUNG(
@@ -116,5 +111,39 @@ public enum TicketTeam {
         this.name = name;
         this.description = description;
         this.roles = roles;
+    }
+
+    /**
+     * Get all teams matching the given roles
+     * <p>
+     *     It filters the teams by role-count, to prevent smaller teams to be mistaken for a selected team,
+     *     even if a bigger team was selected with the same (and more) roles than the smaller team.
+     * </p>
+     * @param roles
+     * @return
+     */
+    public static List<TicketTeam> getTeamsByRoles(List<Role> roles) {
+        HashSet<Role> roleSet = roles.stream().collect(HashSet::new, HashSet::add, HashSet::addAll);
+
+        Comparator<TicketTeam> teamRoleSizeComperator = new Comparator<TicketTeam>()
+        {
+            @Override
+            public int compare(TicketTeam o1, TicketTeam o2) {
+                return Integer.compare(o1.getRoles().size(), o2.getRoles().size());
+            }
+        };
+
+        List<TicketTeam> matchingTeams = new ArrayList<>();
+
+        Arrays.stream(TicketTeam.values())
+                .sorted(teamRoleSizeComperator.reversed())
+                .forEachOrdered(team -> {
+                    if (roleSet.containsAll(team.getRoles())) {
+                        matchingTeams.add(team);
+                        team.getRoles().forEach(roleSet::remove);
+                    }
+                });
+
+        return matchingTeams;
     }
 }

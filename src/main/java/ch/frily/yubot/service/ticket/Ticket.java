@@ -425,7 +425,8 @@ public class Ticket {
      * </p>
      * @param member the member to be added as a participent
      * @throws SQLException Database connection error
-     * @see #addTicketAccess(Member, IPermissionHolder)
+     * @see #addMemberAccess(TextChannelManager, List)
+     * @see #addRoleAccess(TextChannelManager, List)
      */
     public void addParticipant(Member member) throws SQLException {
         TicketParticipantRepository.addParticipantToTicket(this, member);
@@ -433,93 +434,119 @@ public class Ticket {
 
     /**
      * Add a member to this ticket
-     * @param initiator the member that initiates the adding (usually a team-member)
      * @param permissionHolders the users or roles to add
      * @throws PermissionDeniedException if the initator is missing permissions to execute this action
      * @throws InvalidStateException if the user/role is already added or the ticket is already closed
      */
     @Deprecated
-    public void addTicketAccess(Member initiator, List<? extends IPermissionHolder> permissionHolders) throws PermissionDeniedException, InvalidStateException {
-        toggleTicketAccess(initiator, permissionHolders, true);
+    public void addTicketAccess(List<? extends IPermissionHolder> permissionHolders) throws PermissionDeniedException, InvalidStateException {
+        toggleTicketAccess(permissionHolders, true);
     }
 
-    public void addMemberAccess(Member initiator, List<Member> members) throws PermissionDeniedException, InvalidStateException {
-        TextChannelManager manager = getChannel().getManager();
+    /**
+     * Add roles to the ticket
+     * <p>
+     *     Append this action to the manager and {@link TextChannelManager#queue() queue()} it, optionally together with {@link #addMemberAccess(TextChannelManager, List)}, {@link #removePermissionHolder(TextChannelManager, List)}<br>
+     *     This prevents ratelimits when changing multiple permissions
+     * </p>
+     * @param ticketManager the manager to append this action to
+     * @param roles
+     * @throws PermissionDeniedException
+     * @throws InvalidStateException
+     */
+    public void addRoleAccess(TextChannelManager ticketManager, List<Role> roles) throws PermissionDeniedException, InvalidStateException {
+        roles.forEach(role -> {
+            List<Permission> permissions = USER_PERMISSION;
+            if (role.getId().equals(EnvKey.ROLE_YUTEAM.getValue())) {
+                permissions = TEAM_PERMISSION;
+            }
+            ticketManager.putRolePermissionOverride(role.getIdLong(), permissions, null);
+        });
+    }
+
+    /**
+     * Add members to the ticket
+     * <p>
+     *     Append this action to the manager and {@link TextChannelManager#queue() queue()} it, optionally together with {@link #removePermissionHolder(TextChannelManager, List)}, {@link #addRoleAccess(TextChannelManager, List)}<br>
+     *     This prevents ratelimits when changing multiple permissions
+     * </p>
+     * @param ticketManager the manager to append this action to
+     * @param members
+     * @throws PermissionDeniedException
+     * @throws InvalidStateException
+     */
+    public void addMemberAccess(TextChannelManager ticketManager, List<Member> members) throws PermissionDeniedException, InvalidStateException {
         members.forEach(member -> {
             List<Permission> permissions = USER_PERMISSION;
             if (Util.isTeamMember(member)) {
                 permissions = TEAM_PERMISSION;
             }
-            manager.putMemberPermissionOverride(member.getIdLong(), permissions, null);
+            ticketManager.putMemberPermissionOverride(member.getIdLong(), permissions, null);
         });
-
-        manager.queue();
     }
 
     /**
      * Remove users and/or roles from a ticket
-     * @param initiator
+     * <p>
+     *     Append this action to the manager and {@link TextChannelManager#queue() queue()} it, optionally together with {@link #addMemberAccess(TextChannelManager, List)}, {@link #addRoleAccess(TextChannelManager, List)}<br>
+     *     This prevents ratelimits when changing multiple permissions
+     * </p>
+     * @param ticketManager the manager to append this action to
      * @param holders the members and/or roles to remove
      * @throws PermissionDeniedException
      * @throws InvalidStateException
      */
-    public void removePermissionHolder(Member initiator, List<? extends IPermissionHolder> holders) throws PermissionDeniedException, InvalidStateException {
-        TextChannelManager manager = getChannel().getManager();
+    public void removePermissionHolder(TextChannelManager ticketManager, List<? extends IPermissionHolder> holders) throws PermissionDeniedException, InvalidStateException {
+        log.info("removing permission holders: {}", holders.stream().map(IPermissionHolder::toString).toList());
         holders.forEach(holder -> {
-            manager.removePermissionOverride(holder);
+            ticketManager.removePermissionOverride(holder);
         });
-        manager.queue();
     }
 
     /**
      * Remove member from this ticket
-     * @param initiator the member that initiates the removing (usually a team-member)
      * @param permissionHolders the users or roles to remove
      * @throws PermissionDeniedException if the initator is missing permissions to execute this action
      * @throws InvalidStateException if the user/role is already removed, the ticket owner tries to be removed or the ticket is already closed
      */
     @Deprecated
-    public void removeTicketAccess(Member initiator, List<? extends IPermissionHolder> permissionHolders) throws PermissionDeniedException, InvalidStateException {
-        toggleTicketAccess(initiator, permissionHolders, false);
+    public void removeTicketAccess(List<? extends IPermissionHolder> permissionHolders) throws PermissionDeniedException, InvalidStateException {
+        toggleTicketAccess(permissionHolders, false);
     }
 
     /**
      * Add/remove a user or role from the ticket
-     * @param initiator the member that initiates the toggle (usually a team-member)
      * @param permissionHolders the users or roles to toggle
      * @param isAdding whether to add (true) or remove (false) the user/role
      * @throws PermissionDeniedException if the initator is missing permissions to execute this action
      * @throws InvalidStateException if the user/role is already added/removed, the ticket owner tries to be removed or the ticket is already closed
      */
     @Deprecated
-    private void toggleTicketAccess(Member initiator, List<? extends IPermissionHolder> permissionHolders, boolean isAdding) throws PermissionDeniedException, InvalidStateException {
-        if (Util.isTeamMember(initiator)){
-            if (status != TicketStatus.CLOSED) {
+    private void toggleTicketAccess(List<? extends IPermissionHolder> permissionHolders, boolean isAdding) throws PermissionDeniedException, InvalidStateException {
+        if (status != TicketStatus.CLOSED) {
 
-                if (isAdding) {
-                    TextChannelManager manager = channel.getManager();
-                    permissionHolders.forEach(holder -> {
-                        List<Permission> permissions = USER_PERMISSION;
-                        log.info("{} is instance of Member: {}", holder.getClass().getSimpleName(), permissionHolders instanceof Member);
-                        if (permissionHolders instanceof Member permissionMember) {
-                            if (Util.isTeamMember(permissionMember)) {
-                                permissions = TEAM_PERMISSION;
-                            }
+            if (isAdding) {
+                TextChannelManager manager = channel.getManager();
+                permissionHolders.forEach(holder -> {
+                    List<Permission> permissions = USER_PERMISSION;
+                    log.info("{} is instance of Member: {}", holder.getClass().getSimpleName(), permissionHolders instanceof Member);
+                    if (permissionHolders instanceof Member permissionMember) {
+                        if (Util.isTeamMember(permissionMember)) {
+                            permissions = TEAM_PERMISSION;
                         }
-                        manager.putPermissionOverride(holder, permissions, List.of()).queue();
-                    });
+                    }
+                    manager.putPermissionOverride(holder, permissions, List.of()).queue();
+                });
 
-                } else {
+            } else {
 //                    if (permissionHolders.contains(owner)) {
 //                        throw new InvalidStateException("Diese Person kann nicht entfernt werden.", "Der/Die Ticketinhaber\\*in kann nicht entfernt werden.");
 //                    }
 //                    channel.getManager().removePermissionOverride(permissionHolder).queue();
-                }
-                return;
             }
-            throw new InvalidStateException("Das Ticket ist geschlossen.", "Es kann keine Person hinzugefügt werden, wenn das Ticket geschlossen ist.");
+            return;
         }
-        throw new PermissionDeniedException("Nur ein Teammitglied kann diese Aktion ausführen");
+        throw new InvalidStateException("Das Ticket ist geschlossen.", "Es kann keine Person hinzugefügt werden, wenn das Ticket geschlossen ist.");
     }
 
     private List<IPermissionHolder> getPermissionOverrides() {

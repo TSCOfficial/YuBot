@@ -101,9 +101,9 @@ public interface IEmbed {
         }
 
         // Footer
-        if (!getFooterText().isBlank() && !getFooterIconUrl().isBlank()) {
+        if (getFooterText() != null && !getFooterText().isBlank() && getFooterIconUrl() != null && !getFooterIconUrl().isBlank()) {
             builder.setFooter(getFooterText(), getFooterIconUrl());
-        } else if (!getFooterText().isBlank()) {
+        } else if (getFooterText() != null && !getFooterText().isBlank()) {
             builder.setFooter(getFooterText());
         }
 

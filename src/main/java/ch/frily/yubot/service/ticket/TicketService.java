@@ -15,13 +15,10 @@ import ch.frily.yubot.service.ticket.ctxmenu.ModticketMsgCtxMenu;
 import ch.frily.yubot.service.ticket.ctxmenu.ModticketUserCtxMenu;
 import ch.frily.yubot.service.ticket.event.TicketMessageReceivedEvent;
 import ch.frily.yubot.service.ticket.event.TicketOwnerLeftGuildEvent;
-import ch.frily.yubot.service.ticket.modal.ModTicketSelectorModal;
-import ch.frily.yubot.service.ticket.modal.TicketAccessUsersModal;
+import ch.frily.yubot.service.ticket.modal.*;
 import ch.frily.yubot.service.ticket.slashcommand.TicketCmdGroup;
 import ch.frily.yubot.interaction.contextmenu.IContextMenu;
 import ch.frily.yubot.interaction.modal.Modal;
-import ch.frily.yubot.service.ticket.modal.TicketSummaryModal;
-import ch.frily.yubot.service.ticket.modal.TicketTypeSelectorModal;
 import ch.frily.yubot.scheduler.IScheduler;
 import ch.frily.yubot.service.ticket.schedule.TicketActivityScheduler;
 import ch.frily.yubot.util.EnvKey;
@@ -100,7 +97,8 @@ public class TicketService extends Service {
                 new TicketSummaryModal(),
                 new TicketTypeSelectorModal(),
                 new ModTicketSelectorModal(),
-                new TicketAccessUsersModal()
+                new TicketAccessUsersModal(),
+                new TicketAccessTeamsModal()
         );
     }
 
