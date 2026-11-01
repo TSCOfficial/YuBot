@@ -49,6 +49,7 @@ public class TicketRepository {
         String statusName = resultSet.getString(Table.TicketColumn.STATUS.getColumn());
         Timestamp updatedAt = resultSet.getTimestamp(Table.TicketColumn.UPDATED_AT.getColumn());
         boolean isReminderSent = resultSet.getBoolean(Table.TicketColumn.IS_REMINDER_SENT.getColumn());
+        String archiveMessageId = resultSet.getString(Table.TicketColumn.ARCHIVE_MESSAGE_ID.getColumn());
 
         Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
 
@@ -61,17 +62,20 @@ public class TicketRepository {
         ticket.setName(name);
         ticket.setAssignee(guild.getMemberById(assigneeId));
         ticket.setChannel(guild.getTextChannelById(channelId));
-        if (lastActivityAt != null) {
+        if (Objects.nonNull(lastActivityAt)) {
             ticket.setLastActivityAt(lastActivityAt.toLocalDateTime());
         }
         ticket.setRequestPending(isRequestPending);
         ticket.setCloseRequestCount(closeRequestCount);
         ticket.setStatus(status);
-        if (updatedAt != null) {
+        if (Objects.nonNull(updatedAt)) {
             ticket.setUpdatedAt(updatedAt.toLocalDateTime());
         }
         ticket.setReminderSent(isReminderSent);
         ticket.setWelcomeMessageId(welcomeMessageId);
+        if (Objects.nonNull(archiveMessageId)) {
+            ticket.setArchiveMessageId(archiveMessageId);
+        }
 
         List<Member> participants = TicketParticipantRepository.getParticipantsFromTicket(ticket);
         ticket.setParticipants(participants);
@@ -110,6 +114,7 @@ public class TicketRepository {
             Timestamp createdAt = resultSet.getTimestamp(Table.TicketColumn.CREATED_AT.getColumn());
             Timestamp updatedAt = resultSet.getTimestamp(Table.TicketColumn.UPDATED_AT.getColumn());
             Timestamp archivedAt = resultSet.getTimestamp(Table.TicketColumn.ARCHIVED_AT.getColumn());
+            String archiveMessageId = resultSet.getString(Table.TicketColumn.ARCHIVE_MESSAGE_ID.getColumn());
 
 
             Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
@@ -138,6 +143,9 @@ public class TicketRepository {
             }
             if (Objects.nonNull(archivedAt)) {
                 ticket.setArchivedAt(archivedAt.toLocalDateTime());
+            }
+            if (Objects.nonNull(archiveMessageId)) {
+                ticket.setArchiveMessageId(archiveMessageId);
             }
             ticket.setSummary(summary);
 
@@ -173,6 +181,8 @@ public class TicketRepository {
             Timestamp updatedAt = resultSet.getTimestamp(Table.TicketColumn.UPDATED_AT.getColumn());
             Timestamp archivedAt = resultSet.getTimestamp(Table.TicketColumn.ARCHIVED_AT.getColumn());
 
+            String archiveMessageId = resultSet.getString(Table.TicketColumn.ARCHIVE_MESSAGE_ID.getColumn());
+
 
             Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
             Member owner = guild.getMemberById(ownerId);
@@ -199,6 +209,9 @@ public class TicketRepository {
             }
             if (Objects.nonNull(archivedAt)) {
                 ticket.setArchivedAt(archivedAt.toLocalDateTime());
+            }
+            if (Objects.nonNull(archiveMessageId)) {
+                ticket.setArchiveMessageId(archiveMessageId);
             }
             ticket.setSummary(summary);
 

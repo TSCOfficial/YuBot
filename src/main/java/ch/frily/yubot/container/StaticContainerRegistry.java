@@ -66,7 +66,6 @@ public enum StaticContainerRegistry {
     }
 
     public List<Container> getContainer(ContainerContext context) {
-        log.info("get containers with ctx: {}", context);
         return containerFactory.apply(context);
     }
 
