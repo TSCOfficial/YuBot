@@ -16,7 +16,7 @@ import ch.frily.yubot.service.ticket.ctxmenu.ModticketUserCtxMenu;
 import ch.frily.yubot.service.ticket.event.TicketMessageReceivedEvent;
 import ch.frily.yubot.service.ticket.event.TicketOwnerLeftGuildEvent;
 import ch.frily.yubot.service.ticket.modal.ModTicketSelectorModal;
-import ch.frily.yubot.service.ticket.modal.TicketAddUsersModal;
+import ch.frily.yubot.service.ticket.modal.TicketAccessUsersModal;
 import ch.frily.yubot.service.ticket.slashcommand.TicketCmdGroup;
 import ch.frily.yubot.interaction.contextmenu.IContextMenu;
 import ch.frily.yubot.interaction.modal.Modal;
@@ -29,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
@@ -101,7 +100,7 @@ public class TicketService extends Service {
                 new TicketSummaryModal(),
                 new TicketTypeSelectorModal(),
                 new ModTicketSelectorModal(),
-                new TicketAddUsersModal()
+                new TicketAccessUsersModal()
         );
     }
 
