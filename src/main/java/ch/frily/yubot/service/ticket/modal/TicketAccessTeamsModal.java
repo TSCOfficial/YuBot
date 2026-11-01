@@ -87,19 +87,14 @@ public class TicketAccessTeamsModal extends Modal {
         ModalMapping reasonValue = event.getValue("reason");
         List<String> teamNames = teamsValue.getAsStringList();
         List<TicketTeam> allSelectedTeams = Stream.of(TicketTeam.values()).filter(team -> teamNames.contains(team.name())).toList();
-        log.info("selected teams: {}", allSelectedTeams.stream().map(TicketTeam::name).toList());
 
         Ticket ticket = TicketRepository.getTicketByChannelId(event.getChannelIdLong());
 
         List<Role> currentAllowedRoles = ticket.getChannel().getRolePermissionOverrides().stream().map(PermissionOverride::getRole).toList();
         List<TicketTeam> currentlyAllowedTeams = TicketTeam.getTeamsByRoles(currentAllowedRoles);
-        log.info("currently allowed teams: {}", currentlyAllowedTeams.stream().map(TicketTeam::name).toList());
 
         List<TicketTeam> teamsToRemove = currentlyAllowedTeams.stream().filter(team -> !teamNames.contains(team.name())).toList(); // removes teams that are no longer selected
-        log.info("teams to remove: {}", teamsToRemove.stream().map(TicketTeam::name).toList());
-
         List<TicketTeam> teamsToAdd = allSelectedTeams.stream().filter(team -> !currentlyAllowedTeams.contains(team)).toList();
-        log.info("teams to add: {}", teamsToAdd.stream().map(TicketTeam::name).toList());
 
         List<Role> allRolesToAdd = new ArrayList<>();
         teamsToAdd.forEach(team -> {
@@ -118,16 +113,16 @@ public class TicketAccessTeamsModal extends Modal {
 
         StringBuilder reply = new StringBuilder();
         if (!teamsToAdd.isEmpty()) {
-            reply.append(String.format("➡️ %s wurde%s dem Ticket hinzugefügt.\n", String.join(", ", teamsToAdd.stream().map(TicketTeam::getName).toList()), teamsToAdd.size() > 1 ? "n" : ""));
+            reply.append(String.format("➡️ %s wurde%s dem Ticket hinzugefügt.\n", String.join(", ", allRolesToAdd.stream().map(Role::getAsMention).toList()), teamsToAdd.size() > 1 ? "n" : ""));
         }
         if (!teamsToRemove.isEmpty()) {
-            reply.append(String.format("🔻 %s wurde%s vom Ticket entfernt.\n", String.join(", ", teamsToRemove.stream().map(TicketTeam::getName).toList()), teamsToRemove.size() > 1 ? "n" : ""));
+            reply.append(String.format("🔻 %s wurde%s vom Ticket entfernt.\n", String.join(", ", allRolesToRemove.stream().map(Role::getAsMention).toList()), teamsToRemove.size() > 1 ? "n" : ""));
         }
 
         if (Objects.nonNull(reasonValue) && !reasonValue.getAsString().isEmpty()) {
             reply.append(String.format("-# Begründung: %s", reasonValue.getAsString()));
         }
 
-        event.reply(reply.toString()).setAllowedMentions(List.of()).queue(); // todo remove mention control
+        event.reply(reply.toString()).setAllowedMentions(List.of()).queue();
     }
 }
