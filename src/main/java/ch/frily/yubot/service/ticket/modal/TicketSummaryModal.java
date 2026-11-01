@@ -55,8 +55,10 @@ public class TicketSummaryModal extends Modal {
                         Verfasse in ein paar Worten um was das Ticket ging.
                         -# Dies hilft Tickets im Ticket-log schneller wieder zu finden, wenn etwas geprüft werden muss.
                         """),
-                Label.of("Zusammenfassung", summaryInput.build()),
-                TextDisplay.of(String.format("-# %s", summaryOptionalInfo))
+                Label.of("Zusammenfassung",
+                        summaryOptionalInfo,
+                        summaryInput.build()
+                )
         );
     }
 

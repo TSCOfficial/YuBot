@@ -112,7 +112,7 @@ public class AbsenceAddModal extends Modal {
         if (absenceModalDataRecord != null) {
             reason.setValue(absenceModalDataRecord.reason());
         }
-        Label reasonLabel = Label.of("Begründung", reason.build());
+        Label reasonLabel = Label.of("Begründung", "Dies kannst du im nachhinein nicht mehr Bearbeiten.", reason.build());
 
         StringSelectMenu.Builder absenceType = StringSelectMenu.create("absence-type-select");
         for (AbsenceType type : AbsenceType.values()) {

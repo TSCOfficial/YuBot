@@ -63,6 +63,7 @@ public class TicketAddUsersModal extends Modal {
                 TextDisplay.of("Füge dem Ticket neue Benutzer*innen hinzu oder entferne bereits erlaubte Benutzende."),
                 Label.of(
                         "Erlaubte Benutzer*innen auswählen",
+                        "Hinzugefügte Personen werden über ihr neuen Ticketzugang Benachrichtigt.",
                         usersSelect.build()
                 ),
                 Label.of(
