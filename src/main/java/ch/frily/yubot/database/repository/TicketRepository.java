@@ -3,6 +3,7 @@ package ch.frily.yubot.database.repository;
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.InvalidStateException;
+import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.service.ticket.TicketStatus;
 import ch.frily.yubot.service.ticket.TicketType;
@@ -33,7 +34,7 @@ public class TicketRepository {
                 .where(Table.TicketColumn.CHANNEL_ID, DatabaseQuery.Operator.EQUALS, channelId).executeDataQuery();
 
         if (!resultSet.next()) {
-            throw new InvalidStateException("Ticket mit ID " + channelId + " nicht gefunden.");
+            throw new NotFoundException("Ticket mit ID " + channelId + " nicht gefunden.");
         }
 
         int id = resultSet.getInt(Table.TicketColumn.ID.getColumn());
@@ -60,7 +61,9 @@ public class TicketRepository {
         ticket.setName(name);
         ticket.setAssignee(guild.getMemberById(assigneeId));
         ticket.setChannel(guild.getTextChannelById(channelId));
-        ticket.setLastActivityAt(lastActivityAt.toLocalDateTime());
+        if (lastActivityAt != null) {
+            ticket.setLastActivityAt(lastActivityAt.toLocalDateTime());
+        }
         ticket.setRequestPending(isRequestPending);
         ticket.setCloseRequestCount(closeRequestCount);
         ticket.setStatus(status);
@@ -117,7 +120,9 @@ public class TicketRepository {
             ticket.setName(name);
             ticket.setAssignee(guild.getMemberById(assigneeId));
             ticket.setChannel(guild.getTextChannelById(channelId));
-            ticket.setLastActivityAt(lastActivityAt.toLocalDateTime());
+            if (lastActivityAt != null) {
+                ticket.setLastActivityAt(lastActivityAt.toLocalDateTime());
+            }
             ticket.setRequestPending(isRequestPending);
             ticket.setCloseRequestCount(closeRequestCount);
             ticket.setStatus(status);
@@ -177,7 +182,10 @@ public class TicketRepository {
             ticket.setName(name);
             ticket.setAssignee(guild.getMemberById(assigneeId));
             ticket.setChannel(guild.getTextChannelById(channelId));
-            ticket.setLastActivityAt(lastActivityAt.toLocalDateTime());
+            if (lastActivityAt != null) {
+                ticket.setLastActivityAt(lastActivityAt.toLocalDateTime());
+            }
+
             ticket.setRequestPending(isRequestPending);
             ticket.setCloseRequestCount(closeRequestCount);
             ticket.setStatus(status);

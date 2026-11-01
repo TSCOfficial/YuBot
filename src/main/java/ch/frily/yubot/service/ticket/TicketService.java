@@ -4,6 +4,7 @@ import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.database.repository.TicketTypeControlRepository;
 import ch.frily.yubot.embed.ticket.TicketOpenEmbed;
 import ch.frily.yubot.event.IEvent;
+import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.service.Service;
@@ -15,6 +16,7 @@ import ch.frily.yubot.service.ticket.ctxmenu.ModticketUserCtxMenu;
 import ch.frily.yubot.service.ticket.event.TicketMessageReceivedEvent;
 import ch.frily.yubot.service.ticket.event.TicketOwnerLeftGuildEvent;
 import ch.frily.yubot.service.ticket.modal.ModTicketSelectorModal;
+import ch.frily.yubot.service.ticket.modal.TicketAddUsersModal;
 import ch.frily.yubot.service.ticket.slashcommand.TicketCmdGroup;
 import ch.frily.yubot.interaction.contextmenu.IContextMenu;
 import ch.frily.yubot.interaction.modal.Modal;
@@ -27,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
@@ -97,7 +100,8 @@ public class TicketService extends Service {
         return List.of(
                 new TicketSummaryModal(),
                 new TicketTypeSelectorModal(),
-                new ModTicketSelectorModal()
+                new ModTicketSelectorModal(),
+                new TicketAddUsersModal()
         );
     }
 
@@ -128,8 +132,10 @@ public class TicketService extends Service {
         createTicket(type, type.getResponsibleRoles(), ticketOwner, onCreated);
     }
     public void createTicket(TicketType type, List<Role> responsibleRoles, Member ticketOwner, Consumer<TextChannel> onCreated) throws SQLException {
-        List<TextChannel> openedTickets = TicketRepository.getTicketsByUser(ticketOwner.getUser()).stream().map(Ticket::getChannel).toList();
-        if (openedTickets.size() >= MAX_TICKET_COUNT) {
+        List<TextChannel> openedTickets = TicketRepository.getTicketsByUser(ticketOwner.getUser()).stream()
+                .filter(ticket -> !ticket.getType().equals(TicketType.MODTICKET))
+                .map(Ticket::getChannel).toList();
+        if (openedTickets.size() >= MAX_TICKET_COUNT && !type.equals(TicketType.MODTICKET)) {
             throw new PermissionDeniedException(String.format("""
                     Du hast bereits zu viele Tickets offen *(%d)*!
                     
@@ -161,6 +167,7 @@ public class TicketService extends Service {
                 .queue(textChannel -> {
                     // Ticket team permissions
                     TextChannelManager ticketManager = textChannel.getManager();
+                    ticketManager.putRolePermissionOverride(EnvKey.ROLE_EVERYONE.getAsRole().getIdLong(), null, List.of(Permission.VIEW_CHANNEL));
                     responsibleRoles.forEach(role -> {
                         ticketManager.putRolePermissionOverride(role.getIdLong(), TEAM_PERMISSION, null);
                     });
@@ -177,7 +184,10 @@ public class TicketService extends Service {
 
                     textChannel.sendMessage(ticketOwner.getAsMention() + roleMentions)
                             .addEmbeds(embed.build()).setComponents(actionrow).queue(ThrowingConsumer.wrap(null, message -> {
-                                textChannel.pinMessageById(message.getIdLong()).queue(); // todo delete message, add feature after the 30.10.2026
+                                textChannel.pinMessageById(message.getIdLong()).queue( _ -> {
+                                    // delete "pinned a message to this channel"-message
+                                    textChannel.deleteMessageById(textChannel.getLatestMessageId()).queue();
+                                });
                                 ticket.setWelcomeMessageId(message.getIdLong());
                                 TicketRepository.createTicket(ticket);
 
@@ -219,10 +229,11 @@ public class TicketService extends Service {
      * @return True if its a Ticketchannel / False if not
      */
     public boolean isTicketchannel(TextChannel channel) throws SQLException {
-        if (channel.getParentCategory() == null || channel.getParentCategory().getIdLong() != EnvKey.CATEGORY_TICKETSUPPORT.getAsCategory().getIdLong()) {
+        try {
+            TicketRepository.getTicketByChannelId(channel.getIdLong());
+        } catch (NotFoundException e) {
             return false;
         }
-        TicketRepository.getTicketByChannelId(channel.getIdLong());
         return true;
     }
 

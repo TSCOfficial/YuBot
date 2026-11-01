@@ -3,13 +3,17 @@ package ch.frily.yubot.service.ticket.schedule;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.database.repository.TicketRepository;
+import ch.frily.yubot.service.ticket.TicketService;
 import ch.frily.yubot.service.ticket.TicketStatus;
 import ch.frily.yubot.scheduler.IScheduler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Checks the activity of the ticket and acts accordingly
@@ -24,15 +28,15 @@ public class TicketActivityScheduler implements IScheduler {
             if (ticket.getStatus() != TicketStatus.NEW) {
                 return false;
             }
-            if (ticket.getLastActivityAt().plusHours(Ticket.getMAX_OWNER_NOREPLY_DURATION()).isAfter(LocalDateTime.now())) { // time needs to be before now (in the past)
+            if (ticket.getCreatedAt().truncatedTo(ChronoUnit.SECONDS).plusHours(Ticket.getMAX_OWNER_NOREPLY_DURATION()).isAfter(LocalDateTime.now())) {
                 return false;
             }
-            // todo add new flag "owner has already written", to check if the ticket-opener ignosres the ticket or not. return true if the owner DID NOT already write something
-            if (ticket.isReminderSent()) {
+            if (Objects.nonNull(ticket.getLastActivityAt())) { // discards tickets in which someone already wrote something
                 return false;
             }
-            return true;
+            return !ticket.isReminderSent();
         }).toList();
+
         outdatedTickets.forEach(ticket -> {
             try {
                 ticket.sendReminder();

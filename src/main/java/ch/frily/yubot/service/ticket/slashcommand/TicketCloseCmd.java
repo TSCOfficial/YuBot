@@ -46,17 +46,7 @@ public class TicketCloseCmd implements ISlashSubcommand {
         if (Objects.nonNull(forceOption) && forceOption.getAsBoolean()) {
             ticket.forceClose(event);
         } else {
-            ActionRow actionRow = ActionRow.of(
-                    new TicketCloseRequestAcceptBtn().build(),
-                    new TicketCloseRequestRejectBtn().build()
-            );
-
             ticket.requestClose(event);
-
-            TicketCloseRequestEmbed requestEmbed = new TicketCloseRequestEmbed();
-            requestEmbed.setInitiator(event.getMember());
-            requestEmbed.setTicket(ticket);
-            event.replyEmbeds(requestEmbed.build()).setComponents(actionRow).queue();
 
             // Disable welcome message component
             Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
