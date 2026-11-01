@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 @RequiredArgsConstructor
 public enum Table {
-    // todo DEVNOTE - Update notice: The schemas MUST stay on public, till the finished update to the server. Else, data which was added in between tests will habe other data!
     TICKET("ticket", "ticketsystem", TicketColumn.class),
     TICKET_PARTICIPANT("ticket_participant", "ticketsystem", TicketParticipantColumn.class),
     TICKET_TYPE_CONTROL("ticket_type_control", "ticketsystem", TicketTypeControlColumn.class),
