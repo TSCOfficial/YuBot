@@ -216,7 +216,13 @@ public abstract class PaginationContainer extends Container {
 
         controls.addChild(Separator.createDivider(Separator.Spacing.LARGE));
         controls.addChild(ActionRow.of(homeBtn.build(), prevBtn.build(), currentBtn.build(), nextBtn.build()));
-        controls.addChild(TextDisplay.ofFormat("-# Seite %s / %s", currentPage + 1, pages.size()));
+        String resultQuery = "";
+        if (!pages.isEmpty()) {
+            int currentPageComponentCount = pages.get(currentPage).items.size();
+            int componentCountUptoThisPage = pages.stream().limit(currentPage).mapToInt(page -> page.items.size()).sum();
+            resultQuery = String.format("Resultat %s-%s von %s ∙ ", componentCountUptoThisPage + 1, componentCountUptoThisPage + currentPageComponentCount, pages.stream().mapToInt(page -> page.items.size()).reduce(0, Integer::sum));
+        }
+        controls.addChild(TextDisplay.ofFormat("-# %sSeite %s / %s", resultQuery, currentPage + 1, pages.size()));
         return controls;
     }
 
