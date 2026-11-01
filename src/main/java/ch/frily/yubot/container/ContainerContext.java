@@ -46,14 +46,13 @@ public record ContainerContext(
 ) {
 
     /** Component ID argument naming the {@link StaticContainerRegistry} entry to rebuild */
-    public static final String ARG_IDENTIFIER = "identifier";
+    public static final String ARG_IDENTIFIER = "id";
 
     /** Component ID argument holding the page to navigate to */
     public static final String ARG_PAGE = "p";
 
     public ContainerContext {
         args = Map.copyOf(args);
-        log.info("ContainerContext created with args: {}", args);
     }
 
     /**

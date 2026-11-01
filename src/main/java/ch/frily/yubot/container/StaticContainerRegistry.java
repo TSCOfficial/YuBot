@@ -8,13 +8,13 @@ import ch.frily.yubot.container.guildinfo.RulesContainer;
 import ch.frily.yubot.container.guildinfo.ServerClosedContainer;
 import ch.frily.yubot.container.guildinfo.StartHereContainer;
 import ch.frily.yubot.container.ticket.TicketPanelContainer;
+import ch.frily.yubot.container.ticket.TicketSearchContainer;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.container.Container;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-
-import static org.reflections.Reflections.log;
 
 /**
  * This is a list of Embeds that can be used statically via the send embed command
@@ -23,6 +23,7 @@ import static org.reflections.Reflections.log;
  * may depend on the interacting member, on foreign arguments, or on nothing at all without changing
  * the signature.
  */
+@Slf4j
 public enum StaticContainerRegistry {
 
     SERVER_CLOSE(true, ctx -> {
@@ -49,6 +50,9 @@ public enum StaticContainerRegistry {
     }),
     ACTIVE_MOD_DASHBOARD(true, ctx -> {
         return new ActiveModDashboardContainer(ctx).build();
+    }),
+    TICKET_SEARCH_OVERVIEW(false, ctx -> {
+        return new TicketSearchContainer(ctx).build();
     });
 
     /** Whether the container may be sent as a standalone message via the send container command */

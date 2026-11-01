@@ -1,5 +1,6 @@
 package ch.frily.yubot.service.ticket.slashcommand;
 
+import ch.frily.yubot.container.ContainerContext;
 import ch.frily.yubot.container.ticket.TicketSearchContainer;
 import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
@@ -16,6 +17,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class TicketSearchOwnerSubCmd implements ISlashSubcommand {
@@ -46,11 +48,15 @@ public class TicketSearchOwnerSubCmd implements ISlashSubcommand {
     @Override
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
         OptionMapping ownerMapping = Objects.requireNonNull(event.getOption("user"));
-        User userOwner = ownerMapping.getAsUser();
         Member memberOwner = ownerMapping.getAsMember();
-        List<Ticket> ownedTickets = TicketRepository.getTicketsByUser(userOwner);
 
-        TicketSearchContainer container = new TicketSearchContainer(ownedTickets, memberOwner, true);
-        event.replyComponents(container.build()).useComponentsV2().queue();
+        Map<String, String> ctxArguments = Map.of(
+                "target", memberOwner.getId(),
+                "owned", "true"
+        );
+
+        ContainerContext ctx = new ContainerContext(0, event, ctxArguments);
+        TicketSearchContainer container = new TicketSearchContainer(ctx);
+        event.replyComponents(container.build()).setAllowedMentions(List.of()).useComponentsV2().queue();
     }
 }
