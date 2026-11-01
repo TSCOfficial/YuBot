@@ -61,7 +61,7 @@ public class TicketAccessTeamsModal extends Modal {
         teamsSelect.setMinValues(0);
         teamsSelect.setMaxValues(25);
         teamsSelect.setRequired(false);
-        teamsSelect.setPlaceholder("Teams auswählen");
+        teamsSelect.setPlaceholder("Noch keine Teams ausgewählt");
 
         TextInput.Builder reasonInput = TextInput.create("reason", TextInputStyle.PARAGRAPH);
         reasonInput.setRequiredRange(2, 100);

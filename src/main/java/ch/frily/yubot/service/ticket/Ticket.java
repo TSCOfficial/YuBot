@@ -173,7 +173,10 @@ public class Ticket {
      */
     public void setStatus(TicketStatus status){
         this.status = status;
-        channel.getManager().setName(status.getIcon() + this.name).queue();
+        if (channel != null) {
+            channel.getManager().setName(status.getIcon() + this.name).queue();
+        }
+
     }
 
     /**
@@ -433,17 +436,6 @@ public class Ticket {
     }
 
     /**
-     * Add a member to this ticket
-     * @param permissionHolders the users or roles to add
-     * @throws PermissionDeniedException if the initator is missing permissions to execute this action
-     * @throws InvalidStateException if the user/role is already added or the ticket is already closed
-     */
-    @Deprecated
-    public void addTicketAccess(List<? extends IPermissionHolder> permissionHolders) throws PermissionDeniedException, InvalidStateException {
-        toggleTicketAccess(permissionHolders, true);
-    }
-
-    /**
      * Add roles to the ticket
      * <p>
      *     Append this action to the manager and {@link TextChannelManager#queue() queue()} it, optionally together with {@link #addMemberAccess(TextChannelManager, List)}, {@link #removePermissionHolder(TextChannelManager, List)}<br>
@@ -501,56 +493,6 @@ public class Ticket {
         holders.forEach(holder -> {
             ticketManager.removePermissionOverride(holder);
         });
-    }
-
-    /**
-     * Remove member from this ticket
-     * @param permissionHolders the users or roles to remove
-     * @throws PermissionDeniedException if the initator is missing permissions to execute this action
-     * @throws InvalidStateException if the user/role is already removed, the ticket owner tries to be removed or the ticket is already closed
-     */
-    @Deprecated
-    public void removeTicketAccess(List<? extends IPermissionHolder> permissionHolders) throws PermissionDeniedException, InvalidStateException {
-        toggleTicketAccess(permissionHolders, false);
-    }
-
-    /**
-     * Add/remove a user or role from the ticket
-     * @param permissionHolders the users or roles to toggle
-     * @param isAdding whether to add (true) or remove (false) the user/role
-     * @throws PermissionDeniedException if the initator is missing permissions to execute this action
-     * @throws InvalidStateException if the user/role is already added/removed, the ticket owner tries to be removed or the ticket is already closed
-     */
-    @Deprecated
-    private void toggleTicketAccess(List<? extends IPermissionHolder> permissionHolders, boolean isAdding) throws PermissionDeniedException, InvalidStateException {
-        if (status != TicketStatus.CLOSED) {
-
-            if (isAdding) {
-                TextChannelManager manager = channel.getManager();
-                permissionHolders.forEach(holder -> {
-                    List<Permission> permissions = USER_PERMISSION;
-                    log.info("{} is instance of Member: {}", holder.getClass().getSimpleName(), permissionHolders instanceof Member);
-                    if (permissionHolders instanceof Member permissionMember) {
-                        if (Util.isTeamMember(permissionMember)) {
-                            permissions = TEAM_PERMISSION;
-                        }
-                    }
-                    manager.putPermissionOverride(holder, permissions, List.of()).queue();
-                });
-
-            } else {
-//                    if (permissionHolders.contains(owner)) {
-//                        throw new InvalidStateException("Diese Person kann nicht entfernt werden.", "Der/Die Ticketinhaber\\*in kann nicht entfernt werden.");
-//                    }
-//                    channel.getManager().removePermissionOverride(permissionHolder).queue();
-            }
-            return;
-        }
-        throw new InvalidStateException("Das Ticket ist geschlossen.", "Es kann keine Person hinzugefügt werden, wenn das Ticket geschlossen ist.");
-    }
-
-    private List<IPermissionHolder> getPermissionOverrides() {
-        return channel.getPermissionOverrides().stream().map(PermissionOverride::getPermissionHolder).toList();
     }
 
     /**
