@@ -47,7 +47,7 @@ public enum TicketType {
             TicketTypeGroup.SUPPORT,
             List.of(EnvKey.ROLE_SUPPORT, EnvKey.ROLE_MODERATOR)
     ),
-    SUPPORT_PROBEME(
+    SUPPORT_PROBLEME(
             "sup",
             "⚠️ Probleme",
             "Generelle Probleme melden.",
