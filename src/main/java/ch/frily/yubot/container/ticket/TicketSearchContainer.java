@@ -87,35 +87,35 @@ public class TicketSearchContainer extends PaginationContainer {
 
         StringBuilder details = new StringBuilder();
         if (Objects.nonNull(ticket.getSummary())) {
-            details.append(String.format("> Zusammenfassung: \"%s\"", Util.escapeMarkdown(ticket.getSummary())));
+            details.append(String.format("> **Zusammenfassung**: \"%s\"", Util.escapeMarkdown(ticket.getSummary())));
             details.append("\n");
         }
 
         if (Objects.nonNull(ticket.getAssignee())) {
-            details.append(String.format("> Verantwortlich: %s", ticket.getAssignee().getAsMention()));
+            details.append(String.format("> **Verantwortlich**: %s", ticket.getAssignee().getAsMention()));
             details.append("\n");
         } else {
-            details.append("> Verantwortlich: Keine\\*r");
+            details.append("> **Verantwortlich**: Keine\\*r");
             details.append("\n");
         }
         if (searchType == TicketSearchSubCmdGroup.SearchType.OWNER) {
             if (!ticket.getParticipants().isEmpty()) {
-                details.append(String.format("> Teilnehmende: %s", String.join(", ", ticket.getParticipants().stream().map(Member::getAsMention).toList())));
+                details.append(String.format("> **Teilnehmende**: %s", String.join(", ", ticket.getParticipants().stream().map(Member::getAsMention).toList())));
                 details.append("\n");
             } else {
-                details.append("> Teilnehmende: Keine");
+                details.append("> **Teilnehmende**: Keine");
                 details.append("\n");
             }
         } else {
-            details.append(String.format("> Ticket Inhaber\\*in: %s", ticket.getOwner().getAsMention()));
+            details.append(String.format("> **Ticket Inhaber\\*in**: %s", ticket.getOwner().getAsMention()));
             details.append("\n");
         }
 
         if (Objects.nonNull(ticket.getCreatedAt()) && Objects.nonNull(ticket.getArchivedAt())) {
-            details.append(String.format("> Geöffnet <t:%s:f> ∙ Archiviert <t:%s:f>", Util.toEpochSeconds(ticket.getCreatedAt()), Util.toEpochSeconds(ticket.getArchivedAt())));
+            details.append(String.format("> -# Geöffnet <t:%s:f> ∙ Archiviert <t:%s:f>", Util.toEpochSeconds(ticket.getCreatedAt()), Util.toEpochSeconds(ticket.getArchivedAt())));
             details.append("\n");
         } else if (Objects.nonNull(ticket.getCreatedAt())) {
-            details.append(String.format("> Geöffnet <t:%s:f>", Util.toEpochSeconds(ticket.getCreatedAt())));
+            details.append(String.format("> -# Geöffnet <t:%s:f>", Util.toEpochSeconds(ticket.getCreatedAt())));
             details.append("\n");
         }
 
