@@ -30,8 +30,8 @@ public class TicketTranscriptContainer extends Container {
         if (ticket.getType() == TicketType.MODTICKET) {
             labelOwner = "Erstellt für";
         }
-        if (ticket.getOwner() != null) {
-            addFormatedText("**%s**: %s (%s)", labelOwner, ticket.getOwner().getAsMention(), ticket.getOwner().getUser().getName());
+        if (ticket.getMemberOwner() != null) {
+            addFormatedText("**%s**: %s (%s)", labelOwner, ticket.getMemberOwner().getAsMention(), ticket.getMemberOwner().getUser().getName());
         } else {
             addFormatedText("**%s**: *Person hat den Server verlassen*", labelOwner);
         }

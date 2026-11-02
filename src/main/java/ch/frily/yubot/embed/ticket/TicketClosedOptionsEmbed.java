@@ -63,8 +63,8 @@ public class TicketClosedOptionsEmbed implements IEmbed {
         if (initiator != null) {
             return initiator.getColors().getPrimary();
         }
-        if (ticket.getOwner() != null) {
-            return ticket.getOwner().getColors().getPrimary();
+        if (ticket.getMemberOwner() != null) {
+            return ticket.getMemberOwner().getColors().getPrimary();
         }
         return IEmbed.super.getColor();
     }

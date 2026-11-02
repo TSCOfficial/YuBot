@@ -2,7 +2,6 @@ package ch.frily.yubot.database.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
-import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.service.ticket.TicketStatus;
@@ -39,8 +38,8 @@ public class TicketRepository {
 
         int id = resultSet.getInt(Table.TicketColumn.ID.getColumn());
         String name = resultSet.getString(Table.TicketColumn.NAME.getColumn());
-        long ownerId = resultSet.getLong(Table.TicketColumn.OWNER_ID.getColumn());
-        long assigneeId = resultSet.getLong(Table.TicketColumn.ASSIGNEE_ID.getColumn());
+        String ownerId = resultSet.getString(Table.TicketColumn.OWNER_ID.getColumn());
+        String assigneeId = resultSet.getString(Table.TicketColumn.ASSIGNEE_ID.getColumn());
         String typeName = resultSet.getString(Table.TicketColumn.TYPE.getColumn());
         Timestamp lastActivityAt = resultSet.getTimestamp(Table.TicketColumn.LAST_ACTIVITY_AT.getColumn());
         long welcomeMessageId = resultSet.getLong(Table.TicketColumn.WELCOME_MESSAGE_ID.getColumn());
@@ -53,14 +52,14 @@ public class TicketRepository {
 
         Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
 
-        Member owner = guild.getMemberById(ownerId);
         TicketType type = TicketType.valueOf(typeName);
+
         TicketStatus status = TicketStatus.valueOf(statusName);
 
-        Ticket ticket = new Ticket(owner, type);
+        Ticket ticket = new Ticket(ownerId, type);
         ticket.setId(id);
         ticket.setName(name);
-        ticket.setAssignee(guild.getMemberById(assigneeId));
+        ticket.setAssigneeId(assigneeId);
         ticket.setChannel(guild.getTextChannelById(channelId));
         if (Objects.nonNull(lastActivityAt)) {
             ticket.setLastActivityAt(lastActivityAt.toLocalDateTime());
@@ -77,8 +76,8 @@ public class TicketRepository {
             ticket.setArchiveMessageId(archiveMessageId);
         }
 
-        List<Member> participants = TicketParticipantRepository.getParticipantsFromTicket(ticket);
-        ticket.setParticipants(participants);
+        List<String> participants = TicketParticipantRepository.getParticipantsFromTicket(ticket);
+        ticket.setParticipantIds(participants);
         return ticket;
     }
 
@@ -93,15 +92,15 @@ public class TicketRepository {
      */
     public static List<Ticket> getTicketsByUser(User user) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET);
-        query.select().where(Table.TicketColumn.OWNER_ID, DatabaseQuery.Operator.EQUALS, user.getIdLong());
+        query.select().where(Table.TicketColumn.OWNER_ID, DatabaseQuery.Operator.EQUALS, user.getId());
         ResultSet resultSet = query.executeDataQuery();
 
         List<Ticket> tickets = new java.util.ArrayList<>();
         while (resultSet.next()) {
             int id = resultSet.getInt(Table.TicketColumn.ID.getColumn());
             String name = resultSet.getString(Table.TicketColumn.NAME.getColumn());
-            long ownerId = resultSet.getLong(Table.TicketColumn.OWNER_ID.getColumn());
-            long assigneeId = resultSet.getLong(Table.TicketColumn.ASSIGNEE_ID.getColumn());
+            String ownerId = resultSet.getString(Table.TicketColumn.OWNER_ID.getColumn());
+            String assigneeId = resultSet.getString(Table.TicketColumn.ASSIGNEE_ID.getColumn());
             long channelId = resultSet.getLong(Table.TicketColumn.CHANNEL_ID.getColumn());
             TicketType type = TicketType.valueOf(resultSet.getString(Table.TicketColumn.TYPE.getColumn()));
             Timestamp lastActivityAt = resultSet.getTimestamp(Table.TicketColumn.LAST_ACTIVITY_AT.getColumn());
@@ -118,12 +117,11 @@ public class TicketRepository {
 
 
             Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
-            Member owner = guild.getMemberById(ownerId);
 
-            Ticket ticket = new Ticket(owner, type);
+            Ticket ticket = new Ticket(ownerId, type);
             ticket.setId(id);
             ticket.setName(name);
-            ticket.setAssignee(guild.getMemberById(assigneeId));
+            ticket.setAssigneeId(assigneeId);
             ticket.setChannel(guild.getTextChannelById(channelId));
             if (lastActivityAt != null) {
                 ticket.setLastActivityAt(lastActivityAt.toLocalDateTime());
@@ -133,9 +131,7 @@ public class TicketRepository {
             ticket.setStatus(status);
             ticket.setReminderSent(isReminderSent);
             ticket.setWelcomeMessageId(welcomeMessageId);
-            if (createdAt != null) { // todo remove when setting not null on db
-                ticket.setCreatedAt(createdAt.toLocalDateTime());
-            }
+            ticket.setCreatedAt(createdAt.toLocalDateTime());
 
 
             if (Objects.nonNull(updatedAt)) {
@@ -149,8 +145,8 @@ public class TicketRepository {
             }
             ticket.setSummary(summary);
 
-            List<Member> participants = TicketParticipantRepository.getParticipantsFromTicket(ticket);
-            ticket.setParticipants(participants);
+            List<String> participants = TicketParticipantRepository.getParticipantsFromTicket(ticket);
+            ticket.setParticipantIds(participants);
 
             tickets.add(ticket);
         }
@@ -158,7 +154,6 @@ public class TicketRepository {
     }
 
     public static List<Ticket> getTicketsWithMatchingName(String searchQuery) throws SQLException {
-        log.info("Searching for tickets with matching name: {}", searchQuery);
         DatabaseQuery query = new DatabaseQuery(Table.TICKET);
         query.select()
             .where(Table.TicketColumn.NAME, DatabaseQuery.Operator.LIKE, "%" + searchQuery + "%");
@@ -168,8 +163,8 @@ public class TicketRepository {
         while (rs.next()) {
             int id = rs.getInt(Table.TicketColumn.ID.getColumn());
             String name = rs.getString(Table.TicketColumn.NAME.getColumn());
-            long ownerId = rs.getLong(Table.TicketColumn.OWNER_ID.getColumn());
-            long assigneeId = rs.getLong(Table.TicketColumn.ASSIGNEE_ID.getColumn());
+            String ownerId = rs.getString(Table.TicketColumn.OWNER_ID.getColumn());
+            String assigneeId = rs.getString(Table.TicketColumn.ASSIGNEE_ID.getColumn());
             long channelId = rs.getLong(Table.TicketColumn.CHANNEL_ID.getColumn());
             TicketType type = TicketType.valueOf(rs.getString(Table.TicketColumn.TYPE.getColumn()));
             Timestamp lastActivityAt = rs.getTimestamp(Table.TicketColumn.LAST_ACTIVITY_AT.getColumn());
@@ -186,12 +181,11 @@ public class TicketRepository {
 
 
             Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
-            Member owner = guild.getMemberById(ownerId);
 
-            Ticket ticket = new Ticket(owner, type);
+            Ticket ticket = new Ticket(ownerId, type);
             ticket.setId(id);
             ticket.setName(name);
-            ticket.setAssignee(guild.getMemberById(assigneeId));
+            ticket.setAssigneeId(assigneeId);
             ticket.setChannel(guild.getTextChannelById(channelId));
             if (lastActivityAt != null) {
                 ticket.setLastActivityAt(lastActivityAt.toLocalDateTime());
@@ -201,9 +195,7 @@ public class TicketRepository {
             ticket.setStatus(status);
             ticket.setReminderSent(isReminderSent);
             ticket.setWelcomeMessageId(welcomeMessageId);
-            if (createdAt != null) { // todo remove when setting not null on db
-                ticket.setCreatedAt(createdAt.toLocalDateTime());
-            }
+            ticket.setCreatedAt(createdAt.toLocalDateTime());
 
 
             if (Objects.nonNull(updatedAt)) {
@@ -217,8 +209,8 @@ public class TicketRepository {
             }
             ticket.setSummary(summary);
 
-            List<Member> participants = TicketParticipantRepository.getParticipantsFromTicket(ticket);
-            ticket.setParticipants(participants);
+            List<String> participants = TicketParticipantRepository.getParticipantsFromTicket(ticket);
+            ticket.setParticipantIds(participants);
 
             tickets.add(ticket);
         }
@@ -234,8 +226,8 @@ public class TicketRepository {
         while (resultSet.next()) {
             int id = resultSet.getInt(Table.TicketColumn.ID.getColumn());
             String name = resultSet.getString(Table.TicketColumn.NAME.getColumn());
-            long ownerId = resultSet.getLong(Table.TicketColumn.OWNER_ID.getColumn());
-            long assigneeId = resultSet.getLong(Table.TicketColumn.ASSIGNEE_ID.getColumn());
+            String ownerId = resultSet.getString(Table.TicketColumn.OWNER_ID.getColumn());
+            String assigneeId = resultSet.getString(Table.TicketColumn.ASSIGNEE_ID.getColumn());
             long channelId = resultSet.getLong(Table.TicketColumn.CHANNEL_ID.getColumn());
             TicketType type = TicketType.valueOf(resultSet.getString(Table.TicketColumn.TYPE.getColumn()));
             Timestamp lastActivityAt = resultSet.getTimestamp(Table.TicketColumn.LAST_ACTIVITY_AT.getColumn());
@@ -253,12 +245,11 @@ public class TicketRepository {
 
 
             Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
-            Member owner = guild.getMemberById(ownerId);
 
-            Ticket ticket = new Ticket(owner, type);
+            Ticket ticket = new Ticket(ownerId, type);
             ticket.setId(id);
             ticket.setName(name);
-            ticket.setAssignee(guild.getMemberById(assigneeId));
+            ticket.setAssigneeId(assigneeId);
             ticket.setChannel(guild.getTextChannelById(channelId));
             if (lastActivityAt != null) {
                 ticket.setLastActivityAt(lastActivityAt.toLocalDateTime());
@@ -269,9 +260,8 @@ public class TicketRepository {
             ticket.setStatus(status);
             ticket.setReminderSent(isReminderSent);
             ticket.setWelcomeMessageId(welcomeMessageId);
-            if (createdAt != null) {
-                ticket.setCreatedAt(createdAt.toLocalDateTime());
-            }
+            ticket.setCreatedAt(createdAt.toLocalDateTime());
+
             if (Objects.nonNull(updatedAt)) {
                 ticket.setUpdatedAt(updatedAt.toLocalDateTime());
             }
@@ -283,8 +273,8 @@ public class TicketRepository {
             }
             ticket.setSummary(summary);
 
-            List<Member> participants = TicketParticipantRepository.getParticipantsFromTicket(ticket);
-            ticket.setParticipants(participants);
+            List<String> participants = TicketParticipantRepository.getParticipantsFromTicket(ticket);
+            ticket.setParticipantIds(participants);
 
             tickets.add(ticket);
         }
@@ -293,10 +283,11 @@ public class TicketRepository {
 
     public static void createTicket(Ticket ticket) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET);
-        query.insert(Table.TicketColumn.OWNER_ID, ticket.getOwner().getIdLong());
+        query.insert(Table.TicketColumn.OWNER_ID, ticket.getOwnerId());
         query.insert(Table.TicketColumn.NAME, ticket.getName());
         query.insert(Table.TicketColumn.CHANNEL_ID, ticket.getChannel().getIdLong());
         query.insert(Table.TicketColumn.TYPE, ticket.getType().name());
+        query.insert(Table.TicketColumn.STATUS, TicketStatus.NEW.name());
         query.insert(Table.TicketColumn.WELCOME_MESSAGE_ID, ticket.getWelcomeMessageId());
         query.insert(Table.TicketColumn.LAST_ACTIVITY_AT, ticket.getLastActivityAt());
         query.insert(Table.TicketColumn.CREATED_AT, LocalDateTime.now());
@@ -315,8 +306,8 @@ public class TicketRepository {
     public static void updateTicket(Ticket ticket) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET);
 
-        if (ticket.getAssignee() != null) {
-            query.update(Table.TicketColumn.ASSIGNEE_ID, ticket.getAssignee().getIdLong());
+        if (ticket.getAssigneeId() != null) {
+            query.update(Table.TicketColumn.ASSIGNEE_ID, ticket.getAssigneeId());
         }
         query.update(Table.TicketColumn.LAST_ACTIVITY_AT, ticket.getLastActivityAt());
         query.update(Table.TicketColumn.IS_REQUEST_PENDING, ticket.isRequestPending());
@@ -324,6 +315,7 @@ public class TicketRepository {
         query.update(Table.TicketColumn.STATUS, ticket.getStatus().name());
         query.update(Table.TicketColumn.IS_REMINDER_SENT, ticket.isReminderSent());
         query.update(Table.TicketColumn.UPDATED_AT, LocalDateTime.now());
+
         query.where(Table.TicketColumn.ID, DatabaseQuery.Operator.EQUALS, ticket.getId());
         query.executeQuery();
     }
@@ -345,7 +337,7 @@ public class TicketRepository {
     public static void archiveTicket(Ticket ticket) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET);
 
-        query.update(Table.TicketColumn.STATUS, ticket.getStatus().name());
+        query.update(Table.TicketColumn.STATUS, TicketStatus.ARCHIVED.name());
         query.update(Table.TicketColumn.SUMMARY, ticket.getSummary());
         query.update(Table.TicketColumn.ARCHIVE_MESSAGE_ID, ticket.getArchiveMessageId());
         query.update(Table.TicketColumn.ARCHIVED_AT, LocalDateTime.now());

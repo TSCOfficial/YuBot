@@ -149,7 +149,7 @@ public class TicketService extends Service {
             );
         }
 
-        Ticket ticket = new Ticket(ticketOwner, type);
+        Ticket ticket = new Ticket(ticketOwner.getId(), type);
 
         Category ticketCategory = type.getGroup() != null ? type.getGroup().getChannelCategory() : EnvKey.CATEGORY_TICKETSUPPORT.getAsCategory();
         ActionRow actionrow = ActionRow.of(List.of(
@@ -198,7 +198,7 @@ public class TicketService extends Service {
         String typeId = type.getId();
         String username = owner.getUser().getEffectiveName();
         if (owner.getUser().getEffectiveName().length() > 20) {
-            username = owner.getUser().getEffectiveName().substring(0, 20); // take only 25 chars of user's name
+            username = owner.getUser().getEffectiveName().substring(0, 20); // take only 20 chars of user's name
         }
 
         int randInt = ThreadLocalRandom.current().nextInt(100000, 999999);
@@ -217,7 +217,6 @@ public class TicketService extends Service {
             }
         }
 
-        log.info("Ticket name: {}", originalName);
         return originalName;
     }
 

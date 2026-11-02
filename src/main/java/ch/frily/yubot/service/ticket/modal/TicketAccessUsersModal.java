@@ -23,7 +23,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 public class TicketAccessUsersModal extends Modal {
@@ -89,7 +88,7 @@ public class TicketAccessUsersModal extends Modal {
                 uncompletedAction.add(String.format("%s konnte nicht entfernt werden, da du dich selbst nicht Entfernen kannst.", member.getAsMention()));
                 return false;
             }
-            if (member.equals(ticket.getOwner())) {
+            if (member.equals(ticket.getMemberOwner())) {
                 uncompletedAction.add(String.format("%s konnte nicht entfernt werden, da der/die Besitzer*in des Tickets nicht Entfernen werden kann.", member.getAsMention()));
                 return false;
             }

@@ -13,12 +13,12 @@ public class TicketOpenEmbed implements IEmbed {
 
     @Override
     public String getAuthorIconUrl() {
-        return ticket.getOwner().getEffectiveAvatarUrl();
+        return ticket.getMemberOwner().getEffectiveAvatarUrl();
     }
 
     @Override
     public Color getColor() {
-        return ticket.getOwner().getColors().getPrimary();
+        return ticket.getMemberOwner().getColors().getPrimary();
     }
 
     @Override
@@ -28,7 +28,7 @@ public class TicketOpenEmbed implements IEmbed {
 
     @Override
     public String getDescription() {
-        return "Willkommen **" + ticket.getOwner().getEffectiveName() + "**!" +
+        return "Willkommen **" + ticket.getMemberOwner().getEffectiveName() + "**!" +
                 "\n" +
                 ticket.getType().getEmbedDescription() +
                 "\n" +

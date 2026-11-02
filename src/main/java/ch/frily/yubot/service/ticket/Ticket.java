@@ -67,16 +67,16 @@ public class Ticket {
 
     // Person who opened the Ticket
     @Getter
-    private final Member owner;
+    private final String ownerId;
 
     // Team member that is assigned to this ticket
     @Getter
     @Setter
-    private Member assignee;
+    private String assigneeId;
 
     @Getter
     @Setter
-    private List<Member> participants;
+    private List<String> participantIds;
 
     // The ticket channel itself
     @Getter
@@ -144,25 +144,41 @@ public class Ticket {
      * Create a Ticket object<br>
      * Tickets are used within the Ticketsystem and every action for a Ticket or its TextChannel are controlled here.
      * Managing tickets (such as creating) happens in {@link TicketService}.
-     * @param owner Ticket owner
+     * @param ownerId Ticket owner-id
      * @param type Ticket type
      */
-    public Ticket(Member owner, TicketType type){
-        this.owner = owner;
+    public Ticket(String ownerId, TicketType type){
+        this.ownerId = ownerId;
         this.type = type;
         this.status = TicketStatus.NEW;
         this.isReminderSent = false;
     }
 
     /**
-     * Ticket without owner - only used when the owner left the server
-     * @param type the type of the ticket
+     * Get the owner as a Member-Object
+     * <p>
+     *     If the owner is not in the guild, null is returned
+     * </p>
+     * @return owner as {@link Member} or null
      */
-    public Ticket(TicketType type){
-        this(null, type);
+    public Member getMemberOwner() {
+        Objects.requireNonNull(this.ownerId);
+        return EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(this.ownerId);
     }
 
+    public User getUserOwner() {
+        Objects.requireNonNull(this.ownerId);
+        return Client.getInstance().getClient().getUserById(this.ownerId);
+    }
 
+    /**
+     * Get the assignee as a Member-Object
+     * @return assignee as {@link Member}
+     */
+    public Member getAssignee() {
+        Objects.requireNonNull(this.assigneeId);
+        return EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(this.assigneeId);
+    }
 
     /**
      * Sets the status of this ticket
@@ -206,7 +222,7 @@ public class Ticket {
         if (Util.isTeamMember(Objects.requireNonNull(event.getMember()))) {
             if (!isOwner(event.getMember())) {
                 if (this.isClosable()) {
-                    if (owner == null) { // execute forceclose if owner left server
+                    if (getMemberOwner() == null) { // execute forceclose if owner left server
                         forceClose(event, true);
                     } else if (type == TicketType.MODTICKET) { // ModTickets are always force-closed by the mod team
                         forceClose(event, true);
@@ -219,7 +235,7 @@ public class Ticket {
                         TicketCloseRequestEmbed closeRequestEmbed = new TicketCloseRequestEmbed();
                         closeRequestEmbed.setInitiator(event.getMember());
                         closeRequestEmbed.setTicket(this);
-                        event.reply(getOwner().getAsMention()).addEmbeds(closeRequestEmbed.build()).setComponents(actionRow).queue();
+                        event.reply(getMemberOwner().getAsMention()).addEmbeds(closeRequestEmbed.build()).setComponents(actionRow).queue();
 
                         this.closeRequestCount++;
                         this.isRequestPending = true;
@@ -243,7 +259,7 @@ public class Ticket {
         if (this.isOwner(event.getMember())) {
             this.updateRequestStatus(false);
         } else {
-            throw new PermissionDeniedException(String.format("Nur der/die Ticketinhaber\\*in %s kann dies machen!", owner.getAsMention()));
+            throw new PermissionDeniedException(String.format("Nur der/die Ticketinhaber\\*in %s kann dies machen!", getMemberOwner().getAsMention()));
         }
 
     }
@@ -258,7 +274,7 @@ public class Ticket {
             this.close(event, false);
             return;
         }
-        throw new PermissionDeniedException(String.format("Nur der/die Ticketinhaber\\*in %s kann dies machen!", owner.getAsMention()));
+        throw new PermissionDeniedException(String.format("Nur der/die Ticketinhaber\\*in %s kann dies machen!", getUserOwner().getAsMention()));
     }
 
     /**
@@ -388,8 +404,10 @@ public class Ticket {
      * @param member the member who claims the ticket (usually a team-member), if it's the ticket owner, the claim silently rejects it
      */
     public void claim(Member member) throws SQLException {
-        if (assignee == null && !isOwner(member)){
-            this.assignee = member;
+        log.info("claim(Member)");
+        log.info("assigneeId: {}", assigneeId);
+        if (assigneeId == null && !isOwner(member)){
+            this.assigneeId = member.getId();
 
             this.updateStatus(TicketStatus.CLAIMED);
             this.updateChannelTopic();
@@ -404,10 +422,9 @@ public class Ticket {
         }
 
         if (Util.isTeamMember(Objects.requireNonNull(event.getMember()))) {
-            log.info("reclaimed");
             claim(member);
 
-            channel.getManager().putPermissionOverride(owner, USER_PERMISSION, null).queue();
+            channel.getManager().putMemberPermissionOverride(Long.parseLong(ownerId), USER_PERMISSION, null).queue();
 
             ActionRow actionRow = ActionRow.of(
                     new TicketCloseRequestBtn().build()
@@ -507,10 +524,10 @@ public class Ticket {
     }
 
     public boolean isOwner(Member initiator){
-        if (owner == null) {
+        if (getMemberOwner() == null) {
             return false;
         }
-        return initiator.getIdLong() == owner.getIdLong();
+        return initiator.getId().equals(ownerId);
     }
 
     /**
@@ -525,8 +542,8 @@ public class Ticket {
         StringBuilder topic = new StringBuilder();
         topic.append("**").append(type.getLabel()).append("**");
 
-        if (assignee != null) {
-           topic.append(" | Ansprechperson: ").append(assignee.getEffectiveName());
+        if (getAssignee() != null) {
+           topic.append(" | Ansprechperson: ").append(getAssignee().getEffectiveName());
         }
         channel.getManager().setTopic(topic.toString()).queue();
     }
@@ -535,7 +552,7 @@ public class Ticket {
      * Sends a reminder to the ticket when the owner never sent a message
      */
     public void sendReminder() throws SQLException {
-        String sb = owner.getAsMention() + "\n" +
+        String sb = getMemberOwner().getAsMention() + "\n" +
                 type.getEmbedDescription();
         channel.sendMessage(sb).queue();
         setReminderSent(true);

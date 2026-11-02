@@ -1,5 +1,6 @@
 package ch.frily.yubot.container.ticket;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.container.*;
 import ch.frily.yubot.database.repository.TicketParticipantRepository;
 import ch.frily.yubot.database.repository.TicketRepository;
@@ -8,7 +9,6 @@ import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.service.ticket.slashcommand.TicketSearchSubCmdGroup;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.Util;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static kotlin.text.Typography.section;
-
 @Slf4j
 public class TicketSearchContainer extends PaginationContainer {
 
@@ -35,24 +33,29 @@ public class TicketSearchContainer extends PaginationContainer {
         super(StaticContainerRegistry.TICKET_SEARCH_OVERVIEW, context);
         this.context = context;
 
-        Member target = null;
+        log.info("searching tickets");
+        User target = null;
         Optional<String> targetId = context.arg("target");
         if (targetId.isPresent()) {
-            target = EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(targetId.get());
+            target = Client.getInstance().getClient().getUserById(targetId.get());
         }
 
+        log.info("found target {}", target);
         Optional<String> search = context.arg("q");
 
         TicketSearchSubCmdGroup.SearchType searchType = TicketSearchSubCmdGroup.SearchType.valueOf(context.requireArg("search"));
         try {
+            log.info("fetching tickets");
             List<Ticket> tickets = null;
             if (Objects.nonNull(target) && searchType == TicketSearchSubCmdGroup.SearchType.OWNER) {
-                tickets = TicketRepository.getTicketsByUser(target.getUser());
+                tickets = TicketRepository.getTicketsByUser(target);
             } else if (Objects.nonNull(target) && searchType == TicketSearchSubCmdGroup.SearchType.PARTICIPANT) {
-                tickets = TicketParticipantRepository.getTicketsFromParticipant(target);
+                Member memberTarget = EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(targetId.get());
+                tickets = TicketParticipantRepository.getTicketsFromParticipant(memberTarget); // todo replace by User
             } else if (search.isPresent() && searchType == TicketSearchSubCmdGroup.SearchType.NAME) {
                 tickets = TicketRepository.getTicketsWithMatchingName(search.get().trim());
             }
+            log.info("found {} tickets", tickets.size());
 
             PaginationItem header = new PaginationItem();
             header.addChild(TextDisplay.ofFormat("# %s Tickets gefunden", tickets.size()));
@@ -91,24 +94,45 @@ public class TicketSearchContainer extends PaginationContainer {
             details.append("\n");
         }
 
-        if (Objects.nonNull(ticket.getAssignee())) {
-            details.append(String.format("> **Verantwortlich**: %s", ticket.getAssignee().getAsMention()));
-            details.append("\n");
+        if (Objects.nonNull(ticket.getAssigneeId())) {
+            if (Objects.nonNull(ticket.getAssignee())) { // null if the assignee is no longer on the guild
+                details.append(String.format("> **Verantwortlich**: %s (%s)", ticket.getAssignee().getAsMention(), ticket.getAssignee().getEffectiveName()));
+                details.append("\n");
+            } else {
+                details.append(String.format("> **Verantwortlich**: %s *(Person hat den Server verlassen)*", ticket.getAssigneeId()));
+                details.append("\n");
+            }
+
         } else {
             details.append("> **Verantwortlich**: Keine\\*r");
             details.append("\n");
         }
         if (searchType == TicketSearchSubCmdGroup.SearchType.OWNER) {
-            if (!ticket.getParticipants().isEmpty()) {
-                details.append(String.format("> **Teilnehmende**: %s", String.join(", ", ticket.getParticipants().stream().map(Member::getAsMention).toList())));
+            if (!ticket.getParticipantIds().isEmpty()) {
+                StringBuilder participantsSB = new StringBuilder();
+                ticket.getParticipantIds().forEach(participantId -> {
+                    User participantUser = Client.getInstance().getClient().getUserById(participantId);
+                    if (Objects.nonNull(participantUser)) {
+                        String info = String.format("%s (%s)", participantUser.getAsMention(), participantUser.getEffectiveName());
+                        participantsSB.append(info).append(", ");
+                    } else {
+                        participantsSB.append(participantId).append(", ");
+                    }
+                });
+                details.append(String.format("> **Teilnehmende**: %s", participantsSB));
                 details.append("\n");
             } else {
                 details.append("> **Teilnehmende**: Keine");
                 details.append("\n");
             }
         } else {
-            details.append(String.format("> **Ticket Inhaber\\*in**: %s", ticket.getOwner().getAsMention()));
-            details.append("\n");
+            if (Objects.nonNull(ticket.getUserOwner())) {
+                details.append(String.format("> **Ticket Inhaber\\*in**: %s (%s)", ticket.getUserOwner().getAsMention(), ticket.getUserOwner().getEffectiveName()));
+                details.append("\n");
+            } else {
+                details.append(String.format("> **Ticket Inhaber\\*in**: %s *(Person hat den Server verlassen)*", ticket.getOwnerId()));
+                details.append("\n");
+            }
         }
 
         if (Objects.nonNull(ticket.getCreatedAt()) && Objects.nonNull(ticket.getArchivedAt())) {
@@ -119,7 +143,7 @@ public class TicketSearchContainer extends PaginationContainer {
             details.append("\n");
         }
 
-        if (Util.isAdministrator(context.member()) && ticket.getArchiveMessageId() != null && !ticket.getArchiveMessageId().isBlank()) {
+        if (Objects.nonNull(context.member()) && Util.isAdministrator(context.member()) && ticket.getArchiveMessageId() != null && !ticket.getArchiveMessageId().isBlank()) {
             String ticketArchiveJumpLink = EnvKey.CHANNEL_TICKETLOGS.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER).getJumpUrl() + "/" + ticket.getArchiveMessageId();
 
             Section section = Section.of(

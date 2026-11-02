@@ -1,5 +1,6 @@
 package ch.frily.yubot.database.repository;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.service.ticket.Ticket;
@@ -8,6 +9,7 @@ import ch.frily.yubot.service.ticket.TicketType;
 import ch.frily.yubot.util.EnvKey;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,8 +32,8 @@ public class TicketParticipantRepository {
         while (rs.next()) {
             int id = rs.getInt(Table.TicketColumn.ID.getColumn());
             String name = rs.getString(Table.TicketColumn.NAME.getColumn());
-            long ownerId = rs.getLong(Table.TicketColumn.OWNER_ID.getColumn());
-            long assigneeId = rs.getLong(Table.TicketColumn.ASSIGNEE_ID.getColumn());
+            String ownerId = rs.getString(Table.TicketColumn.OWNER_ID.getColumn());
+            String assigneeId = rs.getString(Table.TicketColumn.ASSIGNEE_ID.getColumn());
             long channelId = rs.getLong(Table.TicketColumn.CHANNEL_ID.getColumn());
             TicketType type = TicketType.valueOf(rs.getString(Table.TicketColumn.TYPE.getColumn()));
             Timestamp lastActivityAt = rs.getTimestamp(Table.TicketColumn.LAST_ACTIVITY_AT.getColumn());
@@ -49,12 +51,11 @@ public class TicketParticipantRepository {
 
 
             Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
-            Member owner = guild.getMemberById(ownerId);
 
-            Ticket ticket = new Ticket(owner, type);
+            Ticket ticket = new Ticket(ownerId, type);
             ticket.setId(id);
             ticket.setName(name);
-            ticket.setAssignee(guild.getMemberById(assigneeId));
+            ticket.setAssigneeId(assigneeId);
             ticket.setChannel(guild.getTextChannelById(channelId));
             if (lastActivityAt != null) {
                 ticket.setLastActivityAt(lastActivityAt.toLocalDateTime());
@@ -65,9 +66,8 @@ public class TicketParticipantRepository {
             ticket.setStatus(status);
             ticket.setReminderSent(isReminderSent);
             ticket.setWelcomeMessageId(welcomeMessageId);
-            if (createdAt != null) {
-                ticket.setCreatedAt(createdAt.toLocalDateTime());
-            }
+            ticket.setCreatedAt(createdAt.toLocalDateTime());
+
             if (Objects.nonNull(updatedAt)) {
                 ticket.setUpdatedAt(updatedAt.toLocalDateTime());
             }
@@ -79,8 +79,8 @@ public class TicketParticipantRepository {
             }
             ticket.setSummary(summary);
 
-            List<Member> participants = TicketParticipantRepository.getParticipantsFromTicket(ticket);
-            ticket.setParticipants(participants);
+            List<String> participants = TicketParticipantRepository.getParticipantsFromTicket(ticket);
+            ticket.setParticipantIds(participants);
 
             tickets.add(ticket);
         }
@@ -88,24 +88,23 @@ public class TicketParticipantRepository {
     }
 
     /**
-     * Get every member that participated in a ticket
+     * Get every participant's ID from a given ticket
      * @param ticket
-     * @return a list of members that participated in the ticket, or empty list if none were found
+     * @return a list of member-Id that participated in the ticket, or empty list if none were found
      * @throws SQLException
      */
-    public static List<Member> getParticipantsFromTicket(Ticket ticket) throws SQLException {
+    public static List<String> getParticipantsFromTicket(Ticket ticket) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET_PARTICIPANT);
         query.select(Table.TicketParticipantColumn.MEMBER_ID);
         query.where(Table.TicketParticipantColumn.TICKET_ID, DatabaseQuery.Operator.EQUALS, ticket.getId());
 
         ResultSet rs = query.executeDataQuery();
-        List<Member> members = new ArrayList<>();
+        List<String> participants = new ArrayList<>();
         while (rs.next()) {
-            String memberId = rs.getString(Table.TicketParticipantColumn.MEMBER_ID.getColumn());
-            Member member = EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(memberId);
-            members.add(member);
+            String userId = rs.getString(Table.TicketParticipantColumn.MEMBER_ID.getColumn());
+            participants.add(userId);
         }
-        return members;
+        return participants;
     }
 
     public static boolean memberIsParticipant(Ticket ticket, Member member) throws SQLException {

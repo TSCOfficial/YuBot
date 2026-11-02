@@ -19,8 +19,6 @@ import java.util.*;
 @Slf4j
 public class ActiveModStatisticContainer extends Container {
 
-    // TODO display all members, even when they have no active mod tracking
-
     private final Member initiator;
 
     public ActiveModStatisticContainer(Map<Member, List<ActiveModTracking>> activeModTrackingMap, Member initiator) {
