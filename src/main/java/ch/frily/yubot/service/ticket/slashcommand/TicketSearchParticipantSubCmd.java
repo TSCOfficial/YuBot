@@ -44,6 +44,7 @@ public class TicketSearchParticipantSubCmd implements ISlashSubcommand {
 
     @Override
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
+        event.deferReply(true).useComponentsV2().queue();
         OptionMapping participantMapping = Objects.requireNonNull(event.getOption("user"));
         Member memberParticipant = participantMapping.getAsMember();
 
@@ -54,6 +55,6 @@ public class TicketSearchParticipantSubCmd implements ISlashSubcommand {
 
         ContainerContext ctx = new ContainerContext(0, event, ctxArguments);
         TicketSearchContainer container = new TicketSearchContainer(ctx);
-        event.replyComponents(container.build()).setAllowedMentions(List.of()).useComponentsV2().setEphemeral(true).queue();
+        event.getHook().editOriginalComponents(container.build()).setAllowedMentions(List.of()).useComponentsV2().queue();
     }
 }

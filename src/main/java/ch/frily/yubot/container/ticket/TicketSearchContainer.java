@@ -23,6 +23,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class TicketSearchContainer extends PaginationContainer {
@@ -33,19 +34,16 @@ public class TicketSearchContainer extends PaginationContainer {
         super(StaticContainerRegistry.TICKET_SEARCH_OVERVIEW, context);
         this.context = context;
 
-        log.info("searching tickets");
         User target = null;
         Optional<String> targetId = context.arg("target");
         if (targetId.isPresent()) {
             target = Client.getInstance().getClient().getUserById(targetId.get());
         }
 
-        log.info("found target {}", target);
         Optional<String> search = context.arg("q");
 
         TicketSearchSubCmdGroup.SearchType searchType = TicketSearchSubCmdGroup.SearchType.valueOf(context.requireArg("search"));
         try {
-            log.info("fetching tickets");
             List<Ticket> tickets = null;
             if (Objects.nonNull(target) && searchType == TicketSearchSubCmdGroup.SearchType.OWNER) {
                 tickets = TicketRepository.getTicketsByUser(target);
@@ -55,10 +53,21 @@ public class TicketSearchContainer extends PaginationContainer {
             } else if (search.isPresent() && searchType == TicketSearchSubCmdGroup.SearchType.NAME) {
                 tickets = TicketRepository.getTicketsWithMatchingName(search.get().trim());
             }
-            log.info("found {} tickets", tickets.size());
+
+            int originalMatchedTicketListSize = tickets.size();
+            tickets = tickets.stream().filter(ticket -> {
+                if (Util.isAdministrator(context.member())) {
+                    return true;
+                }
+                return ticket.getType().getResponsibleRoles().stream().anyMatch(role -> context.requireMember().getRoles().contains(role));
+            }).collect(Collectors.toList());
 
             PaginationItem header = new PaginationItem();
             header.addChild(TextDisplay.ofFormat("# %s Tickets gefunden", tickets.size()));
+
+            if (originalMatchedTicketListSize > tickets.size()) {
+                header.addChild(TextDisplay.of("Du siehst nur die Tickets auf dennen du Zugriff hättest."));
+            }
 
             if (searchType == TicketSearchSubCmdGroup.SearchType.OWNER) {
                 header.addChild(TextDisplay.ofFormat("**%s** ist besitzer\\*in von folgenden Tickets:", target.getEffectiveName()));
