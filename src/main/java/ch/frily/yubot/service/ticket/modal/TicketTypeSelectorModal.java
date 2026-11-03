@@ -66,7 +66,7 @@ public class TicketTypeSelectorModal extends Modal {
 
         // check if person already has a ticket with the same type
         List<Ticket> openedTickets = TicketRepository.getTicketsByUser(Objects.requireNonNull(event.getMember()).getUser());
-        openedTickets = openedTickets.stream().filter(ticket -> !ticket.getStatus().equals(TicketStatus.CLOSED) && ticket.getType().equals(ticketType)).toList();
+        openedTickets = openedTickets.stream().filter(ticket -> (ticket.getStatus().equals(TicketStatus.NEW) || ticket.getStatus().equals(TicketStatus.CLAIMED)) && ticket.getType().equals(ticketType)).toList();
         if (!openedTickets.isEmpty()) {
             String text = String.format("Du besitzt bereits ein Ticket dieser Art: %s", openedTickets.getFirst().getChannel().getAsMention());
             if (openedTickets.size() > 1) {

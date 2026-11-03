@@ -130,6 +130,7 @@ public class TicketService extends Service {
     }
     public void createTicket(TicketType type, List<Role> responsibleRoles, Member ticketOwner, Consumer<TextChannel> onCreated) throws SQLException {
         List<TextChannel> openedTickets = TicketRepository.getTicketsByUser(ticketOwner.getUser()).stream()
+                .filter(ticket -> (ticket.getStatus().equals(TicketStatus.CLOSED) || ticket.getStatus().equals(TicketStatus.CLAIMED)))
                 .filter(ticket -> !ticket.getType().equals(TicketType.MODTICKET))
                 .map(Ticket::getChannel).toList();
         if (openedTickets.size() >= MAX_TICKET_COUNT && !type.equals(TicketType.MODTICKET)) {

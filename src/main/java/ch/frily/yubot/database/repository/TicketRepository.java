@@ -338,6 +338,9 @@ public class TicketRepository {
         DatabaseQuery query = new DatabaseQuery(Table.TICKET);
 
         query.update(Table.TicketColumn.STATUS, TicketStatus.ARCHIVED.name());
+        query.update(Table.TicketColumn.CHANNEL_ID, null);
+        query.update(Table.TicketColumn.WELCOME_MESSAGE_ID, null);
+        query.update(Table.TicketColumn.IS_REQUEST_PENDING, false);
         query.update(Table.TicketColumn.SUMMARY, ticket.getSummary());
         query.update(Table.TicketColumn.ARCHIVE_MESSAGE_ID, ticket.getArchiveMessageId());
         query.update(Table.TicketColumn.ARCHIVED_AT, LocalDateTime.now());
