@@ -99,7 +99,7 @@ public class TicketSearchContainer extends PaginationContainer {
 
         StringBuilder details = new StringBuilder();
         if (Objects.nonNull(ticket.getSummary())) {
-            details.append(String.format("> **Zusammenfassung**: \"%s\"", Util.escapeMarkdown(ticket.getSummary())));
+            details.append(String.format("> **Zusammenfassung**: \"%s\"", Util.escapeMarkdown(ticket.getSummary()).replace("\n\n", "\n").replace("\n", "\n> ")));
             details.append("\n");
         }
 
