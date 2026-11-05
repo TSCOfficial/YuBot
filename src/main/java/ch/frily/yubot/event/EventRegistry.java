@@ -2,6 +2,7 @@ package ch.frily.yubot.event;
 
 import ch.frily.yubot.event.listener.*;
 import ch.frily.yubot.exception.ExceptionHandler;
+import ch.frily.yubot.service.profile.event.MessageDeleteEvent;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.Event;
@@ -35,6 +36,7 @@ public class EventRegistry extends ListenerAdapter {
             GuildMemberRoleRemoveListener.getInstance(),
             GuildReadyListener.getInstance(),
             MessageReceivedListener.getInstance(),
+            MessageDeleteListener.getInstance(),
             ModalInteractionListener.getInstance(),
             SlashCommandInteractionListener.getInstance()
     );

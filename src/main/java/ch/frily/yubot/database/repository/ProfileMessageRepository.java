@@ -33,6 +33,21 @@ public class ProfileMessageRepository {
     }
 
     /**
+     * Whether the {@link ProfileMessage} exists in the DB or not
+     * @param channelId the channel id the message is sent in
+     * @param messageId the message id
+     * @return the {@link ProfileMessage}-record
+     * @throws SQLException Database failure
+     */
+    public static boolean exists(String channelId, String messageId) throws SQLException {
+        DatabaseQuery query = new DatabaseQuery(Table.PROFILE_MESSAGE);
+        query.where(Table.ProfileMessageColumn.CHANNEL_ID, DatabaseQuery.Operator.EQUALS, channelId);
+        query.where(Table.ProfileMessageColumn.MESSAGE_ID, DatabaseQuery.Operator.EQUALS, messageId);
+
+        ResultSet rs = query.executeDataQuery();
+        return rs.next();
+    }
+    /**
      * Gets the {@link ProfileMessage} using the channel & message ID
      * @param message the original {@link Message}
      * @return the {@link ProfileMessage}-record
@@ -73,5 +88,14 @@ public class ProfileMessageRepository {
         Member messageOwner = get(message).member();
 
         return member.getId().equals(messageOwner.getId());
+    }
+
+    public static void delete(String channelId, String messageId) throws SQLException {
+        DatabaseQuery query = new DatabaseQuery(Table.PROFILE_MESSAGE);
+        query.delete();
+        query.where(Table.ProfileMessageColumn.CHANNEL_ID, DatabaseQuery.Operator.EQUALS, channelId);
+        query.where(Table.ProfileMessageColumn.MESSAGE_ID, DatabaseQuery.Operator.EQUALS, messageId);
+
+        query.executeQuery();
     }
 }

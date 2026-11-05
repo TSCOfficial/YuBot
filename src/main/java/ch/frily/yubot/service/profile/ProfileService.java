@@ -10,6 +10,7 @@ import ch.frily.yubot.interaction.command.ISlashCommandGroup;
 import ch.frily.yubot.service.profile.ctxmenu.DeleteWebhookMsgCtxMenu;
 import ch.frily.yubot.service.profile.ctxmenu.EditWebhookMsgCtxMenu;
 import ch.frily.yubot.service.profile.ctxmenu.LookupProfileCtxMenu;
+import ch.frily.yubot.service.profile.event.MessageDeleteEvent;
 import ch.frily.yubot.service.profile.event.MessageReceivedEvent;
 import ch.frily.yubot.service.profile.modal.AddProfileModal;
 import ch.frily.yubot.service.profile.modal.DeleteProfileModal;
@@ -92,7 +93,8 @@ public class ProfileService extends Service {
     @Override
     public List<IEvent<? extends Event>> getEvents() {
         return List.of(
-                MessageReceivedEvent.getInstance()
+                MessageReceivedEvent.getInstance(),
+                MessageDeleteEvent.getInstance()
         );
     }
 }

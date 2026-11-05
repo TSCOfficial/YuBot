@@ -14,6 +14,10 @@ import java.util.List;
  */
 public interface IEvent<T extends Event> {
 
+    /**
+     * Get the listener class from Discord
+     * @return
+     */
     Class<? extends Event> getListenerType();
 
     /**
