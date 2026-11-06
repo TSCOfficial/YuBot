@@ -1,4 +1,4 @@
-package ch.frily.yubot.service.dynamicmsg;
+package ch.frily.yubot.service.postoffice;
 
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.util.EnvKey;

@@ -1,6 +1,6 @@
 package ch.frily.yubot.service.profile.slashcommand;
 
-import ch.frily.yubot.database.repository.ProfileRepository;
+import ch.frily.yubot.service.profile.repository.ProfileRepository;
 import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.service.profile.Profile;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;

@@ -1,6 +1,7 @@
-package ch.frily.yubot.database.repository;
+package ch.frily.yubot.service.profile.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
+import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.service.profile.Profile;
@@ -13,7 +14,12 @@ import java.sql.SQLException;
 import java.util.*;
 
 @Slf4j
-public class ProfileRepository {
+public class ProfileRepository implements IRepository {
+
+    @Override
+    public Table getTable() {
+        return null;
+    }
 
     public static Profile getProfileById(String id) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.PROFILE);

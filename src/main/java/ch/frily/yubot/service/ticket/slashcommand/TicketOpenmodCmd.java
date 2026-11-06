@@ -1,10 +1,5 @@
 package ch.frily.yubot.service.ticket.slashcommand;
 
-import ch.frily.yubot.exception.ThrowingConsumer;
-import ch.frily.yubot.service.ticket.Ticket;
-import ch.frily.yubot.service.ticket.TicketService;
-import ch.frily.yubot.database.repository.TicketRepository;
-import ch.frily.yubot.service.ticket.TicketType;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.service.ticket.modal.ModTicketSelectorModal;
 import ch.frily.yubot.util.EnvKey;

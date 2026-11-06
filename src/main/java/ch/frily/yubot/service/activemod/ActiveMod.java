@@ -1,7 +1,7 @@
 package ch.frily.yubot.service.activemod;
 
-import ch.frily.yubot.database.repository.ActiveModControlRepository;
-import ch.frily.yubot.database.repository.ActiveModRepository;
+import ch.frily.yubot.service.activemod.repository.ActiveModControlRepository;
+import ch.frily.yubot.service.activemod.repository.ActiveModRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.PermissionDeniedException;

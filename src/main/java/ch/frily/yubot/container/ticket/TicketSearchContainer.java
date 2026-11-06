@@ -2,8 +2,8 @@ package ch.frily.yubot.container.ticket;
 
 import ch.frily.yubot.Client;
 import ch.frily.yubot.container.*;
-import ch.frily.yubot.database.repository.TicketParticipantRepository;
-import ch.frily.yubot.database.repository.TicketRepository;
+import ch.frily.yubot.service.ticket.repository.TicketParticipantRepository;
+import ch.frily.yubot.service.ticket.repository.TicketRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.service.ticket.slashcommand.TicketSearchSubCmdGroup;

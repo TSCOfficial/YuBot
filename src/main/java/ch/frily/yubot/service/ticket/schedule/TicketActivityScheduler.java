@@ -2,8 +2,7 @@ package ch.frily.yubot.service.ticket.schedule;
 
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.ticket.Ticket;
-import ch.frily.yubot.database.repository.TicketRepository;
-import ch.frily.yubot.service.ticket.TicketService;
+import ch.frily.yubot.service.ticket.repository.TicketRepository;
 import ch.frily.yubot.service.ticket.TicketStatus;
 import ch.frily.yubot.scheduler.IScheduler;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.List;
 import java.util.Objects;
 

@@ -1,13 +1,19 @@
-package ch.frily.yubot.database.repository;
+package ch.frily.yubot.service.ticket.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
+import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.service.ticket.TicketType;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class TicketTypeControlRepository {
+public class TicketTypeControlRepository implements IRepository {
+
+    @Override
+    public Table getTable() {
+        return null;
+    }
 
     public static void upsertType(TicketType type, boolean isLocked) throws SQLException {
         if (exists(type)) {

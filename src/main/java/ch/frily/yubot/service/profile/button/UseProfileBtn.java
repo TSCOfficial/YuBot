@@ -1,7 +1,7 @@
 package ch.frily.yubot.service.profile.button;
 
 import ch.frily.yubot.container.profile.ProfilContainer;
-import ch.frily.yubot.database.repository.ProfileRepository;
+import ch.frily.yubot.service.profile.repository.ProfileRepository;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.service.profile.Profile;
 import ch.frily.yubot.interaction.button.Button;

@@ -1,21 +1,15 @@
 package ch.frily.yubot.service.profile.modal;
 
-import ch.frily.yubot.database.repository.SettingRepository;
-import ch.frily.yubot.exception.InvalidStateException;
+import ch.frily.yubot.service.profile.repository.SettingRepository;
 import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.service.profile.Setting;
 import ch.frily.yubot.service.profile.SettingChoice;
-import ch.frily.yubot.util.EnvKey;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
-import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;

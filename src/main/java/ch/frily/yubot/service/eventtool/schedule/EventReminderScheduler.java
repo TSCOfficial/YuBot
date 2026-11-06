@@ -1,6 +1,6 @@
 package ch.frily.yubot.service.eventtool.schedule;
 
-import ch.frily.yubot.database.repository.EventReminderRepository;
+import ch.frily.yubot.service.eventtool.repository.EventReminderRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.exception.ThrowingConsumer;

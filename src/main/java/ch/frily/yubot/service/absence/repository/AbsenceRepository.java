@@ -1,6 +1,7 @@
-package ch.frily.yubot.database.repository;
+package ch.frily.yubot.service.absence.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
+import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.service.absence.Absence;
@@ -19,7 +20,12 @@ import java.time.LocalTime;
 import java.util.*;
 
 @Slf4j
-public class AbsenceRepository {
+public class AbsenceRepository implements IRepository {
+
+    @Override
+    public Table getTable() {
+        return null;
+    }
 
     /**
      * Get all absences grouped together for each day

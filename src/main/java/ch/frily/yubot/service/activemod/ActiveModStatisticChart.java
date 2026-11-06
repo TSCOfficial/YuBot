@@ -1,10 +1,9 @@
 package ch.frily.yubot.service.activemod;
 
-import ch.frily.yubot.database.repository.SettingRepository;
+import ch.frily.yubot.service.profile.repository.SettingRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.profile.Setting;
 import ch.frily.yubot.service.profile.SettingChoice;
-import ch.frily.yubot.service.profile.modal.ProfileSettingActivemodColorModal;
 import ch.frily.yubot.util.EnvKey;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.selections.SelectOption;

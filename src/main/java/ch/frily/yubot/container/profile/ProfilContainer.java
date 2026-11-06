@@ -1,10 +1,10 @@
 package ch.frily.yubot.container.profile;
 
 import ch.frily.yubot.container.Container;
-import ch.frily.yubot.database.repository.ProfileRepository;
+import ch.frily.yubot.service.profile.repository.ProfileRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.profile.*;
-import ch.frily.yubot.database.repository.SettingRepository;
+import ch.frily.yubot.service.profile.repository.SettingRepository;
 import ch.frily.yubot.service.profile.button.AddProfileBtn;
 import ch.frily.yubot.service.profile.button.DeleteProfileBtn;
 import ch.frily.yubot.service.profile.button.EditProfileBtn;

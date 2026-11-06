@@ -1,6 +1,7 @@
-package ch.frily.yubot.database.repository;
+package ch.frily.yubot.service.ticket.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
+import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.service.ticket.Ticket;
@@ -20,7 +21,12 @@ import java.util.List;
 import java.util.Objects;
 
 @Slf4j
-public class TicketRepository {
+public class TicketRepository implements IRepository {
+
+    @Override
+    public Table getTable() {
+        return null;
+    }
 
     /**
      * Fetch a Ticket from the database.

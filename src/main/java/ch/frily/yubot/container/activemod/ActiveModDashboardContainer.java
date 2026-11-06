@@ -2,11 +2,11 @@ package ch.frily.yubot.container.activemod;
 
 import ch.frily.yubot.container.Container;
 import ch.frily.yubot.container.ContainerContext;
-import ch.frily.yubot.database.repository.ActiveModControlRepository;
+import ch.frily.yubot.service.activemod.repository.ActiveModControlRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.activemod.ActiveModStatisticChart;
 import ch.frily.yubot.service.activemod.ActiveModTracking;
-import ch.frily.yubot.database.repository.ActiveModTrackingRepository;
+import ch.frily.yubot.service.activemod.repository.ActiveModTrackingRepository;
 import ch.frily.yubot.service.activemod.button.ActiveModOptInBtn;
 import ch.frily.yubot.service.activemod.button.ActiveModOptOutBtn;
 import ch.frily.yubot.service.activemod.button.ActiveModShowStatisticBtn;

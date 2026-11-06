@@ -1,6 +1,7 @@
-package ch.frily.yubot.database.repository;
+package ch.frily.yubot.service.activemod.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
+import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.activemod.ActiveMod;
@@ -14,7 +15,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActiveModRepository {
+public class ActiveModRepository implements IRepository {
+
+    @Override
+    public Table getTable() {
+        return null;
+    }
 
     public static List<ActiveMod> getModerators() throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD);

@@ -1,14 +1,12 @@
 package ch.frily.yubot.service.profile.event;
 
-import ch.frily.yubot.database.repository.ProfileMessageRepository;
+import ch.frily.yubot.service.profile.repository.ProfileMessageRepository;
 import ch.frily.yubot.event.IEvent;
-import ch.frily.yubot.service.profile.MessageHandling;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.Event;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Arrays;
 
 @Slf4j
 public class MessageDeleteEvent implements IEvent<net.dv8tion.jda.api.events.message.MessageDeleteEvent> {

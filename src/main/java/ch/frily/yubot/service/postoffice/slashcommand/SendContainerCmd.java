@@ -3,7 +3,7 @@ package ch.frily.yubot.service.postoffice.slashcommand;
 import ch.frily.yubot.container.ContainerContext;
 import ch.frily.yubot.container.StaticContainerRegistry;
 import ch.frily.yubot.exception.ThrowingConsumer;
-import ch.frily.yubot.service.dynamicmsg.DynamicMessageList;
+import ch.frily.yubot.service.postoffice.DynamicMessageList;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.container.Container;

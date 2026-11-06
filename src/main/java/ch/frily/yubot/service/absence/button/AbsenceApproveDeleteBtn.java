@@ -1,6 +1,6 @@
 package ch.frily.yubot.service.absence.button;
 
-import ch.frily.yubot.database.repository.AbsenceRepository;
+import ch.frily.yubot.service.absence.repository.AbsenceRepository;
 import ch.frily.yubot.interaction.button.Button;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;

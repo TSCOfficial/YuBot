@@ -1,11 +1,9 @@
 package ch.frily.yubot.service.profile.modal;
 
-import ch.frily.yubot.database.repository.ProfileRepository;
+import ch.frily.yubot.service.profile.repository.ProfileRepository;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.service.profile.Profile;
-import ch.frily.yubot.util.Util;
-import lombok.Setter;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;

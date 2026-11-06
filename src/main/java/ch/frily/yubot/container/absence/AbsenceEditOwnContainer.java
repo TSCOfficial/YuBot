@@ -6,7 +6,7 @@ import ch.frily.yubot.container.PaginationItem;
 import ch.frily.yubot.container.StaticContainerRegistry;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.absence.Absence;
-import ch.frily.yubot.database.repository.AbsenceRepository;
+import ch.frily.yubot.service.absence.repository.AbsenceRepository;
 import ch.frily.yubot.service.absence.button.AbsenceAddBtn;
 import ch.frily.yubot.service.absence.button.AbsenceEditBtn;
 import ch.frily.yubot.util.Util;

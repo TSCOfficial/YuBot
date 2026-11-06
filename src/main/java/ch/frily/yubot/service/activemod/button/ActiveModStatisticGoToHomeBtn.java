@@ -2,7 +2,7 @@ package ch.frily.yubot.service.activemod.button;
 
 import ch.frily.yubot.container.activemod.ActiveModStatisticContainer;
 import ch.frily.yubot.service.activemod.ActiveModTracking;
-import ch.frily.yubot.database.repository.ActiveModTrackingRepository;
+import ch.frily.yubot.service.activemod.repository.ActiveModTrackingRepository;
 import ch.frily.yubot.interaction.button.Button;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Member;

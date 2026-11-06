@@ -1,7 +1,7 @@
 package ch.frily.yubot.service.activemod.slashcommand;
 
-import ch.frily.yubot.database.repository.ActiveModControlRepository;
-import ch.frily.yubot.service.dynamicmsg.DynamicMessageList;
+import ch.frily.yubot.service.activemod.repository.ActiveModControlRepository;
+import ch.frily.yubot.service.postoffice.DynamicMessageList;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.util.EnvKey;
 import net.dv8tion.jda.api.Permission;

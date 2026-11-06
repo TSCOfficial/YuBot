@@ -1,7 +1,7 @@
 package ch.frily.yubot.service.ticket.modal;
 
 import ch.frily.yubot.service.ticket.Ticket;
-import ch.frily.yubot.database.repository.TicketRepository;
+import ch.frily.yubot.service.ticket.repository.TicketRepository;
 import ch.frily.yubot.service.ticket.TicketType;
 import ch.frily.yubot.interaction.modal.Modal;
 import lombok.extern.slf4j.Slf4j;

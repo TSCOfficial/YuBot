@@ -1,8 +1,9 @@
-package ch.frily.yubot.database.repository;
+package ch.frily.yubot.service.postoffice.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
+import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.database.Table;
-import ch.frily.yubot.service.dynamicmsg.DynamicMessage;
+import ch.frily.yubot.service.postoffice.DynamicMessage;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.ResultSet;
@@ -10,7 +11,12 @@ import java.sql.SQLException;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
-public class DynamicMessageRepository {
+public class DynamicMessageRepository implements IRepository {
+
+    @Override
+    public Table getTable() {
+        return null;
+    }
 
     /**
      * Raw reference to a dynamic message.

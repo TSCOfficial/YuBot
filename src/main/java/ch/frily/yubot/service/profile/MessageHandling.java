@@ -1,11 +1,10 @@
 package ch.frily.yubot.service.profile;
 
 import ch.frily.yubot.Client;
-import ch.frily.yubot.database.repository.ProfileMessageRepository;
-import ch.frily.yubot.database.repository.ProfileRepository;
+import ch.frily.yubot.service.profile.repository.ProfileMessageRepository;
+import ch.frily.yubot.service.profile.repository.ProfileRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.InvalidStateException;
-import ch.frily.yubot.util.EnvKey;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
@@ -14,12 +13,9 @@ import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.managers.WebhookManager;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction;
-import net.dv8tion.jda.api.utils.AttachedFile;
-import net.dv8tion.jda.api.utils.FileProxy;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.ImageProxy;
 
-import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;

@@ -1,6 +1,6 @@
 package ch.frily.yubot.service.ticket.event;
 
-import ch.frily.yubot.database.repository.TicketRepository;
+import ch.frily.yubot.service.ticket.repository.TicketRepository;
 import ch.frily.yubot.event.IEvent;
 import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.service.ticket.TicketService;

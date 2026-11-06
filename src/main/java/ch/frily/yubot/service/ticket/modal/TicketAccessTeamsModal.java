@@ -1,10 +1,9 @@
 package ch.frily.yubot.service.ticket.modal;
 
-import ch.frily.yubot.database.repository.TicketRepository;
+import ch.frily.yubot.service.ticket.repository.TicketRepository;
 import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.service.ticket.TicketTeam;
-import ch.frily.yubot.service.ticket.TicketType;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
@@ -14,7 +13,6 @@ import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;

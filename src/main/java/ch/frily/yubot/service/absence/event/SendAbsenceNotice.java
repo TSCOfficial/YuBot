@@ -1,7 +1,7 @@
 package ch.frily.yubot.service.absence.event;
 
-import ch.frily.yubot.database.repository.AbsenceRepository;
-import ch.frily.yubot.database.repository.SettingRepository;
+import ch.frily.yubot.service.absence.repository.AbsenceRepository;
+import ch.frily.yubot.service.profile.repository.SettingRepository;
 import ch.frily.yubot.event.IEvent;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.absence.Absence;

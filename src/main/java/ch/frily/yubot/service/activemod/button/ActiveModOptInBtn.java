@@ -2,7 +2,7 @@ package ch.frily.yubot.service.activemod.button;
 
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.activemod.ActiveMod;
-import ch.frily.yubot.database.repository.SettingRepository;
+import ch.frily.yubot.service.profile.repository.SettingRepository;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.service.activemod.modal.SelectActiveModSendTypeModal;
 import lombok.extern.slf4j.Slf4j;

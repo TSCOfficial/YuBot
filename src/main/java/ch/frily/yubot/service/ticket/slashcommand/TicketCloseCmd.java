@@ -1,13 +1,9 @@
 package ch.frily.yubot.service.ticket.slashcommand;
 
-import ch.frily.yubot.embed.ticket.TicketCloseRequestEmbed;
 import ch.frily.yubot.service.ticket.Ticket;
-import ch.frily.yubot.database.repository.TicketRepository;
-import ch.frily.yubot.service.ticket.button.TicketCloseRequestAcceptBtn;
-import ch.frily.yubot.service.ticket.button.TicketCloseRequestRejectBtn;
+import ch.frily.yubot.service.ticket.repository.TicketRepository;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.util.EnvKey;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;

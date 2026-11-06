@@ -1,9 +1,9 @@
 package ch.frily.yubot.service.ticket.slashcommand;
 
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.service.dynamicmsg.DynamicMessageList;
+import ch.frily.yubot.service.postoffice.DynamicMessageList;
 import ch.frily.yubot.service.ticket.TicketType;
-import ch.frily.yubot.database.repository.TicketTypeControlRepository;
+import ch.frily.yubot.service.ticket.repository.TicketTypeControlRepository;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;

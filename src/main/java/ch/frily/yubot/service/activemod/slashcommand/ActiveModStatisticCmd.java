@@ -2,7 +2,7 @@ package ch.frily.yubot.service.activemod.slashcommand;
 
 import ch.frily.yubot.container.activemod.ActiveModStatisticContainer;
 import ch.frily.yubot.service.activemod.ActiveModTracking;
-import ch.frily.yubot.database.repository.ActiveModTrackingRepository;
+import ch.frily.yubot.service.activemod.repository.ActiveModTrackingRepository;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.util.EnvKey;
 import net.dv8tion.jda.api.entities.Member;

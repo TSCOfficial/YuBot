@@ -3,7 +3,7 @@ package ch.frily.yubot.embed.teamlist;
 import ch.frily.yubot.embed.Field;
 import ch.frily.yubot.embed.IEmbed;
 import ch.frily.yubot.service.ticket.TicketType;
-import ch.frily.yubot.database.repository.TicketTypeControlRepository;
+import ch.frily.yubot.service.ticket.repository.TicketTypeControlRepository;
 import ch.frily.yubot.service.ticket.TicketTypeGroup;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.Util;
@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

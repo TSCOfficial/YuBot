@@ -1,12 +1,12 @@
 package ch.frily.yubot.service.activemod;
 
-import ch.frily.yubot.database.repository.ActiveModRepository;
-import ch.frily.yubot.database.repository.ActiveModTrackingRepository;
+import ch.frily.yubot.service.activemod.repository.ActiveModRepository;
+import ch.frily.yubot.service.activemod.repository.ActiveModTrackingRepository;
 import ch.frily.yubot.embed.closure.ClosureActivityRequestEmbed;
 import ch.frily.yubot.embed.closure.ClosureLogEmbed;
 import ch.frily.yubot.exception.ThrowingConsumer;
-import ch.frily.yubot.database.repository.SettingRepository;
-import ch.frily.yubot.service.dynamicmsg.DynamicMessageList;
+import ch.frily.yubot.service.profile.repository.SettingRepository;
+import ch.frily.yubot.service.postoffice.DynamicMessageList;
 import ch.frily.yubot.service.activemod.button.ActiveModActivityProveBtn;
 import ch.frily.yubot.service.activemod.button.ActiveModOptOutBtn;
 import ch.frily.yubot.service.postoffice.button.DeleteMessageBtn;

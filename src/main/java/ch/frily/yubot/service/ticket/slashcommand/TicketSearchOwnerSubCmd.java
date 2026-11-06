@@ -2,13 +2,10 @@ package ch.frily.yubot.service.ticket.slashcommand;
 
 import ch.frily.yubot.container.ContainerContext;
 import ch.frily.yubot.container.ticket.TicketSearchContainer;
-import ch.frily.yubot.database.repository.TicketRepository;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
-import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.util.EnvKey;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;

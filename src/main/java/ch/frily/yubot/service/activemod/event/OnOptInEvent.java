@@ -2,11 +2,10 @@ package ch.frily.yubot.service.activemod.event;
 
 import ch.frily.yubot.event.IEvent;
 import ch.frily.yubot.service.activemod.Closure;
-import ch.frily.yubot.service.dynamicmsg.DynamicMessageList;
+import ch.frily.yubot.service.postoffice.DynamicMessageList;
 import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 

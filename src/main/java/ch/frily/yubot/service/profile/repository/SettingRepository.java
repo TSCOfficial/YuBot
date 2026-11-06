@@ -1,6 +1,7 @@
-package ch.frily.yubot.database.repository;
+package ch.frily.yubot.service.profile.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
+import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.service.profile.Settings;
@@ -15,12 +16,16 @@ import java.awt.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
-public class SettingRepository {
+public class SettingRepository implements IRepository {
+
+    @Override
+    public Table getTable() {
+        return null;
+    }
 
     /**
      * Get the settings of a given member

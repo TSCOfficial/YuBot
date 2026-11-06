@@ -1,12 +1,19 @@
-package ch.frily.yubot.database.repository;
+package ch.frily.yubot.service.activemod.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
+import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.database.Table;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class ActiveModControlRepository {
+public class ActiveModControlRepository implements IRepository {
+
+    @Override
+    public Table getTable() {
+        return null;
+    }
+
     public static void updateControl(Boolean state) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.ACTIVE_MOD_CONTROL);
         query.update(Table.ActiveModControlColumn.ALLOW_OPTIN, state);

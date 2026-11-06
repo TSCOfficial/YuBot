@@ -1,6 +1,6 @@
 package ch.frily.yubot.service.profile.ctxmenu;
 
-import ch.frily.yubot.database.repository.ProfileMessageRepository;
+import ch.frily.yubot.service.profile.repository.ProfileMessageRepository;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.service.profile.Profile;
 import ch.frily.yubot.interaction.contextmenu.IMessageContextMenu;

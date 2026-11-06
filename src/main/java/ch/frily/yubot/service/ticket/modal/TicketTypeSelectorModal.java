@@ -1,6 +1,6 @@
 package ch.frily.yubot.service.ticket.modal;
 
-import ch.frily.yubot.database.repository.TicketRepository;
+import ch.frily.yubot.service.ticket.repository.TicketRepository;
 import ch.frily.yubot.service.ticket.*;
 import ch.frily.yubot.service.ticket.button.TicketCancelOpenBtn;
 import ch.frily.yubot.service.ticket.button.TicketConfirmOpenBtn;

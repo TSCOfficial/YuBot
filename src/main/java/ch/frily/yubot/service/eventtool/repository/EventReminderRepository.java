@@ -1,4 +1,4 @@
-package ch.frily.yubot.database.repository;
+package ch.frily.yubot.service.eventtool.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.Table;

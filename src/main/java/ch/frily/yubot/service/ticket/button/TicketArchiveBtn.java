@@ -1,7 +1,7 @@
 package ch.frily.yubot.service.ticket.button;
 
 import ch.frily.yubot.service.ticket.Ticket;
-import ch.frily.yubot.database.repository.TicketRepository;
+import ch.frily.yubot.service.ticket.repository.TicketRepository;
 import ch.frily.yubot.service.ticket.TicketTypeGroup;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.service.ticket.modal.TicketSummaryModal;

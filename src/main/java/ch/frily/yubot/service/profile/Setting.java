@@ -1,7 +1,7 @@
 package ch.frily.yubot.service.profile;
 
 import ch.frily.yubot.database.Table;
-import ch.frily.yubot.database.repository.SettingRepository;
+import ch.frily.yubot.service.profile.repository.SettingRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.profile.modal.ProfileSettingActivemodColorModal;
 import ch.frily.yubot.util.EnvKey;

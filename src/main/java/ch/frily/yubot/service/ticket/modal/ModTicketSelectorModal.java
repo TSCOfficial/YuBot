@@ -1,6 +1,6 @@
 package ch.frily.yubot.service.ticket.modal;
 
-import ch.frily.yubot.database.repository.TicketRepository;
+import ch.frily.yubot.service.ticket.repository.TicketRepository;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.service.ticket.Ticket;

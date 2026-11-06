@@ -1,6 +1,7 @@
-package ch.frily.yubot.database.repository;
+package ch.frily.yubot.service.activemod.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
+import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.service.activemod.ActiveModTracking;
 import ch.frily.yubot.util.EnvKey;
@@ -16,7 +17,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ActiveModTrackingRepository {
+public class ActiveModTrackingRepository implements IRepository {
+
+    @Override
+    public Table getTable() {
+        return null;
+    }
 
     public static Map<Member, List<ActiveModTracking>> completeWithMissingModerators(Map<Member, List<ActiveModTracking>> groupedActiveMods) {
         Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();

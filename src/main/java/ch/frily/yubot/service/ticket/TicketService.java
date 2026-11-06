@@ -1,7 +1,7 @@
 package ch.frily.yubot.service.ticket;
 
-import ch.frily.yubot.database.repository.TicketRepository;
-import ch.frily.yubot.database.repository.TicketTypeControlRepository;
+import ch.frily.yubot.service.ticket.repository.TicketRepository;
+import ch.frily.yubot.service.ticket.repository.TicketTypeControlRepository;
 import ch.frily.yubot.embed.ticket.TicketOpenEmbed;
 import ch.frily.yubot.event.IEvent;
 import ch.frily.yubot.exception.NotFoundException;

@@ -2,7 +2,7 @@ package ch.frily.yubot.service.activemod.button;
 
 import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.service.activemod.ActiveMod;
-import ch.frily.yubot.database.repository.ActiveModRepository;
+import ch.frily.yubot.service.activemod.repository.ActiveModRepository;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.util.EnvKey;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;

@@ -1,6 +1,6 @@
 package ch.frily.yubot.service.profile.button;
 
-import ch.frily.yubot.database.repository.ProfileRepository;
+import ch.frily.yubot.service.profile.repository.ProfileRepository;
 import ch.frily.yubot.service.profile.Profile;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.service.profile.modal.AddProfileModal;
