@@ -57,7 +57,7 @@ public record ContainerContext(
 
     /**
      * Context for the first page of a container rendered from an interaction
-     * @param interaction The interaction to derive member, guild and user from
+     * @param interaction The interaction to derive the initiator (member)
      */
     public static ContainerContext of(Interaction interaction) {
         return of(interaction, 0);
@@ -65,7 +65,7 @@ public record ContainerContext(
 
     /**
      * Context for a specific page of a container rendered from an interaction
-     * @param interaction The interaction to derive member, guild and user from
+     * @param interaction The interaction to derive the initiator (member)
      * @param page Zero-based index of the page to render
      */
     public static ContainerContext of(Interaction interaction, int page) {

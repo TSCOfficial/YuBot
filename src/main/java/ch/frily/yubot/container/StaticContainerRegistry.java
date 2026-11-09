@@ -3,10 +3,7 @@ package ch.frily.yubot.container;
 import ch.frily.yubot.container.absence.AbsenceEditOwnContainer;
 import ch.frily.yubot.container.absence.AbsenceOverviewContainer;
 import ch.frily.yubot.container.activemod.ActiveModDashboardContainer;
-import ch.frily.yubot.container.guildinfo.MentalHealthHelpContainer;
-import ch.frily.yubot.container.guildinfo.RulesContainer;
-import ch.frily.yubot.container.guildinfo.ServerClosedContainer;
-import ch.frily.yubot.container.guildinfo.StartHereContainer;
+import ch.frily.yubot.container.guildinfo.*;
 import ch.frily.yubot.container.ticket.TicketPanelContainer;
 import ch.frily.yubot.container.ticket.TicketSearchContainer;
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +50,9 @@ public enum StaticContainerRegistry {
     }),
     TICKET_SEARCH_OVERVIEW(false, ctx -> {
         return new TicketSearchContainer(ctx).build();
+    }),
+    DATA_COLLECTION_NOTICE(false, ctx -> {
+        return new DataCollectionNotice(ctx).build();
     });
 
     /** Whether the container may be sent as a standalone message via the send container command */

@@ -32,7 +32,7 @@ import java.util.List;
 public class ServiceRegistry {
 
     @Getter
-    private List<Service> features;
+    private List<Service> services;
 
     private static ServiceRegistry instance;
     public static ServiceRegistry getInstance() {
@@ -59,7 +59,7 @@ public class ServiceRegistry {
      * </p>
      */
     public void load() {
-        this.features = List.of(
+        this.services = List.of(
                 TicketService.getInstance(),
                 WordChainGameService.getInstance(),
                 ActivemodService.getInstance(),
@@ -73,7 +73,7 @@ public class ServiceRegistry {
 
         ArrayList<CommandData> commands = new ArrayList<>();
 
-        this.features.forEach(feature -> {
+        this.services.forEach(feature -> {
             log.info("Registering feature: " + feature.getClass().getSimpleName());
             List<SlashCommandData> slashcommands = SlashCommandRegistry.getInstance().registerCommands(feature.getSlashCommands());
             commands.addAll(slashcommands);

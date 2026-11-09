@@ -1,5 +1,6 @@
 package ch.frily.yubot.service.profile;
 
+import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.event.IEvent;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.service.profile.button.AddProfileBtn;
@@ -16,6 +17,9 @@ import ch.frily.yubot.service.profile.modal.AddProfileModal;
 import ch.frily.yubot.service.profile.modal.DeleteProfileModal;
 import ch.frily.yubot.service.profile.modal.EditWebhookMessageModal;
 import ch.frily.yubot.service.profile.modal.ProfileSettingActivemodColorModal;
+import ch.frily.yubot.service.profile.repository.ProfileMessageRepository;
+import ch.frily.yubot.service.profile.repository.ProfileRepository;
+import ch.frily.yubot.service.profile.repository.SettingRepository;
 import ch.frily.yubot.service.profile.select.ProfileUseSelect;
 import ch.frily.yubot.service.profile.slashcommand.ProfileCmdGroup;
 import ch.frily.yubot.interaction.contextmenu.IContextMenu;
@@ -95,6 +99,15 @@ public class ProfileService extends Service {
         return List.of(
                 MessageReceivedEvent.getInstance(),
                 MessageDeleteEvent.getInstance()
+        );
+    }
+
+    @Override
+    public List<IRepository> getRepositories() {
+        return List.of(
+                new ProfileMessageRepository(),
+                new ProfileRepository(),
+                new SettingRepository()
         );
     }
 }

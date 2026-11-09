@@ -1,5 +1,7 @@
 package ch.frily.yubot.service.postoffice.slashcommand;
 
+import ch.frily.yubot.container.ContainerContext;
+import ch.frily.yubot.container.guildinfo.DataCollectionNotice;
 import ch.frily.yubot.interaction.command.ISlashCommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -26,6 +28,11 @@ public class SystestCmd implements ISlashCommand {
 
     @Override
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
-        event.reply("no content").queue();
+        //event.reply("no content").queue();
+
+        ContainerContext context = ContainerContext.of(event);
+        DataCollectionNotice container = new DataCollectionNotice(context);
+
+        event.replyComponents(container.build()).useComponentsV2().queue();
     }
 }

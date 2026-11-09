@@ -22,9 +22,9 @@ public class PaginationItem {
     @Setter
     private String title;
 
-    public PaginationItem(){
-
-    }
+    public PaginationItem(){}
+    public PaginationItem(String title){this.setTitle(title);}
+    public PaginationItem(String title, Object... formatArgs){this.setTitle(String.format(title, formatArgs));}
     public PaginationItem(ContainerChildComponent child){
         this.addChild(child);
     }
@@ -77,7 +77,6 @@ public class PaginationItem {
      */
     public List<PaginationItem> split(PaginationContainer container){
         int budget = container.getItemComponentBudget() - container.getCurrentPageComponentCount();
-        log.info("new split with budget: {}", budget);
         if (getComponentCount() <= budget) {
             return List.of(this);
         }
@@ -88,12 +87,9 @@ public class PaginationItem {
 
         for (ContainerChildComponent child : children) {
             int childCost = childComponentCount(child);
-            int childrenBudget = container.getItemComponentBudget() - container.getCurrentPageComponentCount();
 
             // Start the next chunk before the current one runs over the budget
-            log.info("Splitting item with {} components into {} chunks: used: {}, childcost: {}, budget: {}, equation: {}", getComponentCount(), chunks.size() + 1, container.getCurrentPageComponentCount(), childCost, childrenBudget, container.getItemComponentBudget() - container.getCurrentPageComponentCount() - childCost - titleCost <= 0);
             if (!current.children.isEmpty() && container.getItemComponentBudget() - container.getCurrentPageComponentCount() - childCost - titleCost <= 0) {
-                log.info("added chunk");
                 chunks.add(current);
                 current = newChunk();
                 container.setCurrentPageComponentCount(titleCost);
