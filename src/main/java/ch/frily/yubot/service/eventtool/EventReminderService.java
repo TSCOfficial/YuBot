@@ -1,7 +1,9 @@
 package ch.frily.yubot.service.eventtool;
 
+import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.interaction.command.ISlashCommandGroup;
 import ch.frily.yubot.scheduler.IScheduler;
+import ch.frily.yubot.service.eventtool.repository.EventReminderRepository;
 import ch.frily.yubot.service.eventtool.schedule.EventReminderScheduler;
 import ch.frily.yubot.service.Service;
 import ch.frily.yubot.service.eventtool.slashcommand.StageModCmdGroup;
@@ -39,6 +41,13 @@ public class EventReminderService extends Service {
     public List<ISlashCommandGroup> getSlashCommandGroups() {
         return List.of(
                 new StageModCmdGroup()
+        );
+    }
+
+    @Override
+    public List<IRepository> getRepositories() {
+        return List.of(
+                new EventReminderRepository()
         );
     }
 }

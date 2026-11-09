@@ -12,7 +12,7 @@ public class TicketTypeControlRepository implements IRepository {
 
     @Override
     public Table getTable() {
-        return null;
+        return Table.TICKET_TYPE_CONTROL;
     }
 
     public static void upsertType(TicketType type, boolean isLocked) throws SQLException {

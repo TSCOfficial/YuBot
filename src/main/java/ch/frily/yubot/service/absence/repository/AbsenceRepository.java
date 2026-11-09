@@ -24,7 +24,7 @@ public class AbsenceRepository implements IRepository {
 
     @Override
     public Table getTable() {
-        return null;
+        return Table.ABSENCE;
     }
 
     /**

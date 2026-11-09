@@ -18,7 +18,7 @@ public class ProfileRepository implements IRepository {
 
     @Override
     public Table getTable() {
-        return null;
+        return Table.PROFILE;
     }
 
     public static Profile getProfileById(String id) throws SQLException {

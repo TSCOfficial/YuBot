@@ -1,5 +1,6 @@
 package ch.frily.yubot.service.activemod;
 
+import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.event.IEvent;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.command.ISlashCommand;
@@ -12,6 +13,9 @@ import ch.frily.yubot.service.activemod.button.*;
 import ch.frily.yubot.service.activemod.event.OnOptInEvent;
 import ch.frily.yubot.service.activemod.event.OnOptOutEvent;
 import ch.frily.yubot.service.activemod.modal.SelectActiveModSendTypeModal;
+import ch.frily.yubot.service.activemod.repository.ActiveModControlRepository;
+import ch.frily.yubot.service.activemod.repository.ActiveModRepository;
+import ch.frily.yubot.service.activemod.repository.ActiveModTrackingRepository;
 import ch.frily.yubot.service.activemod.schedule.ActiveModActivityScheduler;
 import ch.frily.yubot.service.activemod.select.ActiveModTrackingDetailSelect;
 import ch.frily.yubot.service.activemod.slashcommand.ActiveModCmdGroup;
@@ -95,6 +99,15 @@ public class ActivemodService extends Service {
         return List.of(
                 OnOptInEvent.getInstance(),
                 OnOptOutEvent.getInstance()
+        );
+    }
+
+    @Override
+    public List<IRepository> getRepositories() {
+        return List.of(
+                new ActiveModRepository(),
+                new ActiveModControlRepository(),
+                new ActiveModTrackingRepository()
         );
     }
 }

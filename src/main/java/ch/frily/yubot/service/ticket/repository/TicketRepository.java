@@ -25,7 +25,7 @@ public class TicketRepository implements IRepository {
 
     @Override
     public Table getTable() {
-        return null;
+        return Table.TICKET;
     }
 
     /**

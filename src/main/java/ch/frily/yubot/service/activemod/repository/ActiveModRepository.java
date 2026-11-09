@@ -19,7 +19,7 @@ public class ActiveModRepository implements IRepository {
 
     @Override
     public Table getTable() {
-        return null;
+        return Table.ACTIVE_MOD;
     }
 
     public static List<ActiveMod> getModerators() throws SQLException {

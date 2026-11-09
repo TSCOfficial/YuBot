@@ -1,6 +1,7 @@
 package ch.frily.yubot.service.eventtool.repository;
 
 import ch.frily.yubot.database.DatabaseQuery;
+import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +10,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Slf4j
-public class EventReminderRepository {
+public class EventReminderRepository implements IRepository {
+
+    @Override
+    public Table getTable() {
+        return Table.EVENT_REMINDER;
+    }
 
     /**
      * Get the event information

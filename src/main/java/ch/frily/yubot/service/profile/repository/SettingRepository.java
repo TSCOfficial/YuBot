@@ -24,7 +24,7 @@ public class SettingRepository implements IRepository {
 
     @Override
     public Table getTable() {
-        return null;
+        return Table.SETTING;
     }
 
     /**

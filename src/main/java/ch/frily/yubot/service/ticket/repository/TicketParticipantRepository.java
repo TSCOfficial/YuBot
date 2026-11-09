@@ -21,7 +21,7 @@ public class TicketParticipantRepository implements IRepository {
 
     @Override
     public Table getTable() {
-        return null;
+        return Table.TICKET_PARTICIPANT;
     }
 
     public static List<Ticket> getTicketsFromParticipant(Member member) throws SQLException {

@@ -15,7 +15,7 @@ public class DynamicMessageRepository implements IRepository {
 
     @Override
     public Table getTable() {
-        return null;
+        return Table.DYNAMIC_MESSAGE;
     }
 
     /**

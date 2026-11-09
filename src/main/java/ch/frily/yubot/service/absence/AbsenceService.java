@@ -1,5 +1,6 @@
 package ch.frily.yubot.service.absence;
 
+import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.event.IEvent;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.modal.Modal;
@@ -9,6 +10,7 @@ import ch.frily.yubot.service.Service;
 import ch.frily.yubot.service.absence.button.*;
 import ch.frily.yubot.service.absence.event.SendAbsenceNotice;
 import ch.frily.yubot.service.absence.modal.AbsenceAddModal;
+import ch.frily.yubot.service.absence.repository.AbsenceRepository;
 import ch.frily.yubot.service.absence.schedule.AbsenceContainerScheduler;
 import net.dv8tion.jda.api.events.Event;
 
@@ -65,6 +67,13 @@ public class AbsenceService extends Service {
     public List<IEvent<? extends Event>> getEvents() {
         return List.of(
                 SendAbsenceNotice.getInstance()
+        );
+    }
+
+    @Override
+    public List<IRepository> getRepositories() {
+        return List.of(
+                new AbsenceRepository()
         );
     }
 }

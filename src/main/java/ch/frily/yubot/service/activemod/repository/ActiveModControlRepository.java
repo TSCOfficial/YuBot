@@ -11,7 +11,7 @@ public class ActiveModControlRepository implements IRepository {
 
     @Override
     public Table getTable() {
-        return null;
+        return Table.ACTIVE_MOD_CONTROL;
     }
 
     public static void updateControl(Boolean state) throws SQLException {

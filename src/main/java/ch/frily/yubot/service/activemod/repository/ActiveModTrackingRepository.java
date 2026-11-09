@@ -21,7 +21,7 @@ public class ActiveModTrackingRepository implements IRepository {
 
     @Override
     public Table getTable() {
-        return null;
+        return Table.ACTIVE_MOD_TRACKING;
     }
 
     public static Map<Member, List<ActiveModTracking>> completeWithMissingModerators(Map<Member, List<ActiveModTracking>> groupedActiveMods) {

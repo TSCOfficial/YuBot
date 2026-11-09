@@ -52,7 +52,7 @@ public enum StaticContainerRegistry {
         return new TicketSearchContainer(ctx).build();
     }),
     DATA_COLLECTION_NOTICE(false, ctx -> {
-        return new DataCollectionNotice(ctx).build();
+        return new LegalNoticeContainer().build();
     });
 
     /** Whether the container may be sent as a standalone message via the send container command */

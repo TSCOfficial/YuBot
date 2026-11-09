@@ -24,7 +24,7 @@ public class ProfileMessageRepository implements IRepository {
 
     @Override
     public Table getTable() {
-        return null;
+        return Table.PROFILE_MESSAGE;
     }
 
     public static void create(ProfileMessage profileMessage) throws SQLException {

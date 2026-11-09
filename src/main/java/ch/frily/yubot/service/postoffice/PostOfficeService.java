@@ -1,5 +1,6 @@
 package ch.frily.yubot.service.postoffice;
 
+import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.command.ISlashCommand;
 import ch.frily.yubot.interaction.command.ISlashCommandGroup;
@@ -8,6 +9,7 @@ import ch.frily.yubot.service.Service;
 import ch.frily.yubot.service.postoffice.button.AddServeropenRoleBtn;
 import ch.frily.yubot.service.postoffice.button.DeleteMessageBtn;
 import ch.frily.yubot.service.postoffice.button.PaginationNavBtn;
+import ch.frily.yubot.service.postoffice.repository.DynamicMessageRepository;
 import ch.frily.yubot.service.postoffice.schedule.StatusOverwriteSchedule;
 import ch.frily.yubot.service.postoffice.slashcommand.SayCmd;
 import ch.frily.yubot.service.postoffice.slashcommand.SendCmdGroup;
@@ -77,6 +79,13 @@ public class PostOfficeService extends Service {
     public List<IScheduler> getSchedulers() {
         return List.of(
                 StatusOverwriteSchedule.getInstance()
+        );
+    }
+
+    @Override
+    public List<IRepository> getRepositories() {
+        return List.of(
+                new DynamicMessageRepository()
         );
     }
 }

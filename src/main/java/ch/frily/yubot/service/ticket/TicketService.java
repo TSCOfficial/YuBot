@@ -1,5 +1,7 @@
 package ch.frily.yubot.service.ticket;
 
+import ch.frily.yubot.database.IRepository;
+import ch.frily.yubot.service.ticket.repository.TicketParticipantRepository;
 import ch.frily.yubot.service.ticket.repository.TicketRepository;
 import ch.frily.yubot.service.ticket.repository.TicketTypeControlRepository;
 import ch.frily.yubot.embed.ticket.TicketOpenEmbed;
@@ -122,6 +124,15 @@ public class TicketService extends Service {
         return List.of(
                 TicketOwnerLeftGuildEvent.getInstance(),
                 TicketMessageReceivedEvent.getInstance()
+        );
+    }
+
+    @Override
+    public List<IRepository> getRepositories() {
+        return List.of(
+                new TicketParticipantRepository(),
+                new TicketRepository(),
+                new TicketTypeControlRepository()
         );
     }
 
