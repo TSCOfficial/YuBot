@@ -17,10 +17,12 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
+import java.security.Security;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Objects;
 
 import static org.reflections.Reflections.log;
 
@@ -63,16 +65,6 @@ public class Client {
             Connection conn = Database.getInstance().connect();
             if (conn != null) {
                 log.info("Database connected!");
-
-                PreparedStatement stmt = conn.prepareStatement("""
-                SELECT current_user, current_schemas(true), current_setting('search_path')
-                """);
-                ResultSet rs = stmt.executeQuery();
-                while (rs.next()) {
-                    log.info(rs.getString(1));
-                    log.info(rs.getString(2));
-                    log.info(rs.getString(3));
-                }
             } else {
                 throw new SQLException("Database could not be reached!");
             }
@@ -100,8 +92,9 @@ public class Client {
         jdaBuilder.setStatus(OnlineStatus.ONLINE);
         jdaBuilder.setMemberCachePolicy(MemberCachePolicy.ALL);
         jdaBuilder.enableCache(CacheFlag.ACTIVITY, CacheFlag.EMOJI);
-        jdaBuilder.setActivity(Activity.customStatus(config.get("STATUS")));
-
+        if (Objects.nonNull(config.get("STATUS"))) {
+            jdaBuilder.setActivity(Activity.customStatus(config.get("STATUS")));
+        }
 
         // Event listeners
         EventRegistry.getLISTENERS().forEach(jdaBuilder::addEventListeners);
