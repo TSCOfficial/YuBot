@@ -53,6 +53,6 @@ public class LegalNoticeContainer extends Container {
         addTextDisplay("### Anwendbares Recht und Gerichtsstand");
         addTextDisplay("Es gilt ausschliesslich Schweizer Recht. Das zuständige Regionalgericht sowie die Schlichtungsbehörde ist Emmental-Oberaargau.");
 
-        addTextDisplay("Vom 3. November 2026 (Stand 11. August 2026)");
+        addTextDisplay("-# Vom 3. November 2026 (Stand 11. August 2026)");
     }
 }
