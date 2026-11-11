@@ -28,10 +28,6 @@ public class SystestCmd implements ISlashCommand {
 
     @Override
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
-        //event.reply("no content").queue();
-
-        LegalNoticeContainer container = new LegalNoticeContainer();
-
-        event.replyComponents(container.build()).useComponentsV2().queue();
+        event.reply("no content").queue();
     }
 }

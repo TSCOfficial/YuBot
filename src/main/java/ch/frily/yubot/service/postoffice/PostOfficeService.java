@@ -11,10 +11,7 @@ import ch.frily.yubot.service.postoffice.button.DeleteMessageBtn;
 import ch.frily.yubot.service.postoffice.button.PaginationNavBtn;
 import ch.frily.yubot.service.postoffice.repository.DynamicMessageRepository;
 import ch.frily.yubot.service.postoffice.schedule.StatusOverwriteSchedule;
-import ch.frily.yubot.service.postoffice.slashcommand.SayCmd;
-import ch.frily.yubot.service.postoffice.slashcommand.SendCmdGroup;
-import ch.frily.yubot.service.postoffice.slashcommand.StatusCmdGroup;
-import ch.frily.yubot.service.postoffice.slashcommand.SystestCmd;
+import ch.frily.yubot.service.postoffice.slashcommand.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -61,7 +58,8 @@ public class PostOfficeService extends Service {
     public List<ISlashCommand> getSlashCommands() {
         return List.of(
                 new SayCmd(),
-                new SystestCmd()
+                new SystestCmd(),
+                new LegalNoticeCmd()
         );
     }
 
