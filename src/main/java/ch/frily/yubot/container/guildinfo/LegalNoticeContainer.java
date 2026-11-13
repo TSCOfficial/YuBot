@@ -50,9 +50,14 @@ public class LegalNoticeContainer extends Container {
         addTextDisplay("""
                 Benutzende können für einige Daten, die im Zusammenhang mit ihrem Discord-Account stehen, eine Löschung bei der Verantwortlichen Person beantragen. Einige Daten können aufgrund der Aufbewahrungsrechtlinie, und zur legalen Absicherung unseres Teams, nicht gelöscht werden.
                 """);
-        addTextDisplay("### Anwendbares Recht und Gerichtsstand");
+        addTextDisplay("## Anwendbares Recht und Gerichtsstand");
         addTextDisplay("Es gilt ausschliesslich Schweizer Recht. Das zuständige Regionalgericht sowie die Schlichtungsbehörde ist Emmental-Oberaargau.");
 
+        addTextDisplay("## Nutzungsbestimmungen");
+        addTextDisplay("""
+                Die Nutzung des YuBots ist nur für Personen gestattet, welche auf dem Discord-Server “Weirdos ✨️” sind und die Regeln des Discord-Servers, sowie den Discord ToS, einhalten.
+                Die Nutzung der vom YuBot angebotenen Services dürfen ausschliesslich für die jeweils beschriebene bzw. angedachte Nutzung verwendet werden. Das Ausnutzen von allfälligen Sicherheitslücken, Berechtigungsfehlern, oder weiteren unbeabsichtigten Randfällen ist verboten. Jegliche Sicherheitslücke, Berechtigungsfehlern, Systemfehler oder unbeabsichtigte (Re-)Aktionen sind der Verantwortlichen Person umgehend zu melden.
+                """);
         addTextDisplay("-# Vom 3. November 2026 (Stand 11. August 2026)");
     }
 }
