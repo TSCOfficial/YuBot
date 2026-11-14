@@ -1,6 +1,5 @@
 package ch.frily.yubot.container.ticket;
 
-import ch.frily.yubot.Client;
 import ch.frily.yubot.container.Container;
 import ch.frily.yubot.service.activemod.repository.ActiveModRepository;
 import ch.frily.yubot.service.ticket.TicketService;
@@ -8,6 +7,7 @@ import ch.frily.yubot.service.ticket.TicketType;
 import ch.frily.yubot.service.ticket.repository.TicketTypeControlRepository;
 import ch.frily.yubot.service.ticket.TicketTypeGroup;
 import ch.frily.yubot.util.Color;
+import ch.frily.yubot.EnvKey;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
@@ -33,13 +33,13 @@ public class TicketPanelContainer extends Container {
         this.addTextDisplay("Wähle die passende Kategorie aus, drücke den dazugehörigen Button und wähle anschliessend die gewünschte Ticketart aus.");
         this.addTextDisplay(String.format(
                 "-# Falls du ein Vorschlag oder anderweitiges Feedback geben willst, kannst du dies gerne in %s schreiben.",
-                Client.EnvKey.CHANNEL_FEEDBACK.getAsChannel(ForumChannel.class, Client.EnvKey.GUILD_YUSERVER).getAsMention()
+                EnvKey.CHANNEL_FEEDBACK.getAsChannel(ForumChannel.class, EnvKey.GUILD_YUSERVER).getAsMention()
                 )
         );
 
         if (!isServerOpen) {
-            Channel serverClosedChannel = Client.EnvKey.CHANNEL_SERVERGESCHLOSSEN.getAsChannel(TextChannel.class, Client.EnvKey.GUILD_YUSERVER);
-            Channel startHereChannel = Client.EnvKey.CHANNEL_STARTHERE.getAsChannel(TextChannel.class, Client.EnvKey.GUILD_YUSERVER);
+            Channel serverClosedChannel = EnvKey.CHANNEL_SERVERGESCHLOSSEN.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
+            Channel startHereChannel = EnvKey.CHANNEL_STARTHERE.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
             this.addTextDisplay(String.format("""
                     ### ⚠️ Server geschlossen
                     **Hinweis:** Der Server ist momentan geschlossen, du siehst also keine Communitychannels mehr. Das Ticketsystem ist aber weiterhin verfügbar.

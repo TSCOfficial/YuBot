@@ -1,6 +1,5 @@
 package ch.frily.yubot.container.activemod;
 
-import ch.frily.yubot.Client;
 import ch.frily.yubot.container.Container;
 import ch.frily.yubot.container.ContainerContext;
 import ch.frily.yubot.service.activemod.repository.ActiveModControlRepository;
@@ -11,6 +10,7 @@ import ch.frily.yubot.service.activemod.repository.ActiveModTrackingRepository;
 import ch.frily.yubot.service.activemod.button.ActiveModOptInBtn;
 import ch.frily.yubot.service.activemod.button.ActiveModOptOutBtn;
 import ch.frily.yubot.service.activemod.button.ActiveModShowStatisticBtn;
+import ch.frily.yubot.EnvKey;
 import ch.frily.yubot.util.Util;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
@@ -30,7 +30,7 @@ public class ActiveModDashboardContainer extends Container {
             addTextDisplay("# Active Moderation");
             addTextDisplay("Siehe den aktuellen Status der Aktiven Moderator*innen und kontrolliere dein ActiveMod Status.");
 
-            Role activeModRole = Client.EnvKey.ROLE_ACTIVEMOD.getAsRole();
+            Role activeModRole = EnvKey.ROLE_ACTIVEMOD.getAsRole();
             List<Member> activeMods = Util.getUsersByRole(activeModRole);
             addFormatedText("## Aktive Moderator*innen (%d)", activeMods.size());
             if (!activeMods.isEmpty()) {

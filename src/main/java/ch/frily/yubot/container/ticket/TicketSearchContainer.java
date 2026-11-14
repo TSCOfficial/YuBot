@@ -7,6 +7,7 @@ import ch.frily.yubot.service.ticket.repository.TicketRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.service.ticket.slashcommand.TicketSearchSubCmdGroup;
+import ch.frily.yubot.EnvKey;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.Button;
@@ -47,7 +48,7 @@ public class TicketSearchContainer extends PaginationContainer {
             if (Objects.nonNull(target) && searchType == TicketSearchSubCmdGroup.SearchType.OWNER) {
                 tickets = TicketRepository.getTicketsByUser(target);
             } else if (Objects.nonNull(target) && searchType == TicketSearchSubCmdGroup.SearchType.PARTICIPANT) {
-                Member memberTarget = Client.EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(targetId.get());
+                Member memberTarget = EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(targetId.get());
                 tickets = TicketParticipantRepository.getTicketsFromParticipant(memberTarget); // todo replace by User
             } else if (search.isPresent() && searchType == TicketSearchSubCmdGroup.SearchType.NAME) {
                 tickets = TicketRepository.getTicketsWithMatchingName(search.get().trim());
@@ -152,7 +153,7 @@ public class TicketSearchContainer extends PaginationContainer {
         }
 
         if (Objects.nonNull(context.member()) && Util.isAdministrator(context.member()) && ticket.getArchiveMessageId() != null && !ticket.getArchiveMessageId().isBlank()) {
-            String ticketArchiveJumpLink = Client.EnvKey.CHANNEL_TICKETLOGS.getAsChannel(TextChannel.class, Client.EnvKey.GUILD_YUSERVER).getJumpUrl() + "/" + ticket.getArchiveMessageId();
+            String ticketArchiveJumpLink = EnvKey.CHANNEL_TICKETLOGS.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER).getJumpUrl() + "/" + ticket.getArchiveMessageId();
 
             Section section = Section.of(
                     Button.of(ButtonStyle.LINK, ticketArchiveJumpLink, "Archiv"),

@@ -1,7 +1,7 @@
 package ch.frily.yubot.service.postoffice;
 
-import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.ExceptionHandler;
+import ch.frily.yubot.EnvKey;
 import net.dv8tion.jda.api.entities.Message;
 
 import java.util.concurrent.CompletableFuture;
@@ -16,7 +16,7 @@ public record DynamicMessage(String name, Message message) {
      * @return a {@link CompletableFuture}, consisting of the {@link DynamicMessage}
      */
     public static CompletableFuture<DynamicMessage> retrieve(String registryName, long channelId, long messageId) {
-        return Client.EnvKey.GUILD_YUSERVER.getAsGuild().getTextChannelById(channelId).retrieveMessageById(messageId).submit()
+        return EnvKey.GUILD_YUSERVER.getAsGuild().getTextChannelById(channelId).retrieveMessageById(messageId).submit()
                 .thenApply(Message -> new DynamicMessage(registryName, Message))
                 .exceptionally(ExceptionHandler::fail);
     }

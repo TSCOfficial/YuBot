@@ -1,11 +1,11 @@
 package ch.frily.yubot.service.activemod.repository;
 
-import ch.frily.yubot.Client;
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.activemod.ActiveMod;
+import ch.frily.yubot.EnvKey;
 import net.dv8tion.jda.api.entities.Member;
 
 import java.sql.ResultSet;
@@ -37,7 +37,7 @@ public class ActiveModRepository implements IRepository {
 
             LocalDateTime activityRequestedAt = activityRequestedAtTimestamp == null ? null : activityRequestedAtTimestamp.toLocalDateTime();
 
-            Member moderator = Client.EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(modId);
+            Member moderator = EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(modId);
             ActiveMod activeMod = new ActiveMod(moderator, lastActivityAt, activityRequestedAt, activityRequestMessageId, requestedAttentionMessageId);
             activeMods.add(activeMod);
         }
@@ -93,7 +93,7 @@ public class ActiveModRepository implements IRepository {
         if (!resultSet.next()) {
             return null;
         }
-        Member member = Client.EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(resultSet.getLong(Table.ActiveModColumn.MODERATOR_ID.getColumn()));
+        Member member = EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(resultSet.getLong(Table.ActiveModColumn.MODERATOR_ID.getColumn()));
         LocalDateTime lastActivityAt = resultSet.getTimestamp(Table.ActiveModColumn.LAST_ACTIVITY_AT.getColumn()).toLocalDateTime();
         Timestamp activityRequestedAtTimestamp = resultSet.getTimestamp(Table.ActiveModColumn.ACTIVITY_REQUESTED_AT.getColumn());
         long activityRequestMessageId = resultSet.getLong(Table.ActiveModColumn.ACTIVITY_REQUEST_MESSAGE_ID.getColumn());
@@ -110,7 +110,7 @@ public class ActiveModRepository implements IRepository {
 
         List<ActiveMod> activeMods = new ArrayList<>();
         while (resultSet.next()) {
-            Member member = Client.EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(resultSet.getLong(Table.ActiveModColumn.MODERATOR_ID.getColumn()));
+            Member member = EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(resultSet.getLong(Table.ActiveModColumn.MODERATOR_ID.getColumn()));
             LocalDateTime lastActivityAt = resultSet.getTimestamp(Table.ActiveModColumn.LAST_ACTIVITY_AT.getColumn()).toLocalDateTime();
             Timestamp activityRequestedAtTimestamp = resultSet.getTimestamp(Table.ActiveModColumn.ACTIVITY_REQUESTED_AT.getColumn());
             long activityRequestMessageId = resultSet.getLong(Table.ActiveModColumn.ACTIVITY_REQUEST_MESSAGE_ID.getColumn());

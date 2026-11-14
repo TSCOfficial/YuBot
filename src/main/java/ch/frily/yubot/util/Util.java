@@ -1,6 +1,6 @@
 package ch.frily.yubot.util;
 
-import ch.frily.yubot.Client;
+import ch.frily.yubot.EnvKey;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -33,13 +33,13 @@ public class Util {
     public static boolean isTeamMember(Member member) {
         if (isAdministrator(member)) return true;
         Objects.requireNonNull(member);
-        Role teamRole = Client.EnvKey.ROLE_YUTEAM.getAsRole();
+        Role teamRole = EnvKey.ROLE_YUTEAM.getAsRole();
         return member.getRoles().contains(teamRole);
     }
 
     public static boolean isActiveMod(Member member) {
         Objects.requireNonNull(member);
-        Role activeModRole = Client.EnvKey.ROLE_ACTIVEMOD.getAsRole();
+        Role activeModRole = EnvKey.ROLE_ACTIVEMOD.getAsRole();
         return member.getRoles().contains(activeModRole);
     }
 
@@ -49,7 +49,7 @@ public class Util {
      * @return true | false : Returns true when the list is completed
      */
     public static List<Member> getUsersByRole(Role role) {
-        Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
+        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
         if (guild == null || role == null) {
             return List.of();
         }
@@ -61,7 +61,7 @@ public class Util {
     }
 
     public static Member getMemberByUser(long userId) {
-        Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
+        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
         return guild.getMemberById(userId);
     }
 
@@ -147,7 +147,7 @@ public class Util {
     }
 
     public static long toEpochSeconds(LocalDateTime dateTime) {
-        return dateTime.atZone(Client.EnvKey.TIMEZONE.getAsZoneId()).toEpochSecond();
+        return dateTime.atZone(EnvKey.TIMEZONE.getAsZoneId()).toEpochSecond();
     }
 
     /**

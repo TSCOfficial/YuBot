@@ -1,10 +1,10 @@
 package ch.frily.yubot.service.ticket.button;
 
-import ch.frily.yubot.Client;
 import ch.frily.yubot.embed.ticket.TicketCloseRejectedEmbed;
 import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.service.ticket.repository.TicketRepository;
 import ch.frily.yubot.interaction.button.Button;
+import ch.frily.yubot.EnvKey;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
@@ -57,7 +57,7 @@ public class TicketCloseRequestRejectBtn extends Button {
                 .setComponents(event.getMessage().getComponentTree().asDisabled())
                 .queue();
 
-        Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
+        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
         TextChannel channel = guild.getTextChannelById(ticket.getChannel().getIdLong());
         CompletableFuture<Message> welcomeMessage = channel.retrieveMessageById(ticket.getWelcomeMessageId()).submit();
         welcomeMessage.thenAccept(message -> {

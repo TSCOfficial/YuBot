@@ -1,10 +1,10 @@
 package ch.frily.yubot.service.activemod.repository;
 
-import ch.frily.yubot.Client;
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.service.activemod.ActiveModTracking;
+import ch.frily.yubot.EnvKey;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 
@@ -25,8 +25,8 @@ public class ActiveModTrackingRepository implements IRepository {
     }
 
     public static Map<Member, List<ActiveModTracking>> completeWithMissingModerators(Map<Member, List<ActiveModTracking>> groupedActiveMods) {
-        Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
-        List<Member> allModerators = guild.getMembersWithRoles(Client.EnvKey.ROLE_MODERATOR.getAsRole());
+        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+        List<Member> allModerators = guild.getMembersWithRoles(EnvKey.ROLE_MODERATOR.getAsRole());
         Map<Member, List<ActiveModTracking>> completeWithMissingModerators = new LinkedHashMap<>();
 
         allModerators.forEach(moderator -> {
@@ -94,7 +94,7 @@ public class ActiveModTrackingRepository implements IRepository {
             int missedActivityRequestCount = resultSet.getInt(Table.ActiveModTrackingColumn.MISSED_ACTIVITY_REQUEST_COUNT.getColumn());
             int totalActivityRequestCount = resultSet.getInt(Table.ActiveModTrackingColumn.TOTAL_ACTIVITY_REQUEST_COUNT.getColumn());
 
-            Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
+            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
             Member member = guild.getMemberById(moderatorId);
             activeModTrackings.add(new ActiveModTracking(member, activeTime, lastTimeActive, month, missedActivityRequestCount, totalActivityRequestCount));
         }

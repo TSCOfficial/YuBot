@@ -1,11 +1,11 @@
 package ch.frily.yubot.service.eventtool.schedule;
 
-import ch.frily.yubot.Client;
 import ch.frily.yubot.service.eventtool.repository.EventReminderRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.scheduler.IScheduler;
+import ch.frily.yubot.EnvKey;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
@@ -26,7 +26,7 @@ public class EventReminderScheduler implements IScheduler {
 
     @Override
     public void execute() {
-        Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
+        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
         List<ScheduledEvent> upcomingEvents = guild.getScheduledEvents().stream().filter(event -> {
             log.info("Processing event: {}", event.getName());
             // remove already reminded events from list by returning false
@@ -59,9 +59,9 @@ public class EventReminderScheduler implements IScheduler {
 
     private void sendReminder(ScheduledEvent event) {
         log.info("Sending reminder for event {}", event.getId());
-        TextChannel channel = Client.EnvKey.CHANNEL_ANKUENDIGUNGEN.getAsChannel(TextChannel.class, Client.EnvKey.GUILD_YUSERVER);
+        TextChannel channel = EnvKey.CHANNEL_ANKUENDIGUNGEN.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
         StringBuilder reminderSB = new StringBuilder();
-        reminderSB.append(Client.EnvKey.ROLE_EVENTPING.getAsRole().getAsMention()).append("\n");
+        reminderSB.append(EnvKey.ROLE_EVENTPING.getAsRole().getAsMention()).append("\n");
         reminderSB.append(String.format("# __%s__ startet in <t:%d:R>", event.getName(), Util.toEpochSeconds(event.getStartTime().atZoneSameInstant(ZoneId.of("Europe/Zurich")).toLocalDateTime()))).append("\n");
         reminderSB.append(event.getDescription()).append("\n");
         if (event.getType() == ScheduledEvent.Type.STAGE_INSTANCE || event.getType() == ScheduledEvent.Type.VOICE) {

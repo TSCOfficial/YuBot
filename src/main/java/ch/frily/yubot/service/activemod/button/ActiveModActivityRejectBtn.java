@@ -1,10 +1,10 @@
 package ch.frily.yubot.service.activemod.button;
 
-import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.service.activemod.ActiveMod;
 import ch.frily.yubot.service.activemod.repository.ActiveModRepository;
 import ch.frily.yubot.interaction.button.Button;
+import ch.frily.yubot.EnvKey;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -36,8 +36,8 @@ public class ActiveModActivityRejectBtn extends Button {
     public void execute(@NotNull ButtonInteractionEvent event) throws SQLException {
         ActiveMod forActiveMod = Objects.requireNonNull(ActiveModRepository.getModeratorByActivityRequestMessageId(event.getMessageIdLong()));
         if (Objects.equals(event.getMember(), forActiveMod.member())) {
-            Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
-            guild.removeRoleFromMember(forActiveMod.member(), Client.EnvKey.ROLE_ACTIVEMOD.getAsRole()).queue();
+            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+            guild.removeRoleFromMember(forActiveMod.member(), EnvKey.ROLE_ACTIVEMOD.getAsRole()).queue();
             event.getMessage().delete().queue();
             event.reply("✅ Du wurdest erfolgreich als Active-mod entfernt.").setEphemeral(true).queue();
         } else {

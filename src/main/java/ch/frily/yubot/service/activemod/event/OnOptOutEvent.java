@@ -1,10 +1,10 @@
 package ch.frily.yubot.service.activemod.event;
 
-import ch.frily.yubot.Client;
 import ch.frily.yubot.event.IEvent;
 import ch.frily.yubot.service.activemod.Closure;
 import ch.frily.yubot.service.postoffice.DynamicMessageList;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
+import ch.frily.yubot.EnvKey;
 import ch.frily.yubot.util.Util;
 import net.dv8tion.jda.api.events.Event;
 
@@ -31,7 +31,7 @@ public class OnOptOutEvent implements IEvent<GuildMemberRoleRemoveEvent> {
     public <T extends Event> void execute(T event) throws SQLException, IOException {
         GuildMemberRoleRemoveEvent castEvent = (GuildMemberRoleRemoveEvent) event;
         if (Util.isTeamMember(castEvent.getMember())) {
-            if (castEvent.getRoles().contains(Client.EnvKey.ROLE_ACTIVEMOD.getAsRole())) {
+            if (castEvent.getRoles().contains(EnvKey.ROLE_ACTIVEMOD.getAsRole())) {
                 Closure.getInstance().triggerUpdate();
             }
 

@@ -1,8 +1,8 @@
 package ch.frily.yubot.service.activemod.slashcommand;
 
-import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.interaction.command.ISlashCommand;
+import ch.frily.yubot.EnvKey;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -28,16 +28,16 @@ public class VoiceCheck implements ISlashCommand {
     @Override
     public List<Role> getAllowedRoles() {
         return Stream.of(
-                Client.EnvKey.ROLE_SUPPORT,
-                Client.EnvKey.ROLE_MODERATOR
-        ).map(Client.EnvKey::getAsRole).toList();
+                EnvKey.ROLE_SUPPORT,
+                EnvKey.ROLE_MODERATOR
+        ).map(EnvKey::getAsRole).toList();
     }
 
     @Override
     public void execute(@NonNull SlashCommandInteractionEvent event) {
         event.deferReply(true).queue();
         if (event.getChannelType() == ChannelType.VOICE) {
-            TextChannel checkChannel = Client.EnvKey.CHANNEL_VOICECHECK.getAsChannel(TextChannel.class, Client.EnvKey.GUILD_YUSERVER);
+            TextChannel checkChannel = EnvKey.CHANNEL_VOICECHECK.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
             checkChannel.sendMessage(String.format("%s (%s) ist in Ordnung", event.getChannel().getAsMention(), event.getChannel().getName())).queue(_ -> {
                 event.getHook().editOriginal(String.format("✅ %s wurde als geprüft vermerkt", event.getChannel().getAsMention())).queue();
             });

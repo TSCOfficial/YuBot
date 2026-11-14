@@ -1,6 +1,6 @@
 package ch.frily.yubot.service.ticket;
 
-import ch.frily.yubot.Client;
+import ch.frily.yubot.EnvKey;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Role;
 
@@ -15,7 +15,7 @@ public enum TicketType {
                     Das Serverteam hat ein Ticket für dich geöffnet, um ein privates Gespräch mit dir führen zu können.
                     """,
             null,
-            List.of(Client.EnvKey.ROLE_SUPPORT, Client.EnvKey.ROLE_MODERATOR)
+            List.of(EnvKey.ROLE_SUPPORT, EnvKey.ROLE_MODERATOR)
     ),
     // SUPPORT
     SUPPORT_GENERAL(
@@ -30,7 +30,7 @@ public enum TicketType {
                     Das Supportteam meldet sich so schnell wie möglich bei dir.
                     """,
             TicketTypeGroup.SUPPORT,
-            List.of(Client.EnvKey.ROLE_SUPPORT, Client.EnvKey.ROLE_MODERATOR)
+            List.of(EnvKey.ROLE_SUPPORT, EnvKey.ROLE_MODERATOR)
     ),
     SUPPORT_REGELVERSTOSS(
             "report",
@@ -45,7 +45,7 @@ public enum TicketType {
                     Das Supportteam meldet sich so schnell wie möglich bei dir.
                     """,
             TicketTypeGroup.SUPPORT,
-            List.of(Client.EnvKey.ROLE_SUPPORT, Client.EnvKey.ROLE_MODERATOR)
+            List.of(EnvKey.ROLE_SUPPORT, EnvKey.ROLE_MODERATOR)
     ),
     SUPPORT_PROBLEME(
             "sup",
@@ -60,7 +60,7 @@ public enum TicketType {
                     Das Supportteam meldet sich so schnell wie möglich bei dir.
                     """,
             TicketTypeGroup.SUPPORT,
-            List.of(Client.EnvKey.ROLE_SUPPORT, Client.EnvKey.ROLE_MODERATOR)
+            List.of(EnvKey.ROLE_SUPPORT, EnvKey.ROLE_MODERATOR)
     ),
     SUPPORT_LEITUNG(
             "leit",
@@ -73,7 +73,7 @@ public enum TicketType {
                     Die Serverleitung meldet sich so schnell wie möglich bei dir.
                     """,
             TicketTypeGroup.SUPPORT,
-            List.of(Client.EnvKey.ROLE_SERVERLEITUNG)
+            List.of(EnvKey.ROLE_SERVERLEITUNG)
     ),
     // AWARENESS
     AWARENESS_PROBLEME(
@@ -86,7 +86,7 @@ public enum TicketType {
                     Du must nichts Sagen was du nicht Teilen möchtest.
                     """,
             TicketTypeGroup.AWARENESS,
-            List.of(Client.EnvKey.ROLE_AWARENESS)
+            List.of(EnvKey.ROLE_AWARENESS)
     ),
     // BEWERBUNG
     BEWERBUNG_SUPPORT(
@@ -105,7 +105,7 @@ public enum TicketType {
                     Sobald du deine Bewerbung geschrieben hast, meldet sich die zuständige Person bei dir.
                     """,
             TicketTypeGroup.BEWERBUNG,
-            List.of(Client.EnvKey.ROLE_SUPPORTLEITUNG, Client.EnvKey.ROLE_STVSUPPORTLEITUNG)
+            List.of(EnvKey.ROLE_SUPPORTLEITUNG, EnvKey.ROLE_STVSUPPORTLEITUNG)
     ),
     BEWERBUNG_MODERATION(
             "bemod",
@@ -123,7 +123,7 @@ public enum TicketType {
                     Sobald du deine Bewerbung geschrieben hast, meldet sich die zuständige Person bei dir.
                     """,
             TicketTypeGroup.BEWERBUNG,
-            List.of(Client.EnvKey.ROLE_MODLEITUNG, Client.EnvKey.ROLE_STVMODLEITUNG, Client.EnvKey.ROLE_SERVERLEITUNG)
+            List.of(EnvKey.ROLE_MODLEITUNG, EnvKey.ROLE_STVMODLEITUNG, EnvKey.ROLE_SERVERLEITUNG)
     ),
     BEWERBUNG_TWITCHMOD(
             "betwm",
@@ -143,7 +143,7 @@ public enum TicketType {
                     Sobald du deine Bewerbung geschrieben hast, meldet sich die zuständige Person bei dir.
                     """,
             TicketTypeGroup.BEWERBUNG,
-            List.of(Client.EnvKey.ROLE_SERVERLEITUNG)
+            List.of(EnvKey.ROLE_SERVERLEITUNG)
     ),
     BEWERBUNG_AWARENESS(
             "beawrn",
@@ -161,7 +161,7 @@ public enum TicketType {
                     Sobald du deine Bewerbung geschrieben hast, meldet sich die zuständige Person bei dir.
                     """,
             TicketTypeGroup.BEWERBUNG,
-            List.of(Client.EnvKey.ROLE_AWARENESSLEITUNG, Client.EnvKey.ROLE_STVAWARENESSLEITUNG)
+            List.of(EnvKey.ROLE_AWARENESSLEITUNG, EnvKey.ROLE_STVAWARENESSLEITUNG)
     ),
     BEWERBUNG_EVENT(
             "beevnt",
@@ -179,7 +179,7 @@ public enum TicketType {
                     Sobald du deine Bewerbung geschrieben hast, meldet sich die zuständige Person bei dir.
                     """,
             TicketTypeGroup.BEWERBUNG,
-            List.of(Client.EnvKey.ROLE_EVENTLEITUNG, Client.EnvKey.ROLE_STVEVENTLEITUNG)
+            List.of(EnvKey.ROLE_EVENTLEITUNG, EnvKey.ROLE_STVEVENTLEITUNG)
     ),
     BEWERBUNG_DESIGN(
             "bedes",
@@ -198,7 +198,7 @@ public enum TicketType {
                     Sobald du deine Bewerbung geschrieben hast, meldet sich die zuständige Person bei dir.
                     """,
             TicketTypeGroup.BEWERBUNG,
-            List.of(Client.EnvKey.ROLE_SERVERLEITUNG)
+            List.of(EnvKey.ROLE_SERVERLEITUNG)
     );
 
 
@@ -215,12 +215,12 @@ public enum TicketType {
     @Getter
     private final List<Role> responsibleRoles;
 
-    TicketType(String id, String label, String selectDescription, String embedDescription, TicketTypeGroup group, List<Client.EnvKey> responsibleRoles){
+    TicketType(String id, String label, String selectDescription, String embedDescription, TicketTypeGroup group, List<EnvKey> responsibleRoles){
         this.id = id;
         this.label = label;
         this.selectDescription = selectDescription;
         this.embedDescription = embedDescription;
         this.group = group;
-        this.responsibleRoles = responsibleRoles.stream().map(Client.EnvKey::getAsRole).toList();
+        this.responsibleRoles = responsibleRoles.stream().map(EnvKey::getAsRole).toList();
     }
 }

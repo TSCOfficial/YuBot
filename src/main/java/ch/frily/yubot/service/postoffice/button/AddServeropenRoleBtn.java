@@ -1,8 +1,8 @@
 package ch.frily.yubot.service.postoffice.button;
 
-import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.interaction.button.Button;
+import ch.frily.yubot.EnvKey;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -29,10 +29,10 @@ public class AddServeropenRoleBtn extends Button {
 
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) {
-        if (Objects.requireNonNull(event.getMember()).getRoles().contains(Client.EnvKey.ROLE_EROEFFNUNGSPING.getAsRole())) {
-            throw new InvalidStateException("Du wirst bereits benachrichtigt.", String.format("Du besitzt die %s Rolle bereits.", Client.EnvKey.ROLE_EROEFFNUNGSPING.getAsRole().getAsMention()));
+        if (Objects.requireNonNull(event.getMember()).getRoles().contains(EnvKey.ROLE_EROEFFNUNGSPING.getAsRole())) {
+            throw new InvalidStateException("Du wirst bereits benachrichtigt.", String.format("Du besitzt die %s Rolle bereits.", EnvKey.ROLE_EROEFFNUNGSPING.getAsRole().getAsMention()));
         }
-        Role pingRole = Client.EnvKey.ROLE_EROEFFNUNGSPING.getAsRole();
+        Role pingRole = EnvKey.ROLE_EROEFFNUNGSPING.getAsRole();
         Objects.requireNonNull(event.getGuild()).addRoleToMember(event.getMember(), pingRole).queue();
         event.reply(String.format("""
                         Du wirst nun Benachrichtigt, sobald der Server öffnet!

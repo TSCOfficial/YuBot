@@ -1,9 +1,9 @@
 package ch.frily.yubot.service.ticket.button;
 
-import ch.frily.yubot.Client;
 import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.service.ticket.repository.TicketRepository;
 import ch.frily.yubot.interaction.button.Button;
+import ch.frily.yubot.EnvKey;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Role;
@@ -49,7 +49,7 @@ public class TicketCloseRequestBtn extends Button {
     @Override
     public List<Role> getAllowedRoles() {
         return Stream.of(
-                Client.EnvKey.ROLE_YUTEAM
-        ).map(Client.EnvKey::getAsRole).toList();
+                EnvKey.ROLE_YUTEAM
+        ).map(EnvKey::getAsRole).toList();
     }
 }

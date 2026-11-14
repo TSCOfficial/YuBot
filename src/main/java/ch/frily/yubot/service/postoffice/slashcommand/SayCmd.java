@@ -1,7 +1,7 @@
 package ch.frily.yubot.service.postoffice.slashcommand;
 
-import ch.frily.yubot.Client;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
+import ch.frily.yubot.EnvKey;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Role;
@@ -61,8 +61,8 @@ public class SayCmd implements ISlashSubcommand {
     @Override
     public List<Role> getAllowedRoles() {
         return Stream.of(
-                Client.EnvKey.ROLE_SERVERLEITUNG
-        ).map(Client.EnvKey::getAsRole).toList();
+                EnvKey.ROLE_SERVERLEITUNG
+        ).map(EnvKey::getAsRole).toList();
     }
 
     @Override

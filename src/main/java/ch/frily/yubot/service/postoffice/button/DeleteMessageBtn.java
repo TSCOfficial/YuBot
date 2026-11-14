@@ -1,9 +1,9 @@
 package ch.frily.yubot.service.postoffice.button;
 
-import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.interaction.button.Button;
+import ch.frily.yubot.EnvKey;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Guild;
@@ -40,7 +40,7 @@ public class DeleteMessageBtn extends Button {
         Matcher matcher = pattern.matcher(event.getMessage().getContentRaw());
         if (matcher.find()) {
             String memberId = matcher.group().replace("<@", "").replace(">", "");
-            Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
+            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
             guild.retrieveMemberById(memberId).queue(member -> {
                 if (event.getMember() == null) { // member == null when not from a guild -> ignore
                     event.getMessage().delete().queue();

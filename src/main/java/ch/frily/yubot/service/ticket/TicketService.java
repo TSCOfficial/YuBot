@@ -1,6 +1,5 @@
 package ch.frily.yubot.service.ticket;
 
-import ch.frily.yubot.Client;
 import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.service.ticket.repository.TicketParticipantRepository;
 import ch.frily.yubot.service.ticket.repository.TicketRepository;
@@ -24,6 +23,7 @@ import ch.frily.yubot.interaction.contextmenu.IContextMenu;
 import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.scheduler.IScheduler;
 import ch.frily.yubot.service.ticket.schedule.TicketActivityScheduler;
+import ch.frily.yubot.EnvKey;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
@@ -163,7 +163,7 @@ public class TicketService extends Service {
 
         Ticket ticket = new Ticket(ticketOwner.getId(), type);
 
-        Category ticketCategory = type.getGroup() != null ? type.getGroup().getChannelCategory() : Client.EnvKey.CATEGORY_TICKETSUPPORT.getAsCategory();
+        Category ticketCategory = type.getGroup() != null ? type.getGroup().getChannelCategory() : EnvKey.CATEGORY_TICKETSUPPORT.getAsCategory();
         ActionRow actionrow = ActionRow.of(List.of(
                 new TicketCloseRequestBtn().build()
         ));
@@ -176,7 +176,7 @@ public class TicketService extends Service {
                 .queue(textChannel -> {
                     // Ticket team permissions
                     TextChannelManager ticketManager = textChannel.getManager();
-                    ticketManager.putRolePermissionOverride(Client.EnvKey.ROLE_EVERYONE.getAsRole().getIdLong(), null, List.of(Permission.VIEW_CHANNEL));
+                    ticketManager.putRolePermissionOverride(EnvKey.ROLE_EVERYONE.getAsRole().getIdLong(), null, List.of(Permission.VIEW_CHANNEL));
                     responsibleRoles.forEach(role -> {
                         ticketManager.putRolePermissionOverride(role.getIdLong(), TEAM_PERMISSION, null);
                     });

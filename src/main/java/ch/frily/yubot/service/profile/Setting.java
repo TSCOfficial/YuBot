@@ -1,10 +1,10 @@
 package ch.frily.yubot.service.profile;
 
-import ch.frily.yubot.Client;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.service.profile.repository.SettingRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.profile.modal.ProfileSettingActivemodColorModal;
+import ch.frily.yubot.EnvKey;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Role;
@@ -22,7 +22,7 @@ public enum Setting {
             "aktivitätsbestätigungsanfrage",
             "Entscheide wo deine ActiveMod-Nachrichten gesendet werden.",
             Table.SettingColumn.ACTIVEMOD_SEND_IN_DM,
-            List.of(Client.EnvKey.ROLE_MODERATOR),
+            List.of(EnvKey.ROLE_MODERATOR),
             Boolean.class,
             new OptionData(OptionType.STRING, "via", "Wähle das Medium aus, worüber die Nachricht versendet werden soll", true, true),
             List.of(
@@ -42,7 +42,7 @@ public enum Setting {
             "abwesenheitsmeldung",
             "Passe die Nachricht an, welche bei @Erwähnungen während deiner Absenz gesendet wird.",
             Table.SettingColumn.ABSENCE_NOTICE,
-            List.of(Client.EnvKey.ROLE_YUTEAM, Client.EnvKey.ROLE_TWITCHMOD),
+            List.of(EnvKey.ROLE_YUTEAM, EnvKey.ROLE_TWITCHMOD),
             String.class,
             new OptionData(OptionType.STRING, "text", "Wähle den Text der gesendet werden soll", true),
             (ctx) -> {
@@ -57,39 +57,39 @@ public enum Setting {
             "activemod-color",
             "Passe die Farbe des Balkens deiner ActiveMod-Statistik an.",
             Table.SettingColumn.ACTIVEMOD_COLOR,
-            List.of(Client.EnvKey.ROLE_MODERATOR),
+            List.of(EnvKey.ROLE_MODERATOR),
             String.class,
             List.of(
-                    new SettingChoice<>("Blau / Petrol", Client.EnvKey.COLOR_BLAUPETROL.name(), Client.EnvKey.EMOJI_COLOR_BLAUPETROL.getAsEmoji()),
-                    new SettingChoice<>("Blau / Kornblume", Client.EnvKey.COLOR_BLAUKORNBLUME.name(), Client.EnvKey.EMOJI_COLOR_BLAUKORNBLUME.getAsEmoji()),
-                    new SettingChoice<>("Blau / Azur", Client.EnvKey.COLOR_BLAUAZUR.name(), Client.EnvKey.EMOJI_COLOR_BLAUAZUR.getAsEmoji()),
-                    new SettingChoice<>("Blau / Aqua", Client.EnvKey.COLOR_BLAUAQUA.name(), Client.EnvKey.EMOJI_COLOR_BLAUAQUA.getAsEmoji()),
+                    new SettingChoice<>("Blau / Petrol", EnvKey.COLOR_BLAUPETROL.name(), EnvKey.EMOJI_COLOR_BLAUPETROL.getAsEmoji()),
+                    new SettingChoice<>("Blau / Kornblume", EnvKey.COLOR_BLAUKORNBLUME.name(), EnvKey.EMOJI_COLOR_BLAUKORNBLUME.getAsEmoji()),
+                    new SettingChoice<>("Blau / Azur", EnvKey.COLOR_BLAUAZUR.name(), EnvKey.EMOJI_COLOR_BLAUAZUR.getAsEmoji()),
+                    new SettingChoice<>("Blau / Aqua", EnvKey.COLOR_BLAUAQUA.name(), EnvKey.EMOJI_COLOR_BLAUAQUA.getAsEmoji()),
 
-                    new SettingChoice<>("Gelb / Zitrone", Client.EnvKey.COLOR_GELBZITRONE.name(), Client.EnvKey.EMOJI_COLOR_GELBZITRONE.getAsEmoji()),
-                    new SettingChoice<>("Gelb / Vanille", Client.EnvKey.COLOR_GELBVANILLE.name(), Client.EnvKey.EMOJI_COLOR_GELBVANILLE.getAsEmoji()),
-                    new SettingChoice<>("Gelb / Senf", Client.EnvKey.COLOR_GELBSENF.name(), Client.EnvKey.EMOJI_COLOR_GELBSENF.getAsEmoji()),
-                    new SettingChoice<>("Gelb / Gold", Client.EnvKey.COLOR_GELBGOLD.name(), Client.EnvKey.EMOJI_COLOR_GELBGOLD.getAsEmoji()),
+                    new SettingChoice<>("Gelb / Zitrone", EnvKey.COLOR_GELBZITRONE.name(), EnvKey.EMOJI_COLOR_GELBZITRONE.getAsEmoji()),
+                    new SettingChoice<>("Gelb / Vanille", EnvKey.COLOR_GELBVANILLE.name(), EnvKey.EMOJI_COLOR_GELBVANILLE.getAsEmoji()),
+                    new SettingChoice<>("Gelb / Senf", EnvKey.COLOR_GELBSENF.name(), EnvKey.EMOJI_COLOR_GELBSENF.getAsEmoji()),
+                    new SettingChoice<>("Gelb / Gold", EnvKey.COLOR_GELBGOLD.name(), EnvKey.EMOJI_COLOR_GELBGOLD.getAsEmoji()),
 
-                    new SettingChoice<>("Grün / Smaragd", Client.EnvKey.COLOR_GRUENSMARAGD.name(), Client.EnvKey.EMOJI_COLOR_GRUENSMARAGD.getAsEmoji()),
-                    new SettingChoice<>("Grün / Olivgrün", Client.EnvKey.COLOR_GRUENOLIVGRUEN.name(), Client.EnvKey.EMOJI_COLOR_GRUENOLIVGRUEN.getAsEmoji()),
-                    new SettingChoice<>("Grün / Lindgrün", Client.EnvKey.COLOR_GRUENLINDGRUEN.name(), Client.EnvKey.EMOJI_COLOR_GRUENLINDGRUEN.getAsEmoji()),
-                    new SettingChoice<>("Grün / Kleegrün", Client.EnvKey.COLOR_GRUENKLEEGRUEN.name(), Client.EnvKey.EMOJI_COLOR_GRUENKLEEGRUEN.getAsEmoji()),
+                    new SettingChoice<>("Grün / Smaragd", EnvKey.COLOR_GRUENSMARAGD.name(), EnvKey.EMOJI_COLOR_GRUENSMARAGD.getAsEmoji()),
+                    new SettingChoice<>("Grün / Olivgrün", EnvKey.COLOR_GRUENOLIVGRUEN.name(), EnvKey.EMOJI_COLOR_GRUENOLIVGRUEN.getAsEmoji()),
+                    new SettingChoice<>("Grün / Lindgrün", EnvKey.COLOR_GRUENLINDGRUEN.name(), EnvKey.EMOJI_COLOR_GRUENLINDGRUEN.getAsEmoji()),
+                    new SettingChoice<>("Grün / Kleegrün", EnvKey.COLOR_GRUENKLEEGRUEN.name(), EnvKey.EMOJI_COLOR_GRUENKLEEGRUEN.getAsEmoji()),
 
-                    new SettingChoice<>("Pink / Rosa", Client.EnvKey.COLOR_PINKROSA.name(), Client.EnvKey.EMOJI_COLOR_PINKROSA.getAsEmoji()),
-                    new SettingChoice<>("Pink / Pink", Client.EnvKey.COLOR_PINKPINK.name(), Client.EnvKey.EMOJI_COLOR_PINKPINK.getAsEmoji()),
-                    new SettingChoice<>("Pink / Fuchsia", Client.EnvKey.COLOR_PINKFUCHSIA.name(), Client.EnvKey.EMOJI_COLOR_PINKFUCHSIA.getAsEmoji()),
-                    new SettingChoice<>("Pink / Flamingo", Client.EnvKey.COLOR_PINKFLAMINGO.name(), Client.EnvKey.EMOJI_COLOR_PINKFLAMINGO.getAsEmoji()),
+                    new SettingChoice<>("Pink / Rosa", EnvKey.COLOR_PINKROSA.name(), EnvKey.EMOJI_COLOR_PINKROSA.getAsEmoji()),
+                    new SettingChoice<>("Pink / Pink", EnvKey.COLOR_PINKPINK.name(), EnvKey.EMOJI_COLOR_PINKPINK.getAsEmoji()),
+                    new SettingChoice<>("Pink / Fuchsia", EnvKey.COLOR_PINKFUCHSIA.name(), EnvKey.EMOJI_COLOR_PINKFUCHSIA.getAsEmoji()),
+                    new SettingChoice<>("Pink / Flamingo", EnvKey.COLOR_PINKFLAMINGO.name(), EnvKey.EMOJI_COLOR_PINKFLAMINGO.getAsEmoji()),
 
-                    new SettingChoice<>("Rot / Scharlach", Client.EnvKey.COLOR_ROTSCHARLACH.name(), Client.EnvKey.EMOJI_COLOR_ROTSCHARLACH.getAsEmoji()),
-                    new SettingChoice<>("Rot / Mandarine", Client.EnvKey.COLOR_ROTMANDARINE.name(), Client.EnvKey.EMOJI_COLOR_ROTMANDARINE.getAsEmoji()),
-                    new SettingChoice<>("Rot / Kupfer", Client.EnvKey.COLOR_ROTKUPFER.name(), Client.EnvKey.EMOJI_COLOR_ROTKUPFER.getAsEmoji()),
-                    new SettingChoice<>("Rot / Koralle", Client.EnvKey.COLOR_ROTKORALLE.name(), Client.EnvKey.EMOJI_COLOR_ROTKORALLE.getAsEmoji()),
-                    new SettingChoice<>("Rot / Aprikose", Client.EnvKey.COLOR_ROTAPRIKOSE.name(), Client.EnvKey.EMOJI_COLOR_ROTAPRIKOSE.getAsEmoji()),
+                    new SettingChoice<>("Rot / Scharlach", EnvKey.COLOR_ROTSCHARLACH.name(), EnvKey.EMOJI_COLOR_ROTSCHARLACH.getAsEmoji()),
+                    new SettingChoice<>("Rot / Mandarine", EnvKey.COLOR_ROTMANDARINE.name(), EnvKey.EMOJI_COLOR_ROTMANDARINE.getAsEmoji()),
+                    new SettingChoice<>("Rot / Kupfer", EnvKey.COLOR_ROTKUPFER.name(), EnvKey.EMOJI_COLOR_ROTKUPFER.getAsEmoji()),
+                    new SettingChoice<>("Rot / Koralle", EnvKey.COLOR_ROTKORALLE.name(), EnvKey.EMOJI_COLOR_ROTKORALLE.getAsEmoji()),
+                    new SettingChoice<>("Rot / Aprikose", EnvKey.COLOR_ROTAPRIKOSE.name(), EnvKey.EMOJI_COLOR_ROTAPRIKOSE.getAsEmoji()),
 
-                    new SettingChoice<>("Violett / Veilchen", Client.EnvKey.COLOR_VIOLETTVEILCHEN.name(), Client.EnvKey.EMOJI_COLOR_VIOLETTVEILCHEN.getAsEmoji()),
-                    new SettingChoice<>("Violett / Orchidee", Client.EnvKey.COLOR_VIOLETTORCHIDEE.name(), Client.EnvKey.EMOJI_COLOR_VIOLETTORCHIDEE.getAsEmoji()),
-                    new SettingChoice<>("Violett / Lavendel", Client.EnvKey.COLOR_VIOLETTLAVENDER.name(), Client.EnvKey.EMOJI_COLOR_VIOLETTLAVENDER.getAsEmoji()),
-                    new SettingChoice<>("Violett / Brombeere", Client.EnvKey.COLOR_VIOLETTBROMBEERE.name(), Client.EnvKey.EMOJI_COLOR_VIOLETTBROMBEERE.getAsEmoji())
+                    new SettingChoice<>("Violett / Veilchen", EnvKey.COLOR_VIOLETTVEILCHEN.name(), EnvKey.EMOJI_COLOR_VIOLETTVEILCHEN.getAsEmoji()),
+                    new SettingChoice<>("Violett / Orchidee", EnvKey.COLOR_VIOLETTORCHIDEE.name(), EnvKey.EMOJI_COLOR_VIOLETTORCHIDEE.getAsEmoji()),
+                    new SettingChoice<>("Violett / Lavendel", EnvKey.COLOR_VIOLETTLAVENDER.name(), EnvKey.EMOJI_COLOR_VIOLETTLAVENDER.getAsEmoji()),
+                    new SettingChoice<>("Violett / Brombeere", EnvKey.COLOR_VIOLETTBROMBEERE.name(), EnvKey.EMOJI_COLOR_VIOLETTBROMBEERE.getAsEmoji())
             ),
             (ctx) -> {
                 try {
@@ -136,11 +136,11 @@ public enum Setting {
      * @param dbColumn database column to be able to resolve for generic actions
      * @param <T> the datatype of the given setting
      */
-    <T> Setting(String label, String description, Table.Column dbColumn, List<Client.EnvKey> allowedRoles, Class<T> dataType, Consumer<SettingOnSubmitCtx> onSubmit, Function<SettingOnDisplayCtx, String> onDisplay) {
+    <T> Setting(String label, String description, Table.Column dbColumn, List<EnvKey> allowedRoles, Class<T> dataType, Consumer<SettingOnSubmitCtx> onSubmit, Function<SettingOnDisplayCtx, String> onDisplay) {
         this.label = label;
         this.description = description;
         this.dbColumn = dbColumn;
-        this.allowedRoles = allowedRoles.stream().map(Client.EnvKey::getAsRole).toList();
+        this.allowedRoles = allowedRoles.stream().map(EnvKey::getAsRole).toList();
         this.dataType = dataType;
         this.onSubmit = onSubmit;
         this.onDisplay = onDisplay;
@@ -156,11 +156,11 @@ public enum Setting {
      * @param dbColumn database column to be able to resolve for generic actions
      * @param <T> the datatype of the given setting
      */
-    <T> Setting(String label, String description, Table.Column dbColumn, List<Client.EnvKey> allowedRoles, Class<T> dataType, List<SettingChoice> detachedChoices, Consumer<SettingOnSubmitCtx> onSubmit, Function<SettingOnDisplayCtx, String> onDisplay) {
+    <T> Setting(String label, String description, Table.Column dbColumn, List<EnvKey> allowedRoles, Class<T> dataType, List<SettingChoice> detachedChoices, Consumer<SettingOnSubmitCtx> onSubmit, Function<SettingOnDisplayCtx, String> onDisplay) {
         this.label = label;
         this.description = description;
         this.dbColumn = dbColumn;
-        this.allowedRoles = allowedRoles.stream().map(Client.EnvKey::getAsRole).toList();
+        this.allowedRoles = allowedRoles.stream().map(EnvKey::getAsRole).toList();
         this.dataType = dataType;
         this.choices.addAll(detachedChoices);
         this.onSubmit = onSubmit;
@@ -174,11 +174,11 @@ public enum Setting {
      * @param dbColumn database column to be able to resolve for generic actions
      * @param <T> the datatype of the given setting
      */
-    <T> Setting(String label, String description, Table.Column dbColumn, List<Client.EnvKey> allowedRoles, Class<T> dataType, OptionData option, Consumer<SettingOnSubmitCtx> onSubmit){
+    <T> Setting(String label, String description, Table.Column dbColumn, List<EnvKey> allowedRoles, Class<T> dataType, OptionData option, Consumer<SettingOnSubmitCtx> onSubmit){
         this.label = label;
         this.description = description;
         this.dbColumn = dbColumn;
-        this.allowedRoles = allowedRoles.stream().map(Client.EnvKey::getAsRole).toList();
+        this.allowedRoles = allowedRoles.stream().map(EnvKey::getAsRole).toList();
         this.dataType = dataType;
         this.option = option;
         this.onSubmit = onSubmit;
@@ -192,11 +192,11 @@ public enum Setting {
      * @param choices Autocomplete choices for that setting
      * @param <T> the datatype of the setting
      */
-    <T> Setting(String label, String description, Table.Column dbColumn, List<Client.EnvKey> allowedRoles, Class<T> dataType, OptionData option, List<SettingChoice> choices, Consumer<SettingOnSubmitCtx> onSubmit){
+    <T> Setting(String label, String description, Table.Column dbColumn, List<EnvKey> allowedRoles, Class<T> dataType, OptionData option, List<SettingChoice> choices, Consumer<SettingOnSubmitCtx> onSubmit){
         this.label = label;
         this.description = description;
         this.dbColumn = dbColumn;
-        this.allowedRoles = allowedRoles.stream().map(Client.EnvKey::getAsRole).toList();
+        this.allowedRoles = allowedRoles.stream().map(EnvKey::getAsRole).toList();
         this.dataType = dataType;
         this.option = option;
         this.choices.addAll(choices);

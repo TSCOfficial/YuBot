@@ -1,9 +1,9 @@
 package ch.frily.yubot.service.profile.modal;
 
-import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.profile.MessageHandling;
 import ch.frily.yubot.interaction.modal.Modal;
+import ch.frily.yubot.EnvKey;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.api.components.label.Label;
@@ -63,7 +63,7 @@ public class EditWebhookMessageModal extends Modal {
 
         String editedMessage = messageValue.getAsString();
 
-        Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
+        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
         TextChannel channel = guild.getTextChannelById(channelId);
         channel.retrieveMessageById(messageId).submit()
                 .thenAccept(originalMessage -> {

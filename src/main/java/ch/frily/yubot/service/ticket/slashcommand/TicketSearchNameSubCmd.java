@@ -1,9 +1,9 @@
 package ch.frily.yubot.service.ticket.slashcommand;
 
-import ch.frily.yubot.Client;
 import ch.frily.yubot.container.ContainerContext;
 import ch.frily.yubot.container.ticket.TicketSearchContainer;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
+import ch.frily.yubot.EnvKey;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -37,7 +37,7 @@ public class TicketSearchNameSubCmd implements ISlashSubcommand {
     @Override
     public List<Role> getAllowedRoles() {
         return List.of(
-                Client.EnvKey.ROLE_YUTEAM.getAsRole()
+                EnvKey.ROLE_YUTEAM.getAsRole()
         );
     }
 
