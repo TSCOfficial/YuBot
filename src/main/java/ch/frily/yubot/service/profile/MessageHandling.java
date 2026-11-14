@@ -94,7 +94,7 @@ public class MessageHandling {
                                 List<FileUpload> files = originalMessage.getAttachments().stream().map(attachment -> {
                                     return attachment.getProxy().downloadAsFileUpload(attachment.getFileName());
                                 }).toList();
-                                messageCreateAction.setFiles(files);
+                                messageCreateAction.addFiles(files);
                             }
                             messageCreateAction.queue( msg -> {
                                 ProfileMessage profileMsg = new ProfileMessage(msg, profile, originalMessage.getChannel(), originalMessage.getMember());

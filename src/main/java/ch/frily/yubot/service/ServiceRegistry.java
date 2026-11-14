@@ -4,6 +4,7 @@ import ch.frily.yubot.event.EventRegistry;
 import ch.frily.yubot.service.absence.AbsenceService;
 import ch.frily.yubot.service.activemod.ActivemodService;
 import ch.frily.yubot.service.eventtool.EventReminderService;
+import ch.frily.yubot.service.forummanager.ForumManagerService;
 import ch.frily.yubot.service.game.WordChainGameService;
 import ch.frily.yubot.service.postoffice.PostOfficeService;
 import ch.frily.yubot.service.profile.ProfileService;
@@ -67,7 +68,8 @@ public class ServiceRegistry {
                 SessionStorageService.getInstance(),
                 ProfileService.getInstance(),
                 PostOfficeService.getInstance(),
-                EventReminderService.getInstance()
+                EventReminderService.getInstance(),
+                ForumManagerService.getInstance()
         );
 
 

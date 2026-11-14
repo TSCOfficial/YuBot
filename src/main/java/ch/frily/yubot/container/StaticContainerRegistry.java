@@ -6,6 +6,7 @@ import ch.frily.yubot.service.activemod.container.ActiveModDashboardContainer;
 import ch.frily.yubot.service.ticket.container.TicketPanelContainer;
 import ch.frily.yubot.service.ticket.container.TicketSearchContainer;
 import ch.frily.yubot.service.postoffice.container.*;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.container.Container;
 
