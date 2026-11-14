@@ -1,6 +1,6 @@
 package ch.frily.yubot.service.profile.slashcommand;
 
-import ch.frily.yubot.container.profile.ProfilContainer;
+import ch.frily.yubot.service.profile.container.ProfilContainer;
 import ch.frily.yubot.service.profile.repository.ProfileRepository;
 import ch.frily.yubot.service.profile.Profile;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;

@@ -1,6 +1,6 @@
 package ch.frily.yubot.service.absence.button;
 
-import ch.frily.yubot.container.absence.AbsenceDetailContainer;
+import ch.frily.yubot.service.absence.container.AbsenceDetailContainer;
 import ch.frily.yubot.service.absence.Absence;
 import ch.frily.yubot.service.absence.repository.AbsenceRepository;
 import ch.frily.yubot.interaction.button.Button;

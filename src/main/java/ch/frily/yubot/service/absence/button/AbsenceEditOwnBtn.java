@@ -1,6 +1,6 @@
 package ch.frily.yubot.service.absence.button;
 
-import ch.frily.yubot.container.absence.AbsenceEditOwnContainer;
+import ch.frily.yubot.service.absence.container.AbsenceEditOwnContainer;
 import ch.frily.yubot.container.ContainerContext;
 import ch.frily.yubot.interaction.button.Button;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;

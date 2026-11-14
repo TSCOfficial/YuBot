@@ -1,7 +1,5 @@
 package ch.frily.yubot.service.postoffice.slashcommand;
 
-import ch.frily.yubot.container.ContainerContext;
-import ch.frily.yubot.container.guildinfo.LegalNoticeContainer;
 import ch.frily.yubot.interaction.command.ISlashCommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;

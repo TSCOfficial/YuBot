@@ -1,6 +1,6 @@
 package ch.frily.yubot.embed;
 
-import ch.frily.yubot.embed.teamlist.TeamlistEmbed;
+import ch.frily.yubot.service.postoffice.embed.TeamlistEmbed;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 

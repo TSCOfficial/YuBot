@@ -1,6 +1,6 @@
 package ch.frily.yubot.service.profile.select;
 
-import ch.frily.yubot.container.profile.ProfilContainer;
+import ch.frily.yubot.service.profile.container.ProfilContainer;
 import ch.frily.yubot.service.profile.repository.ProfileRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.profile.Profile;

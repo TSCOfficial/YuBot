@@ -4,7 +4,7 @@ import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.service.ticket.repository.TicketParticipantRepository;
 import ch.frily.yubot.service.ticket.repository.TicketRepository;
 import ch.frily.yubot.service.ticket.repository.TicketTypeControlRepository;
-import ch.frily.yubot.embed.ticket.TicketOpenEmbed;
+import ch.frily.yubot.service.ticket.embed.TicketOpenEmbed;
 import ch.frily.yubot.event.IEvent;
 import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.exception.PermissionDeniedException;

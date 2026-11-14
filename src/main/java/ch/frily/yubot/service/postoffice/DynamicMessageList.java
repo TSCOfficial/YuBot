@@ -2,10 +2,10 @@ package ch.frily.yubot.service.postoffice;
 
 import ch.frily.yubot.container.ContainerContext;
 import ch.frily.yubot.container.StaticContainerRegistry;
-import ch.frily.yubot.container.ticket.TicketPanelContainer;
+import ch.frily.yubot.service.ticket.container.TicketPanelContainer;
 import ch.frily.yubot.service.postoffice.repository.DynamicMessageRepository;
 import ch.frily.yubot.embed.StaticEmbedRegistry;
-import ch.frily.yubot.embed.teamlist.TeamlistEmbed;
+import ch.frily.yubot.service.postoffice.embed.TeamlistEmbed;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.EnvKey;

@@ -1,12 +1,12 @@
 package ch.frily.yubot.service.ticket;
 
 import ch.frily.yubot.Client;
-import ch.frily.yubot.container.ticket.TicketTranscriptContainer;
+import ch.frily.yubot.service.ticket.container.TicketTranscriptContainer;
 import ch.frily.yubot.service.ticket.repository.TicketParticipantRepository;
 import ch.frily.yubot.service.ticket.repository.TicketRepository;
-import ch.frily.yubot.embed.ticket.TicketCloseRequestEmbed;
-import ch.frily.yubot.embed.ticket.TicketClosedOptionsEmbed;
-import ch.frily.yubot.embed.ticket.TicketReopenedEmbed;
+import ch.frily.yubot.service.ticket.embed.TicketCloseRequestEmbed;
+import ch.frily.yubot.service.ticket.embed.TicketClosedOptionsEmbed;
+import ch.frily.yubot.service.ticket.embed.TicketReopenedEmbed;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.PermissionDeniedException;
 import ch.frily.yubot.exception.ThrowingConsumer;

@@ -1,6 +1,6 @@
 package ch.frily.yubot.service.activemod.slashcommand;
 
-import ch.frily.yubot.container.activemod.ActiveModStatisticContainer;
+import ch.frily.yubot.service.activemod.container.ActiveModStatisticContainer;
 import ch.frily.yubot.service.activemod.ActiveModTracking;
 import ch.frily.yubot.service.activemod.repository.ActiveModTrackingRepository;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;

@@ -2,8 +2,8 @@ package ch.frily.yubot.service.activemod;
 
 import ch.frily.yubot.service.activemod.repository.ActiveModRepository;
 import ch.frily.yubot.service.activemod.repository.ActiveModTrackingRepository;
-import ch.frily.yubot.embed.closure.ClosureActivityRequestEmbed;
-import ch.frily.yubot.embed.closure.ClosureLogEmbed;
+import ch.frily.yubot.service.activemod.embed.ActiveModActivityRequestEmbed;
+import ch.frily.yubot.service.activemod.embed.ClosureLogEmbed;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.service.profile.repository.SettingRepository;
 import ch.frily.yubot.service.postoffice.DynamicMessageList;
@@ -279,7 +279,7 @@ public class Closure {
             ActionRow actionrow = ActionRow.of(new ActiveModActivityProveBtn().build(), optOutBtn.build());
 
             channel.sendMessage(moderator.member().getAsMention())
-                    .addEmbeds(new ClosureActivityRequestEmbed(moderator).build())
+                    .addEmbeds(new ActiveModActivityRequestEmbed(moderator).build())
                     .setComponents(actionrow)
                     .queue(ThrowingConsumer.wrap(null, message -> {
                         ActiveMod updatedActiveMod = new ActiveMod(moderator.member(), moderator.lastActivityAt(), LocalDateTime.now(), message.getIdLong(), moderator.requestedAttentionMessageId());
@@ -304,7 +304,7 @@ public class Closure {
 
             moderator.member().getUser().openPrivateChannel().submit().thenAccept(ThrowingConsumer.wrap(null, privateChannel -> {
                 privateChannel.sendMessage(moderator.member().getAsMention())
-                        .addEmbeds(new ClosureActivityRequestEmbed(moderator).build())
+                        .addEmbeds(new ActiveModActivityRequestEmbed(moderator).build())
                         .setComponents(actionrow)
                         .queue(ThrowingConsumer.wrap(null, message -> {
                                     ActiveMod updatedActiveMod = new ActiveMod(moderator.member(), moderator.lastActivityAt(), LocalDateTime.now(), message.getIdLong(), moderator.requestedAttentionMessageId());

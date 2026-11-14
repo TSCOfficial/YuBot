@@ -1,7 +1,7 @@
 package ch.frily.yubot.service.ticket.slashcommand;
 
 import ch.frily.yubot.container.ContainerContext;
-import ch.frily.yubot.container.ticket.TicketSearchContainer;
+import ch.frily.yubot.service.ticket.container.TicketSearchContainer;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
 import ch.frily.yubot.EnvKey;
 import net.dv8tion.jda.api.entities.Role;

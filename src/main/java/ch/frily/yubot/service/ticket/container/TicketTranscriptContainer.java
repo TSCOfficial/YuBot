@@ -1,0 +1,58 @@
+package ch.frily.yubot.service.ticket.container;
+
+import ch.frily.yubot.container.Container;
+import ch.frily.yubot.service.ticket.Ticket;
+import ch.frily.yubot.service.ticket.TicketType;
+import ch.frily.yubot.util.Util;
+import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.utils.FileUpload;
+
+import java.time.OffsetDateTime;
+
+@Slf4j
+public class TicketTranscriptContainer extends Container {
+
+    public TicketTranscriptContainer(Member initiator, Ticket ticket, FileUpload transkript) {
+        this.addComponent(TextDisplay.of(String.format("### Ticket %s wurde geschlossen", ticket.getName())));
+        this.addComponent(Separator.createInvisible(Separator.Spacing.SMALL));
+
+        if (ticket.getType().getGroup() == null) {
+            addFormatedText("**Kategorie**: `%s`", ticket.getType().getLabel());
+        } else {
+            addFormatedText("**Kategorie**: `%s / %s`", ticket.getType().getGroup().getLabel(), ticket.getType().getLabel());
+        }
+
+        String labelOwner = "Erstellt von";
+        if (ticket.getType() == TicketType.MODTICKET) {
+            labelOwner = "Erstellt für";
+        }
+        if (ticket.getMemberOwner() != null) {
+            addFormatedText("**%s**: %s (%s)", labelOwner, ticket.getMemberOwner().getAsMention(), ticket.getMemberOwner().getUser().getName());
+        } else {
+            addFormatedText("**%s**: *Person hat den Server verlassen*", labelOwner);
+        }
+
+        String assignedMember = "**Verantwortlich**: -";
+
+        if (ticket.getAssignee() != null) {
+            assignedMember = String.format("**Verantwortlich**: %s (@%s)", ticket.getAssignee().getAsMention(), ticket.getAssignee().getUser().getName());
+        }
+
+        this.addComponent(TextDisplay.of(assignedMember));
+        this.addFormatedText("**Gelöscht von**: %s (@%s)", initiator.getAsMention(), initiator.getUser().getName());
+
+        long epochTimeCreated = ticket.getChannel().getTimeCreated().toEpochSecond();
+        String opendTimeSinceCreation = Util.calcDuration(ticket.getChannel().getTimeCreated(), OffsetDateTime.now());
+        addFormatedText("**Geöffnet am**: <t:%d:F> (%s)", epochTimeCreated, opendTimeSinceCreation);
+
+        if (ticket.getSummary() != null) {
+            addFormatedText("**Zusammenfassung**\n> %s", ticket.getSummary());
+        }
+        this.addComponent(Separator.createDivider(Separator.Spacing.LARGE));
+        this.addComponent(FileDisplay.fromFile(transkript));
+    }
+}

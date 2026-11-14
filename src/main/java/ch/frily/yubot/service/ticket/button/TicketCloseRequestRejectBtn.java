@@ -1,6 +1,6 @@
 package ch.frily.yubot.service.ticket.button;
 
-import ch.frily.yubot.embed.ticket.TicketCloseRejectedEmbed;
+import ch.frily.yubot.service.ticket.embed.TicketCloseRejectedEmbed;
 import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.service.ticket.repository.TicketRepository;
 import ch.frily.yubot.interaction.button.Button;

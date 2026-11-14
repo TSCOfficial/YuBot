@@ -1,11 +1,11 @@
 package ch.frily.yubot.container;
 
-import ch.frily.yubot.container.absence.AbsenceEditOwnContainer;
-import ch.frily.yubot.container.absence.AbsenceOverviewContainer;
-import ch.frily.yubot.container.activemod.ActiveModDashboardContainer;
-import ch.frily.yubot.container.guildinfo.*;
-import ch.frily.yubot.container.ticket.TicketPanelContainer;
-import ch.frily.yubot.container.ticket.TicketSearchContainer;
+import ch.frily.yubot.service.absence.container.AbsenceEditOwnContainer;
+import ch.frily.yubot.service.absence.container.AbsenceOverviewContainer;
+import ch.frily.yubot.service.activemod.container.ActiveModDashboardContainer;
+import ch.frily.yubot.service.ticket.container.TicketPanelContainer;
+import ch.frily.yubot.service.ticket.container.TicketSearchContainer;
+import ch.frily.yubot.service.postoffice.container.*;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.container.Container;
 
