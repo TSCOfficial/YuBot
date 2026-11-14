@@ -1,9 +1,9 @@
 package ch.frily.yubot.service.ticket.modal;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.service.ticket.repository.TicketRepository;
 import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.service.ticket.Ticket;
-import ch.frily.yubot.util.EnvKey;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
@@ -77,7 +77,7 @@ public class TicketAccessUsersModal extends Modal {
         ModalMapping usersValue = event.getValue("users-select");
         ModalMapping reasonValue = event.getValue("reason");
         List<String> memberIds = usersValue.getAsStringList();
-        List<Member> allSelectedMembers = memberIds.stream().map(memberId -> EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(memberId)).toList(); // depending whether they are already added or not, will be filtered out to lower API calls
+        List<Member> allSelectedMembers = memberIds.stream().map(memberId -> Client.EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(memberId)).toList(); // depending whether they are already added or not, will be filtered out to lower API calls
 
         Ticket ticket = TicketRepository.getTicketByChannelId(event.getChannelIdLong());
         List<String> uncompletedAction = new ArrayList<>();

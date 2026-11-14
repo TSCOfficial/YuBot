@@ -1,9 +1,9 @@
 package ch.frily.yubot.service.activemod.event;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.event.IEvent;
 import ch.frily.yubot.service.activemod.Closure;
 import ch.frily.yubot.service.postoffice.DynamicMessageList;
-import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.Event;
@@ -34,7 +34,7 @@ public class OnOptInEvent implements IEvent<GuildMemberRoleAddEvent> {
         GuildMemberRoleAddEvent castEvent = (GuildMemberRoleAddEvent) event;
         if (Util.isTeamMember(castEvent.getMember())) {
 
-            if (castEvent.getRoles().contains(EnvKey.ROLE_ACTIVEMOD.getAsRole())) {
+            if (castEvent.getRoles().contains(Client.EnvKey.ROLE_ACTIVEMOD.getAsRole())) {
                 Closure.getInstance().triggerUpdate();
             }
 

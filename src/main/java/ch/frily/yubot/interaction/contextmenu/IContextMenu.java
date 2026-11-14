@@ -1,6 +1,6 @@
 package ch.frily.yubot.interaction.contextmenu;
 
-import ch.frily.yubot.util.EnvKey;
+import ch.frily.yubot.Client;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -31,7 +31,7 @@ public interface IContextMenu {
      * <p>
      * Allowed roles are roles that a user needs to execute the command. (The user needs to have at least one of these roles)
      * <p>
-     * <b>How to define roles using {@link EnvKey}:</b>
+     * <b>How to define roles using {@link Client.EnvKey}:</b>
      * <pre><code>
      *     Stream.of(
      *             EnvKey.ROLE_MODLEITUNG,

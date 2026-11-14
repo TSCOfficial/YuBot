@@ -1,7 +1,7 @@
 package ch.frily.yubot.service.eventtool.slashcommand;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
-import ch.frily.yubot.util.EnvKey;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -43,8 +43,8 @@ public class RemoveStageModCmd implements ISlashSubcommand {
     @Override
     public List<Role> getAllowedRoles() {
         return Stream.of(
-                EnvKey.ROLE_EVENTLEITUNG,
-                EnvKey.ROLE_STVEVENTLEITUNG
-        ).map(EnvKey::getAsRole).toList();
+                Client.EnvKey.ROLE_EVENTLEITUNG,
+                Client.EnvKey.ROLE_STVEVENTLEITUNG
+        ).map(Client.EnvKey::getAsRole).toList();
     }
 }

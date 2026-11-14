@@ -1,11 +1,11 @@
 package ch.frily.yubot.service.profile.ctxmenu;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.service.profile.repository.ProfileMessageRepository;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.service.profile.Profile;
 import ch.frily.yubot.interaction.contextmenu.IMessageContextMenu;
 import ch.frily.yubot.service.profile.ProfileMessage;
-import ch.frily.yubot.util.EnvKey;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
@@ -29,8 +29,8 @@ public class LookupProfileCtxMenu implements IMessageContextMenu {
     @Override
     public List<Role> getAllowedRoles() {
         return Stream.of(
-                EnvKey.ROLE_YUTEAM
-        ).map(EnvKey::getAsRole).toList();
+                Client.EnvKey.ROLE_YUTEAM
+        ).map(Client.EnvKey::getAsRole).toList();
     }
 
     @Override

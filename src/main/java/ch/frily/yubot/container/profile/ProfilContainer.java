@@ -1,5 +1,6 @@
 package ch.frily.yubot.container.profile;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.container.Container;
 import ch.frily.yubot.service.profile.repository.ProfileRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
@@ -45,32 +46,32 @@ public class ProfilContainer extends Container {
             "<:active1:1527044015927721984><:active2:1527044016942616748><:active3:1527044018276536403>";
 
     private static final Map<Role, Emoji> PRONOUN_ROLES = Map.ofEntries(
-            Map.entry(EnvKey.ROLE_ERIHM.getAsRole(), EnvKey.EMOJI_PRONOMEN_ERIHM.getAsEmoji()),
-            Map.entry(EnvKey.ROLE_ERSIE.getAsRole(), EnvKey.EMOJI_PRONOMEN_ERSIE.getAsEmoji()),
-            Map.entry(EnvKey.ROLE_SIEER.getAsRole(), EnvKey.EMOJI_PRONOMEN_SIEER.getAsEmoji()),
-            Map.entry(EnvKey.ROLE_ERDEY.getAsRole(), EnvKey.EMOJI_PRONOMEN_ERDEY.getAsEmoji()),
-            Map.entry(EnvKey.ROLE_SIEIHR.getAsRole(), EnvKey.EMOJI_PRONOMEN_SIEIHR.getAsEmoji()),
-            Map.entry(EnvKey.ROLE_SIEDEY.getAsRole(), EnvKey.EMOJI_PRONOMEN_SIEDEY.getAsEmoji()),
-            Map.entry(EnvKey.ROLE_DEYDEREN.getAsRole(), EnvKey.EMOJI_PRONOMEN_DEYDEREN.getAsEmoji()),
-            Map.entry(EnvKey.ROLE_DEYER.getAsRole(), EnvKey.EMOJI_PRONOMEN_DEYER.getAsEmoji()),
-            Map.entry(EnvKey.ROLE_DEYSIE.getAsRole(), EnvKey.EMOJI_PRONOMEN_DEYSIE.getAsEmoji()),
-            Map.entry(EnvKey.ROLE_ES.getAsRole(), EnvKey.EMOJI_PRONOMEN_ES.getAsEmoji()),
-            Map.entry(EnvKey.ROLE_ERES.getAsRole(), EnvKey.EMOJI_PRONOMEN_ERES.getAsEmoji()),
-            Map.entry(EnvKey.ROLE_SIEES.getAsRole(), EnvKey.EMOJI_PRONOMEN_SIEES.getAsEmoji()),
-            Map.entry(EnvKey.ROLE_DEYES.getAsRole(), EnvKey.EMOJI_PRONOMEN_DEYES.getAsEmoji()),
-            Map.entry(EnvKey.ROLE_ESER.getAsRole(), EnvKey.EMOJI_PRONOMEN_ESER.getAsEmoji()),
-            Map.entry(EnvKey.ROLE_ESSIE.getAsRole(), EnvKey.EMOJI_PRONOMEN_ESSIE.getAsEmoji()),
-            Map.entry(EnvKey.ROLE_ESDEY.getAsRole(), EnvKey.EMOJI_PRONOMEN_ESDEY.getAsEmoji()),
-            Map.entry(EnvKey.ROLE_ALLE.getAsRole(), EnvKey.EMOJI_PRONOMEN_ALLE.getAsEmoji()),
-            Map.entry(EnvKey.ROLE_KEINE.getAsRole(), EnvKey.EMOJI_PRONOMEN_KEINE.getAsEmoji()),
-            Map.entry(EnvKey.ROLE_ANDEREFRAGEN.getAsRole(), EnvKey.EMOJI_PRONOMEN_ANDEREFRAGEN.getAsEmoji())
+            Map.entry(Client.EnvKey.ROLE_ERIHM.getAsRole(), Client.EnvKey.EMOJI_PRONOMEN_ERIHM.getAsEmoji()),
+            Map.entry(Client.EnvKey.ROLE_ERSIE.getAsRole(), Client.EnvKey.EMOJI_PRONOMEN_ERSIE.getAsEmoji()),
+            Map.entry(Client.EnvKey.ROLE_SIEER.getAsRole(), Client.EnvKey.EMOJI_PRONOMEN_SIEER.getAsEmoji()),
+            Map.entry(Client.EnvKey.ROLE_ERDEY.getAsRole(), Client.EnvKey.EMOJI_PRONOMEN_ERDEY.getAsEmoji()),
+            Map.entry(Client.EnvKey.ROLE_SIEIHR.getAsRole(), Client.EnvKey.EMOJI_PRONOMEN_SIEIHR.getAsEmoji()),
+            Map.entry(Client.EnvKey.ROLE_SIEDEY.getAsRole(), Client.EnvKey.EMOJI_PRONOMEN_SIEDEY.getAsEmoji()),
+            Map.entry(Client.EnvKey.ROLE_DEYDEREN.getAsRole(), Client.EnvKey.EMOJI_PRONOMEN_DEYDEREN.getAsEmoji()),
+            Map.entry(Client.EnvKey.ROLE_DEYER.getAsRole(), Client.EnvKey.EMOJI_PRONOMEN_DEYER.getAsEmoji()),
+            Map.entry(Client.EnvKey.ROLE_DEYSIE.getAsRole(), Client.EnvKey.EMOJI_PRONOMEN_DEYSIE.getAsEmoji()),
+            Map.entry(Client.EnvKey.ROLE_ES.getAsRole(), Client.EnvKey.EMOJI_PRONOMEN_ES.getAsEmoji()),
+            Map.entry(Client.EnvKey.ROLE_ERES.getAsRole(), Client.EnvKey.EMOJI_PRONOMEN_ERES.getAsEmoji()),
+            Map.entry(Client.EnvKey.ROLE_SIEES.getAsRole(), Client.EnvKey.EMOJI_PRONOMEN_SIEES.getAsEmoji()),
+            Map.entry(Client.EnvKey.ROLE_DEYES.getAsRole(), Client.EnvKey.EMOJI_PRONOMEN_DEYES.getAsEmoji()),
+            Map.entry(Client.EnvKey.ROLE_ESER.getAsRole(), Client.EnvKey.EMOJI_PRONOMEN_ESER.getAsEmoji()),
+            Map.entry(Client.EnvKey.ROLE_ESSIE.getAsRole(), Client.EnvKey.EMOJI_PRONOMEN_ESSIE.getAsEmoji()),
+            Map.entry(Client.EnvKey.ROLE_ESDEY.getAsRole(), Client.EnvKey.EMOJI_PRONOMEN_ESDEY.getAsEmoji()),
+            Map.entry(Client.EnvKey.ROLE_ALLE.getAsRole(), Client.EnvKey.EMOJI_PRONOMEN_ALLE.getAsEmoji()),
+            Map.entry(Client.EnvKey.ROLE_KEINE.getAsRole(), Client.EnvKey.EMOJI_PRONOMEN_KEINE.getAsEmoji()),
+            Map.entry(Client.EnvKey.ROLE_ANDEREFRAGEN.getAsRole(), Client.EnvKey.EMOJI_PRONOMEN_ANDEREFRAGEN.getAsEmoji())
     );
 
     private static final List<Role> DM_ROLES = Stream.of(
-            EnvKey.ROLE_DMOFFEN,
-            EnvKey.ROLE_DMFRAGEN,
-            EnvKey.ROLE_DM_GESCHLOSSEN
-    ).map(EnvKey::getAsRole).toList();
+            Client.EnvKey.ROLE_DMOFFEN,
+            Client.EnvKey.ROLE_DMFRAGEN,
+            Client.EnvKey.ROLE_DM_GESCHLOSSEN
+    ).map(Client.EnvKey::getAsRole).toList();
 
     /** Whether the profile is owned by the person viewing the profile details */
     @Getter
@@ -173,7 +174,7 @@ public class ProfilContainer extends Container {
             profileControl.add(useProfileBtn.build());
         }
         // add new profile btn
-        if (Util.isPermitted(target, Stream.of(EnvKey.ROLE_DIDSYSTEM).map(EnvKey::getAsRole).toList())) {
+        if (Util.isPermitted(target, Stream.of(Client.EnvKey.ROLE_DIDSYSTEM).map(Client.EnvKey::getAsRole).toList())) {
             profileControl.add(new AddProfileBtn().build());
         }
         // edit & delete profile

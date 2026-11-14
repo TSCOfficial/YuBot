@@ -1,9 +1,9 @@
 package ch.frily.yubot.service.ticket.slashcommand;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.service.ticket.repository.TicketRepository;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
-import ch.frily.yubot.util.EnvKey;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.jspecify.annotations.NonNull;
@@ -33,7 +33,7 @@ public class TicketReopenCmd implements ISlashSubcommand {
     @Override
     public List<Role> getAllowedRoles() {
         return Stream.of(
-                EnvKey.ROLE_YUTEAM
-        ).map(EnvKey::getAsRole).toList();
+                Client.EnvKey.ROLE_YUTEAM
+        ).map(Client.EnvKey::getAsRole).toList();
     }
 }

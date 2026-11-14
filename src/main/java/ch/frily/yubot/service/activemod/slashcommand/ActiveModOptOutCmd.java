@@ -1,11 +1,11 @@
 package ch.frily.yubot.service.activemod.slashcommand;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.service.activemod.Closure;
 import ch.frily.yubot.service.activemod.button.ActiveModApproveOptOutBtn;
 import ch.frily.yubot.service.activemod.button.ActiveModCancelOptOutBtn;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
-import ch.frily.yubot.util.EnvKey;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.Role;
@@ -31,20 +31,20 @@ public class ActiveModOptOutCmd implements ISlashSubcommand {
     @Override
     public List<Role> getAllowedRoles() {
         return Stream.of(
-                EnvKey.ROLE_MODERATOR
-        ).map(EnvKey::getAsRole).toList();
+                Client.EnvKey.ROLE_MODERATOR
+        ).map(Client.EnvKey::getAsRole).toList();
     }
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) {
-        Role activeMod = EnvKey.ROLE_ACTIVEMOD.getAsRole();
+        Role activeMod = Client.EnvKey.ROLE_ACTIVEMOD.getAsRole();
         int activeModCount = Closure.getActiveMods().size() - 1;
         if (activeModCount <= 0) {
             event.reply("**Bestätige dein Opt-out**\nDu bist der/die letzte aktive Moderator*in. Bitte bestätige dein Opt-out.\n-# Falls du bestätigst wird der Server sofort geschlossen.")
                     .addComponents(ActionRow.of(new ActiveModApproveOptOutBtn().build(), new ActiveModCancelOptOutBtn().build())).setEphemeral(true).queue();
             return;
         }
-        if (Objects.requireNonNull(event.getMember()).getRoles().stream().anyMatch(role -> role.getIdLong() == EnvKey.ROLE_ACTIVEMOD.getAsLong())) {
+        if (Objects.requireNonNull(event.getMember()).getRoles().stream().anyMatch(role -> role.getIdLong() == Client.EnvKey.ROLE_ACTIVEMOD.getAsLong())) {
             Objects.requireNonNull(event.getGuild()).removeRoleFromMember(event.getMember(), activeMod).submit().thenAccept(_ -> {
                 String countInfo = "Es sind nun **" + activeModCount + "** aktive Moderator\\*innen";
                 if (activeModCount == 1) {

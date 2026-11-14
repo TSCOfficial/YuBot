@@ -1,12 +1,12 @@
 package ch.frily.yubot.service.absence.event;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.service.absence.repository.AbsenceRepository;
 import ch.frily.yubot.service.profile.repository.SettingRepository;
 import ch.frily.yubot.event.IEvent;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.absence.Absence;
 import ch.frily.yubot.service.profile.Setting;
-import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.Util;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -53,7 +53,7 @@ public class SendAbsenceNotice implements IEvent<MessageReceivedEvent> {
                     } else {
                         sb.append(String.format("> **%s %s ist heute bis <t:%d:t> %s**", todaysAbsence.type().getEmoji().getFormatted(), member.getAsMention(), Util.toEpochSeconds(todaysAbsence.toDateTime()), todaysAbsence.type().getLabel().toLowerCase())).append("\n");
                     }
-                    if (Util.resolveCategory(castEvent.getGuildChannel()) != null && Util.resolveCategory(castEvent.getGuildChannel()).getId().equals(EnvKey.CATEGORY_TEAMBEREICH.getAsCategory().getId())) {
+                    if (Util.resolveCategory(castEvent.getGuildChannel()) != null && Util.resolveCategory(castEvent.getGuildChannel()).getId().equals(Client.EnvKey.CATEGORY_TEAMBEREICH.getAsCategory().getId())) {
                         sb.append(String.format("> Begründung: %s", todaysAbsence.reason())).append("\n");
                     }
 

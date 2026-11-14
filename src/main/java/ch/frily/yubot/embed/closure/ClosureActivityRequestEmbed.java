@@ -1,11 +1,11 @@
 package ch.frily.yubot.embed.closure;
 
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.embed.IEmbed;
 import ch.frily.yubot.service.activemod.ActiveMod;
 import ch.frily.yubot.service.activemod.Closure;
 import ch.frily.yubot.service.profile.repository.SettingRepository;
-import ch.frily.yubot.util.EnvKey;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Role;
 
@@ -22,8 +22,8 @@ public class ClosureActivityRequestEmbed implements IEmbed {
 
     public ClosureActivityRequestEmbed(ActiveMod activeMod) {
         this.activeMod = activeMod;
-        this.epochTime = activeMod.lastActivityAt().atZone(EnvKey.TIMEZONE.getAsZoneId()).toEpochSecond();
-        this.activeModRole = EnvKey.ROLE_ACTIVEMOD.getAsRole();
+        this.epochTime = activeMod.lastActivityAt().atZone(Client.EnvKey.TIMEZONE.getAsZoneId()).toEpochSecond();
+        this.activeModRole = Client.EnvKey.ROLE_ACTIVEMOD.getAsRole();
         this.activeModCount = Closure.getActiveMods().size() - 1; // mod-count without this mod
     }
 

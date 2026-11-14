@@ -1,11 +1,11 @@
 package ch.frily.yubot.embed.teamlist;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.embed.Field;
 import ch.frily.yubot.embed.IEmbed;
 import ch.frily.yubot.service.ticket.TicketType;
 import ch.frily.yubot.service.ticket.repository.TicketTypeControlRepository;
 import ch.frily.yubot.service.ticket.TicketTypeGroup;
-import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
@@ -27,26 +27,26 @@ import static ch.frily.yubot.util.Util.getUsersByRole;
 public class TeamlistEmbed implements IEmbed {
 
     private static final List<Role> ROLES = Stream.of(
-            EnvKey.ROLE_OWNER,
-            EnvKey.ROLE_SERVERLEITUNG,
-            EnvKey.ROLE_MODLEITUNG,
-            EnvKey.ROLE_SUPPORTLEITUNG,
-            EnvKey.ROLE_MODERATOR,
-            EnvKey.ROLE_SUPPORT,
-            EnvKey.ROLE_AWARENESSLEITUNG,
-            EnvKey.ROLE_AWARENESS,
-            EnvKey.ROLE_DEVLEITUNG,
-            EnvKey.ROLE_DEVELOPER,
-            EnvKey.ROLE_EVENTLEITUNG,
-            EnvKey.ROLE_EVENT,
-            EnvKey.ROLE_DESIGN
-    ).map(EnvKey::getAsRole).toList();
+            Client.EnvKey.ROLE_OWNER,
+            Client.EnvKey.ROLE_SERVERLEITUNG,
+            Client.EnvKey.ROLE_MODLEITUNG,
+            Client.EnvKey.ROLE_SUPPORTLEITUNG,
+            Client.EnvKey.ROLE_MODERATOR,
+            Client.EnvKey.ROLE_SUPPORT,
+            Client.EnvKey.ROLE_AWARENESSLEITUNG,
+            Client.EnvKey.ROLE_AWARENESS,
+            Client.EnvKey.ROLE_DEVLEITUNG,
+            Client.EnvKey.ROLE_DEVELOPER,
+            Client.EnvKey.ROLE_EVENTLEITUNG,
+            Client.EnvKey.ROLE_EVENT,
+            Client.EnvKey.ROLE_DESIGN
+    ).map(Client.EnvKey::getAsRole).toList();
 
     @Override
     public String getTitle() {
-        Role teamRole = EnvKey.ROLE_YUTEAM.getAsRole();
+        Role teamRole = Client.EnvKey.ROLE_YUTEAM.getAsRole();
         List<Member> teamMembers = teamRole == null ? List.of() : getUsersByRole(teamRole);
-        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+        Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
         String guildName = guild == null ? "YuServer" : guild.getName();
         return String.format("%s's Team *(%s)*", guildName, teamMembers.size());
     }
@@ -61,7 +61,7 @@ public class TeamlistEmbed implements IEmbed {
         List<Field> fields = new ArrayList<>();
         ROLES.forEach(role -> fields.add(generateFieldByRole(role)));
 
-        Role activeModRole = EnvKey.ROLE_ACTIVEMOD.getAsRole();
+        Role activeModRole = Client.EnvKey.ROLE_ACTIVEMOD.getAsRole();
         List<Member> activeMods = activeModRole == null ? List.of() : getUsersByRole(activeModRole);
 
         if (activeMods.isEmpty()) {
@@ -89,10 +89,10 @@ public class TeamlistEmbed implements IEmbed {
         }).toList();
 
         List<Role> mappedTypes = openedTypes.stream().map(type -> switch (type) {
-            case BEWERBUNG_SUPPORT ->  EnvKey.ROLE_SUPPORT.getAsRole();
-            case BEWERBUNG_MODERATION ->  EnvKey.ROLE_MODERATOR.getAsRole();
-            case BEWERBUNG_EVENT ->  EnvKey.ROLE_EVENT.getAsRole();
-            case BEWERBUNG_AWARENESS ->  EnvKey.ROLE_AWARENESS.getAsRole();
+            case BEWERBUNG_SUPPORT ->  Client.EnvKey.ROLE_SUPPORT.getAsRole();
+            case BEWERBUNG_MODERATION ->  Client.EnvKey.ROLE_MODERATOR.getAsRole();
+            case BEWERBUNG_EVENT ->  Client.EnvKey.ROLE_EVENT.getAsRole();
+            case BEWERBUNG_AWARENESS ->  Client.EnvKey.ROLE_AWARENESS.getAsRole();
             default -> null;
         }).filter(Objects::nonNull).toList();
 
@@ -101,7 +101,7 @@ public class TeamlistEmbed implements IEmbed {
                     "Wir suchen Teammitglieder*innen ✨",
                     String.format("In %s suchen wir noch Teammitglieder. Bewerbe dich in %s",
                             mappedTypes.stream().map(Role::getAsMention).collect(Collectors.joining(", ")),
-                            EnvKey.CHANNEL_SUPPORT.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER).getAsMention()), false
+                            Client.EnvKey.CHANNEL_SUPPORT.getAsChannel(TextChannel.class, Client.EnvKey.GUILD_YUSERVER).getAsMention()), false
             ));
         }
 

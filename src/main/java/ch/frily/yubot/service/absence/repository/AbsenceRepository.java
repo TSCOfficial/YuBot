@@ -1,12 +1,12 @@
 package ch.frily.yubot.service.absence.repository;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.service.absence.Absence;
 import ch.frily.yubot.service.absence.AbsenceType;
-import ch.frily.yubot.util.EnvKey;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -84,7 +84,7 @@ public class AbsenceRepository implements IRepository {
             LocalDateTime updatedAt = rs.getTimestamp(Table.AbsenceColumn.UPDATED_AT.getColumn()).toLocalDateTime();
             AbsenceType absenceType = AbsenceType.valueOf(typeString);
 
-            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+            Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
             Member member = guild.getMemberById(memberId);
             Absence absence = new Absence(id, member, startDateTime, endDateTime, absenceType, reason, sendNotice, createdAt, updatedAt);
             absences.add(absence);
@@ -115,7 +115,7 @@ public class AbsenceRepository implements IRepository {
             LocalDateTime updatedAt = rs.getTimestamp(Table.AbsenceColumn.UPDATED_AT.getColumn()).toLocalDateTime();
             AbsenceType absenceType = AbsenceType.valueOf(typeString);
 
-            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+            Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
             Member member = guild.getMemberById(memberId);
             return new Absence(id, member, startDateTime, endDateTime, absenceType, reason, sendNotice, createdAt, updatedAt);
         }
@@ -150,7 +150,7 @@ public class AbsenceRepository implements IRepository {
             LocalDateTime updatedAt = rs.getTimestamp(Table.AbsenceColumn.UPDATED_AT.getColumn()).toLocalDateTime();
             AbsenceType absenceType = AbsenceType.valueOf(typeString);
 
-            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+            Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
             Member member = guild.getMemberById(memberId);
             Absence absence = new Absence(id, member, startDateTime, endDateTime, absenceType, reason, sendNotice, createdAt, updatedAt);
 

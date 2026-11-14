@@ -1,10 +1,10 @@
 package ch.frily.yubot.service.activemod;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.service.profile.repository.SettingRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.profile.Setting;
 import ch.frily.yubot.service.profile.SettingChoice;
-import ch.frily.yubot.util.EnvKey;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.entities.Member;
@@ -86,7 +86,7 @@ public final class ActiveModStatisticChart {
             try {
                 String colorName = SettingRepository.getSetting(member, Setting.ACTIVEMOD_GRAPH_COLOR, String.class);
                 if (colorName != null) {
-                    color = EnvKey.valueOf(colorName).getAsColor();
+                    color = Client.EnvKey.valueOf(colorName).getAsColor();
                 }
 
                 // Take a random color that no member is already using
@@ -99,7 +99,7 @@ public final class ActiveModStatisticChart {
                     }).toList();
 
                     String colorKey = restColors.getFirst().getValue();
-                    color = EnvKey.valueOf(colorKey).getAsColor();
+                    color = Client.EnvKey.valueOf(colorKey).getAsColor();
 
                     // save this color to DB
                     SettingRepository.upsertSetting(member, Setting.ACTIVEMOD_GRAPH_COLOR, colorKey);

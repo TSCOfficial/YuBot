@@ -1,5 +1,6 @@
 package ch.frily.yubot.service;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.event.EventRegistry;
 import ch.frily.yubot.service.absence.AbsenceService;
 import ch.frily.yubot.service.activemod.ActivemodService;
@@ -15,7 +16,6 @@ import ch.frily.yubot.interaction.contextmenu.ContextMenuRegistry;
 import ch.frily.yubot.interaction.modal.ModalRegistry;
 import ch.frily.yubot.interaction.select.SelectRegistry;
 import ch.frily.yubot.scheduler.SchedulerRegistry;
-import ch.frily.yubot.util.EnvKey;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
@@ -89,7 +89,7 @@ public class ServiceRegistry {
         });
 
 
-        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+        Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
         guild.updateCommands()
                 .addCommands(commands)
                 .queue();

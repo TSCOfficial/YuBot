@@ -1,12 +1,12 @@
 package ch.frily.yubot.service.profile.repository;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.service.profile.Settings;
 import ch.frily.yubot.service.profile.Setting;
-import ch.frily.yubot.util.EnvKey;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
 import org.jetbrains.annotations.NotNull;
@@ -47,7 +47,7 @@ public class SettingRepository implements IRepository {
             String activemodColorString = rs.getString(Table.SettingColumn.ACTIVEMOD_COLOR.getColumn());
             Color  activemodColor = null;
             if (activemodColorString != null) {
-                activemodColor = EnvKey.valueOf(activemodColorString).getAsColor();
+                activemodColor = Client.EnvKey.valueOf(activemodColorString).getAsColor();
             }
 
             return new Settings(member, activeModSendInDm, absenceNotice, activemodColor);
@@ -98,7 +98,7 @@ public class SettingRepository implements IRepository {
         Map<Member, T> map = new HashMap<>();
         while (rs.next()) {
             String memberId = rs.getString(Table.SettingColumn.MEMBER_ID.getColumn());
-            Member member = EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(memberId);
+            Member member = Client.EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(memberId);
             T settingValue = rs.getObject(setting.getDbColumn().getColumn(), dataType);
             map.put(member, settingValue);
         }

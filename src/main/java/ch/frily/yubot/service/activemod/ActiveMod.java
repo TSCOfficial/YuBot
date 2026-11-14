@@ -1,11 +1,11 @@
 package ch.frily.yubot.service.activemod;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.service.activemod.repository.ActiveModControlRepository;
 import ch.frily.yubot.service.activemod.repository.ActiveModRepository;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.PermissionDeniedException;
-import ch.frily.yubot.util.EnvKey;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Guild;
@@ -43,12 +43,12 @@ public record ActiveMod(
             );
         }
 
-        Role activeMod = EnvKey.ROLE_ACTIVEMOD.getAsRole();
+        Role activeMod = Client.EnvKey.ROLE_ACTIVEMOD.getAsRole();
         if (member.getRoles().contains(activeMod)) {
             ActiveModRepository.updateModeratorActivity(member);
             return CompletableFuture.completedFuture("✅ Du hast deine Aktivität erfolgreich bestätigt.");
         }
-        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+        Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
         return guild.addRoleToMember(member, activeMod).submit().thenApply(_ -> {
 
             try {

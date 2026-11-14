@@ -1,10 +1,10 @@
 package ch.frily.yubot.service.activemod.button;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.service.activemod.Closure;
 import ch.frily.yubot.interaction.button.Button;
-import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
@@ -43,14 +43,14 @@ public class ActiveModOptOutBtn extends Button {
 
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) throws SQLException {
-        Role activeMod = EnvKey.ROLE_ACTIVEMOD.getAsRole();
+        Role activeMod = Client.EnvKey.ROLE_ACTIVEMOD.getAsRole();
         Member member = event.getMember() == null ? Util.getMemberByUser(event.getUser()) : event.getMember();
         if (!member.getRoles().contains(activeMod)) {
             throw new InvalidStateException("Du bist nicht als aktiver moderator\\*in markiert.", null);
         }
 
         Closure.deleteRequestedAttentionMessages();
-        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+        Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
         guild.removeRoleFromMember(member, activeMod).submit().thenAccept(ThrowingConsumer.wrap(null, _ -> {
             int activeModCount = Closure.getActiveMods().size();
 

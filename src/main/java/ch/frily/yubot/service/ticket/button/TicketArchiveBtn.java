@@ -1,11 +1,11 @@
 package ch.frily.yubot.service.ticket.button;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.service.ticket.repository.TicketRepository;
 import ch.frily.yubot.service.ticket.TicketTypeGroup;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.service.ticket.modal.TicketSummaryModal;
-import ch.frily.yubot.util.EnvKey;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Role;
@@ -58,7 +58,7 @@ public class TicketArchiveBtn extends Button {
     @Override
     public List<Role> getAllowedRoles() {
         return Stream.of(
-                EnvKey.ROLE_YUTEAM
-        ).map(EnvKey::getAsRole).toList();
+                Client.EnvKey.ROLE_YUTEAM
+        ).map(Client.EnvKey::getAsRole).toList();
     }
 }

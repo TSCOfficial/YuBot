@@ -1,5 +1,6 @@
 package ch.frily.yubot.service.postoffice;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.container.ContainerContext;
 import ch.frily.yubot.container.StaticContainerRegistry;
 import ch.frily.yubot.container.ticket.TicketPanelContainer;
@@ -8,7 +9,6 @@ import ch.frily.yubot.embed.StaticEmbedRegistry;
 import ch.frily.yubot.embed.teamlist.TeamlistEmbed;
 import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.exception.ThrowingConsumer;
-import ch.frily.yubot.util.EnvKey;
 import lombok.Getter;
 import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.entities.Guild;
@@ -200,7 +200,7 @@ public enum DynamicMessageList {
      */
     private void sendNewMessage(DynamicMessageRepository.DynamicMessageReference reference, ContainerContext context) {
         try {
-            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+            Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
             MessageChannel channel = (MessageChannel) guild.getGuildChannelById(reference.channelId());
 
             if (channel == null) {

@@ -1,8 +1,8 @@
 package ch.frily.yubot.service.ticket.ctxmenu;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.interaction.contextmenu.IUserContextMenu;
 import ch.frily.yubot.service.ticket.modal.ModTicketSelectorModal;
-import ch.frily.yubot.util.EnvKey;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import org.jspecify.annotations.NonNull;
@@ -28,8 +28,8 @@ public class ModticketUserCtxMenu implements IUserContextMenu {
     @Override
     public List<Role> getAllowedRoles() {
         return Stream.of(
-                EnvKey.ROLE_SUPPORT,
-                EnvKey.ROLE_MODERATOR
-        ).map(EnvKey::getAsRole).toList();
+                Client.EnvKey.ROLE_SUPPORT,
+                Client.EnvKey.ROLE_MODERATOR
+        ).map(Client.EnvKey::getAsRole).toList();
     }
 }

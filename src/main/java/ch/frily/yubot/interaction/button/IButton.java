@@ -1,6 +1,6 @@
 package ch.frily.yubot.interaction.button;
 
-import ch.frily.yubot.util.EnvKey;
+import ch.frily.yubot.Client;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
@@ -40,7 +40,7 @@ public interface IButton {
      * Allowed roles are roles that a user needs to execute the interaction. (The user needs to have at least one of these roles)
      * </p>
      * <p>
-     *     <b>How to define roles using {@link EnvKey}:</b>
+     *     <b>How to define roles using {@link Client.EnvKey}:</b>
      *     <pre><code>
      *         Stream.of(
      *             EnvKey.ROLE_MODLEITUNG,

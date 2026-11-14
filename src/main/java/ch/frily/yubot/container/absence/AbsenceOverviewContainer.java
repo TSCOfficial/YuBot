@@ -1,5 +1,6 @@
 package ch.frily.yubot.container.absence;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.container.ContainerContext;
 import ch.frily.yubot.container.PaginationContainer;
 import ch.frily.yubot.container.PaginationItem;
@@ -10,7 +11,6 @@ import ch.frily.yubot.service.absence.repository.AbsenceRepository;
 import ch.frily.yubot.service.absence.button.AbsenceAddBtn;
 import ch.frily.yubot.service.absence.button.AbsenceDetailBtn;
 import ch.frily.yubot.service.absence.button.AbsenceEditOwnBtn;
-import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.Util;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -34,17 +34,17 @@ public class AbsenceOverviewContainer extends PaginationContainer {
 
     /** Roles that are taken in account for when displaying the roles of an absenced member */
     private static final List<Role> DISPLAYABLE_ROLES = Stream.of(
-            EnvKey.ROLE_OWNER,
-            EnvKey.ROLE_SERVERLEITUNG,
-            EnvKey.ROLE_MODERATOR,
-            EnvKey.ROLE_SUPPORT,
-            EnvKey.ROLE_AWARENESS,
-            EnvKey.ROLE_DEVELOPER,
-            EnvKey.ROLE_DESIGN,
-            EnvKey.ROLE_EVENT,
-            EnvKey.ROLE_DESIGN,
-            EnvKey.ROLE_TWITCHMOD
-    ).map(EnvKey::getAsRole).toList();
+            Client.EnvKey.ROLE_OWNER,
+            Client.EnvKey.ROLE_SERVERLEITUNG,
+            Client.EnvKey.ROLE_MODERATOR,
+            Client.EnvKey.ROLE_SUPPORT,
+            Client.EnvKey.ROLE_AWARENESS,
+            Client.EnvKey.ROLE_DEVELOPER,
+            Client.EnvKey.ROLE_DESIGN,
+            Client.EnvKey.ROLE_EVENT,
+            Client.EnvKey.ROLE_DESIGN,
+            Client.EnvKey.ROLE_TWITCHMOD
+    ).map(Client.EnvKey::getAsRole).toList();
 
     /**
      * All absences split up into day-absences, grouped by the day they belong to
@@ -92,7 +92,7 @@ public class AbsenceOverviewContainer extends PaginationContainer {
     private void addDaySection(LocalDate day, List<Absence> absences) {
         PaginationItem daySection = new PaginationItem();
 
-        String todayTag = day.equals(LocalDate.now(EnvKey.TIMEZONE.getAsZoneId())) ? "*(Heute)*" : "";
+        String todayTag = day.equals(LocalDate.now(Client.EnvKey.TIMEZONE.getAsZoneId())) ? "*(Heute)*" : "";
 
         daySection.setTitle(String.format("""
                         ### %d. %s %d %s

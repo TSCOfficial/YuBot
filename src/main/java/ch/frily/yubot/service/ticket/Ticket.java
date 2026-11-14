@@ -14,7 +14,6 @@ import ch.frily.yubot.service.ticket.button.TicketCloseRequestAcceptBtn;
 import ch.frily.yubot.service.ticket.button.TicketCloseRequestBtn;
 import ch.frily.yubot.service.ticket.button.TicketCloseRequestRejectBtn;
 import ch.frily.yubot.service.ticket.button.TicketArchiveBtn;
-import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.Util;
 import dev.omardiaa.transcript.jda.exception.TranscriberPermissionException;
 import dev.omardiaa.transcript.jda.model.JDATranscript;
@@ -136,9 +135,9 @@ public class Ticket {
 
 
     private static final List<Role> ALLOW_DIRECT_FORCECLOSE_ROLES = Stream.of(
-            EnvKey.ROLE_SERVERLEITUNG,
-            EnvKey.ROLE_MODLEITUNG
-    ).map(EnvKey::getAsRole).toList();
+            Client.EnvKey.ROLE_SERVERLEITUNG,
+            Client.EnvKey.ROLE_MODLEITUNG
+    ).map(Client.EnvKey::getAsRole).toList();
 
     /**
      * Create a Ticket object<br>
@@ -163,7 +162,7 @@ public class Ticket {
      */
     public Member getMemberOwner() {
         Objects.requireNonNull(this.ownerId);
-        return EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(this.ownerId);
+        return Client.EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(this.ownerId);
     }
 
     public User getUserOwner() {
@@ -177,7 +176,7 @@ public class Ticket {
      */
     public Member getAssignee() {
         Objects.requireNonNull(this.assigneeId);
-        return EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(this.assigneeId);
+        return Client.EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(this.assigneeId);
     }
 
     /**
@@ -368,7 +367,7 @@ public class Ticket {
 
         generateTranscript().thenAccept(ThrowingConsumer.wrap(null, fileUpload -> {
             fileUpload.setName("transkript-" + name + ".html");
-            TextChannel logChannel = EnvKey.CHANNEL_TICKETLOGS.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
+            TextChannel logChannel = Client.EnvKey.CHANNEL_TICKETLOGS.getAsChannel(TextChannel.class, Client.EnvKey.GUILD_YUSERVER);
 
             List<Container> containers = new TicketTranscriptContainer(initiator, this, fileUpload).build();
             logChannel.sendMessageComponents(containers).useComponentsV2().addFiles(fileUpload).setAllowedMentions(List.of()).queue(ThrowingConsumer.wrap(null, logMsg -> {
@@ -466,7 +465,7 @@ public class Ticket {
     public void addRoleAccess(TextChannelManager ticketManager, List<Role> roles) throws PermissionDeniedException, InvalidStateException {
         roles.forEach(role -> {
             List<Permission> permissions = USER_PERMISSION;
-            if (role.getId().equals(EnvKey.ROLE_YUTEAM.getValue())) {
+            if (role.getId().equals(Client.EnvKey.ROLE_YUTEAM.getValue())) {
                 permissions = TEAM_PERMISSION;
             }
             ticketManager.putRolePermissionOverride(role.getIdLong(), permissions, null);

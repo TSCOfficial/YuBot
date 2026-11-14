@@ -1,5 +1,6 @@
 package ch.frily.yubot.service.ticket.repository;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.database.Table;
@@ -7,7 +8,6 @@ import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.service.ticket.TicketStatus;
 import ch.frily.yubot.service.ticket.TicketType;
-import ch.frily.yubot.util.EnvKey;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -56,7 +56,7 @@ public class TicketRepository implements IRepository {
         boolean isReminderSent = resultSet.getBoolean(Table.TicketColumn.IS_REMINDER_SENT.getColumn());
         String archiveMessageId = resultSet.getString(Table.TicketColumn.ARCHIVE_MESSAGE_ID.getColumn());
 
-        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+        Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
 
         TicketType type = TicketType.valueOf(typeName);
 
@@ -122,7 +122,7 @@ public class TicketRepository implements IRepository {
             String archiveMessageId = resultSet.getString(Table.TicketColumn.ARCHIVE_MESSAGE_ID.getColumn());
 
 
-            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+            Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
 
             Ticket ticket = new Ticket(ownerId, type);
             ticket.setId(id);
@@ -186,7 +186,7 @@ public class TicketRepository implements IRepository {
             String archiveMessageId = rs.getString(Table.TicketColumn.ARCHIVE_MESSAGE_ID.getColumn());
 
 
-            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+            Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
 
             Ticket ticket = new Ticket(ownerId, type);
             ticket.setId(id);
@@ -250,7 +250,7 @@ public class TicketRepository implements IRepository {
             String archiveMessageId = resultSet.getString(Table.TicketColumn.ARCHIVE_MESSAGE_ID.getColumn());
 
 
-            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+            Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
 
             Ticket ticket = new Ticket(ownerId, type);
             ticket.setId(id);

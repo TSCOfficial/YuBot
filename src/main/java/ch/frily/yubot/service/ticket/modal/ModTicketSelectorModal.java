@@ -1,5 +1,6 @@
 package ch.frily.yubot.service.ticket.modal;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.service.ticket.repository.TicketRepository;
 import ch.frily.yubot.exception.ThrowingConsumer;
 import ch.frily.yubot.interaction.modal.Modal;
@@ -7,7 +8,6 @@ import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.service.ticket.TicketService;
 import ch.frily.yubot.service.ticket.TicketTeam;
 import ch.frily.yubot.service.ticket.TicketType;
-import ch.frily.yubot.util.EnvKey;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
@@ -118,7 +118,7 @@ public class ModTicketSelectorModal extends Modal {
             if (Objects.nonNull(proveOption) && !proveOption.getAsStringList().isEmpty()) {
                 loadingProveNotice = String.format("""
                         %s Beweismittel wird geladen...
-                        """, EnvKey.EMOJI_SPINNER.getAsEmoji());
+                        """, Client.EnvKey.EMOJI_SPINNER.getAsEmoji());
             }
             event.getHook().editOriginal(
                     String.format("""

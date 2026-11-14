@@ -1,5 +1,6 @@
 package ch.frily.yubot.service.activemod;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.service.activemod.repository.ActiveModRepository;
 import ch.frily.yubot.service.activemod.repository.ActiveModTrackingRepository;
 import ch.frily.yubot.embed.closure.ClosureActivityRequestEmbed;
@@ -10,7 +11,6 @@ import ch.frily.yubot.service.postoffice.DynamicMessageList;
 import ch.frily.yubot.service.activemod.button.ActiveModActivityProveBtn;
 import ch.frily.yubot.service.activemod.button.ActiveModOptOutBtn;
 import ch.frily.yubot.service.postoffice.button.DeleteMessageBtn;
-import ch.frily.yubot.util.EnvKey;
 import ch.frily.yubot.util.Util;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -43,10 +43,10 @@ public class Closure {
     );
 
     private static final List<Role> MOD_ROLES = Stream.of(
-            EnvKey.ROLE_MODLEITUNG,
-            EnvKey.ROLE_MODERATOR,
-            EnvKey.ROLE_SERVERLEITUNG
-    ).map(EnvKey::getAsRole).toList();
+            Client.EnvKey.ROLE_MODLEITUNG,
+            Client.EnvKey.ROLE_MODERATOR,
+            Client.EnvKey.ROLE_SERVERLEITUNG
+    ).map(Client.EnvKey::getAsRole).toList();
 
     /** How long a person needs to be inactive to trigger an activity request [in minutes] */
     @Getter
@@ -83,14 +83,14 @@ public class Closure {
         toggleCommunityPermission(serverIsOpen);
         toggleServerClosedInfoChannelPermissions(serverIsOpen);
 
-        Role everyoneRole = EnvKey.ROLE_EVERYONE.getAsRole();
+        Role everyoneRole = Client.EnvKey.ROLE_EVERYONE.getAsRole();
 
-        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
-        TextChannel lobbyChannel = EnvKey.CHANNEL_LOBBY.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
+        Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
+        TextChannel lobbyChannel = Client.EnvKey.CHANNEL_LOBBY.getAsChannel(TextChannel.class, Client.EnvKey.GUILD_YUSERVER);
 
         // Opening the server
         if (serverIsOpen && !everyoneRole.getPermissions().contains(Permission.VIEW_CHANNEL)) {
-            Role mentionRole = EnvKey.ROLE_EROEFFNUNGSPING.getAsRole();
+            Role mentionRole = Client.EnvKey.ROLE_EROEFFNUNGSPING.getAsRole();
             lobbyChannel.sendMessage(String.format("%s, es ist Zeit zu quatschen ✨", mentionRole.getAsMention())).queue();
 
             logClosure(true);
@@ -107,7 +107,7 @@ public class Closure {
                     ## %s
                     Der server ist nun geschlossen.
                     -# Es gibt keine aktiven Moderator*innen mehr.
-                    """, EnvKey.CHANNEL_SERVERGESCHLOSSEN.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER).getAsMention())).queue();
+                    """, Client.EnvKey.CHANNEL_SERVERGESCHLOSSEN.getAsChannel(TextChannel.class, Client.EnvKey.GUILD_YUSERVER).getAsMention())).queue();
 
             logClosure(false);
             InputStream serverIcon = Objects.requireNonNull(getClass().getResourceAsStream("/img/server-icon-closed.png"));
@@ -124,7 +124,7 @@ public class Closure {
      * @param isOpen whether the server was opened (true) or closed (false)
      */
     private void logClosure(boolean isOpen) {
-        TextChannel logChannel = EnvKey.CHANNEL_CLOSURELOGS.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
+        TextChannel logChannel = Client.EnvKey.CHANNEL_CLOSURELOGS.getAsChannel(TextChannel.class, Client.EnvKey.GUILD_YUSERVER);
         logChannel.sendMessageEmbeds(new ClosureLogEmbed(isOpen).build()).queue();
     }
 
@@ -133,8 +133,8 @@ public class Closure {
      * @param serverIsOpen True if the server is open, false if it should be closed
      */
     private void toggleServerClosedInfoChannelPermissions(boolean serverIsOpen) {
-        Role everyoneRole = EnvKey.ROLE_EVERYONE.getAsRole();
-        TextChannel serverClosedChannel = EnvKey.CHANNEL_SERVERGESCHLOSSEN.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
+        Role everyoneRole = Client.EnvKey.ROLE_EVERYONE.getAsRole();
+        TextChannel serverClosedChannel = Client.EnvKey.CHANNEL_SERVERGESCHLOSSEN.getAsChannel(TextChannel.class, Client.EnvKey.GUILD_YUSERVER);
 
         List<Permission> allowPerms = new ArrayList<>();
         List<Permission> denyPerms = new ArrayList<>();
@@ -154,7 +154,7 @@ public class Closure {
      * @param serverIsOpen True if the server should be open, false if they should be closed
      */
     private void toggleCommunityPermission(boolean serverIsOpen) {
-        Role everyoneRole = EnvKey.ROLE_EVERYONE.getAsRole();
+        Role everyoneRole = Client.EnvKey.ROLE_EVERYONE.getAsRole();
 
         if (serverIsOpen) {
             everyoneRole.getManager().givePermissions(PERMISSIONS).queue();
@@ -165,9 +165,9 @@ public class Closure {
     }
 
     private void kickMembersFromVoice() {
-        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+        Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
         guild.getVoiceStates().forEach(voiceState -> {
-            if (Objects.requireNonNull(voiceState.getChannel()).getParentCategory() == null || voiceState.getChannel().getParentCategory() != EnvKey.CATEGORY_TEAMBEREICH.getAsCategory()) {
+            if (Objects.requireNonNull(voiceState.getChannel()).getParentCategory() == null || voiceState.getChannel().getParentCategory() != Client.EnvKey.CATEGORY_TEAMBEREICH.getAsCategory()) {
                 guild.moveVoiceMember(voiceState.getMember(), null).queue();
             }
         });
@@ -178,8 +178,8 @@ public class Closure {
      * @return get all active moderators
      */
     public static List<Member> getActiveMods() {
-        Role activeModRole = EnvKey.ROLE_ACTIVEMOD.getAsRole();
-        Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+        Role activeModRole = Client.EnvKey.ROLE_ACTIVEMOD.getAsRole();
+        Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
         return guild.getMembersWithRoles(activeModRole);
     }
 
@@ -223,7 +223,7 @@ public class Closure {
     }
 
     /**
-     * Check if a member is a moderator by checking if the member has the {@link EnvKey#ROLE_MODERATOR}-role
+     * Check if a member is a moderator by checking if the member has the {@link Client.EnvKey#ROLE_MODERATOR}-role
      * @param member the member to check whether its a moderator or not
      * @return True if they are a mod, false if not
      */
@@ -247,7 +247,7 @@ public class Closure {
         deleteRequestedAttentionMessages();
 
         if (activeMod.activityRequestMessageId() != 0) { // automatically accept an active activity-prove-request
-            TextChannel channel = EnvKey.CHANNEL_ACTIVEMODERATION.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
+            TextChannel channel = Client.EnvKey.CHANNEL_ACTIVEMODERATION.getAsChannel(TextChannel.class, Client.EnvKey.GUILD_YUSERVER);
             channel.deleteMessageById(activeMod.activityRequestMessageId()).queue(
                     success -> {},
                     failure -> {
@@ -270,7 +270,7 @@ public class Closure {
      * @param moderator mod-record {@link ActiveMod}
      */
     public static void requestActivityProve(ActiveMod moderator) throws SQLException, ClassNotFoundException {
-        TextChannel channel = EnvKey.CHANNEL_ACTIVEMODERATION.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
+        TextChannel channel = Client.EnvKey.CHANNEL_ACTIVEMODERATION.getAsChannel(TextChannel.class, Client.EnvKey.GUILD_YUSERVER);
 
         if (moderator.activityRequestedAt() == null) {
 
@@ -326,14 +326,14 @@ public class Closure {
     private static void handleActivityProveTimeout(ActiveMod moderator) throws SQLException {
         if (getActiveMods().size() == 1) {
             if (Objects.requireNonNull(moderator.activityRequestedAt()).isBefore(LocalDateTime.now().minusMinutes(Closure.PING_MODS_AFTER_ACTIVITY_REQUEST_IF_ALONE)) && Objects.requireNonNull(moderator.requestedAttentionMessageId()) == 0) {
-                TextChannel channel = EnvKey.CHANNEL_ACTIVEMODERATION.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
+                TextChannel channel = Client.EnvKey.CHANNEL_ACTIVEMODERATION.getAsChannel(TextChannel.class, Client.EnvKey.GUILD_YUSERVER);
                 channel.sendMessage(String.format("""
                                 %s
                                 ⚠️ %s hat bislang noch nicht auf die Aktivitätsbestätigungsanfrage geantwortet.
                                 Der Server würde <t:%d:R> schliessen.
                                 -# Halte du den Server offen indem du dich </activemod opt-in:1518320360834207866> machst.
                                 """,
-                        EnvKey.ROLE_MODERATOR.getAsRole().getAsMention(),
+                        Client.EnvKey.ROLE_MODERATOR.getAsRole().getAsMention(),
                         moderator.member().getAsMention(),
                         Instant.now().plus(5, java.time.temporal.ChronoUnit.MINUTES).toEpochMilli() / 1000
                 )).queue(ThrowingConsumer.wrap(null, message -> {
@@ -343,14 +343,14 @@ public class Closure {
             }
         }
         if (moderator.activityRequestedAt().isBefore(LocalDateTime.now().minusMinutes(Closure.MAX_NORMAL_ACTIVITY_REQUEST_RESPONSE_TIME))) {
-            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+            Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
 
             if (SettingRepository.getSettings(moderator.member()).activeModSendInDm()) {
                 moderator.member().getUser().openPrivateChannel().queue(privateChannel -> {
                     editIgnoredRequestActivityMsg(privateChannel, moderator);
                 });
             } else {
-                TextChannel channel = EnvKey.CHANNEL_ACTIVEMODERATION.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
+                TextChannel channel = Client.EnvKey.CHANNEL_ACTIVEMODERATION.getAsChannel(TextChannel.class, Client.EnvKey.GUILD_YUSERVER);
 
                 editIgnoredRequestActivityMsg(channel, moderator);
             }
@@ -358,7 +358,7 @@ public class Closure {
             log.info("active mod size: {}", getActiveMods().size());
             long requestMessageId = moderator.activityRequestMessageId();
             log.info(moderator.member().getEffectiveName());
-            guild.removeRoleFromMember(moderator.member(), EnvKey.ROLE_ACTIVEMOD.getAsRole()).queue(_ -> {
+            guild.removeRoleFromMember(moderator.member(), Client.EnvKey.ROLE_ACTIVEMOD.getAsRole()).queue(_ -> {
                 log.info("active mod size after removing: {}", getActiveMods().size());
                 // Send close message in modchat when no other mods are active
                 if (getActiveMods().isEmpty()) {
@@ -373,7 +373,7 @@ public class Closure {
     }
 
     private static void editIgnoredRequestActivityMsg(MessageChannel channel, ActiveMod moderator) {
-        long epochTime = moderator.lastActivityAt().atZone(EnvKey.TIMEZONE.getAsZoneId()).toEpochSecond();
+        long epochTime = moderator.lastActivityAt().atZone(Client.EnvKey.TIMEZONE.getAsZoneId()).toEpochSecond();
 
         channel.retrieveMessageById(moderator.activityRequestMessageId()).queue(message -> {
             message.editMessage(
@@ -394,7 +394,7 @@ public class Closure {
     }
 
     public static void deleteRequestedAttentionMessageById(long messageId) {
-        TextChannel channel = EnvKey.CHANNEL_ACTIVEMODERATION.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
+        TextChannel channel = Client.EnvKey.CHANNEL_ACTIVEMODERATION.getAsChannel(TextChannel.class, Client.EnvKey.GUILD_YUSERVER);
         channel.deleteMessageById(messageId).queue();
     }
 
@@ -403,7 +403,7 @@ public class Closure {
      */
     public static void requestAttentionMessageIgnored(long messageId) {
         int delay = 900; // 15min
-        TextChannel channel = EnvKey.CHANNEL_ACTIVEMODERATION.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
+        TextChannel channel = Client.EnvKey.CHANNEL_ACTIVEMODERATION.getAsChannel(TextChannel.class, Client.EnvKey.GUILD_YUSERVER);
         channel.retrieveMessageById(messageId).queue(message -> {
             message.editMessage(String.format("""
                     Es hat sich niemand gemeldet. Der Server wird nun geschlossen.

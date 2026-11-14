@@ -1,12 +1,12 @@
 package ch.frily.yubot.service.profile.repository;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.service.profile.Profile;
 import ch.frily.yubot.service.profile.ProfileMessage;
-import ch.frily.yubot.util.EnvKey;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 
@@ -76,7 +76,7 @@ public class ProfileMessageRepository implements IRepository {
 
             Member memberRef = null;
             if (memberId != null) {
-                memberRef = EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(memberId);
+                memberRef = Client.EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(memberId);
             }
 
             return new ProfileMessage(message, profileRef, message.getChannel(), memberRef);

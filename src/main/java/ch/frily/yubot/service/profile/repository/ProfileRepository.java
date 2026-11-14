@@ -1,11 +1,11 @@
 package ch.frily.yubot.service.profile.repository;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.service.profile.Profile;
-import ch.frily.yubot.util.EnvKey;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
 
@@ -36,7 +36,7 @@ public class ProfileRepository implements IRepository {
             String proxy = rs.getString(Table.ProfileColumn.PROXY.getColumn());
             int useCount = rs.getInt(Table.ProfileColumn.USE_COUNT.getColumn());
 
-            Member member = EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(memberId);
+            Member member = Client.EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(memberId);
 
             return new Profile(profileId, member, name, isCurrentlyUsed, profilePicture, proxy, useCount);
         }

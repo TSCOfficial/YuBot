@@ -1,9 +1,9 @@
 package ch.frily.yubot.service.ticket.slashcommand;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.service.ticket.repository.TicketRepository;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
-import ch.frily.yubot.util.EnvKey;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -45,7 +45,7 @@ public class TicketCloseCmd implements ISlashSubcommand {
             ticket.requestClose(event);
 
             // Disable welcome message component
-            Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
+            Guild guild = Client.EnvKey.GUILD_YUSERVER.getAsGuild();
             TextChannel channel = guild.getTextChannelById(ticket.getChannel().getIdLong());
             channel.retrieveMessageById(ticket.getWelcomeMessageId()).submit().thenAccept(message -> {
                 message.editMessageComponents(message.getComponentTree().asDisabled()).queue();

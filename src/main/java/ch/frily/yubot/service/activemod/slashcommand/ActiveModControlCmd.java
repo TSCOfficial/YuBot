@@ -1,9 +1,9 @@
 package ch.frily.yubot.service.activemod.slashcommand;
 
+import ch.frily.yubot.Client;
 import ch.frily.yubot.service.activemod.repository.ActiveModControlRepository;
 import ch.frily.yubot.service.postoffice.DynamicMessageList;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
-import ch.frily.yubot.util.EnvKey;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -50,15 +50,15 @@ public class ActiveModControlCmd implements ISlashSubcommand {
     @Override
     public List<Role> getAllowedRoles() {
         return Stream.of(
-                EnvKey.ROLE_SERVERLEITUNG
-        ).map(EnvKey::getAsRole).toList();
+                Client.EnvKey.ROLE_SERVERLEITUNG
+        ).map(Client.EnvKey::getAsRole).toList();
     }
 
     @Override
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException {
         boolean state = Objects.requireNonNull(event.getOption("opt-in")).getAsString().equals("allow");
         ActiveModControlRepository.updateControl(state);
-        TextChannel modIntern = EnvKey.CHANNEL_ACTIVEMODERATION.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER);
+        TextChannel modIntern = Client.EnvKey.CHANNEL_ACTIVEMODERATION.getAsChannel(TextChannel.class, Client.EnvKey.GUILD_YUSERVER);
         int delay = 600; // 10min
         long timestamp = Instant.now().plusSeconds(delay).toEpochMilli() / 1000;
         if (state) {
