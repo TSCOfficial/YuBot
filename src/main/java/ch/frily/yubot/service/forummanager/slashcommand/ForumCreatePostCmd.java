@@ -2,7 +2,7 @@ package ch.frily.yubot.service.forummanager.slashcommand;
 
 import ch.frily.yubot.EnvKey;
 import ch.frily.yubot.interaction.command.ISlashSubcommand;
-import ch.frily.yubot.service.forummanager.modal.CreatePostModal;
+import ch.frily.yubot.service.forummanager.modal.CreateCustomPostModal;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
@@ -18,6 +18,7 @@ import java.util.Objects;
 /**
  * Slashcommand to create a new forum post
  * @since v2.5.0
+ * @author Aliz Rose Frily
  */
 public class ForumCreatePostCmd implements ISlashSubcommand {
     @Override
@@ -50,7 +51,7 @@ public class ForumCreatePostCmd implements ISlashSubcommand {
         Objects.requireNonNull(event.getOption("forum"));
         ForumChannel forumChannel = event.getOption("forum").getAsChannel().asForumChannel();
 
-        CreatePostModal modal = new CreatePostModal();
+        CreateCustomPostModal modal = new CreateCustomPostModal();
         modal.setForumChannel(forumChannel);
         modal.addArgument("forumId", forumChannel.getId());
 

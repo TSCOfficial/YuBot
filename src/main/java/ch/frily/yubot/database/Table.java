@@ -18,7 +18,8 @@ public enum Table {
     SETTING("setting", "profile", SettingColumn.class),
     PROFILE("profile", "profile", ProfileColumn.class),
     PROFILE_MESSAGE("profile_message", "profile", ProfileMessageColumn.class),
-    EVENT_REMINDER("event_reminder", "public", EventReminderColumn.class);
+    EVENT_REMINDER("event_reminder", "public", EventReminderColumn.class),
+    SPECIAL_INTEREST("special_interest", "forum", SpecialInterestColumn.class);
 
     @NotNull
     private final String table;
@@ -192,6 +193,17 @@ public enum Table {
     public enum EventReminderColumn implements Column {
         ID("id"),
         IS_REMINDER_SENT("is_reminder_sent");
+        private final String column;
+    }
+
+    // SPECIAL INTEREST
+    @Getter
+    @RequiredArgsConstructor
+    public enum SpecialInterestColumn implements Column {
+        ID("ID"),
+        NAME("name"),
+        DESCRIPTION("description"),
+        STATUS("status");
         private final String column;
     }
 }

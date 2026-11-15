@@ -1,12 +1,10 @@
 package ch.frily.yubot.service.forummanager.modal;
 
 import ch.frily.yubot.EnvKey;
-import ch.frily.yubot.container.Container;
 import ch.frily.yubot.container.ContainerContext;
 import ch.frily.yubot.container.StaticContainerRegistry;
 import ch.frily.yubot.embed.StaticEmbedRegistry;
 import ch.frily.yubot.interaction.modal.Modal;
-import ch.frily.yubot.service.forummanager.slashcommand.ForumCreatePostCmd;
 import lombok.Setter;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.api.components.attachmentupload.AttachmentUpload;
@@ -20,25 +18,21 @@ import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
-import net.dv8tion.jda.api.requests.restaction.ForumPostAction;
-import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
-import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
-import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Creates a forum Post
  * @since v2.5.0
+ * @author Aliz Rose Frily
  */
-public class CreatePostModal extends Modal {
+public class CreateCustomPostModal extends Modal {
 
     @Setter
     private ForumChannel forumChannel;

@@ -8,6 +8,7 @@ import java.util.List;
 /**
  * <code>/forum</code> command group
  * @since v2.5.0
+ * @author Aliz Rose Frily
  */
 public class ForumCmdGroup implements ISlashCommandGroup {
     @Override

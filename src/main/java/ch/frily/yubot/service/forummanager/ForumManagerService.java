@@ -2,20 +2,20 @@ package ch.frily.yubot.service.forummanager;
 
 import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.interaction.button.Button;
-import ch.frily.yubot.interaction.command.ISlashCommand;
 import ch.frily.yubot.interaction.command.ISlashCommandGroup;
 import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.service.Service;
-import ch.frily.yubot.service.forummanager.modal.CreatePostModal;
+import ch.frily.yubot.service.forummanager.modal.CreateCustomPostModal;
+import ch.frily.yubot.service.forummanager.modal.RegisterNewInterestModal;
 import ch.frily.yubot.service.forummanager.slashcommand.ForumCmdGroup;
-import ch.frily.yubot.service.forummanager.slashcommand.ForumCreatePostCmd;
 
 import java.util.List;
 
 /**
- * Service
+ * <h1>Service</h1>
  * <p>Manages forum posts</p>
  * @since v2.5.0
+ * @author Aliz Rose Frily
  */
 public class ForumManagerService extends Service {
 
@@ -53,7 +53,8 @@ public class ForumManagerService extends Service {
     @Override
     public List<Modal> getModals() {
         return List.of(
-                new CreatePostModal()
+                new CreateCustomPostModal(),
+                new RegisterNewInterestModal()
         );
     }
 
