@@ -1,6 +1,7 @@
 package ch.frily.yubot.service.forummanager.entity;
 
 import ch.frily.yubot.database.Table;
+import ch.frily.yubot.exception.InvalidStateException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -51,18 +52,17 @@ public class SpecialInterestEntity {
 
     /**
      * Maps the entity fields, defined in this class, to the database columns from {@link Table.Column}
-     * @param datatype the datatype to map the column to
      * @param column the database column to
      * @return
      * @param <T>
      */
-    public Consumer mapDbColumnToEntity(Table.Column column) {
+    public Consumer<Integer> mapDbColumnToEntity(Table.Column column) {
         switch (column) {
             case Table.SpecialInterestColumn.ID -> {
                 return this::setId;
 
             }
+            default -> throw new InvalidStateException(String.format("Could not map Table '%s' to entity field", column.getColumn()));
         }
-
     }
 }
