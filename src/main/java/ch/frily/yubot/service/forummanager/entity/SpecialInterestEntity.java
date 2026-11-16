@@ -1,9 +1,23 @@
 package ch.frily.yubot.service.forummanager.entity;
 
+import ch.frily.yubot.database.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+import java.util.function.Consumer;
+
+/**
+ * Interest Entity
+ * <p>
+ *     Saves all data for a special interest
+ * </p>
+ */
 public class SpecialInterestEntity {
+
+    @Getter
+    @Setter
+    private int id;
 
     @Getter
     @Setter
@@ -21,5 +35,34 @@ public class SpecialInterestEntity {
         REQUESTED,
         APPROVED,
         DENIED
+    }
+
+    /**
+     * Build the entity
+     */
+    public class Builder {
+
+        /**
+         * Get the field setter from the appropriate {@link ch.frily.yubot.database.Table.Column Table.Column}
+         * @return
+         */
+
+    }
+
+    /**
+     * Maps the entity fields, defined in this class, to the database columns from {@link Table.Column}
+     * @param datatype the datatype to map the column to
+     * @param column the database column to
+     * @return
+     * @param <T>
+     */
+    public Consumer mapDbColumnToEntity(Table.Column column) {
+        switch (column) {
+            case Table.SpecialInterestColumn.ID -> {
+                return this::setId;
+
+            }
+        }
+
     }
 }
