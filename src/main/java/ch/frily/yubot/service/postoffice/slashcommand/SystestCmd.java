@@ -33,7 +33,7 @@ public class SystestCmd implements ISlashCommand {
         //event.reply("no content").queue();
 
         SpecialInterestEntity interestEntity = new SpecialInterestEntity();
-        interestEntity.mapColumnToField(Table.SpecialInterestColumn.NAME).accept("System test #1");
+        interestEntity.mapColumnToField(Table.SpecialInterestColumn.ID).accept("System test #1");
 
         log.info(interestEntity.getName());
     }

@@ -33,25 +33,6 @@ public class SpecialInterestRepository implements IRepository {
 
         ResultSet rs = query.executeDataQuery();
 
-        List<SpecialInterestEntity> specialInterests = new ArrayList<>();
-        while (rs.next()) {
-            String name = rs.getString("name");
-            String description = rs.getString("description");
-            String statusKey = rs.getString("status");
-
-            Objects.requireNonNull(name);
-            Objects.requireNonNull(description);
-            Objects.requireNonNull(statusKey);
-
-            SpecialInterestEntity.RequestStatus requestStatus = SpecialInterestEntity.RequestStatus.valueOf(statusKey);
-
-            SpecialInterestEntity interest = new SpecialInterestEntity();
-            interest.setName(name);
-            interest.setDescription(description);
-            interest.setRequestStatus(requestStatus);
-
-            specialInterests.add(interest);
-        }
-        return specialInterests;
+        return SpecialInterestEntity.Builder.build(rs);
     }
 }

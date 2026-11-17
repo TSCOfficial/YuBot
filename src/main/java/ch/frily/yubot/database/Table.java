@@ -203,7 +203,7 @@ public enum Table {
         ID("ID"),
         NAME("name"),
         DESCRIPTION("description"),
-        STATUS("status");
+        REQUEST_STATUS("request_status");
         private final String column;
     }
 }
