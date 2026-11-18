@@ -8,9 +8,7 @@ import ch.frily.yubot.service.forummanager.entity.SpecialInterestEntity;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * "Special Interest"-Repository
@@ -31,9 +29,10 @@ public class SpecialInterestRepository implements IRepository {
     public static List<SpecialInterestEntity> getSpecialInterests() throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.SPECIAL_INTEREST);
         query.select();
+        query.orderBy(Table.SpecialInterestColumn.ID, DatabaseQuery.OrderBy.ASCENDED);
 
         ResultSet rs = query.executeDataQuery();
 
-        return EntityMapper.mapAll(rs, SpecialInterestEntity.class);
+        return EntityMapper.build(rs, SpecialInterestEntity.class);
     }
 }

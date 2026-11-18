@@ -11,6 +11,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 public class SystestCmd implements ISlashCommand {
@@ -40,6 +41,12 @@ public class SystestCmd implements ISlashCommand {
             log.info(interest.getName());
             log.info(interest.getDescription());
             log.info(interest.getInterestGroup().getName());
+            if (Objects.nonNull(interest.getOriginalPoster())) {
+                log.info(interest.getOriginalPoster().getAsMention());
+            } else {
+                log.info("No original poster");
+            }
+
         });
     }
 }

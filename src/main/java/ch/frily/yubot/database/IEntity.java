@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 
 public interface IEntity {
 
-    default Object customMapping(Field field) {
+    default Object customMapping(Field field, Object value) {
         return null;
     };
 }
