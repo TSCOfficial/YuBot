@@ -40,7 +40,6 @@ public class SystestCmd implements ISlashCommand {
             log.info(String.valueOf(interest.getId()));
             log.info(interest.getName());
             log.info(interest.getDescription());
-            log.info(interest.getInterestGroup().getName());
             if (Objects.nonNull(interest.getOriginalPoster())) {
                 log.info(interest.getOriginalPoster().getAsMention());
             } else {

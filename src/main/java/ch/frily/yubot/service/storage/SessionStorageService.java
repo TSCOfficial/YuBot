@@ -17,6 +17,20 @@ import java.util.List;
  * <p>
  *     Each storage record has a TTL (Time to live) that defines its lifetime. At latest when the Bot stops, all data are lost.
  * </p>
+ * <p>
+ *     <b>Create a new storage:</b><br>
+ *     <ol>
+ *         <li>Create a new Record with any data you want to store.</li>
+ *         <li>
+ *             Add the Record to the SessionStorageService.
+ *             <pre><code>
+ *                 YourStorageRecord storage = new YourStorageRecord(field1, field2, field3, ...);
+ *                 SessionStorageService.getInstance().addStorage("your-custom-storage", event.getMember(), storage, 10);
+ *             </code></pre>
+ *         </li>
+ *     </ol>
+ *
+ * </p>
  */
 @Slf4j
 public class SessionStorageService extends Service {
@@ -50,7 +64,15 @@ public class SessionStorageService extends Service {
         );
     }
 
-    public <T> T getValue(String key, Member member, Class<T> type) {
+    /**
+     * Call an existing storage for given function (key) and member
+     * @param key
+     * @param member
+     * @param type
+     * @return
+     * @param <T>
+     */
+    public <T extends Record> T getStorage(String key, Member member, Class<T> type) {
         return sessionStorage.stream()
                 .filter(data -> data.key().equals(key) && (member == null || data.member().getId().equals(member.getId())))
                 .filter(data -> data.ttl().isAfter(LocalDateTime.now()))
@@ -61,7 +83,7 @@ public class SessionStorageService extends Service {
                 .orElse(null);
     }
 
-    public <T> void addStorage(String key, Member member, T value, int ttl) {
+    public <T extends Record> void addStorage(String key, Member member, T value, int ttl) {
         sessionStorage.add(new StorageData<>(key, member, new Storage<>(value), resolveTtl(ttl)));
     }
 
