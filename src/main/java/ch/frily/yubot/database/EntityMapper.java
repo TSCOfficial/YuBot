@@ -49,10 +49,9 @@ public final class EntityMapper {
 
             for (int i = 1; i <= columnCount; i++) {
                 Field field = fields.get(normalize(meta.getColumnLabel(i)));
+                // handle "_id"-columns
                 if (field == null && meta.getColumnLabel(i).endsWith("_id")) {
-                    log.info("column is id, mapping to its object field");
                     String fieldname = normalize(meta.getColumnLabel(i).substring(0, meta.getColumnLabel(i).length() - 3));
-                    log.info("field name: {}", fieldname);
                     field = fields.get(fieldname);
                 }
                 try {

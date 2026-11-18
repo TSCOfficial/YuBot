@@ -44,10 +44,6 @@ public class SpecialInterestEntity implements IEntity {
 
     @Getter
     @Setter
-    private InterestGroup interestGroup;
-
-    @Getter
-    @Setter
     private User originalPoster;
 
     public enum RequestStatus {
@@ -59,11 +55,6 @@ public class SpecialInterestEntity implements IEntity {
     @Override
     public Object customMapping(@NonNull Field field, Object value) {
         switch (field.getName()) {
-            case "interestGroup" -> {
-                InterestGroup group = new InterestGroup();
-                group.setName((String) value);
-                return group;
-            }
             case "originalPoster" -> {
                 if (Objects.nonNull(value)) {
                     User poster = Client.getInstance().getClient().getUserById((String) value);
