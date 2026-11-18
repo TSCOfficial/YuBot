@@ -1,6 +1,9 @@
 package ch.frily.yubot.database;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -17,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 2.5.0
  * @author Aliz Rose Frily
  */
+@Slf4j
 public final class EntityMapper {
 
     /** Caches fields to prevent scans at each request */
@@ -48,13 +52,21 @@ public final class EntityMapper {
                         continue; // ignore missing field
                     }
 
-                    Object value = readValue(rs, i, field.getType());
-                    if (value == null && field.getType().isPrimitive()) {
-                        field.set(entity, 0);
+                    log.info("Reading value from column {} for field {} with type {}", normalize(meta.getColumnLabel(i)), field.getName(), field.getType().getSimpleName());
+                    Object value;
+                    try {
+                        value = readValue(rs, i, field);
+                    } catch (SQLException e) {
+                        log.info("could not map value for field {}, using customMapping", field.getName());
+                        value = type.getMethod("customMapping", Field.class, Object.class).invoke(entity, field, rs.getObject(i));
                     }
+
+                    log.info("Value: {}", value);
                     field.set(entity, value);
                 } catch (IllegalAccessException e) {
                     throw new IllegalStateException("Cannot set field " + field.getName(), e);
+                } catch (NoSuchMethodException | InvocationTargetException e) {
+                    throw new IllegalStateException("Cannot find customMapping method for field " + field.getName(), e);
                 }
             }
             entities.add(entity);
@@ -65,19 +77,24 @@ public final class EntityMapper {
 
     /**
      * Read a value from the ResultSet and convert it to the appropriate type
+     * <p>
+     *     If the value is part of a enum, the enum constant is directly called<br>
+     *     If the value is a custom Object, the customMapping method is called<br>
+     * </p>
      * @param rs the ResultSet to read from
      * @param index the index of the column to read
-     * @param fieldType the type of the field to read
+     * @param field the field itself
      * @return the value read from the ResultSet
      * @throws SQLException if an error occurs while reading from the ResultSet
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static Object readValue(ResultSet rs, int index, Class<?> fieldType) throws SQLException {
-        if (fieldType.isEnum()) {
+    private static Object readValue(ResultSet rs, int index, Field field) throws SQLException {
+        if (field.getType().isEnum()) {
             String name = rs.getString(index);
-            return name == null ? null : Enum.valueOf((Class<? extends Enum>) fieldType, name);
+            return name == null ? null : Enum.valueOf((Class<? extends Enum>) field.getType(), name);
         }
-        return rs.getObject(index, box(fieldType));
+        return rs.getObject(index, box(field.getType()));
+
     }
 
     /**
