@@ -1,8 +1,7 @@
 package ch.frily.yubot.service.postoffice.slashcommand;
 
-import ch.frily.yubot.database.Table;
 import ch.frily.yubot.interaction.command.ISlashCommand;
-import ch.frily.yubot.service.forummanager.entity.SpecialInterestEntity;
+import ch.frily.yubot.service.forummanager.entity.SpecialInterest;
 import ch.frily.yubot.service.forummanager.repository.SpecialInterestRepository;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
@@ -34,7 +33,7 @@ public class SystestCmd implements ISlashCommand {
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
         //event.reply("no content").queue();
 
-        List<SpecialInterestEntity> interests = SpecialInterestRepository.getSpecialInterests();
+        List<SpecialInterest> interests = SpecialInterestRepository.getSpecialInterests();
 
         interests.forEach(interest -> {
             log.info(String.valueOf(interest.getId()));

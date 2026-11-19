@@ -4,7 +4,7 @@ import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.EntityMapper;
 import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.database.Table;
-import ch.frily.yubot.service.forummanager.entity.SpecialInterestEntity;
+import ch.frily.yubot.service.forummanager.entity.SpecialInterest;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,13 +26,13 @@ public class SpecialInterestRepository implements IRepository {
         return Table.SPECIAL_INTEREST;
     }
 
-    public static List<SpecialInterestEntity> getSpecialInterests() throws SQLException {
+    public static List<SpecialInterest> getSpecialInterests() throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.SPECIAL_INTEREST);
         query.select();
         query.orderBy(Table.SpecialInterestColumn.ID, DatabaseQuery.OrderBy.ASCENDED);
 
         ResultSet rs = query.executeDataQuery();
 
-        return EntityMapper.build(rs, SpecialInterestEntity.class);
+        return EntityMapper.build(rs, SpecialInterest.class);
     }
 }

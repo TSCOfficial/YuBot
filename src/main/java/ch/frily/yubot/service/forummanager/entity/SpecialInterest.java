@@ -1,9 +1,7 @@
 package ch.frily.yubot.service.forummanager.entity;
 
 import ch.frily.yubot.Client;
-import ch.frily.yubot.EnvKey;
 import ch.frily.yubot.database.IEntity;
-import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.InvalidStateException;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,10 +9,7 @@ import net.dv8tion.jda.api.entities.User;
 import org.jspecify.annotations.NonNull;
 
 import java.lang.reflect.Field;
-import java.sql.ResultSet;
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 /**
  * Interest Entity
@@ -24,7 +19,7 @@ import java.util.function.Consumer;
  * @since v2.5.2
  * @author Aliz Rose Frily
  */
-public class SpecialInterestEntity implements IEntity {
+public class SpecialInterest implements IEntity {
 
     @Getter
     @Setter
@@ -68,4 +63,18 @@ public class SpecialInterestEntity implements IEntity {
 
         }
     }
+
+    public class Table {
+        public static final String ID = "id";
+        public static final String NAME = "name";
+        public static final String DESCRIPTION = "description";
+        public static final String REQUEST_STATUS = "request_status";
+        public static final String ORIGINAL_POSTER_ID = "original_poster_id";
+
+        public static String getTable() {
+            return "special_interest";
+        }
+    }
+
+
 }
