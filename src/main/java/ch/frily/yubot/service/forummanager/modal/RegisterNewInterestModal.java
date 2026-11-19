@@ -6,6 +6,7 @@ import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.service.forummanager.container.RegisterInterestRequestContainer;
 import ch.frily.yubot.service.forummanager.entity.SpecialInterest;
 import ch.frily.yubot.service.forummanager.repository.SpecialInterestRepository;
+import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.api.components.label.Label;
@@ -79,20 +80,29 @@ public class RegisterNewInterestModal extends Modal {
             ModalMapping nameMapping = event.getValue("interest-name");
             ModalMapping descriptionMapping = event.getValue("interest-description");
 
-            SpecialInterest interest = new SpecialInterest();
-            interest.setName(nameMapping.getAsString());
-            interest.setDescription(descriptionMapping.getAsString());
-            interest.setOriginalPoster(event.getUser());
+            List<String> terms = SpecialInterestRepository.getInterests().stream().map(SpecialInterest::getName).toList();
+            List<String> similarInterest = Util.fuzzySearch(nameMapping.getAsString(), terms);
 
-            int interestId = SpecialInterestRepository.createInterest(interest);
-            interest.setId(interestId);
+            if (similarInterest.isEmpty()) {
+                SpecialInterest interest = new SpecialInterest();
+                interest.setName(nameMapping.getAsString());
+                interest.setDescription(descriptionMapping.getAsString());
+                interest.setOriginalPoster(event.getUser());
 
-            // send request to moderators
-            RegisterInterestRequestContainer requestContainer = new RegisterInterestRequestContainer(event.getMember(), interest);
-            EnvKey.CHANNEL_SERVERCONFIG.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER)
-                    .sendMessageComponents(requestContainer.build()).useComponentsV2().setAllowedMentions(List.of()).queue(_ -> {
-                        event.getHook().editOriginal("✅ Die Anfrage wurde gesendet.").queue();
-                    });
+                int interestId = SpecialInterestRepository.createInterest(interest);
+                interest.setId(interestId);
+
+                // send request to moderators
+                RegisterInterestRequestContainer requestContainer = new RegisterInterestRequestContainer(event.getMember(), interest);
+                EnvKey.CHANNEL_SERVERCONFIG.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER)
+                        .sendMessageComponents(requestContainer.build()).useComponentsV2().setAllowedMentions(List.of()).queue(_ -> {
+                            event.getHook().editOriginal("✅ Die Anfrage wurde gesendet.").queue();
+                        });
+            } else {
+                event.getHook().editOriginal(String.join("\n", similarInterest)).queue();
+            }
+
+
         } else {
             throw new LimitReachedException("Du kannst nicht mehr als 2 Interests gleichzeitig in bearbeitung haben.");
         }

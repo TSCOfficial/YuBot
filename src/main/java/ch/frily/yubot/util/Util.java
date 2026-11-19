@@ -1,6 +1,7 @@
 package ch.frily.yubot.util;
 
 import ch.frily.yubot.EnvKey;
+import de.uni_jena.cs.fusion.similarity.jarowinkler.JaroWinklerSimilarity;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -11,17 +12,43 @@ import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
+import java.text.Normalizer;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class Util {
 
+    static String normalize(String s) {
+        return Normalizer.normalize(s, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "") // Akzente weg
+                .toLowerCase()
+                .replaceAll("[^a-z0-9 ]", " ")
+                .replaceAll("\\s+", " ")
+                .trim();
+    }
+
+    public static List<String> fuzzySearch(String key, List<String> terms) {
+        double threshold = 0.4;
+        terms = terms.stream().map(Util::normalize).toList();
+        var jw = JaroWinklerSimilarity.with(terms, threshold);
+        key = normalize(key);
+
+        Map<String, Double> similar = jw.apply(key);
+
+        return similar.entrySet().stream()
+                .filter(entry -> entry.getValue() > threshold)
+                .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
+                .limit(5)
+                .map(Map.Entry::getKey)
+                .toList();
+    }
     /**
      * Check if a member is a team-member
      * <p>

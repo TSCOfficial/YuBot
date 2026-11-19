@@ -50,7 +50,6 @@ public class AcceptInterestRegistrationBtn extends Button {
     public void execute(@NonNull ButtonInteractionEvent event) throws SQLException {
         event.deferReply(true).queue();
         String interestId = getArgument(event.getComponentId(), "interestId");
-        log.info("interest id on btn: {}", interestId);
         SpecialInterest interest = SpecialInterestRepository.getInterestById(Integer.parseInt(interestId));
 
         if (Objects.nonNull(interest)) {
