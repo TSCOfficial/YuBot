@@ -63,8 +63,10 @@ public final class EntityMapper {
                     Object value;
                     try {
                         value = readValue(rs, i, field);
+                        log.info("reading value for {}", field.getName());
                     } catch (SQLException e) {
                         // use custom mappers
+                        log.info("executing custom mapper for {}", field.getName());
                         value = type.getMethod("customMapping", Field.class, Object.class).invoke(entity, field, rs.getObject(i));
                     }
 

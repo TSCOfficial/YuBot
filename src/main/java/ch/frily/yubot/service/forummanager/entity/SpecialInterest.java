@@ -21,6 +21,9 @@ import java.util.Objects;
  */
 public class SpecialInterest implements IEntity {
 
+    /** How many interests the same user can habe pending at the same time */
+    public static final int MAX_SIMULTANEOUS_PENDING_INTERESTS = 2;
+
     @Getter
     @Setter
     private int id;
@@ -42,7 +45,7 @@ public class SpecialInterest implements IEntity {
     private User originalPoster;
 
     public enum RequestStatus {
-        REQUESTED,
+        PENDING,
         APPROVED,
         DENIED
     }
@@ -64,7 +67,7 @@ public class SpecialInterest implements IEntity {
         }
     }
 
-    public class Table {
+    public static class Table {
         public static final String ID = "id";
         public static final String NAME = "name";
         public static final String DESCRIPTION = "description";

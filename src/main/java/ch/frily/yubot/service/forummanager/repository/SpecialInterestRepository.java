@@ -5,10 +5,13 @@ import ch.frily.yubot.database.EntityMapper;
 import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.service.forummanager.entity.SpecialInterest;
+import net.dv8tion.jda.api.entities.User;
 
+import javax.annotation.Nullable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * "Special Interest"-Repository
@@ -26,7 +29,22 @@ public class SpecialInterestRepository implements IRepository {
         return Table.SPECIAL_INTEREST;
     }
 
-    public static List<SpecialInterest> getSpecialInterests() throws SQLException {
+    public static @Nullable SpecialInterest getInterestById(int id) throws SQLException {
+        DatabaseQuery query = new DatabaseQuery(Table.SPECIAL_INTEREST);
+        query.select();
+        query.where(Table.SpecialInterestColumn.ID, DatabaseQuery.Operator.EQUALS, id);
+
+        ResultSet rs = query.executeDataQuery();
+
+        List<SpecialInterest> result = EntityMapper.build(rs, SpecialInterest.class);
+        if (result.isEmpty()) {
+            return null;
+        } else {
+            return result.getFirst();
+        }
+    }
+
+    public static List<SpecialInterest> getInterests() throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.SPECIAL_INTEREST);
         query.select();
         query.orderBy(Table.SpecialInterestColumn.ID, DatabaseQuery.OrderBy.ASCENDED);
@@ -34,5 +52,41 @@ public class SpecialInterestRepository implements IRepository {
         ResultSet rs = query.executeDataQuery();
 
         return EntityMapper.build(rs, SpecialInterest.class);
+    }
+
+    /**
+     * Get all special interets from a given user
+     * @param user
+     * @return
+     * @throws SQLException
+     */
+    public static List<SpecialInterest> getInterestsByUser(User user) throws SQLException {
+        DatabaseQuery query = new DatabaseQuery(Table.SPECIAL_INTEREST);
+        query.select();
+        query.where(Table.SpecialInterestColumn.ORIGINAL_POSTER_ID, DatabaseQuery.Operator.EQUALS, user.getId());
+        query.orderBy(Table.SpecialInterestColumn.ID, DatabaseQuery.OrderBy.ASCENDED);
+
+        ResultSet rs = query.executeDataQuery();
+
+        return EntityMapper.build(rs, SpecialInterest.class);
+    }
+
+    public static void createInterest(SpecialInterest interest) throws SQLException {
+        DatabaseQuery query = new DatabaseQuery(Table.SPECIAL_INTEREST);
+        query.insert(Table.SpecialInterestColumn.NAME, interest.getName());
+        query.insert(Table.SpecialInterestColumn.DESCRIPTION, interest.getDescription());
+        query.insert(Table.SpecialInterestColumn.REQUEST_STATUS, SpecialInterest.RequestStatus.PENDING.name());
+        query.insert(Table.SpecialInterestColumn.ORIGINAL_POSTER_ID, interest.getOriginalPoster().getId());
+        query.executeQuery();
+    }
+
+    public static void updateInterest(SpecialInterest interest) throws SQLException {
+        DatabaseQuery query = new DatabaseQuery(Table.SPECIAL_INTEREST);
+        query.update(Table.SpecialInterestColumn.NAME, interest.getName());
+        query.update(Table.SpecialInterestColumn.DESCRIPTION, interest.getDescription());
+        query.update(Table.SpecialInterestColumn.REQUEST_STATUS, SpecialInterest.RequestStatus.PENDING.name());
+        query.where(Table.SpecialInterestColumn.ID, DatabaseQuery.Operator.EQUALS, interest.getId());
+
+        query.executeQuery();
     }
 }

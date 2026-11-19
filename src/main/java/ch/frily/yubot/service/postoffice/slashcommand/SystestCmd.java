@@ -33,7 +33,7 @@ public class SystestCmd implements ISlashCommand {
     public void execute(@NonNull SlashCommandInteractionEvent event) throws SQLException, ClassNotFoundException {
         //event.reply("no content").queue();
 
-        List<SpecialInterest> interests = SpecialInterestRepository.getSpecialInterests();
+        List<SpecialInterest> interests = SpecialInterestRepository.getInterests();
 
         interests.forEach(interest -> {
             log.info(String.valueOf(interest.getId()));
