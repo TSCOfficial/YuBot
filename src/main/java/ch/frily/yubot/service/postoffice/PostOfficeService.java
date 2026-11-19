@@ -4,11 +4,13 @@ import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.command.ISlashCommand;
 import ch.frily.yubot.interaction.command.ISlashCommandGroup;
+import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.scheduler.IScheduler;
 import ch.frily.yubot.service.Service;
 import ch.frily.yubot.service.postoffice.button.AddServeropenRoleBtn;
 import ch.frily.yubot.service.postoffice.button.DeleteMessageBtn;
 import ch.frily.yubot.service.postoffice.button.PaginationNavBtn;
+import ch.frily.yubot.service.postoffice.modal.EditMessageModal;
 import ch.frily.yubot.service.postoffice.repository.DynamicMessageRepository;
 import ch.frily.yubot.service.postoffice.schedule.StatusOverwriteSchedule;
 import ch.frily.yubot.service.postoffice.slashcommand.*;
@@ -84,6 +86,13 @@ public class PostOfficeService extends Service {
     public List<IRepository> getRepositories() {
         return List.of(
                 new DynamicMessageRepository()
+        );
+    }
+
+    @Override
+    public List<Modal> getModals() {
+        return List.of(
+                new EditMessageModal()
         );
     }
 }

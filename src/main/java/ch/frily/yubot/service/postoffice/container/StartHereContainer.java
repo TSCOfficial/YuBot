@@ -119,5 +119,7 @@ public class StartHereContainer extends Container {
         this.addInvisibleSeparator(Separator.Spacing.LARGE);
 
         this.addTextDisplay("-# Das YuTeam wünscht euch viel spass! ❤️");
+
+        this.addTextDisplay("Systemtest");
     }
 }

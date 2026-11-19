@@ -9,7 +9,7 @@ import ch.frily.yubot.service.profile.button.EditProfileBtn;
 import ch.frily.yubot.service.profile.button.UseProfileBtn;
 import ch.frily.yubot.interaction.command.ISlashCommandGroup;
 import ch.frily.yubot.service.profile.ctxmenu.DeleteWebhookMsgCtxMenu;
-import ch.frily.yubot.service.profile.ctxmenu.EditWebhookMsgCtxMenu;
+import ch.frily.yubot.service.postoffice.contextmenu.EditMessageCtxMenu;
 import ch.frily.yubot.service.profile.ctxmenu.LookupProfileCtxMenu;
 import ch.frily.yubot.service.profile.event.MessageDeleteEvent;
 import ch.frily.yubot.service.profile.event.MessageReceivedEvent;
@@ -89,7 +89,7 @@ public class ProfileService extends Service {
     public List<IContextMenu> getContextMenus() {
         return List.of(
                 new DeleteWebhookMsgCtxMenu(),
-                new EditWebhookMsgCtxMenu(),
+                new EditMessageCtxMenu(),
                 new LookupProfileCtxMenu()
         );
     }
