@@ -79,16 +79,16 @@ public class RegisterNewInterestModal extends Modal {
             ModalMapping nameMapping = event.getValue("interest-name");
             ModalMapping descriptionMapping = event.getValue("interest-description");
 
-            SpecialInterest newInterest = new SpecialInterest();
-            newInterest.setName(nameMapping.getAsString());
-            newInterest.setDescription(descriptionMapping.getAsString());
-            newInterest.setOriginalPoster(event.getUser());
+            SpecialInterest interest = new SpecialInterest();
+            interest.setName(nameMapping.getAsString());
+            interest.setDescription(descriptionMapping.getAsString());
+            interest.setOriginalPoster(event.getUser());
 
-            SpecialInterestRepository.createInterest(newInterest);
-            newInterest = SpecialInterestRepository.getInterestById(newInterest.getId());
+            int interestId = SpecialInterestRepository.createInterest(interest);
+            interest.setId(interestId);
 
             // send request to moderators
-            RegisterInterestRequestContainer requestContainer = new RegisterInterestRequestContainer(event.getMember(), newInterest);
+            RegisterInterestRequestContainer requestContainer = new RegisterInterestRequestContainer(event.getMember(), interest);
             EnvKey.CHANNEL_SERVERCONFIG.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER)
                     .sendMessageComponents(requestContainer.build()).useComponentsV2().setAllowedMentions(List.of()).queue(_ -> {
                         event.getHook().editOriginal("✅ Die Anfrage wurde gesendet.").queue();

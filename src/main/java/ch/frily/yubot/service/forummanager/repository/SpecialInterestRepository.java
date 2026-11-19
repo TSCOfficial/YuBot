@@ -4,7 +4,9 @@ import ch.frily.yubot.database.DatabaseQuery;
 import ch.frily.yubot.database.EntityMapper;
 import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.database.Table;
+import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.service.forummanager.entity.SpecialInterest;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.User;
 
 import javax.annotation.Nullable;
@@ -21,6 +23,7 @@ import java.util.Optional;
  * @since v2.5.0
  * @author Aliz Rose Frily
  */
+@Slf4j
 public class SpecialInterestRepository implements IRepository {
 
 
@@ -71,13 +74,23 @@ public class SpecialInterestRepository implements IRepository {
         return EntityMapper.build(rs, SpecialInterest.class);
     }
 
-    public static void createInterest(SpecialInterest interest) throws SQLException {
+    public static int createInterest(SpecialInterest interest) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.SPECIAL_INTEREST);
         query.insert(Table.SpecialInterestColumn.NAME, interest.getName());
         query.insert(Table.SpecialInterestColumn.DESCRIPTION, interest.getDescription());
         query.insert(Table.SpecialInterestColumn.REQUEST_STATUS, SpecialInterest.RequestStatus.PENDING.name());
         query.insert(Table.SpecialInterestColumn.ORIGINAL_POSTER_ID, interest.getOriginalPoster().getId());
-        query.executeQuery();
+        query.setReturning(Table.SpecialInterestColumn.ID);
+
+        ResultSet rs = query.executeDataQuery();
+
+        if (rs.next()) {
+            return rs.getInt(Table.SpecialInterestColumn.ID.getColumn());
+        } else {
+            throw new InvalidStateException("Interest failed to insert properly!");
+        }
+
+
     }
 
     public static void updateInterest(SpecialInterest interest) throws SQLException {
