@@ -21,6 +21,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Modal to request all infos for the new interest
@@ -80,18 +81,22 @@ public class RegisterNewInterestModal extends Modal {
             ModalMapping nameMapping = event.getValue("interest-name");
             ModalMapping descriptionMapping = event.getValue("interest-description");
 
-            List<String> terms = SpecialInterestRepository.getInterests().stream().map(SpecialInterest::getName).toList();
-            List<String> similarInterest = Util.fuzzySearch(nameMapping.getAsString(), terms);
+            List<SpecialInterest> allInterests = SpecialInterestRepository.getInterests();
+            Map<String, SpecialInterest> terms = allInterests.stream().map(interest -> {
+                return Map.of(interest.getName(), interest);
+            });
+            List<String> similarTerms = Util.fuzzySearch(nameMapping.getAsString(), terms);
 
-            if (similarInterest.isEmpty()) {
-                SpecialInterest interest = new SpecialInterest();
-                interest.setName(nameMapping.getAsString());
-                interest.setDescription(descriptionMapping.getAsString());
-                interest.setOriginalPoster(event.getUser());
 
-                int interestId = SpecialInterestRepository.createInterest(interest);
-                interest.setId(interestId);
+            SpecialInterest interest = new SpecialInterest();
+            interest.setName(nameMapping.getAsString());
+            interest.setDescription(descriptionMapping.getAsString());
+            interest.setOriginalPoster(event.getUser());
 
+            int interestId = SpecialInterestRepository.createInterest(interest);
+            interest.setId(interestId);
+
+            if (similarTerms.isEmpty()) {
                 // send request to moderators
                 RegisterInterestRequestContainer requestContainer = new RegisterInterestRequestContainer(event.getMember(), interest);
                 EnvKey.CHANNEL_SERVERCONFIG.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER)
@@ -99,7 +104,16 @@ public class RegisterNewInterestModal extends Modal {
                             event.getHook().editOriginal("✅ Die Anfrage wurde gesendet.").queue();
                         });
             } else {
-                event.getHook().editOriginal(String.join("\n", similarInterest)).queue();
+                StringBuilder sb = new StringBuilder();
+                if (similarTerms.size() == 1) {
+                    sb.append(String.format("Meintest du %s?", similarTerms.getFirst()))
+                    sb.append("Es existiert ein anderes Interest, welches potenziell dein Thema sein könnte:");
+                } else {
+                    sb.append(String.format("Es existieren %d andere Interests, welche potenziell dein Thema"))
+                }
+
+
+                event.getHook().editOriginal(String.join("\n", similarTerms)).queue();
             }
 
 
