@@ -204,7 +204,9 @@ public enum Table {
         NAME("name"),
         DESCRIPTION("description"),
         REQUEST_STATUS("request_status"),
-        ORIGINAL_POSTER_ID("original_poster_id");
+        ORIGINAL_POSTER_ID("original_poster_id"),
+        POST_ID("post_id"),
+        NOTIFY_OP("notify_op");
         private final String column;
     }
 }

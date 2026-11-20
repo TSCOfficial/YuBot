@@ -12,6 +12,7 @@ import ch.frily.yubot.service.storage.SessionStorageService;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
+import net.dv8tion.jda.api.components.checkbox.Checkbox;
 import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.components.textinput.TextInput;
@@ -57,6 +58,8 @@ public class RegisterNewInterestModal extends Modal {
         interestDescription.setRequired(true);
         interestDescription.setPlaceholder("Beschreibung eingeben...");
 
+        Checkbox notifyOP = Checkbox.of("notify-op", true);
+
         return List.of(
                 TextDisplay.of("""
         Um ein neues Interest registrieren zu können, muss ein Namen und eine Beschreibung des Themas angegeben werden.
@@ -71,6 +74,11 @@ public class RegisterNewInterestModal extends Modal {
                         "Beschreibung",
                         "Dies wird, bei der Freigabe, als Post-Beschreibung (\"first message\") verwendet.",
                         interestDescription.build()
+                ),
+                Label.of(
+                        "Über DM benachricht werden",
+                        "Werde benachrichtigt, wenn dein Interest abgelehnt bzw. bearbeitet wurde.",
+                        notifyOP
                 )
         );
     }
@@ -85,12 +93,11 @@ public class RegisterNewInterestModal extends Modal {
         if (pendingInterestCount < SpecialInterest.MAX_SIMULTANEOUS_PENDING_INTERESTS) {
             ModalMapping nameMapping = event.getValue("interest-name");
             ModalMapping descriptionMapping = event.getValue("interest-description");
+            ModalMapping notifyOPMapping = event.getValue("notify-op");
 
             List<SpecialInterest> allInterests = SpecialInterestRepository.getInterests();
             Map<String, SpecialInterest> terms = allInterests.stream().collect(Collectors.toMap(SpecialInterest::getName, Function.identity()));
-            log.info("terms: " + String.join(", ", terms.keySet().stream().toList()));
             List<String> similarTerms = Util.fuzzySearch(nameMapping.getAsString(), terms.keySet().stream().toList());
-            log.info("similar terms: " + String.join(", ", similarTerms));
             List<SpecialInterest> similarInterests = allInterests.stream().filter(interest -> similarTerms.contains(Util.normalize(interest.getName()))).toList();
 
 
@@ -98,6 +105,7 @@ public class RegisterNewInterestModal extends Modal {
             registeredInterest.setName(nameMapping.getAsString());
             registeredInterest.setDescription(descriptionMapping.getAsString());
             registeredInterest.setOriginalPoster(event.getUser());
+            registeredInterest.setNotifyOP(notifyOPMapping.getAsBoolean());
 
             if (similarTerms.isEmpty()) {
                 int interestId = SpecialInterestRepository.createInterest(registeredInterest);

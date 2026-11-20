@@ -80,6 +80,7 @@ public class SpecialInterestRepository implements IRepository {
         query.insert(Table.SpecialInterestColumn.DESCRIPTION, interest.getDescription());
         query.insert(Table.SpecialInterestColumn.REQUEST_STATUS, SpecialInterest.RequestStatus.PENDING.name());
         query.insert(Table.SpecialInterestColumn.ORIGINAL_POSTER_ID, interest.getOriginalPoster().getId());
+        query.insert(Table.SpecialInterestColumn.NOTIFY_OP, interest.isNotifyOP());
         query.setReturning(Table.SpecialInterestColumn.ID);
 
         ResultSet rs = query.executeDataQuery();
@@ -97,7 +98,10 @@ public class SpecialInterestRepository implements IRepository {
         DatabaseQuery query = new DatabaseQuery(Table.SPECIAL_INTEREST);
         query.update(Table.SpecialInterestColumn.NAME, interest.getName());
         query.update(Table.SpecialInterestColumn.DESCRIPTION, interest.getDescription());
+        query.update(Table.SpecialInterestColumn.POST_ID, interest.getPost().getId());
         query.update(Table.SpecialInterestColumn.REQUEST_STATUS, interest.getRequestStatus().name());
+        query.update(Table.SpecialInterestColumn.NOTIFY_OP, interest.isNotifyOP());
+
         query.where(Table.SpecialInterestColumn.ID, DatabaseQuery.Operator.EQUALS, interest.getId());
 
         query.executeQuery();

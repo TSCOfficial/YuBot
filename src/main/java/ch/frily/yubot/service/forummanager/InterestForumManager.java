@@ -1,8 +1,10 @@
 package ch.frily.yubot.service.forummanager;
 
 import ch.frily.yubot.EnvKey;
+import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.forummanager.container.RegisterInterestRequestContainer;
 import ch.frily.yubot.service.forummanager.entity.SpecialInterest;
+import ch.frily.yubot.service.forummanager.repository.SpecialInterestRepository;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
@@ -11,6 +13,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -36,7 +39,14 @@ public class InterestForumManager {
         MessageCreateBuilder messageBuilder = new MessageCreateBuilder();
         messageBuilder.addContent(interest.getDescription());
         messageBuilder.addContent(String.format("\n-# Interest wurde eingereicht von %s", interest.getOriginalPoster().getAsMention()));
-        forumChannel.createForumPost(interest.getName(), messageBuilder.build()).queue();
+        forumChannel.createForumPost(interest.getName(), messageBuilder.build()).queue(post -> {
+            try {
+                interest.setPost(post.getThreadChannel());
+                SpecialInterestRepository.updateInterest(interest);
+            } catch (SQLException e) {
+                ExceptionHandler.handle(e);
+            }
+        });
     }
 
     /**

@@ -56,6 +56,10 @@ public class SpecialInterest implements IEntity {
     @Setter
     private User originalPoster;
 
+    @Getter
+    @Setter
+    private boolean notifyOP = true;
+
     public enum RequestStatus {
         PENDING,
         APPROVED,
