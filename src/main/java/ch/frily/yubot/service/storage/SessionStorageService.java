@@ -72,7 +72,7 @@ public class SessionStorageService extends Service {
      * @return
      * @param <T>
      */
-    public <T extends Record> T getStorage(String key, Member member, Class<T> type) {
+    public <T> T getStorage(String key, Member member, Class<T> type) {
         return sessionStorage.stream()
                 .filter(data -> data.key().equals(key) && (member == null || data.member().getId().equals(member.getId())))
                 .filter(data -> data.ttl().isAfter(LocalDateTime.now()))
@@ -83,7 +83,7 @@ public class SessionStorageService extends Service {
                 .orElse(null);
     }
 
-    public <T extends Record> void addStorage(String key, Member member, T value, int ttl) {
+    public <T> void addStorage(String key, Member member, T value, int ttl) {
         sessionStorage.add(new StorageData<>(key, member, new Storage<>(value), resolveTtl(ttl)));
     }
 
