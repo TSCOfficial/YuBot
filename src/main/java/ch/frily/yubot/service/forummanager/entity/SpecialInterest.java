@@ -7,6 +7,7 @@ import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.NotFoundException;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
@@ -25,6 +26,7 @@ import java.util.Objects;
  * @since v2.5.2
  * @author Aliz Rose Frily
  */
+@Slf4j
 public class SpecialInterest implements IEntity {
 
     /** How many interests the same user can habe pending at the same time */
@@ -36,7 +38,7 @@ public class SpecialInterest implements IEntity {
 
     @Getter
     @Setter
-    private ForumPost post;
+    private ThreadChannel post;
 
     @Getter
     @Setter
@@ -62,18 +64,17 @@ public class SpecialInterest implements IEntity {
 
     @Override
     public Object customMapping(@NonNull Field field, Object value) {
+        log.info("mapping with value " + value);
         switch (field.getName()) {
             case "originalPoster" -> {
                 if (Objects.nonNull(value)) {
-                    User poster = Client.getInstance().getClient().getUserById((String) value);
-                    return poster;
+                    return Client.getInstance().getClient().getUserById((String) value);
                 }
                 return null;
             }
             case "post" -> {
                 if (Objects.nonNull(value)) {
-                    List<ThreadChannel> forumPosts = EnvKey.CHANNEL_SPECIALINTERESTS.getAsChannel(ForumChannel.class, EnvKey.GUILD_YUSERVER).getThreadChannels();
-                    return forumPosts.stream().filter(thread -> thread.getId().equals(value));
+                    return EnvKey.GUILD_YUSERVER.getAsGuild().getThreadChannelById((String) value);
                 }
                 return null;
             }

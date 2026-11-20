@@ -1,5 +1,6 @@
 package ch.frily.yubot.database;
 
+import ch.frily.yubot.exception.InvalidStateException;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -70,11 +71,15 @@ public final class EntityMapper {
                         value = type.getMethod("customMapping", Field.class, Object.class).invoke(entity, field, rs.getObject(i));
                     }
 
-                    field.set(entity, value);
+                    try {
+                        field.set(entity, value);
+                    } catch (Exception e) {
+                        throw new InvalidStateException("Field mapping failed for " + field.getName(), e.getLocalizedMessage());
+                    }
                 } catch (IllegalAccessException e) {
-                    throw new IllegalStateException("Cannot set field " + field.getName(), e);
+                    throw new InvalidStateException("Cannot set field " + field.getName(), e.getMessage());
                 } catch (NoSuchMethodException | InvocationTargetException e) {
-                    throw new IllegalStateException("Cannot find customMapping method for field " + field.getName(), e);
+                    throw new InvalidStateException("Cannot find customMapping method for field " + field.getName(), e.getLocalizedMessage());
                 }
             }
             entities.add(entity);

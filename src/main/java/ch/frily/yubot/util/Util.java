@@ -25,7 +25,12 @@ import java.util.regex.Pattern;
 
 public class Util {
 
-    static String normalize(String s) {
+    /**
+     * Normalize strings
+     * @param s
+     * @return
+     */
+    public static String normalize(String s) {
         return Normalizer.normalize(s, Normalizer.Form.NFD)
                 .replaceAll("\\p{M}", "") // Akzente weg
                 .toLowerCase()

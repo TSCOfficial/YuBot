@@ -5,9 +5,7 @@ import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.command.ISlashCommandGroup;
 import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.service.Service;
-import ch.frily.yubot.service.forummanager.button.AcceptInterestRegistrationBtn;
-import ch.frily.yubot.service.forummanager.button.DenyInterestRegistrationBtn;
-import ch.frily.yubot.service.forummanager.button.RegisterNewInterestBtn;
+import ch.frily.yubot.service.forummanager.button.*;
 import ch.frily.yubot.service.forummanager.modal.CreateCustomPostModal;
 import ch.frily.yubot.service.forummanager.modal.RegisterNewInterestModal;
 import ch.frily.yubot.service.forummanager.slashcommand.ForumCmdGroup;
@@ -53,7 +51,9 @@ public class ForumManagerService extends Service {
         return List.of(
                 new AcceptInterestRegistrationBtn(),
                 new DenyInterestRegistrationBtn(),
-                new RegisterNewInterestBtn()
+                new RegisterNewInterestBtn(),
+                new RejectSimilarInterestsBtn(),
+                new SelectSimilarInterestBtn()
         );
     }
 

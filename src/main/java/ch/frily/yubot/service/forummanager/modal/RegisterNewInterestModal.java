@@ -3,9 +3,12 @@ package ch.frily.yubot.service.forummanager.modal;
 import ch.frily.yubot.EnvKey;
 import ch.frily.yubot.exception.LimitReachedException;
 import ch.frily.yubot.interaction.modal.Modal;
+import ch.frily.yubot.service.forummanager.InterestForumManager;
+import ch.frily.yubot.service.forummanager.container.AskSimilarInterestContainer;
 import ch.frily.yubot.service.forummanager.container.RegisterInterestRequestContainer;
 import ch.frily.yubot.service.forummanager.entity.SpecialInterest;
 import ch.frily.yubot.service.forummanager.repository.SpecialInterestRepository;
+import ch.frily.yubot.service.storage.SessionStorageService;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
@@ -22,6 +25,8 @@ import org.jspecify.annotations.NonNull;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Modal to request all infos for the new interest
@@ -82,38 +87,33 @@ public class RegisterNewInterestModal extends Modal {
             ModalMapping descriptionMapping = event.getValue("interest-description");
 
             List<SpecialInterest> allInterests = SpecialInterestRepository.getInterests();
-            Map<String, SpecialInterest> terms = allInterests.stream().map(interest -> {
-                return Map.of(interest.getName(), interest);
-            });
-            List<String> similarTerms = Util.fuzzySearch(nameMapping.getAsString(), terms);
+            Map<String, SpecialInterest> terms = allInterests.stream().collect(Collectors.toMap(SpecialInterest::getName, Function.identity()));
+            log.info("terms: " + String.join(", ", terms.keySet().stream().toList()));
+            List<String> similarTerms = Util.fuzzySearch(nameMapping.getAsString(), terms.keySet().stream().toList());
+            log.info("similar terms: " + String.join(", ", similarTerms));
+            List<SpecialInterest> similarInterests = allInterests.stream().filter(interest -> similarTerms.contains(Util.normalize(interest.getName()))).toList();
 
 
-            SpecialInterest interest = new SpecialInterest();
-            interest.setName(nameMapping.getAsString());
-            interest.setDescription(descriptionMapping.getAsString());
-            interest.setOriginalPoster(event.getUser());
-
-            int interestId = SpecialInterestRepository.createInterest(interest);
-            interest.setId(interestId);
+            SpecialInterest registeredInterest = new SpecialInterest();
+            registeredInterest.setName(nameMapping.getAsString());
+            registeredInterest.setDescription(descriptionMapping.getAsString());
+            registeredInterest.setOriginalPoster(event.getUser());
 
             if (similarTerms.isEmpty()) {
-                // send request to moderators
-                RegisterInterestRequestContainer requestContainer = new RegisterInterestRequestContainer(event.getMember(), interest);
-                EnvKey.CHANNEL_SERVERCONFIG.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER)
-                        .sendMessageComponents(requestContainer.build()).useComponentsV2().setAllowedMentions(List.of()).queue(_ -> {
-                            event.getHook().editOriginal("✅ Die Anfrage wurde gesendet.").queue();
-                        });
+                int interestId = SpecialInterestRepository.createInterest(registeredInterest);
+                registeredInterest.setId(interestId);
+
+                InterestForumManager.requestInterestApproval(event.getMember(), registeredInterest, () -> {
+                    event.getHook().editOriginal("✅ Die Anfrage wurde gesendet. Das Moderationsteam wird es sich baldmöglichst anschauen — dies kann etwas Zeit in anspruch nehmen.").queue();
+                });
+
             } else {
-                StringBuilder sb = new StringBuilder();
-                if (similarTerms.size() == 1) {
-                    sb.append(String.format("Meintest du %s?", similarTerms.getFirst()))
-                    sb.append("Es existiert ein anderes Interest, welches potenziell dein Thema sein könnte:");
-                } else {
-                    sb.append(String.format("Es existieren %d andere Interests, welche potenziell dein Thema"))
-                }
+                int randomId = Math.toIntExact(Math.round(Math.random() * 100));
+                registeredInterest.setId(randomId); // generate random pseudo id for session storage. This id will get overwritten when later saved to the database
+                SessionStorageService.getInstance().addStorage("special-interest-registration-" + registeredInterest.getId(), event.getMember(), registeredInterest, 15);
 
-
-                event.getHook().editOriginal(String.join("\n", similarTerms)).queue();
+                AskSimilarInterestContainer similarInterestContainer = new AskSimilarInterestContainer(registeredInterest, similarInterests);
+                event.getHook().editOriginalComponents(similarInterestContainer.build()).useComponentsV2().queue();
             }
 
 
