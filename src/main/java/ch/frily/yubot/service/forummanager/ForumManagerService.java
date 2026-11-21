@@ -7,6 +7,7 @@ import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.service.Service;
 import ch.frily.yubot.service.forummanager.button.*;
 import ch.frily.yubot.service.forummanager.modal.CreateCustomPostModal;
+import ch.frily.yubot.service.forummanager.modal.EditAndAcceptInterestModal;
 import ch.frily.yubot.service.forummanager.modal.RegisterNewInterestModal;
 import ch.frily.yubot.service.forummanager.slashcommand.ForumCmdGroup;
 
@@ -53,7 +54,8 @@ public class ForumManagerService extends Service {
                 new DenyInterestRegistrationBtn(),
                 new RegisterNewInterestBtn(),
                 new RejectSimilarInterestsBtn(),
-                new SelectSimilarInterestBtn()
+                new SelectSimilarInterestBtn(),
+                new EditAndAcceptInterestRegistrationBtn()
         );
     }
 
@@ -61,7 +63,8 @@ public class ForumManagerService extends Service {
     public List<Modal> getModals() {
         return List.of(
                 new CreateCustomPostModal(),
-                new RegisterNewInterestModal()
+                new RegisterNewInterestModal(),
+                new EditAndAcceptInterestModal()
         );
     }
 

@@ -95,7 +95,7 @@ public class RegisterNewInterestModal extends Modal {
             ModalMapping descriptionMapping = event.getValue("interest-description");
             ModalMapping notifyOPMapping = event.getValue("notify-op");
 
-            List<SpecialInterest> allInterests = SpecialInterestRepository.getInterests();
+            List<SpecialInterest> allInterests = SpecialInterestRepository.getInterests().stream().filter(interest -> interest.getRequestStatus() == SpecialInterest.RequestStatus.APPROVED).toList();
             Map<String, SpecialInterest> terms = allInterests.stream().collect(Collectors.toMap(SpecialInterest::getName, Function.identity()));
             List<String> similarTerms = Util.fuzzySearch(nameMapping.getAsString(), terms.keySet().stream().toList());
             List<SpecialInterest> similarInterests = allInterests.stream().filter(interest -> similarTerms.contains(Util.normalize(interest.getName()))).toList();
