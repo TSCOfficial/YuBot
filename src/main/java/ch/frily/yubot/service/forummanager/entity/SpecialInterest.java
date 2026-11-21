@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumPost;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import org.jspecify.annotations.NonNull;
 
 import java.lang.reflect.Field;
@@ -64,6 +65,13 @@ public class SpecialInterest implements IEntity {
         PENDING,
         APPROVED,
         DENIED
+    }
+
+    public void notifyOP(MessageCreateBuilder messageBuilder) {
+        Objects.requireNonNull(originalPoster);
+        originalPoster.openPrivateChannel().queue(privateChannel -> {
+            privateChannel.sendMessage(messageBuilder.build()).queue();
+        });
     }
 
     @Override

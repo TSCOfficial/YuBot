@@ -69,7 +69,7 @@ public abstract class ArgumentComponent {
      * @param componentId the component ID (Use {@link ComponentInteraction#getCustomId() getCustomId()} or {@link ComponentInteraction#getComponentId() getComponentId()})
      * @param key the key to get the argument value from
      * @return the arguments value
-     * @throws IllegalStateException if the argument could not be found
+     * @throws InvalidStateException if the argument could not be found
      */
     public String getArgument(String componentId, String key){
         String value = parseArguments(componentId).get(key);

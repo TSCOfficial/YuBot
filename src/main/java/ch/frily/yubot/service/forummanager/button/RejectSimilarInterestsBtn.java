@@ -1,6 +1,7 @@
 package ch.frily.yubot.service.forummanager.button;
 
 
+import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.service.forummanager.InterestForumManager;
 import ch.frily.yubot.service.forummanager.entity.SpecialInterest;
@@ -37,8 +38,13 @@ public class RejectSimilarInterestsBtn extends Button {
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) throws SQLException {
         event.deferReply(true).queue();
+
         String localInterestId = getArgument(event.getComponentId(), "interestId");
         SpecialInterest interest = SessionStorageService.getInstance().getStorage("special-interest-registration-" + localInterestId, event.getMember(), SpecialInterest.class);
+
+        if (interest == null) {
+            throw new NotFoundException("Es konnte keine Anfrage gefunden werden.", "Es scheint so, also wäre deine Anfrage abgelaufen. Bitte versuche es noch einmal.");
+        }
 
         int interestId = SpecialInterestRepository.createInterest(interest);
         interest.setId(interestId); // overwrite id with the correct one from the DB

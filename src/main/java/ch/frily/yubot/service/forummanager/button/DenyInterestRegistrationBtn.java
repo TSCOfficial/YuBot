@@ -8,6 +8,7 @@ import ch.frily.yubot.service.forummanager.repository.SpecialInterestRepository;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
@@ -48,6 +49,13 @@ public class DenyInterestRegistrationBtn extends Button {
 
             event.getHook().editOriginal("✅ Interest wurde abgelehnt.").queue();
             event.getMessage().delete().queue();
+
+            if (interest.isNotifyOP()) {
+                MessageCreateBuilder messageBuilder = new MessageCreateBuilder();
+                messageBuilder.addContent("## Interest-Forum\n");
+                messageBuilder.addContent("Deine Registrierung für das Thema **%s** wurde leider abgelehnt.".formatted(interest.getName()));
+                interest.notifyOP(messageBuilder);
+            }
         }else {
             throw new NotFoundException("Es konnte keine Anfrage gefunden werden.");
         }
