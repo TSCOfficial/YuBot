@@ -2,6 +2,7 @@ package ch.frily.yubot.util;
 
 import ch.frily.yubot.EnvKey;
 import de.uni_jena.cs.fusion.similarity.jarowinkler.JaroWinklerSimilarity;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -11,6 +12,7 @@ import net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import org.jspecify.annotations.NonNull;
 
 import java.text.Normalizer;
 import java.time.Duration;
@@ -23,6 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class Util {
 
     /**
@@ -31,16 +34,19 @@ public class Util {
      * @return
      */
     public static String normalize(String s) {
-        return Normalizer.normalize(s, Normalizer.Form.NFD)
+        log.info("Normalizing string: {}", s);
+        String normalizedString =  Normalizer.normalize(s, Normalizer.Form.NFD)
                 .replaceAll("\\p{M}", "") // Akzente weg
                 .toLowerCase()
                 .replaceAll("[^a-z0-9 ]", " ")
                 .replaceAll("\\s+", " ")
                 .trim();
+        log.info("Normalized string: {}", normalizedString);
+        return normalizedString;
     }
 
-    public static List<String> fuzzySearch(String key, List<String> terms) {
-        double threshold = 0.4;
+    public static @NonNull List<String> fuzzySearch(String key, List<String> terms) {
+        double threshold = 0.6;
         terms = terms.stream().map(Util::normalize).toList();
         var jw = JaroWinklerSimilarity.with(terms, threshold);
         key = normalize(key);

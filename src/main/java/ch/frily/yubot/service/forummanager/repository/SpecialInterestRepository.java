@@ -98,7 +98,9 @@ public class SpecialInterestRepository implements IRepository {
         DatabaseQuery query = new DatabaseQuery(Table.SPECIAL_INTEREST);
         query.update(Table.SpecialInterestColumn.NAME, interest.getName());
         query.update(Table.SpecialInterestColumn.DESCRIPTION, interest.getDescription());
-        query.update(Table.SpecialInterestColumn.POST_ID, interest.getPost().getId());
+        if (interest.getPost() != null) {
+            query.update(Table.SpecialInterestColumn.POST_ID, interest.getPost().getId());
+        }
         query.update(Table.SpecialInterestColumn.REQUEST_STATUS, interest.getRequestStatus().name());
         query.update(Table.SpecialInterestColumn.NOTIFY_OP, interest.isNotifyOP());
 
