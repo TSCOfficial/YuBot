@@ -7,8 +7,9 @@ import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.service.Service;
 import ch.frily.yubot.service.forummanager.button.*;
 import ch.frily.yubot.service.forummanager.modal.CreateCustomPostModal;
+import ch.frily.yubot.service.forummanager.modal.DenySubmissionReasonModal;
 import ch.frily.yubot.service.forummanager.modal.EditAndAcceptInterestModal;
-import ch.frily.yubot.service.forummanager.modal.RegisterNewInterestModal;
+import ch.frily.yubot.service.forummanager.modal.SubmitNewInterestModal;
 import ch.frily.yubot.service.forummanager.slashcommand.ForumCmdGroup;
 
 import java.util.List;
@@ -50,12 +51,12 @@ public class ForumManagerService extends Service {
     @Override
     public List<Button> getButtons() {
         return List.of(
-                new AcceptInterestRegistrationBtn(),
-                new DenyInterestRegistrationBtn(),
-                new RegisterNewInterestBtn(),
+                new AcceptInterestSubmissionBtn(),
+                new DenyInterestSubmissionBtn(),
+                new SubmitNewInterestBtn(),
                 new RejectSimilarInterestsBtn(),
                 new SelectSimilarInterestBtn(),
-                new EditAndAcceptInterestRegistrationBtn()
+                new EditAndAcceptInterestSubmissionBtn()
         );
     }
 
@@ -63,8 +64,9 @@ public class ForumManagerService extends Service {
     public List<Modal> getModals() {
         return List.of(
                 new CreateCustomPostModal(),
-                new RegisterNewInterestModal(),
-                new EditAndAcceptInterestModal()
+                new SubmitNewInterestModal(),
+                new EditAndAcceptInterestModal(),
+                new DenySubmissionReasonModal()
         );
     }
 

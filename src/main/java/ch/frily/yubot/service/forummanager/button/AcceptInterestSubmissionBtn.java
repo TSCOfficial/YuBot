@@ -23,7 +23,7 @@ import java.util.Objects;
  * @since v2.5.0
  */
 @Slf4j
-public class AcceptInterestRegistrationBtn extends Button {
+public class AcceptInterestSubmissionBtn extends Button {
     @Override
     public String getId() {
         return "accept-interest-btn";
@@ -53,9 +53,8 @@ public class AcceptInterestRegistrationBtn extends Button {
         SpecialInterest interest = SpecialInterestRepository.getInterestById(Integer.parseInt(interestId));
 
         if (Objects.nonNull(interest)) {
-            interest.setRequestStatus(SpecialInterest.RequestStatus.APPROVED);
             SpecialInterestRepository.updateInterest(interest);
-            InterestForumManager.acceptInterestRegistration(interest);
+            InterestForumManager.acceptInterestSubmission(interest);
 
             event.getHook().editOriginal("✅ Interest wurde freigegeben.").queue();
             event.getMessage().delete().queue();

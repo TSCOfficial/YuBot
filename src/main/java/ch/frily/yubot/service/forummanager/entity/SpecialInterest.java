@@ -5,19 +5,29 @@ import ch.frily.yubot.EnvKey;
 import ch.frily.yubot.database.IEntity;
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.exception.NotFoundException;
+import ch.frily.yubot.service.forummanager.repository.SpecialInterestRepository;
+import ch.frily.yubot.util.Util;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumPost;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import org.jspecify.annotations.NonNull;
+import org.w3c.dom.Text;
 
 import java.lang.reflect.Field;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Interest Entity
@@ -67,16 +77,20 @@ public class SpecialInterest implements IEntity {
         DENIED
     }
 
-    public void notifyOP(MessageCreateBuilder messageBuilder) {
+    public void notifyOP(StringBuilder messageBuilder) {
         Objects.requireNonNull(originalPoster);
+        MessageCreateBuilder notificationMessage = new MessageCreateBuilder();
+        notificationMessage.useComponentsV2();
+        notificationMessage.addComponents(TextDisplay.of(messageBuilder.toString()));
+        notificationMessage.addComponents(Separator.createDivider(Separator.Spacing.SMALL));
+        notificationMessage.addComponents(TextDisplay.ofFormat("-# <:ServerIconrund:1574129338222125287> %s ∙ Interest-Forum Management | <t:%s:F>", EnvKey.GUILD_YUSERVER.getAsGuild().getName(), Util.toEpochSeconds(LocalDateTime.now())));
         originalPoster.openPrivateChannel().queue(privateChannel -> {
-            privateChannel.sendMessage(messageBuilder.build()).queue();
+            privateChannel.sendMessage(notificationMessage.build()).queue();
         });
     }
 
     @Override
     public Object customMapping(@NonNull Field field, Object value) {
-        log.info("mapping with value " + value);
         switch (field.getName()) {
             case "originalPoster" -> {
                 if (Objects.nonNull(value)) {

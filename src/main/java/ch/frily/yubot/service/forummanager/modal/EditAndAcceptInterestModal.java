@@ -13,9 +13,11 @@ import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
+import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,32 +50,52 @@ public class EditAndAcceptInterestModal extends Modal {
         interestDescription.setPlaceholder("Beschreibung eingeben...");
         interestDescription.setValue(interest.getDescription());
 
-        return List.of(
-                TextDisplay.of("Bearbeite das Interest bevor du es Freigibst. "),
-                Label.of(
-                        "Name",
-                        "Dies wird, bei der Freigabe, als Post-Titel verwendet",
-                        interestName.build()
-                ),
-                Label.of(
-                        "Beschreibung",
-                        "Dies wird, bei der Freigabe, als Post-Beschreibung (\"first message\") verwendet.",
-                        interestDescription.build()
-                ),
-                TextDisplay.of("-# Original Poster (OP) wird von dieser Änderung informiert.")
-        );
+        List<ModalTopLevelComponent> components = new ArrayList<>();
+        components.add(TextDisplay.of("Bearbeite das Interest bevor du es Freigibst. "));
+        components.add(Label.of(
+                "Name",
+                "Dies wird, bei der Freigabe, als Post-Titel verwendet",
+                interestName.build()
+        ));
+        components.add(Label.of(
+                "Beschreibung",
+                "Dies wird, bei der Freigabe, als Post-Beschreibung (\"first message\") verwendet.",
+                interestDescription.build()
+        ));
+        if (interest.isNotifyOP()) {
+            components.add(TextDisplay.of("-# Original Poster (OP) wird von dieser Änderung informiert."));
+        }
+
+
+        return components;
     }
 
     @Override
     public void execute(@NonNull ModalInteractionEvent event) throws SQLException, NullPointerException {
+        ModalMapping nameMapping = event.getValue("interest-name");
+        ModalMapping descriptionMapping = event.getValue("interest-description");
+
         event.deferReply(true).queue();
         String interestId = getArgument(event.getCustomId(), "interestId");
         SpecialInterest interest = SpecialInterestRepository.getInterestById(Integer.parseInt(interestId));
 
         if (Objects.nonNull(interest)) {
-            interest.setRequestStatus(SpecialInterest.RequestStatus.APPROVED);
+            StringBuilder modificationNotice = new StringBuilder();
+            modificationNotice.append("## Änderungen am Interest \"%s\" vorgenommen\n".formatted(interest.getName()));
+            if (!nameMapping.getAsString().equals(interest.getName())) {
+                modificationNotice.append("Der Name wurde zu **%s** angepasst.\n".formatted(nameMapping.getAsString()));
+                interest.setName(nameMapping.getAsString());
+            }
+            if (!descriptionMapping.getAsString().equals(interest.getDescription())) {
+                modificationNotice.append("Die Beschreibung wurde zu \"**%s**\" angepasst.\n".formatted(descriptionMapping.getAsString()));
+                interest.setDescription(descriptionMapping.getAsString());
+            }
+            if (!modificationNotice.isEmpty() && interest.isNotifyOP()) {
+                interest.notifyOP(modificationNotice);
+            }
+
             SpecialInterestRepository.updateInterest(interest);
-            InterestForumManager.acceptInterestRegistration(interest);
+            InterestForumManager.acceptInterestSubmission(interest);
 
             event.getHook().editOriginal("✅ Interest wurde freigegeben.").queue();
             event.getMessage().delete().queue();

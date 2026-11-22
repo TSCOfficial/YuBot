@@ -1,11 +1,9 @@
 package ch.frily.yubot.service.forummanager.modal;
 
-import ch.frily.yubot.EnvKey;
 import ch.frily.yubot.exception.LimitReachedException;
 import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.service.forummanager.InterestForumManager;
 import ch.frily.yubot.service.forummanager.container.AskSimilarInterestContainer;
-import ch.frily.yubot.service.forummanager.container.RegisterInterestRequestContainer;
 import ch.frily.yubot.service.forummanager.entity.SpecialInterest;
 import ch.frily.yubot.service.forummanager.repository.SpecialInterestRepository;
 import ch.frily.yubot.service.storage.SessionStorageService;
@@ -17,7 +15,6 @@ import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
@@ -35,7 +32,7 @@ import java.util.stream.Collectors;
  * @author Aliz Rose Frily
  */
 @Slf4j
-public class RegisterNewInterestModal extends Modal {
+public class SubmitNewInterestModal extends Modal {
     @Override
     public String getId() {
         return "request-interest-modal";
@@ -95,10 +92,7 @@ public class RegisterNewInterestModal extends Modal {
             ModalMapping descriptionMapping = event.getValue("interest-description");
             ModalMapping notifyOPMapping = event.getValue("notify-op");
 
-            List<SpecialInterest> allInterests = SpecialInterestRepository.getInterests().stream().filter(interest -> interest.getRequestStatus() == SpecialInterest.RequestStatus.APPROVED).toList();
-            Map<String, SpecialInterest> terms = allInterests.stream().collect(Collectors.toMap(SpecialInterest::getName, Function.identity()));
-            List<String> similarTerms = Util.fuzzySearch(nameMapping.getAsString(), terms.keySet().stream().toList());
-            List<SpecialInterest> similarInterests = allInterests.stream().filter(interest -> similarTerms.contains(Util.normalize(interest.getName()))).toList();
+            List<SpecialInterest> similarInterests = InterestForumManager.getSimilarInterests(nameMapping.getAsString());
 
 
             SpecialInterest registeredInterest = new SpecialInterest();
@@ -107,12 +101,17 @@ public class RegisterNewInterestModal extends Modal {
             registeredInterest.setOriginalPoster(event.getUser());
             registeredInterest.setNotifyOP(notifyOPMapping.getAsBoolean());
 
-            if (similarTerms.isEmpty()) {
+            if (similarInterests.isEmpty()) {
                 int interestId = SpecialInterestRepository.createInterest(registeredInterest);
                 registeredInterest.setId(interestId);
 
                 InterestForumManager.requestInterestApproval(event.getMember(), registeredInterest, () -> {
-                    event.getHook().editOriginal("✅ Die Anfrage wurde gesendet. Das Moderationsteam wird es sich baldmöglichst anschauen — dies kann etwas Zeit in anspruch nehmen.").queue();
+                    String sendDmNotificationMsg = registeredInterest.isNotifyOP() ? "Du wirst über Änderungen des Status deiner Einsendung per DM benachrichtigt." : "";
+                    event.getHook().editOriginal("""
+                            ✅ **Die Anfrage wurde gesendet.**
+                            Das Moderationsteam wird es sich baldmöglichst anschauen — dies kann jedoch etwas Zeit in anspruch nehmen.
+                            %s
+                            """.formatted(sendDmNotificationMsg)).queue();
                 });
 
             } else {

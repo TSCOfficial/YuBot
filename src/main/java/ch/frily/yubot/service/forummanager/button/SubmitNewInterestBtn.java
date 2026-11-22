@@ -1,7 +1,7 @@
 package ch.frily.yubot.service.forummanager.button;
 
 import ch.frily.yubot.interaction.button.Button;
-import ch.frily.yubot.service.forummanager.modal.RegisterNewInterestModal;
+import ch.frily.yubot.service.forummanager.modal.SubmitNewInterestModal;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jspecify.annotations.NonNull;
@@ -13,7 +13,7 @@ import java.sql.SQLException;
  * @since v2.5.0
  * @author Aliz Rose Frily
  */
-public class RegisterNewInterestBtn extends Button {
+public class SubmitNewInterestBtn extends Button {
     @Override
     public String getId() {
         return "new-interest-btn";
@@ -31,7 +31,7 @@ public class RegisterNewInterestBtn extends Button {
 
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) throws SQLException {
-        RegisterNewInterestModal modal = new RegisterNewInterestModal();
+        SubmitNewInterestModal modal = new SubmitNewInterestModal();
         event.replyModal(modal.build()).queue();
     }
 }
