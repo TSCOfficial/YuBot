@@ -59,6 +59,14 @@ public class SpecialInterest implements IEntity {
     @Setter
     private boolean notifyOP = true;
 
+    @Getter
+    @Setter
+    private User moderator;
+
+    @Getter
+    @Setter
+    private String denyReason;
+
     public enum RequestStatus {
         PENDING,
         APPROVED,
@@ -80,7 +88,7 @@ public class SpecialInterest implements IEntity {
     @Override
     public Object customMapping(@NonNull Field field, @NonNull Object value) {
         switch (field.getName()) {
-            case "originalPoster" -> {
+            case "originalPoster", "moderator" -> {
                 return Client.getInstance().getClient().getUserById((String) value);
             }
             case "post" -> {

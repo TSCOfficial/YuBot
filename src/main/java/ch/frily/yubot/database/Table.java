@@ -206,7 +206,9 @@ public enum Table {
         REQUEST_STATUS("request_status"),
         ORIGINAL_POSTER_ID("original_poster_id"),
         POST_ID("post_id"),
-        NOTIFY_OP("notify_op");
+        NOTIFY_OP("notify_op"),
+        MODERATOR_ID("moderator_id"),
+        DENY_REASON("deny_reason");
         private final String column;
     }
 }

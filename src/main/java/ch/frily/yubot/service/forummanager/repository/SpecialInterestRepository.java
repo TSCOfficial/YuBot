@@ -117,6 +117,9 @@ public class SpecialInterestRepository implements IRepository {
         if (interest.getPost() != null) {
             query.update(Table.SpecialInterestColumn.POST_ID, interest.getPost().getId());
         }
+        if (interest.getModerator() != null) {
+            query.update(Table.SpecialInterestColumn.MODERATOR_ID, interest.getModerator().getId());
+        }
         query.update(Table.SpecialInterestColumn.REQUEST_STATUS, interest.getRequestStatus().name());
         query.update(Table.SpecialInterestColumn.NOTIFY_OP, interest.isNotifyOP());
 
