@@ -24,7 +24,7 @@ import java.util.List;
 public class NewInterestSubmittedContainer extends Container {
 
     public NewInterestSubmittedContainer(Member member, SpecialInterest interest) {
-        addTextDisplay("## 📬 Neues Interest eingesendet");
+        addTextDisplay("## 📬 Neues Special-Interest eingesendet");
         addFormatedText("""
                 %s (%s) hat das Interest **%s** eingesendet.
                 """, member.getAsMention(), member.getEffectiveName(), interest.getName());
@@ -37,7 +37,7 @@ public class NewInterestSubmittedContainer extends Container {
         try {
             List<SpecialInterest> similarInterests = InterestForumManager.getSimilarInterests(interest.getName());
             if (!similarInterests.isEmpty()) {
-                addTextDisplay("### Potenziell ähnliche Interests");
+                addTextDisplay("### Potenziell ähnliche Special-Interests");
                 for (SpecialInterest similarInterest : similarInterests) {
                     addFormatedText("""
                     - "%s" (%s)
@@ -49,7 +49,7 @@ public class NewInterestSubmittedContainer extends Container {
         addFormatedText("-# <t:%d:s> (<t:%d:R>)", Util.toEpochSeconds(LocalDateTime.now()), Util.toEpochSeconds(LocalDateTime.now()));
 
         addLineSeparator(Separator.Spacing.LARGE);
-        addTextDisplay("-# Lehne die Einsendung ab, wenn das Thema bereits existiert, es kritisch ist, oder gegen die Serverregeln verstösst.");
+        addTextDisplay("-# Lehne die Einsendung ab, wenn das Thema bereits existiert, oder gegen die Serverregeln verstösst.");
 
         AcceptInterestSubmissionBtn acceptBtn = new AcceptInterestSubmissionBtn();
         acceptBtn.addArgument("interestId", interest.getId());

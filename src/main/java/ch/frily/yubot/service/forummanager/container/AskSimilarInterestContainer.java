@@ -29,16 +29,16 @@ public class AskSimilarInterestContainer extends Container {
     public AskSimilarInterestContainer(SpecialInterest registeringInterest, List<SpecialInterest> similarInterests) {
         Objects.requireNonNull(similarInterests);
         if (similarInterests.isEmpty()) {
-                throw new InvalidStateException("Liste der ähnlichen Interests darf nicht leer sein.");
+                throw new InvalidStateException("Liste der ähnlichen Special-Interests darf nicht leer sein.");
         }
 
         if (similarInterests.size() == 1) {
             addFormatedText("## Meintest du \"%s\"?", similarInterests.getFirst().getName());
-            addFormatedText("Es existiert ein potenziell ähnliches Interesse. Bitte wähle aus, ob dieses existierende Interesse zu deinem Thema passt. Wenn nicht, kannst du dein Interesse mit dem darunterstehenden Button registrieren.", similarInterests.getFirst().getPost().getJumpUrl());
+            addFormatedText("Es existiert ein potenziell ähnliches Special-Interests. Bitte wähle aus, ob dieses existierende Interest zu deinem passt. Wenn nicht, kannst du dein Special-Interests mit dem darunterstehenden Button registrieren.", similarInterests.getFirst().getPost().getJumpUrl());
             similarInterests.forEach(this::addSimilarInterestSection);
         } else {
             addFormatedText("## Meintest du \"%s\",... ?", similarInterests.getFirst().getName());
-            addTextDisplay("Es existieren %d potenzielle ähnliche Interessen. Bitte wähle aus, ob eins dieser existierenden Interessen zu deinem Thema passt. Wenn nicht, kannst du dein Interesse mit dem darunterstehenden Button registrieren.");
+            addTextDisplay("Es existieren %d potenzielle ähnliche Special-Interests. Bitte wähle aus, ob eins dieser existierenden Interests zu deinem passt. Wenn nicht, kannst du dein Special-Interest mit dem darunterstehenden Button registrieren.");
             similarInterests.forEach(this::addSimilarInterestSection);
         }
 

@@ -95,9 +95,9 @@ public class InterestForumManager {
      * @throws SQLException
      */
     public static List<SpecialInterest> getSimilarInterests(String term) throws SQLException {
-        List<SpecialInterest> allInterests = SpecialInterestRepository.getInterests().stream().filter(interest -> interest.getRequestStatus() == SpecialInterest.RequestStatus.APPROVED).toList();
-        Map<String, SpecialInterest> terms = allInterests.stream().collect(Collectors.toMap(SpecialInterest::getName, Function.identity()));
+        List<SpecialInterest> approvedInterests = SpecialInterestRepository.getInterests(SpecialInterest.RequestStatus.APPROVED);
+        Map<String, SpecialInterest> terms = approvedInterests.stream().collect(Collectors.toMap(SpecialInterest::getName, Function.identity()));
         List<String> similarTerms = Util.fuzzySearch(term, terms.keySet().stream().toList());
-        return allInterests.stream().filter(interest -> similarTerms.contains(Util.normalize(interest.getName()))).toList();
+        return approvedInterests.stream().filter(interest -> similarTerms.contains(Util.normalize(interest.getName()))).toList();
     }
 }

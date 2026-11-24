@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -48,14 +49,29 @@ public class SpecialInterestRepository implements IRepository {
     }
 
     public static List<SpecialInterest> getInterests() throws SQLException {
+        return getInterests(null);
+    }
+
+    /**
+     * Request all interests with a given {@link SpecialInterest.RequestStatus RequestStatus}.
+     * @param requestStatus the status you want the interests to have. If null, it returns any status
+     * @return
+     * @throws SQLException
+     */
+    public static List<SpecialInterest> getInterests(@Nullable SpecialInterest.RequestStatus requestStatus) throws SQLException {
         DatabaseQuery query = new DatabaseQuery(Table.SPECIAL_INTEREST);
         query.select();
+        if (Objects.nonNull(requestStatus)) {
+            query.where(Table.SpecialInterestColumn.REQUEST_STATUS, DatabaseQuery.Operator.EQUALS, requestStatus.name());
+        }
+
         query.orderBy(Table.SpecialInterestColumn.ID, DatabaseQuery.OrderBy.ASCENDED);
 
         ResultSet rs = query.executeDataQuery();
 
         return EntityMapper.build(rs, SpecialInterest.class);
     }
+
 
     /**
      * Get all special interets from a given user
