@@ -91,7 +91,7 @@ public class InterestForumManager {
      */
     public static void requestInterestApproval(Member initiator, SpecialInterest interest, Runnable onRequested) throws SQLException {
         NewInterestSubmittedContainer requestContainer = new NewInterestSubmittedContainer(initiator, interest);
-        EnvKey.CHANNEL_SERVERCONFIG.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER)
+        EnvKey.CHANNEL_MODINTERN.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER)
                 .sendMessageComponents(requestContainer.build()).useComponentsV2().setAllowedMentions(List.of()).queue(_ -> {
                     onRequested.run();
                 });

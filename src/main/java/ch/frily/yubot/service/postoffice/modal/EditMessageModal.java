@@ -56,7 +56,7 @@ public class EditMessageModal extends Modal {
 
     @Override
     public String getTitle() {
-        return String.format("Nachricht in %s bearbeiten", message.getGuildChannel().getName());
+        return "Nachricht bearbeiten";
     }
 
     @Override
