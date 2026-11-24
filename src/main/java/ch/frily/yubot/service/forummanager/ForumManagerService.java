@@ -8,6 +8,7 @@ import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.service.Service;
 import ch.frily.yubot.service.forummanager.button.*;
 import ch.frily.yubot.service.forummanager.event.InterestPostDeleteEvent;
+import ch.frily.yubot.service.forummanager.event.PreventSendMessageEvent;
 import ch.frily.yubot.service.forummanager.modal.CreateCustomPostModal;
 import ch.frily.yubot.service.forummanager.modal.DenySubmissionReasonModal;
 import ch.frily.yubot.service.forummanager.modal.EditAndAcceptInterestModal;
@@ -81,7 +82,8 @@ public class ForumManagerService extends Service {
     @Override
     public List<IEvent<? extends Event>> getEvents() {
         return List.of(
-                new InterestPostDeleteEvent()
+                new InterestPostDeleteEvent(),
+                new PreventSendMessageEvent()
         );
     }
 }
