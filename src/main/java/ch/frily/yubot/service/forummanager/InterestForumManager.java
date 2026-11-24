@@ -8,6 +8,7 @@ import ch.frily.yubot.service.forummanager.repository.SpecialInterestRepository;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
@@ -36,7 +37,7 @@ public class InterestForumManager {
      * </p>
      * @param interest
      */
-    public static void acceptInterestSubmission(SpecialInterest interest) {
+    public static void acceptInterestSubmission(User moderator, SpecialInterest interest) {
         MessageCreateBuilder postMessage = new MessageCreateBuilder();
         postMessage.addContent(interest.getDescription());
         postMessage.addContent(String.format("\n-# Interest wurde von %s eingereicht", interest.getOriginalPoster().getAsMention()));
@@ -45,12 +46,13 @@ public class InterestForumManager {
             try {
                 interest.setPost(post.getThreadChannel());
                 interest.setRequestStatus(SpecialInterest.RequestStatus.APPROVED);
+                interest.setModerator(moderator);
                 SpecialInterestRepository.updateInterest(interest);
 
                 if (interest.isNotifyOP()) {
                     StringBuilder acceptNotificationMessage = new StringBuilder();
-                    acceptNotificationMessage.append("## Interest freigegeben\n");
-                    acceptNotificationMessage.append(String.format("Dein Interest \"%s\" wurde freigegeben und ist nun unter %s auffindbar.", interest.getName(), interest.getPost().getJumpUrl()));
+                    acceptNotificationMessage.append("## Special-Interest freigegeben\n");
+                    acceptNotificationMessage.append(String.format("Dein Special-Interest \"%s\" wurde freigegeben und ist nun unter %s auffindbar.", interest.getName(), interest.getPost().getJumpUrl()));
                     interest.notifyOP(acceptNotificationMessage);
                 }
             } catch (SQLException e) {
@@ -59,13 +61,15 @@ public class InterestForumManager {
         });
     }
 
-    public static void denyInterestSubmission(SpecialInterest interest, String reason) throws SQLException {
+    public static void denyInterestSubmission(User moderator, SpecialInterest interest, String reason) throws SQLException {
         interest.setRequestStatus(SpecialInterest.RequestStatus.DENIED);
+        interest.setDenyReason(reason);
+        interest.setModerator(moderator);
         SpecialInterestRepository.updateInterest(interest);
 
         if (interest.isNotifyOP()) {
             StringBuilder messageBuilder = new StringBuilder();
-            messageBuilder.append("## Interest abgelehnt\n");
+            messageBuilder.append("## Special-Interest abgelehnt\n");
             messageBuilder.append("Deine Anfrage für das Thema **%s** wurde leider abgelehnt.\n".formatted(interest.getName()));
             messageBuilder.append("Grund: %s".formatted(reason));
             interest.notifyOP(messageBuilder);
@@ -90,14 +94,26 @@ public class InterestForumManager {
     }
 
     /**
+     * Search for similar interests by name, with a custom threshold
+     * @return
+     * @throws SQLException
+     */
+    public static List<SpecialInterest> getSimilarInterests(String term, double threshold) throws SQLException {
+        List<SpecialInterest> approvedInterests = SpecialInterestRepository.getInterests(SpecialInterest.RequestStatus.APPROVED);
+        Map<String, SpecialInterest> terms = approvedInterests.stream().collect(Collectors.toMap(SpecialInterest::getName, Function.identity()));
+        List<String> similarTerms = Util.fuzzySearch(term, terms.keySet().stream().toList(), threshold);
+        return approvedInterests.stream().filter(interest -> similarTerms.contains(Util.normalize(interest.getName()))).toList();
+    }
+
+    /**
      * Search for similar interests by name
+     * <p>
+     *     This uses the default threshold ({@link Util#FUZZY_SEARCH_DEFAULT_THRESHOLD})
+     * </p>
      * @return
      * @throws SQLException
      */
     public static List<SpecialInterest> getSimilarInterests(String term) throws SQLException {
-        List<SpecialInterest> approvedInterests = SpecialInterestRepository.getInterests(SpecialInterest.RequestStatus.APPROVED);
-        Map<String, SpecialInterest> terms = approvedInterests.stream().collect(Collectors.toMap(SpecialInterest::getName, Function.identity()));
-        List<String> similarTerms = Util.fuzzySearch(term, terms.keySet().stream().toList());
-        return approvedInterests.stream().filter(interest -> similarTerms.contains(Util.normalize(interest.getName()))).toList();
+        return getSimilarInterests(term, 0);
     }
 }

@@ -83,7 +83,7 @@ public class EditAndAcceptInterestModal extends Modal {
             StringBuilder modificationNotice = new StringBuilder();
             modificationNotice.append("## Änderungen am Interest \"%s\" vorgenommen\n".formatted(interest.getName()));
             if (!nameMapping.getAsString().equals(interest.getName())) {
-                modificationNotice.append("Der Name wurde zu **%s** angepasst.\n".formatted(nameMapping.getAsString()));
+                modificationNotice.append("Der Name wurde zu \"**%s**\" angepasst.\n".formatted(nameMapping.getAsString()));
                 interest.setName(nameMapping.getAsString());
             }
             if (!descriptionMapping.getAsString().equals(interest.getDescription())) {
@@ -95,7 +95,7 @@ public class EditAndAcceptInterestModal extends Modal {
             }
 
             SpecialInterestRepository.updateInterest(interest);
-            InterestForumManager.acceptInterestSubmission(interest);
+            InterestForumManager.acceptInterestSubmission(event.getUser(), interest);
 
             event.getHook().editOriginal("✅ Interest wurde freigegeben.").queue();
             event.getMessage().delete().queue();

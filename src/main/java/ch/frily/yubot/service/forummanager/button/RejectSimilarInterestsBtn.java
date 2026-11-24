@@ -50,7 +50,12 @@ public class RejectSimilarInterestsBtn extends Button {
         interest.setId(interestId); // overwrite id with the correct one from the DB
 
         InterestForumManager.requestInterestApproval(event.getMember(), interest, () -> {
-            event.getHook().editOriginal("✅ Die Anfrage wurde gesendet. Das Moderationsteam wird es sich baldmöglichst anschauen — dies kann etwas Zeit in anspruch nehmen.").queue();
+            String sendDmNotificationMsg = interest.isNotifyOP() ? "Du wirst über Änderungen des Status deiner Einsendung per DM benachrichtigt." : "";
+            event.getHook().editOriginal("""
+                            ✅ **Die Anfrage wurde gesendet.**
+                            Das Moderationsteam wird es sich baldmöglichst anschauen — dies kann jedoch etwas Zeit in anspruch nehmen.
+                            %s
+                            """.formatted(sendDmNotificationMsg)).queue();
             event.getMessage().delete().queue();
         });
     }

@@ -54,7 +54,7 @@ public class AcceptInterestSubmissionBtn extends Button {
 
         if (Objects.nonNull(interest)) {
             SpecialInterestRepository.updateInterest(interest);
-            InterestForumManager.acceptInterestSubmission(interest);
+            InterestForumManager.acceptInterestSubmission(event.getUser(), interest);
 
             event.getHook().editOriginal("✅ Interest wurde freigegeben.").queue();
             event.getMessage().delete().queue();

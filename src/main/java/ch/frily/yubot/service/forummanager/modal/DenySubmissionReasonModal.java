@@ -59,8 +59,8 @@ public class DenySubmissionReasonModal extends Modal {
         SpecialInterest interest = SpecialInterestRepository.getInterestById(Integer.parseInt(interestId));
 
         if (Objects.nonNull(interest)) {
-            InterestForumManager.denyInterestSubmission(interest, reasonMapping.getAsString());
-            event.reply("✅ Interest \"%s\" wurde abgelehnt.".formatted(interest.getName())).setEphemeral(true).queue();
+            InterestForumManager.denyInterestSubmission(event.getUser(), interest, reasonMapping.getAsString());
+            event.getHook().editOriginal("✅ Interest \"%s\" wurde abgelehnt.".formatted(interest.getName())).queue();
             event.getMessage().delete().queue();
         }else {
             throw new NotFoundException("Einsendung '%s' nicht gefunden.".formatted(interestId));

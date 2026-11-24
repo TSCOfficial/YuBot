@@ -105,6 +105,8 @@ public class SubmitNewInterestModal extends Modal {
             submittedInterest.setOriginalPoster(event.getUser());
             submittedInterest.setNotifyOP(notifyOPMapping.getAsBoolean());
 
+            beta_SubmissionFuzzySearchDebug(submittedInterest, similarInterests, SpecialInterestRepository.getInterests());
+
             if (similarInterests.isEmpty()) {
                 int interestId = SpecialInterestRepository.createInterest(submittedInterest);
                 submittedInterest.setId(interestId);
@@ -126,8 +128,6 @@ public class SubmitNewInterestModal extends Modal {
                 AskSimilarInterestContainer similarInterestContainer = new AskSimilarInterestContainer(submittedInterest, similarInterests);
                 event.getHook().editOriginalComponents(similarInterestContainer.build()).useComponentsV2().queue();
             }
-
-            beta_SubmissionFuzzySearchDebug(submittedInterest, similarInterests, SpecialInterestRepository.getInterests());
 
         } else {
             throw new LimitReachedException("Du kannst nicht mehr als 2 Interests gleichzeitig einsenden.", "Bitte warte, bis das Modteam deine Einsendungen bearbeitet hat, bevor du nochmals ein Interest einsendest.");

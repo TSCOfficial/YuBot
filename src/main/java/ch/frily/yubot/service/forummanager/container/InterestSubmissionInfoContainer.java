@@ -10,9 +10,9 @@ import net.dv8tion.jda.api.components.separator.Separator;
  * @since v2.5.0
  * @author Aliz Rose Frily
  */
-public class SubmitInterestInfoContainer extends Container {
+public class InterestSubmissionInfoContainer extends Container {
 
-    public SubmitInterestInfoContainer() {
+    public InterestSubmissionInfoContainer() {
         addTextDisplay("# Special-Interests Forum - Neues Interests einsenden");
 
         addTextDisplay("In diesem Forum kann man in den verschiedenen Posts über die entsprechenden Themen quatschen. Falls es ein Thema noch nicht gibt, kannst du es hier einsenden.");

@@ -34,32 +34,57 @@ public class Util {
      * @return
      */
     public static String normalize(String s) {
-        log.info("Normalizing string: {}", s);
         String normalizedString =  Normalizer.normalize(s, Normalizer.Form.NFD)
                 .replaceAll("\\p{M}", "") // Akzente weg
                 .toLowerCase()
                 .replaceAll("[^a-z0-9 ]", " ")
                 .replaceAll("\\s+", " ")
                 .trim();
-        log.info("Normalized string: {}", normalizedString);
         return normalizedString;
     }
 
-    public static @NonNull List<String> fuzzySearch(String key, List<String> terms) {
-        double threshold = 0.6;
+    public static final double FUZZY_SEARCH_DEFAULT_THRESHOLD = 0.6;
+
+    /**
+     * Search for similar Strings using a defined threshold
+     * <p>
+     *     Default threshold is <b>0.6</b> (60% similarity).<br>
+     *     Greater threshold means more similar. Lower threshold means less similar.<br>
+     * </p>
+     * @param key the key term to search for
+     * @param terms the terms to find the similarity in
+     * @param threshold the threshold to use
+     * @return a list of similar strings that are at least x% similar to the given key term (where x is the given threshold in percent)
+     */
+    public static @NonNull List<String> fuzzySearch(String key, List<String> terms, double threshold) {
+        if (threshold == 0) {
+            threshold = FUZZY_SEARCH_DEFAULT_THRESHOLD;
+        }
         terms = terms.stream().map(Util::normalize).toList();
         var jw = JaroWinklerSimilarity.with(terms, threshold);
         key = normalize(key);
 
         Map<String, Double> similar = jw.apply(key);
 
+        double finalThreshold = threshold;
         return similar.entrySet().stream()
-                .filter(entry -> entry.getValue() > threshold)
+                .filter(entry -> entry.getValue() > finalThreshold)
                 .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
                 .limit(5)
                 .map(Map.Entry::getKey)
                 .toList();
     }
+
+    /**
+     * Search for similar Strings using a default threshold (60% similar)
+     * @param key the key term to search for
+     * @param terms the terms to find the similarity in
+     * @return a list of similar strings that are at least 60% similar to the given key term
+     */
+    public static @NonNull List<String> fuzzySearch(String key, List<String> terms) {
+        return fuzzySearch(key, terms, FUZZY_SEARCH_DEFAULT_THRESHOLD);
+    }
+
     /**
      * Check if a member is a team-member
      * <p>
