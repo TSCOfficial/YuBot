@@ -5,6 +5,7 @@ import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.forummanager.container.NewInterestSubmittedContainer;
 import ch.frily.yubot.service.forummanager.entity.SpecialInterest;
 import ch.frily.yubot.service.forummanager.repository.SpecialInterestRepository;
+import ch.frily.yubot.service.postoffice.DynamicMessageList;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
@@ -37,7 +38,7 @@ public class InterestForumManager {
      * </p>
      * @param interest
      */
-    public static void acceptInterestSubmission(User moderator, SpecialInterest interest) {
+    public static void acceptInterestSubmission(User moderator, SpecialInterest interest) throws SQLException {
         MessageCreateBuilder postMessage = new MessageCreateBuilder();
         postMessage.addContent(interest.getDescription());
         postMessage.addContent(String.format("\n-# Interest wurde von %s eingereicht", interest.getOriginalPoster().getAsMention()));
@@ -60,6 +61,7 @@ public class InterestForumManager {
                 ExceptionHandler.handle(e);
             }
         });
+        //DynamicMessageList.INTEREST_FORUM_DASHBOARD.update(); // todo awaiting forum channel processing
     }
 
     public static void denyInterestSubmission(User moderator, SpecialInterest interest, String reason) throws SQLException {
@@ -75,6 +77,7 @@ public class InterestForumManager {
             messageBuilder.append("Grund: %s".formatted(reason));
             interest.notifyOP(messageBuilder);
         }
+        // DynamicMessageList.INTEREST_FORUM_DASHBOARD.update(); // todo awaiting forum channel processing
     }
 
     /**
@@ -86,12 +89,13 @@ public class InterestForumManager {
      * @param interest the interest to be approved
      * @param onRequested method to execute when the submission request has been sent
      */
-    public static void requestInterestApproval(Member initiator, SpecialInterest interest, Runnable onRequested) {
+    public static void requestInterestApproval(Member initiator, SpecialInterest interest, Runnable onRequested) throws SQLException {
         NewInterestSubmittedContainer requestContainer = new NewInterestSubmittedContainer(initiator, interest);
         EnvKey.CHANNEL_SERVERCONFIG.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER)
                 .sendMessageComponents(requestContainer.build()).useComponentsV2().setAllowedMentions(List.of()).queue(_ -> {
                     onRequested.run();
                 });
+        // DynamicMessageList.INTEREST_FORUM_DASHBOARD.update(); // todo awaiting forum channel processing
     }
 
     /**

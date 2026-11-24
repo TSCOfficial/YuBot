@@ -10,7 +10,6 @@ import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 
-@Slf4j
 public class InterestPostDeleteEvent implements IEvent<ChannelDeleteEvent> {
     @Override
     public Class<? extends Event> getListenerType() {

@@ -21,7 +21,7 @@ public class SubmitNewInterestBtn extends Button {
 
     @Override
     public String getLabel() {
-        return "Interest registrieren";
+        return "Interest einsenden";
     }
 
     @Override
