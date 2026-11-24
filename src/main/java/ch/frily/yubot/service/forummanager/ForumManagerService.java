@@ -1,16 +1,19 @@
 package ch.frily.yubot.service.forummanager;
 
 import ch.frily.yubot.database.IRepository;
+import ch.frily.yubot.event.IEvent;
 import ch.frily.yubot.interaction.button.Button;
 import ch.frily.yubot.interaction.command.ISlashCommandGroup;
 import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.service.Service;
 import ch.frily.yubot.service.forummanager.button.*;
+import ch.frily.yubot.service.forummanager.event.InterestPostDeleteEvent;
 import ch.frily.yubot.service.forummanager.modal.CreateCustomPostModal;
 import ch.frily.yubot.service.forummanager.modal.DenySubmissionReasonModal;
 import ch.frily.yubot.service.forummanager.modal.EditAndAcceptInterestModal;
 import ch.frily.yubot.service.forummanager.modal.SubmitNewInterestModal;
 import ch.frily.yubot.service.forummanager.slashcommand.ForumCmdGroup;
+import net.dv8tion.jda.api.events.Event;
 
 import java.util.List;
 
@@ -73,5 +76,12 @@ public class ForumManagerService extends Service {
     @Override
     public List<IRepository> getRepositories() {
         return super.getRepositories();
+    }
+
+    @Override
+    public List<IEvent<? extends Event>> getEvents() {
+        return List.of(
+                new InterestPostDeleteEvent()
+        );
     }
 }

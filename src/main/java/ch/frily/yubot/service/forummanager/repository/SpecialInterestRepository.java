@@ -154,4 +154,12 @@ public class SpecialInterestRepository implements IRepository {
 
         query.executeQuery();
     }
+
+    public static void deleteByPostId(String postId) throws SQLException {
+        DatabaseQuery query = new DatabaseQuery(Table.SPECIAL_INTEREST);
+        query.delete();
+        query.where(Table.SpecialInterestColumn.POST_ID, DatabaseQuery.Operator.EQUALS, postId);
+
+        query.executeQuery();
+    }
 }
