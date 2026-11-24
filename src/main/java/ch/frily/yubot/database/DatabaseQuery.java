@@ -157,7 +157,12 @@ public class DatabaseQuery {
      * @return The database query
      */
     public DatabaseQuery where(Table.Column column, Operator operator, Object value) {
-        whereClauses.add(column.getColumn() + " " + operator.getSymbol() + " ?");
+        if (value instanceof String) { // ignore case sensitivity for Strings
+            whereClauses.add("LOWER(" + column.getColumn() + ") " + operator.getSymbol() + " LOWER(?)");
+        } else {
+            whereClauses.add(column.getColumn() + " " + operator.getSymbol() + " ?");
+        }
+
         params.add(value);
         return this;
     }

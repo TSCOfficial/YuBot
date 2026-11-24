@@ -43,6 +43,7 @@ public class InterestForumManager {
         postMessage.addContent(String.format("\n-# Interest wurde von %s eingereicht", interest.getOriginalPoster().getAsMention()));
         postMessage.setAllowedMentions(List.of());
         forumChannel.createForumPost(interest.getName(), postMessage.build()).queue(post -> {
+            post.getThreadChannel().addThreadMember(interest.getOriginalPoster()).queue();
             try {
                 interest.setPost(post.getThreadChannel());
                 interest.setRequestStatus(SpecialInterest.RequestStatus.APPROVED);

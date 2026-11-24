@@ -2,6 +2,7 @@ package ch.frily.yubot.service.forummanager.modal;
 
 import ch.frily.yubot.EnvKey;
 import ch.frily.yubot.exception.LimitReachedException;
+import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.service.forummanager.InterestForumManager;
 import ch.frily.yubot.service.forummanager.container.AskSimilarInterestContainer;
@@ -97,6 +98,12 @@ public class SubmitNewInterestModal extends Modal {
             ModalMapping notifyOPMapping = event.getValue("notify-op");
 
             List<SpecialInterest> similarInterests = InterestForumManager.getSimilarInterests(nameMapping.getAsString());
+
+            try {
+                SpecialInterest existingInterest = SpecialInterestRepository.getInterestByName(nameMapping.getAsString());
+                event.getHook().editOriginalFormat("❌ Das Special-Interest \"%s\" kann nicht eingereicht werden, da es bereits existiert. Siehe %s.", existingInterest.getName(), existingInterest.getPost().getJumpUrl()).queue();
+                return;
+            } catch (NotFoundException _) {}
 
 
             SpecialInterest submittedInterest = new SpecialInterest();

@@ -5,6 +5,7 @@ import ch.frily.yubot.database.EntityMapper;
 import ch.frily.yubot.database.IRepository;
 import ch.frily.yubot.database.Table;
 import ch.frily.yubot.exception.InvalidStateException;
+import ch.frily.yubot.exception.NotFoundException;
 import ch.frily.yubot.service.forummanager.entity.SpecialInterest;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.User;
@@ -88,6 +89,28 @@ public class SpecialInterestRepository implements IRepository {
         ResultSet rs = query.executeDataQuery();
 
         return EntityMapper.build(rs, SpecialInterest.class);
+    }
+
+    /**
+     * Get an interest by its name
+     * @param name
+     * @return
+     * @throws SQLException
+     * @throws NotFoundException when the interest with the given name could not be found
+     */
+    public static SpecialInterest getInterestByName(String name) throws SQLException, NotFoundException {
+        DatabaseQuery query = new DatabaseQuery(Table.SPECIAL_INTEREST);
+        query.select();
+        query.where(Table.SpecialInterestColumn.NAME, DatabaseQuery.Operator.EQUALS, name);
+
+        ResultSet rs = query.executeDataQuery();
+
+        List<SpecialInterest> interests = EntityMapper.build(rs, SpecialInterest.class);
+        if (!interests.isEmpty()) {
+            return interests.getFirst();
+        } else {
+            throw new NotFoundException("Specialinterest mit Name '%s' nicht gefunden".formatted(name));
+        }
     }
 
     public static int createInterest(SpecialInterest interest) throws SQLException {
