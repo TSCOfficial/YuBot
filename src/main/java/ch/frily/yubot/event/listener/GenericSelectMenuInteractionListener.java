@@ -1,23 +1,20 @@
 package ch.frily.yubot.event.listener;
 
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.interaction.button.ButtonRegistry;
 import ch.frily.yubot.interaction.select.SelectRegistry;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 @Slf4j
-public class GenericSelectMenuInteraction extends ListenerAdapter {
+public class GenericSelectMenuInteractionListener extends ListenerAdapter {
 
-    private static GenericSelectMenuInteraction instance;
+    private static GenericSelectMenuInteractionListener instance;
 
-    public static GenericSelectMenuInteraction getInstance() {
+    public static GenericSelectMenuInteractionListener getInstance() {
         if (instance == null) {
-            instance = new GenericSelectMenuInteraction();
+            instance = new GenericSelectMenuInteractionListener();
         }
         return instance;
     }
