@@ -29,10 +29,7 @@ public class MessageDeleteEvent implements IEvent<net.dv8tion.jda.api.events.mes
     public <T extends Event> void execute(T event) throws SQLException, IOException {
         net.dv8tion.jda.api.events.message.MessageDeleteEvent castEvent = (net.dv8tion.jda.api.events.message.MessageDeleteEvent) event;
         if (ProfileMessageRepository.exists(castEvent.getChannel().getId(), castEvent.getMessageId())) {
-            log.info("Message deleted: {}", castEvent.getMessageId());
             ProfileMessageRepository.delete(castEvent.getChannel().getId(), castEvent.getMessageId());
-        } else {
-            log.info("Message is not webhook");
         }
 
     }
