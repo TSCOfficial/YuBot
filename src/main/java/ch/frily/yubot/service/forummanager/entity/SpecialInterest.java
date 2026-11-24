@@ -4,30 +4,19 @@ import ch.frily.yubot.Client;
 import ch.frily.yubot.EnvKey;
 import ch.frily.yubot.database.IEntity;
 import ch.frily.yubot.exception.InvalidStateException;
-import ch.frily.yubot.exception.NotFoundException;
-import ch.frily.yubot.service.forummanager.repository.SpecialInterestRepository;
 import ch.frily.yubot.util.Util;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
-import net.dv8tion.jda.api.entities.channel.forums.ForumPost;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
-import org.jspecify.annotations.NonNull;
-import org.w3c.dom.Text;
 
 import java.lang.reflect.Field;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Interest Entity
@@ -37,7 +26,6 @@ import java.util.stream.Collectors;
  * @since v2.5.2
  * @author Aliz Rose Frily
  */
-@Slf4j
 public class SpecialInterest implements IEntity {
 
     /** How many interests the same user can habe pending at the same time */
@@ -90,19 +78,13 @@ public class SpecialInterest implements IEntity {
     }
 
     @Override
-    public Object customMapping(@NonNull Field field, Object value) {
+    public Object customMapping(@NonNull Field field, @NonNull Object value) {
         switch (field.getName()) {
             case "originalPoster" -> {
-                if (Objects.nonNull(value)) {
-                    return Client.getInstance().getClient().getUserById((String) value);
-                }
-                return null;
+                return Client.getInstance().getClient().getUserById((String) value);
             }
             case "post" -> {
-                if (Objects.nonNull(value)) {
-                    return EnvKey.GUILD_YUSERVER.getAsGuild().getThreadChannelById((String) value);
-                }
-                return null;
+                return EnvKey.GUILD_YUSERVER.getAsGuild().getThreadChannelById((String) value);
             }
             default -> {
                 throw new InvalidStateException(String.format("Could not resolve customMapper for field: %s", field.getName()));

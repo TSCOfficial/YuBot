@@ -1,19 +1,16 @@
 package ch.frily.yubot.database;
 
 import ch.frily.yubot.exception.InvalidStateException;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -61,14 +58,14 @@ public final class EntityMapper {
                         continue; // ignore missing field
                     }
 
-                    Object value;
+                    Object value = null;
                     try {
                         value = readValue(rs, i, field);
-                        log.info("reading value for {}", field.getName());
                     } catch (SQLException e) {
                         // use custom mappers
-                        log.info("executing custom mapper for {}", field.getName());
-                        value = type.getMethod("customMapping", Field.class, Object.class).invoke(entity, field, rs.getObject(i));
+                        if (Objects.nonNull(rs.getObject(i))) {
+                            value = type.getMethod("customMapping", Field.class, Object.class).invoke(entity, field, rs.getObject(i));
+                        }
                     }
 
                     try {
