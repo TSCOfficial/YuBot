@@ -7,8 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-import static org.reflections.Reflections.log;
-
 public class DatabaseQuery {
     // Table schema
     private final String schema;
@@ -30,6 +28,9 @@ public class DatabaseQuery {
 	
 	// Parameters to insert into the where clause & update statement
     private final List<Object> params = new ArrayList<>();
+
+    // Values to return after a create statement
+    private final List<String> returning = new ArrayList<>();
 	
 	// Fields to update
     private final Map<String, Object> updateFields = new LinkedHashMap<>();
@@ -156,7 +157,12 @@ public class DatabaseQuery {
      * @return The database query
      */
     public DatabaseQuery where(Table.Column column, Operator operator, Object value) {
-        whereClauses.add(column.getColumn() + " " + operator.getSymbol() + " ?");
+        if (value instanceof String) { // ignore case sensitivity for Strings
+            whereClauses.add("LOWER(" + column.getColumn() + ") " + operator.getSymbol() + " LOWER(?)");
+        } else {
+            whereClauses.add(column.getColumn() + " " + operator.getSymbol() + " ?");
+        }
+
         params.add(value);
         return this;
     }
@@ -248,6 +254,14 @@ public class DatabaseQuery {
     }
 
     /**
+     * Return auto-generated values while inserting
+     * @param columns the columns to return the auto-generated value
+     */
+    public void setReturning(Table.Column... columns){
+        returning.addAll(Arrays.stream(columns).map(Table.Column::getColumn).toList());
+    }
+
+    /**
      * Builds the SQl query depending on the query type
      * @return The built query statement
      */
@@ -291,7 +305,12 @@ public class DatabaseQuery {
     private String buildInsert() {
         String columns = String.join(", ", updateFields.keySet());
         String queryString = String.join(", ", Collections.nCopies(updateFields.size(), "?"));
-        return "INSERT INTO " + schema + "." + table + " (" + columns + ") VALUES (" + queryString + ")";
+        String sql = "INSERT INTO " + schema + "." + table;
+        sql += " (" + columns + ") VALUES (" + queryString + ")";
+        if (!returning.isEmpty()) {
+            sql += " RETURNING " + String.join(", ", returning);
+        }
+        return sql;
     }
 
     /**

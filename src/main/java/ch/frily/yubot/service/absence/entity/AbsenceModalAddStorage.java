@@ -1,5 +1,6 @@
-package ch.frily.yubot.service.absence.modal;
+package ch.frily.yubot.service.absence.entity;
 
+import ch.frily.yubot.service.absence.modal.AbsenceAddModal;
 import ch.frily.yubot.service.storage.SessionStorageService;
 
 /**
@@ -9,5 +10,5 @@ import ch.frily.yubot.service.storage.SessionStorageService;
  *     The system retrieves the data when the same user opens the {@link AbsenceAddModal} again to display the previously entered data.
  * </p>
  */
-public record AbsenceModalDataRecord(String startTime, String endTime, String type, String reason, boolean sendNotice) {
+public record AbsenceModalAddStorage(String startTime, String endTime, String type, String reason, boolean sendNotice) {
 }

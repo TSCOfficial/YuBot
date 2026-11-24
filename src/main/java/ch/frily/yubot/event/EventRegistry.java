@@ -2,11 +2,9 @@ package ch.frily.yubot.event;
 
 import ch.frily.yubot.event.listener.*;
 import ch.frily.yubot.exception.ExceptionHandler;
-import ch.frily.yubot.service.profile.event.MessageDeleteEvent;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.ArrayList;
@@ -28,9 +26,10 @@ public class EventRegistry extends ListenerAdapter {
     @Getter
     private static final List<Object> LISTENERS = List.of(
             ButtonInteractionListener.getInstance(),
+            ChannelDeleteListener.getInstance(),
             CommandAutoCompleteInteractionListener.getInstance(),
             GenericContextInteractionListener.getInstance(),
-            GenericSelectMenuInteraction.getInstance(),
+            GenericSelectMenuInteractionListener.getInstance(),
             GuildMemberRemoveListener.getInstance(),
             GuildMemberRoleAddListener.getInstance(),
             GuildMemberRoleRemoveListener.getInstance(),

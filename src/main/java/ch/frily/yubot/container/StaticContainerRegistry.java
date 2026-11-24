@@ -3,6 +3,7 @@ package ch.frily.yubot.container;
 import ch.frily.yubot.service.absence.container.AbsenceEditOwnContainer;
 import ch.frily.yubot.service.absence.container.AbsenceOverviewContainer;
 import ch.frily.yubot.service.activemod.container.ActiveModDashboardContainer;
+import ch.frily.yubot.service.forummanager.container.InterestSubmissionInfoContainer;
 import ch.frily.yubot.service.ticket.container.TicketPanelContainer;
 import ch.frily.yubot.service.ticket.container.TicketSearchContainer;
 import ch.frily.yubot.service.postoffice.container.*;
@@ -53,6 +54,9 @@ public enum StaticContainerRegistry {
     }),
     DATA_COLLECTION_NOTICE(false, ctx -> {
         return new LegalNoticeContainer().build();
+    }),
+    INTEREST_FORUM_POST_DASHBOARD(true, ctx -> {
+        return new InterestSubmissionInfoContainer().build();
     });
 
     /** Whether the container may be sent as a standalone message via the send container command */

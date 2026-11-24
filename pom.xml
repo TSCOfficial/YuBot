@@ -65,6 +65,12 @@
             <version>9.2.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>de.uni_jena.cs.fusion</groupId>
+            <artifactId>similarity.jarowinkler</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+
         <!-- Logging  -->
         <dependency>
             <groupId>ch.qos.logback</groupId>

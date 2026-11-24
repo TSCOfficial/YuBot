@@ -1,0 +1,62 @@
+package ch.frily.yubot.service.forummanager.button;
+
+
+import ch.frily.yubot.exception.NotFoundException;
+import ch.frily.yubot.interaction.button.Button;
+import ch.frily.yubot.service.forummanager.InterestForumManager;
+import ch.frily.yubot.service.forummanager.entity.SpecialInterest;
+import ch.frily.yubot.service.forummanager.repository.SpecialInterestRepository;
+import ch.frily.yubot.service.storage.SessionStorageService;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import org.jspecify.annotations.NonNull;
+
+import java.sql.SQLException;
+
+/**
+ * Used to reject all similar interest suggestions and register own new interest
+ *
+ * @author Aliz Rose Frily
+ * @since v2.5.0
+ */
+public class RejectSimilarInterestsBtn extends Button {
+    @Override
+    public String getId() {
+        return "reject-interest-sugg-btn";
+    }
+
+    @Override
+    public String getLabel() {
+        return "Nein, keiner dieser Vorschläge passt";
+    }
+
+    @Override
+    public ButtonStyle getStyle() {
+        return ButtonStyle.SECONDARY;
+    }
+
+    @Override
+    public void execute(@NonNull ButtonInteractionEvent event) throws SQLException {
+        event.deferReply(true).queue();
+
+        String localInterestId = getArgument(event.getComponentId(), "interestId");
+        SpecialInterest interest = SessionStorageService.getInstance().getStorage("special-interest-registration-" + localInterestId, event.getMember(), SpecialInterest.class);
+
+        if (interest == null) {
+            throw new NotFoundException("Es konnte keine Anfrage gefunden werden.", "Es scheint so, also wäre deine Anfrage abgelaufen. Bitte versuche es noch einmal.");
+        }
+
+        int interestId = SpecialInterestRepository.createInterest(interest);
+        interest.setId(interestId); // overwrite id with the correct one from the DB
+
+        InterestForumManager.requestInterestApproval(event.getMember(), interest, () -> {
+            String sendDmNotificationMsg = interest.isNotifyOP() ? "Du wirst über Änderungen des Status deiner Einsendung per DM benachrichtigt." : "";
+            event.getHook().editOriginal("""
+                            ✅ **Die Anfrage wurde gesendet.**
+                            Das Moderationsteam wird es sich baldmöglichst anschauen — dies kann jedoch etwas Zeit in anspruch nehmen.
+                            %s
+                            """.formatted(sendDmNotificationMsg)).queue();
+            event.getMessage().delete().queue();
+        });
+    }
+}

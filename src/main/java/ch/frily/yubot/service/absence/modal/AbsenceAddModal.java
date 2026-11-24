@@ -2,6 +2,7 @@ package ch.frily.yubot.service.absence.modal;
 
 import ch.frily.yubot.exception.InvalidStateException;
 import ch.frily.yubot.service.absence.Absence;
+import ch.frily.yubot.service.absence.entity.AbsenceModalAddStorage;
 import ch.frily.yubot.service.absence.repository.AbsenceRepository;
 import ch.frily.yubot.service.absence.AbsenceType;
 import ch.frily.yubot.service.postoffice.DynamicMessageList;
@@ -73,7 +74,7 @@ public class AbsenceAddModal extends Modal {
 
     @Override
     public List<ModalTopLevelComponent> getComponents() {
-        AbsenceModalDataRecord absenceModalDataRecord = SessionStorageService.getInstance().getValue("invalid-absence-clipboard", member, AbsenceModalDataRecord.class);
+        AbsenceModalAddStorage absenceModalAddStorage = SessionStorageService.getInstance().getStorage("invalid-absence-clipboard", member, AbsenceModalAddStorage.class);
 
         ModalTopLevelComponent startTimeLabel;
 
@@ -81,8 +82,8 @@ public class AbsenceAddModal extends Modal {
         startTime.setRequiredRange(16, 16);
         startTime.setRequired(true);
 
-        if (absenceModalDataRecord != null) {
-            startTime.setValue(absenceModalDataRecord.startTime());
+        if (absenceModalAddStorage != null) {
+            startTime.setValue(absenceModalAddStorage.startTime());
         } else if (absence != null && absence.fromDateTime() != null){
             startTime.setValue(absence.fromDateTime().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
         } else {
@@ -98,8 +99,8 @@ public class AbsenceAddModal extends Modal {
         if (isEditing) {
             endTime.setValue(absence.toDateTime().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
         }
-        if (absenceModalDataRecord != null) {
-            endTime.setValue(absenceModalDataRecord.endTime());
+        if (absenceModalAddStorage != null) {
+            endTime.setValue(absenceModalAddStorage.endTime());
         }
         Label endTimeLabel = Label.of(String.format("Endzeit (%s)", DATE_TIME_FORMAT), endTime.build());
 
@@ -109,8 +110,8 @@ public class AbsenceAddModal extends Modal {
         if (isEditing) {
             reason.setValue(absence.reason());
         }
-        if (absenceModalDataRecord != null) {
-            reason.setValue(absenceModalDataRecord.reason());
+        if (absenceModalAddStorage != null) {
+            reason.setValue(absenceModalAddStorage.reason());
         }
         Label reasonLabel = Label.of("Begründung", "Dies kannst du im nachhinein nicht mehr Bearbeiten.", reason.build());
 
@@ -121,8 +122,8 @@ public class AbsenceAddModal extends Modal {
         if (isEditing) {
             absenceType.setDefaultOptions(SelectOption.of(absence.type().getLabel(), absence.type().name()));
         }
-        if (absenceModalDataRecord != null) {
-            AbsenceType selectedType = AbsenceType.valueOf(absenceModalDataRecord.type());
+        if (absenceModalAddStorage != null) {
+            AbsenceType selectedType = AbsenceType.valueOf(absenceModalAddStorage.type());
             absenceType.setDefaultOptions(SelectOption.of(selectedType.getLabel(), selectedType.name()));
         }
         Label absenceTypeLabel = Label.of("Abwesenheitsart auswählen", absenceType.build());
@@ -131,8 +132,8 @@ public class AbsenceAddModal extends Modal {
         if (isEditing) {
             absenceMessageChecked = absence.absenceMessage();
         }
-        if (absenceModalDataRecord != null) {
-            absenceMessageChecked = absenceModalDataRecord.sendNotice();
+        if (absenceModalAddStorage != null) {
+            absenceMessageChecked = absenceModalAddStorage.sendNotice();
         }
         Label absenceNoticeLabel = Label.of("Anwesenheitsmeldung senden", Checkbox.of("absence-notice", absenceMessageChecked));
 
@@ -194,8 +195,8 @@ public class AbsenceAddModal extends Modal {
         }
 
         // save data to session storage in case anything goes wrong
-        AbsenceModalDataRecord absenceModalDataRecord = new AbsenceModalDataRecord(startTimeString, endTimeString, absenceTypeString, reason, showNotice);
-        SessionStorageService.getInstance().addStorage("invalid-absence-clipboard", event.getMember(), absenceModalDataRecord, 10);
+        AbsenceModalAddStorage absenceModalAddStorage = new AbsenceModalAddStorage(startTimeString, endTimeString, absenceTypeString, reason, showNotice);
+        SessionStorageService.getInstance().addStorage("invalid-absence-clipboard", event.getMember(), absenceModalAddStorage, 10);
 
         try {
             LocalDateTime startTime = LocalDateTime.parse(startTimeString, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));

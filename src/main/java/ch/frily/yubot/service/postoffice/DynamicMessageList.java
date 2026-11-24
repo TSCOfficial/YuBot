@@ -61,6 +61,12 @@ public enum DynamicMessageList {
             null,
             StaticContainerRegistry.ACTIVE_MOD_DASHBOARD::getContainer
     );
+//    INTEREST_FORUM_DASHBOARD( // todo process any channel type in DynamicMessage Record
+//            StaticContainerRegistry.INTEREST_FORUM_POST_DASHBOARD.name(),
+//            DynamicMessageType.CONTAINER,
+//            null,
+//            StaticContainerRegistry.INTEREST_FORUM_POST_DASHBOARD::getContainer
+//    );
 
     @Getter
     private final String registryName;
