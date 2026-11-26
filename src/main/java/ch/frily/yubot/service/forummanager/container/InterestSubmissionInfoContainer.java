@@ -36,9 +36,9 @@ public class InterestSubmissionInfoContainer extends Container {
                 """);
         addTextDisplay("Bitte beachte, dass deine Einsendung den Serverregeln entspricht und nicht bereits ein ähnliches Special-Interest existiert.");
 
-        //try { // todo awaiting forum channel processing
-        //    displayPendingSubmissions();
-        //} catch (SQLException _) {}
+        try { // todo awaiting forum channel processing
+            displayPendingSubmissions();
+        } catch (SQLException _) {}
 
         addInvisibleSeparator(Separator.Spacing.SMALL);
 

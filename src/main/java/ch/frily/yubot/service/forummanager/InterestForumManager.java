@@ -6,6 +6,7 @@ import ch.frily.yubot.service.forummanager.container.NewInterestSubmittedContain
 import ch.frily.yubot.service.forummanager.entity.SpecialInterest;
 import ch.frily.yubot.service.forummanager.repository.SpecialInterestRepository;
 import ch.frily.yubot.service.postoffice.DynamicMessageList;
+import ch.frily.yubot.util.MessageUtil;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
@@ -61,7 +62,7 @@ public class InterestForumManager {
                 ExceptionHandler.handle(e);
             }
         });
-        //DynamicMessageList.INTEREST_FORUM_DASHBOARD.update(); // todo awaiting forum channel processing
+        DynamicMessageList.INTEREST_FORUM_DASHBOARD.update(); // todo awaiting forum channel processing
     }
 
     public static void denyInterestSubmission(User moderator, SpecialInterest interest, String reason) throws SQLException {
@@ -77,7 +78,7 @@ public class InterestForumManager {
             messageBuilder.append("Grund: %s".formatted(reason));
             interest.notifyOP(messageBuilder);
         }
-        // DynamicMessageList.INTEREST_FORUM_DASHBOARD.update(); // todo awaiting forum channel processing
+         DynamicMessageList.INTEREST_FORUM_DASHBOARD.update(); // todo awaiting forum channel processing
     }
 
     /**
@@ -95,7 +96,7 @@ public class InterestForumManager {
                 .sendMessageComponents(requestContainer.build()).useComponentsV2().setAllowedMentions(List.of()).queue(_ -> {
                     onRequested.run();
                 });
-        // DynamicMessageList.INTEREST_FORUM_DASHBOARD.update(); // todo awaiting forum channel processing
+         DynamicMessageList.INTEREST_FORUM_DASHBOARD.update(); // todo awaiting forum channel processing
     }
 
     /**
@@ -107,7 +108,7 @@ public class InterestForumManager {
         List<SpecialInterest> approvedInterests = SpecialInterestRepository.getInterests(SpecialInterest.RequestStatus.APPROVED);
         Map<String, SpecialInterest> terms = approvedInterests.stream().collect(Collectors.toMap(SpecialInterest::getName, Function.identity()));
         List<String> similarTerms = Util.fuzzySearch(term, terms.keySet().stream().toList(), threshold);
-        return approvedInterests.stream().filter(interest -> similarTerms.contains(Util.normalize(interest.getName()))).toList();
+        return approvedInterests.stream().filter(interest -> similarTerms.contains(MessageUtil.normalize(interest.getName()))).toList();
     }
 
     /**
