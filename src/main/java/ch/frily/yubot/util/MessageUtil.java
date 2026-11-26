@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * Message Utilities, such as Channel & Message helpers and String formating
  *
  * @author Aliz Rose Frily
- * @since 2.5.1
+ * @since 2.5.2
  */
 public class MessageUtil {
 
