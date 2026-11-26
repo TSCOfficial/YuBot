@@ -8,6 +8,7 @@ import ch.frily.yubot.exception.ExceptionHandler;
 import ch.frily.yubot.service.ticket.Ticket;
 import ch.frily.yubot.service.ticket.slashcommand.TicketSearchSubCmdGroup;
 import ch.frily.yubot.EnvKey;
+import ch.frily.yubot.util.MessageUtil;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.buttons.Button;
@@ -99,7 +100,7 @@ public class TicketSearchContainer extends PaginationContainer {
 
         StringBuilder details = new StringBuilder();
         if (Objects.nonNull(ticket.getSummary())) {
-            details.append(String.format("> **Zusammenfassung**: \"%s\"", Util.escapeMarkdown(ticket.getSummary()).replace("\n\n", "\n").replace("\n", "\n> ")));
+            details.append(String.format("> **Zusammenfassung**: \"%s\"", MessageUtil.escapeMarkdown(ticket.getSummary()).replace("\n\n", "\n").replace("\n", "\n> ")));
             details.append("\n");
         }
 

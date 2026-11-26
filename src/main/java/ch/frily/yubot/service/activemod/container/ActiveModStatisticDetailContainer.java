@@ -5,6 +5,7 @@ import ch.frily.yubot.service.activemod.ActiveModStatisticChart;
 import ch.frily.yubot.service.activemod.ActiveModTracking;
 import ch.frily.yubot.service.activemod.button.ActiveModStatisticGoToHomeBtn;
 import ch.frily.yubot.service.activemod.select.ActiveModTrackingDetailSelect;
+import ch.frily.yubot.util.MessageUtil;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
@@ -72,13 +73,13 @@ public class ActiveModStatisticDetailContainer extends Container {
                             activeModTracking.activeTime(), lastMonthTracking.activeTime(),
                             activeModTracking.month(), LocalDate.now());
                     differenceLastMonth = String.format("Vergleich zum %s: %s",
-                            Util.translateMonth(lastMonthTracking.month().getMonth()).toLowerCase(), tendency);
+                            MessageUtil.translateMonth(lastMonthTracking.month().getMonth()).toLowerCase(), tendency);
                 }
 
 
 
                 StringBuilder monthDetail = new StringBuilder();
-                monthDetail.append(String.format("### %s %d", Util.translateMonth(activeModTracking.month().getMonth()), activeModTracking.month().getYear())).append("\n");
+                monthDetail.append(String.format("### %s %d", MessageUtil.translateMonth(activeModTracking.month().getMonth()), activeModTracking.month().getYear())).append("\n");
                 int activeTimePerDay = Math.round((float) activeModTracking.activeTime() / activeModTracking.month().lengthOfMonth());
                 if (activeModTracking.month().equals(YearMonth.now())) {
                     activeTimePerDay = Math.round((float) activeModTracking.activeTime() / LocalDate.now().getDayOfMonth());

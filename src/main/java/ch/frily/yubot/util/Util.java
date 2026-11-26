@@ -28,21 +28,6 @@ import java.util.regex.Pattern;
 @Slf4j
 public class Util {
 
-    /**
-     * Normalize strings
-     * @param s
-     * @return
-     */
-    public static String normalize(String s) {
-        String normalizedString =  Normalizer.normalize(s, Normalizer.Form.NFD)
-                .replaceAll("\\p{M}", "") // Akzente weg
-                .toLowerCase()
-                .replaceAll("[^a-z0-9 ]", " ")
-                .replaceAll("\\s+", " ")
-                .trim();
-        return normalizedString;
-    }
-
     public static final double FUZZY_SEARCH_DEFAULT_THRESHOLD = 0.6;
 
     /**
@@ -60,9 +45,9 @@ public class Util {
         if (threshold == 0) {
             threshold = FUZZY_SEARCH_DEFAULT_THRESHOLD;
         }
-        terms = terms.stream().map(Util::normalize).toList();
+        terms = terms.stream().map(MessageUtil::normalize).toList();
         var jw = JaroWinklerSimilarity.with(terms, threshold);
-        key = normalize(key);
+        key = MessageUtil.normalize(key);
 
         Map<String, Double> similar = jw.apply(key);
 
@@ -213,21 +198,7 @@ public class Util {
         return dateTime.atZone(EnvKey.TIMEZONE.getAsZoneId()).toEpochSecond();
     }
 
-    /**
-     * Escapes characters in a text that are interpreted as Markdown on Discord.
-     * @param input The string to escape
-     * @return The escaped string
-     */
-    public static String escapeMarkdown(String input) {
-        if (input == null) return null;
 
-        return input
-                .replace("*", "\\*")
-                .replace("_", "\\_")
-                .replace("~", "\\~")
-                .replace("`", "\\`")
-                .replace("|", "\\|");
-    }
 
     public static double calcPercentage(int value1, int value2) {
         if (value2 == 0)
@@ -235,22 +206,7 @@ public class Util {
         return (double) value1 / (double) value2 * 100;
     }
 
-    public static String translateMonth(Month month) {
-        return switch (month) {
-            case JANUARY -> "Januar";
-            case FEBRUARY -> "Februar";
-            case MARCH -> "März";
-            case APRIL -> "April";
-            case MAY -> "Mai";
-            case JUNE -> "Juni";
-            case JULY -> "Juli";
-            case AUGUST -> "August";
-            case SEPTEMBER -> "September";
-            case OCTOBER -> "Oktober";
-            case NOVEMBER -> "November";
-            case DECEMBER -> "Dezember";
-        };
-    }
+
 
     public static Category resolveCategory(GuildChannel channel) {
         if (channel instanceof ThreadChannel thread) {
@@ -264,21 +220,5 @@ public class Util {
 
     public static GuildChannel resolveThreadParent(ThreadChannel thread) {
         return thread.getParentChannel();
-    }
-
-    /**
-     * Extracts UTF-16 text from a given input string
-     * <p>
-     *     Keeps a-Z, 0-9 & punctuation<br>
-     *     Discards emojis, non-UTF-16 characters etc
-     * </p>
-     * @param text The input string to extract text from.
-     * @return The extracted text and Markdown escaped
-     */
-    public static String extractText(String text) {
-        Pattern pattern = Pattern.compile("[^\\p{L}\\p{N}\\-\\s\\*]");
-        if (text == null || text.isBlank()) return text;
-        String roleName = pattern.matcher(text).replaceAll("").trim();
-        return Util.escapeMarkdown(roleName);
     }
 }

@@ -11,6 +11,7 @@ import ch.frily.yubot.service.absence.button.AbsenceAddBtn;
 import ch.frily.yubot.service.absence.button.AbsenceDetailBtn;
 import ch.frily.yubot.service.absence.button.AbsenceEditOwnBtn;
 import ch.frily.yubot.EnvKey;
+import ch.frily.yubot.util.MessageUtil;
 import ch.frily.yubot.util.Util;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -98,7 +99,7 @@ public class AbsenceOverviewContainer extends PaginationContainer {
                         ### %d. %s %d %s
                         -# *%s Abwesenheit%s insgesamt*
                         """,
-                day.getDayOfMonth(), Util.translateMonth(day.getMonth()), day.getYear(), todayTag,
+                day.getDayOfMonth(), MessageUtil.translateMonth(day.getMonth()), day.getYear(), todayTag,
                 absences.size(), absences.size() == 1 ? "" : "en"));
 
         absences.forEach(absence -> addAbsenceText(daySection, day, absence));

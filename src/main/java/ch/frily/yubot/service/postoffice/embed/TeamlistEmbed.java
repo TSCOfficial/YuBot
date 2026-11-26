@@ -6,6 +6,7 @@ import ch.frily.yubot.service.ticket.TicketType;
 import ch.frily.yubot.service.ticket.repository.TicketTypeControlRepository;
 import ch.frily.yubot.service.ticket.TicketTypeGroup;
 import ch.frily.yubot.EnvKey;
+import ch.frily.yubot.util.MessageUtil;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
@@ -74,7 +75,7 @@ public class TeamlistEmbed implements IEmbed {
             fields.add(new Field(
                     String.format("Aktive Moderation *(%s)*", activeMods.size()),
                     getRoleMention(activeModRole) + "\n" +
-                            activeMods.stream().map(mod -> Util.escapeMarkdown(mod.getEffectiveName())).collect(Collectors.joining(", ")),
+                            activeMods.stream().map(mod -> MessageUtil.escapeMarkdown(mod.getEffectiveName())).collect(Collectors.joining(", ")),
                     false)
             );
         }
@@ -116,12 +117,12 @@ public class TeamlistEmbed implements IEmbed {
         int userCount = 0;
 
         if (!getUsersByRole(role).isEmpty()) {
-            userList = getUsersByRole(role).stream().map(member -> Util.escapeMarkdown(member.getEffectiveName())).collect(Collectors.joining("\n"));
+            userList = getUsersByRole(role).stream().map(member -> MessageUtil.escapeMarkdown(member.getEffectiveName())).collect(Collectors.joining("\n"));
             userCount = getUsersByRole(role).size();
         }
 
         return new Field(
-                String.format("%s *(%s)*", Util.extractText(role.getName()), userCount),
+                String.format("%s *(%s)*", MessageUtil.extractText(role.getName()), userCount),
                 getRoleMention(role) + "\n" + userList,
                 true
         );

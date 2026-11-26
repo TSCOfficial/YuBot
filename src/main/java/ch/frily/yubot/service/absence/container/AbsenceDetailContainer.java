@@ -3,6 +3,7 @@ package ch.frily.yubot.service.absence.container;
 import ch.frily.yubot.container.Container;
 import ch.frily.yubot.service.absence.Absence;
 import ch.frily.yubot.service.absence.button.AbsenceEditBtn;
+import ch.frily.yubot.util.MessageUtil;
 import ch.frily.yubot.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.separator.Separator;
@@ -12,9 +13,9 @@ import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 public class AbsenceDetailContainer extends Container {
 
     public AbsenceDetailContainer(Absence absence, boolean isOwner) {
-        String fromDate = String.format("%d. %s", absence.fromDateTime().getDayOfMonth(), Util.translateMonth(absence.fromDateTime().getMonth()));
+        String fromDate = String.format("%d. %s", absence.fromDateTime().getDayOfMonth(), MessageUtil.translateMonth(absence.fromDateTime().getMonth()));
         long fromTimestamp = Util.toEpochSeconds(absence.fromDateTime());
-        String toDate = String.format("%d. %s", absence.toDateTime().getDayOfMonth(), Util.translateMonth(absence.toDateTime().getMonth()));
+        String toDate = String.format("%d. %s", absence.toDateTime().getDayOfMonth(), MessageUtil.translateMonth(absence.toDateTime().getMonth()));
         long toTimestamp = Util.toEpochSeconds(absence.toDateTime());
         this.addFormatedText("## Abwesenheit %s - %s", fromDate, toDate);
         this.addFormatedText("-# %s (%s)", absence.member().getAsMention(), absence.member().getEffectiveName());

@@ -6,6 +6,7 @@ import ch.frily.yubot.container.StaticContainerRegistry;
 import ch.frily.yubot.embed.StaticEmbedRegistry;
 import ch.frily.yubot.interaction.modal.Modal;
 import ch.frily.yubot.service.forummanager.entity.CreateCustomPostStorage;
+import ch.frily.yubot.service.postoffice.DynamicMessageList;
 import ch.frily.yubot.service.storage.SessionStorageService;
 import lombok.Setter;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
