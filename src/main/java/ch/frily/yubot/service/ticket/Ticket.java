@@ -176,7 +176,7 @@ public class Ticket {
      * @return assignee as {@link Member}
      */
     public Member getAssignee() {
-        Objects.requireNonNull(this.assigneeId);
+        if (Objects.isNull(this.getAssigneeId())) return null;
         return EnvKey.GUILD_YUSERVER.getAsGuild().getMemberById(this.assigneeId);
     }
 
