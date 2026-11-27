@@ -66,7 +66,7 @@ public class TicketTypeControlCmd implements ISlashSubcommand {
         OptionMapping statusOption = Objects.requireNonNull(event.getOption("status"));
         boolean isLocked = statusOption.getAsInt() == 0;
 
-        TicketType type = TicketType.valueOf(typeOption.getAsString());
+        TicketType type = TicketType.fromName(typeOption.getAsString());
         TicketTypeControlRepository.upsertType(type, isLocked);
 
         event.reply(String.format("✅ Tickettyp '%s' erfolgreich auf **%s** gesetzt", type.getLabel(), isLocked ? "geschlossen" : "geöffnet")).setEphemeral(true).queue();

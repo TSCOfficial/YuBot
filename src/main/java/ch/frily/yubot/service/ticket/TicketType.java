@@ -15,7 +15,7 @@ public enum TicketType {
                     Das Serverteam hat ein Ticket für dich geöffnet, um ein privates Gespräch mit dir führen zu können.
                     """,
             null,
-            List.of(EnvKey.ROLE_SUPPORT, EnvKey.ROLE_MODERATOR)
+            List.of(EnvKey.ROLE_MODERATOR)
     ),
     // SUPPORT
     SUPPORT_GENERAL(
@@ -30,7 +30,7 @@ public enum TicketType {
                     Das Supportteam meldet sich so schnell wie möglich bei dir.
                     """,
             TicketTypeGroup.SUPPORT,
-            List.of(EnvKey.ROLE_SUPPORT, EnvKey.ROLE_MODERATOR)
+            List.of(EnvKey.ROLE_MODERATOR)
     ),
     SUPPORT_REGELVERSTOSS(
             "report",
@@ -45,7 +45,7 @@ public enum TicketType {
                     Das Supportteam meldet sich so schnell wie möglich bei dir.
                     """,
             TicketTypeGroup.SUPPORT,
-            List.of(EnvKey.ROLE_SUPPORT, EnvKey.ROLE_MODERATOR)
+            List.of(EnvKey.ROLE_MODERATOR)
     ),
     SUPPORT_PROBLEME(
             "sup",
@@ -60,7 +60,7 @@ public enum TicketType {
                     Das Supportteam meldet sich so schnell wie möglich bei dir.
                     """,
             TicketTypeGroup.SUPPORT,
-            List.of(EnvKey.ROLE_SUPPORT, EnvKey.ROLE_MODERATOR)
+            List.of(EnvKey.ROLE_MODERATOR)
     ),
     SUPPORT_LEITUNG(
             "leit",
@@ -89,15 +89,15 @@ public enum TicketType {
             List.of(EnvKey.ROLE_AWARENESS)
     ),
     // BEWERBUNG
-    BEWERBUNG_SUPPORT(
-            "besup",
-            "🔩 Fachbereich Support",
-            "Bewerbung Fachbereich Support (16+)",
+    BEWERBUNG_CONNECTION(
+            "becon",
+            "🧵 Fachbereich Connection",
+            "Bewerbung Fachbereich Connection (16+)",
             """
-                    Bitte verfasse deine Bewerbung. Für deine Bewerbung ist uns Folgendes wichtig::
+                    Bitte verfasse deine Bewerbung. Für deine Bewerbung ist uns Folgendes wichtig:
                     
                     - Kurze Vorstellung (Name, Alter, Pronomen, ...)
-                    - Warum möchtest du Teil des Supportteams werden?
+                    - Warum möchtest du Teil des Connectionteams werden?
                     - Deine zeitliche Verfügbarkeit
                     - Bisherige Erfahrungen in dem Bereich
                     Du kannst gerne mehr schreiben!
@@ -105,7 +105,7 @@ public enum TicketType {
                     Sobald du deine Bewerbung geschrieben hast, meldet sich die zuständige Person bei dir.
                     """,
             TicketTypeGroup.BEWERBUNG,
-            List.of(EnvKey.ROLE_SUPPORTLEITUNG, EnvKey.ROLE_STVSUPPORTLEITUNG)
+            List.of(EnvKey.ROLE_CONNECTORLEITUNG, EnvKey.ROLE_STVCONNECTORLEITUNG)
     ),
     BEWERBUNG_MODERATION(
             "bemod",
@@ -199,6 +199,14 @@ public enum TicketType {
                     """,
             TicketTypeGroup.BEWERBUNG,
             List.of(EnvKey.ROLE_SERVERLEITUNG)
+    ),
+    UNKNOWN(
+            "unkown",
+            "Unbekannter Typ",
+            "Unbekannter Typ",
+            "Beschreibung ist für unbekannte typen nicht verfügbar",
+            null,
+            List.of()
     );
 
 
@@ -223,4 +231,21 @@ public enum TicketType {
         this.group = group;
         this.responsibleRoles = responsibleRoles.stream().map(EnvKey::getAsRole).toList();
     }
+
+    /**
+     * Get an enum constant from its name
+     * <p>
+     *     This handles missing types by returning the {@link TicketType#UNKNOWN}
+     * </p>
+     * @param name the String name of the enum constant
+     * @return the enum constant itself, or {@link TicketType#UNKNOWN} if not found
+     */
+    public static TicketType fromName(String name) {
+        try {
+            return TicketType.valueOf(name);
+        } catch (IllegalArgumentException e) {
+            return TicketType.UNKNOWN;
+        }
+    }
+
 }

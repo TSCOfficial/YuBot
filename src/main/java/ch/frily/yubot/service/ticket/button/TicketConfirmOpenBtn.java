@@ -33,7 +33,7 @@ public class TicketConfirmOpenBtn extends Button {
     @Override
     public void execute(@NonNull ButtonInteractionEvent event) throws SQLException {
         String ticketTypeString = getArgument(event.getComponentId(), "type");
-        TicketType ticketType = TicketType.valueOf(ticketTypeString);
+        TicketType ticketType = TicketType.fromName(ticketTypeString);
 
         TicketService.getInstance().createTicket(ticketType, Objects.requireNonNull(event.getMember()), channel -> {
             event.editMessage("Dein Ticket wurde erstellt: " + channel.getAsMention()).setComponents(event.getMessage().getComponentTree().asDisabled()).queue();

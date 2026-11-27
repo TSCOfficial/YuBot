@@ -82,7 +82,6 @@ public class StartHereContainer extends Container {
                 %s ▸ hier könnt ihr euch über Konzerte oder Festivals, auf denen ihr Yu sehen könnt, unterhalten
                 
                 ### ⪼ Foren
-                %s ▸ hier könnt ihr über die unterschiedlichsten Themen diskutieren
                 %s ▸ hier könnt ihr dem Serverteam feedback geben :envelope:
                 %s ▸ hier könnt ihr euch als Konzertbegleitung für andere anbieten, oder nach solcher fragen und euch zusammentun
                 
@@ -108,7 +107,6 @@ public class StartHereContainer extends Container {
                 EnvKey.CHANNEL_YUKONZERTFESTIVALS.getAsChannel(TextChannel.class, EnvKey.GUILD_YUSERVER).getAsMention(),
 
                 // forum
-                EnvKey.CHANNEL_DISKUSSIONEN.getAsChannel(ForumChannel.class, EnvKey.GUILD_YUSERVER).getAsMention(),
                 EnvKey.CHANNEL_FEEDBACK.getAsChannel(ForumChannel.class, EnvKey.GUILD_YUSERVER).getAsMention(),
                 EnvKey.CHANNEL_KONZERTBEGLEITUNG.getAsChannel(ForumChannel.class, EnvKey.GUILD_YUSERVER).getAsMention(),
 

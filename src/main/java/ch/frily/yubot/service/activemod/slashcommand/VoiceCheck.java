@@ -28,7 +28,7 @@ public class VoiceCheck implements ISlashCommand {
     @Override
     public List<Role> getAllowedRoles() {
         return Stream.of(
-                EnvKey.ROLE_SUPPORT,
+                EnvKey.ROLE_CONNECTOR,
                 EnvKey.ROLE_MODERATOR
         ).map(EnvKey::getAsRole).toList();
     }

@@ -28,7 +28,6 @@ public class ModticketUserCtxMenu implements IUserContextMenu {
     @Override
     public List<Role> getAllowedRoles() {
         return Stream.of(
-                EnvKey.ROLE_SUPPORT,
                 EnvKey.ROLE_MODERATOR
         ).map(EnvKey::getAsRole).toList();
     }

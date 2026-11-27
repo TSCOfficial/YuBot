@@ -58,7 +58,7 @@ public class TicketRepository implements IRepository {
 
         Guild guild = EnvKey.GUILD_YUSERVER.getAsGuild();
 
-        TicketType type = TicketType.valueOf(typeName);
+        TicketType type = TicketType.fromName(typeName);
 
         TicketStatus status = TicketStatus.valueOf(statusName);
 
@@ -108,7 +108,7 @@ public class TicketRepository implements IRepository {
             String ownerId = resultSet.getString(Table.TicketColumn.OWNER_ID.getColumn());
             String assigneeId = resultSet.getString(Table.TicketColumn.ASSIGNEE_ID.getColumn());
             long channelId = resultSet.getLong(Table.TicketColumn.CHANNEL_ID.getColumn());
-            TicketType type = TicketType.valueOf(resultSet.getString(Table.TicketColumn.TYPE.getColumn()));
+            TicketType type = TicketType.fromName(resultSet.getString(Table.TicketColumn.TYPE.getColumn()));
             Timestamp lastActivityAt = resultSet.getTimestamp(Table.TicketColumn.LAST_ACTIVITY_AT.getColumn());
             long welcomeMessageId = resultSet.getLong(Table.TicketColumn.WELCOME_MESSAGE_ID.getColumn());
             boolean isRequestPending = resultSet.getBoolean(Table.TicketColumn.IS_REQUEST_PENDING.getColumn());
@@ -172,7 +172,7 @@ public class TicketRepository implements IRepository {
             String ownerId = rs.getString(Table.TicketColumn.OWNER_ID.getColumn());
             String assigneeId = rs.getString(Table.TicketColumn.ASSIGNEE_ID.getColumn());
             long channelId = rs.getLong(Table.TicketColumn.CHANNEL_ID.getColumn());
-            TicketType type = TicketType.valueOf(rs.getString(Table.TicketColumn.TYPE.getColumn()));
+            TicketType type = TicketType.fromName(rs.getString(Table.TicketColumn.TYPE.getColumn()));
             Timestamp lastActivityAt = rs.getTimestamp(Table.TicketColumn.LAST_ACTIVITY_AT.getColumn());
             long welcomeMessageId = rs.getLong(Table.TicketColumn.WELCOME_MESSAGE_ID.getColumn());
             boolean isRequestPending = rs.getBoolean(Table.TicketColumn.IS_REQUEST_PENDING.getColumn());
@@ -235,7 +235,7 @@ public class TicketRepository implements IRepository {
             String ownerId = resultSet.getString(Table.TicketColumn.OWNER_ID.getColumn());
             String assigneeId = resultSet.getString(Table.TicketColumn.ASSIGNEE_ID.getColumn());
             long channelId = resultSet.getLong(Table.TicketColumn.CHANNEL_ID.getColumn());
-            TicketType type = TicketType.valueOf(resultSet.getString(Table.TicketColumn.TYPE.getColumn()));
+            TicketType type = TicketType.fromName(resultSet.getString(Table.TicketColumn.TYPE.getColumn()));
             Timestamp lastActivityAt = resultSet.getTimestamp(Table.TicketColumn.LAST_ACTIVITY_AT.getColumn());
             long welcomeMessageId = resultSet.getLong(Table.TicketColumn.WELCOME_MESSAGE_ID.getColumn());
             boolean isRequestPending = resultSet.getBoolean(Table.TicketColumn.IS_REQUEST_PENDING.getColumn());

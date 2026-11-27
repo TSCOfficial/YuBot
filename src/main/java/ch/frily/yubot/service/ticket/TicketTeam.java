@@ -10,18 +10,18 @@ import java.util.*;
 @Slf4j
 public enum TicketTeam {
     SUPPORT_TEAM(
-            "\uD83D\uDD29 Supporter*innen",
-            "Das Support-Team",
+            "🧵 Connector*innen",
+            "Das Connection-Team",
             List.of(
-                EnvKey.ROLE_SUPPORT.getAsRole()
+                EnvKey.ROLE_CONNECTOR.getAsRole()
             )
     ),
     SUPPORT_LEITUNG(
-            "\uD83D\uDD29 Supporter*innen-Leitung",
-            "Die Support-Leitung und Stellvertretung",
+            "🧵 Connector*innen-Leitung",
+            "Die Connection-Leitung und Stellvertretung",
             List.of(
-                    EnvKey.ROLE_SUPPORTLEITUNG.getAsRole(),
-                    EnvKey.ROLE_STVSUPPORTLEITUNG.getAsRole()
+                    EnvKey.ROLE_CONNECTOR.getAsRole(),
+                    EnvKey.ROLE_STVCONNECTORLEITUNG.getAsRole()
             )
     ),
     MODERATION_TEAM(

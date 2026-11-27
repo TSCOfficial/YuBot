@@ -39,7 +39,7 @@ public class TicketParticipantRepository implements IRepository {
             String ownerId = rs.getString(Table.TicketColumn.OWNER_ID.getColumn());
             String assigneeId = rs.getString(Table.TicketColumn.ASSIGNEE_ID.getColumn());
             long channelId = rs.getLong(Table.TicketColumn.CHANNEL_ID.getColumn());
-            TicketType type = TicketType.valueOf(rs.getString(Table.TicketColumn.TYPE.getColumn()));
+            TicketType type = TicketType.fromName(rs.getString(Table.TicketColumn.TYPE.getColumn()));
             Timestamp lastActivityAt = rs.getTimestamp(Table.TicketColumn.LAST_ACTIVITY_AT.getColumn());
             long welcomeMessageId = rs.getLong(Table.TicketColumn.WELCOME_MESSAGE_ID.getColumn());
             boolean isRequestPending = rs.getBoolean(Table.TicketColumn.IS_REQUEST_PENDING.getColumn());
